@@ -1,0 +1,217 @@
+#!/bin/sh
+
+local DDNS_STATUS="/tmp/ez-ipupd.status"
+[ -f /usr/sbin/ez-ipupdate ] || exit 0
+
+#wait for wan_ifname gets ready
+/bin/sleep 3
+
+CONFIG=/bin/config
+
+prog="/usr/sbin/ez-ipupdate"
+pid="/var/run/ez-ipupd.pid"
+no_ip_conf="/tmp/noip2.conf"
+NTGRDNS_CONF="/tmp/ntgrdns.conf"
+DDNS_CACHE="/tmp/ez-ipupd.cache"
+DDNS_CONF="/tmp/ez-ipupd.conf"
+DDNS_SCRIPT="/etc/ez-ipupdate.script"
+WAN_IF=brwan
+
+#This address is got from Linux Open Source at Oray Officail Site
+ORAY_SERVER=hphserver.oray.net
+ORAY_PORT=6060
+
+ddns_enable=`$CONFIG get endis_ddns`
+usr_name=`$CONFIG get sysDNSUser`
+usr_password=`$CONFIG get sysDNSPassword`
+host_name=`$CONFIG get sysDNSHost`
+
+wan_proto=`$CONFIG get wan_proto`
+if [ "x$wan_proto" == "x3g" -o "x$wan_proto" == "xpppoe" -o "x$wan_proto" == "xl2tp" -o "x$wan_proto" == "xpptp" ]; then
+	wan_ifname="ppp0"
+elif [ "x$wan_proto" == "xwimax" ]; then
+	wan_ifname=`$CONFIG get wan_ifname_wimax`
+else
+	wan_ifname=$WAN_IF
+fi
+
+#wan_ipaddr=`$CONFIG get wan_default_ipaddr`
+wan_ipaddr=`/sbin/ifconfig $wan_ifname | grep "inet addr:" | awk '{print $2}' | awk -F: '{print $2}'`
+ddns_wildcard=`$CONFIG get endis_wildcards`
+ddns_provider=`$CONFIG get sysDNSProviderlist`
+
+# Not used parameter: sysDNSProviderlist,  change_wan_type
+
+#return 0 for check pass, 1 for check fail.
+returnValue=0
+print_ntgrddns_conf() {
+cat << EOF
+provider=NETGEAR
+mac=$1
+model=$2
+fw_version=$3
+serial_num=$4
+EOF
+}
+
+printf_ddns_conf() {
+	local user_agent="NETGEAR - $(cat /module_name) - $(cat /firmware_version)"
+cat << EOF
+	user-agent=$user_agent
+EOF
+}
+
+check()	
+{
+	if [ "$ddns_enable" != 1 ]; then	#ddns disable, do nothing
+		returnValue=1
+		return 1
+	fi
+	if [ "$usr_name" = "" ]; then
+		echo "No user name for DDNS!"
+		returnValue=1
+		return 1
+	fi
+	if [ "$usr_password" = "" ]; then
+		echo "No password for DDNS!"
+		returnValue=1
+		return 1
+	fi
+	if [ "$host_name" = "" ]; then
+		echo "No host name for DDNS!"
+		returnValue=1
+		return 1
+	fi
+	if [ "$wan_ipaddr" = "" ]; then
+		echo "No WAN IP address for DDNS!"
+		returnValue=1
+		return 1
+	fi
+
+	#ddns will not process when current ip and host are the same as last update.
+	if [ -f /tmp/ddns_lastip ] && [ -f /tmp/ddns_lasthost ]; then
+		lastip=`cat /tmp/ddns_lastip`
+		lasthost=`cat /tmp/ddns_lasthost`
+		if [ "$lastip" = "$wan_ipaddr" ] && [ "$lasthost" = "$host_name" ]; then
+			echo "== Your IP address and hostname have not changed since the last DDNS update =="
+			returnValue=1
+			return 1
+		fi
+	fi
+
+	echo $wan_ipaddr > /tmp/ddns_lastip
+	echo $host_name > /tmp/ddns_lasthost
+
+	returnValue=0
+	return 0
+}
+
+get_wan_ifname() {
+        local proto=$($CONFIG get wan_proto)
+        if [ "$proto" = "pppoe" -o "$proto" = "pptp" -o "$proto" = "l2tp" -o "$proto" = "mulpppoe1" ]; then
+                echo -n "ppp0"
+        else
+                echo -n $WAN_IF
+        fi
+}
+
+start()
+{
+	#we will do check in net-cgi module
+	#check
+
+	#if [ "$returnValue" = "0" ] ; then
+	#	ddns_update
+	#fi
+	ddns_update
+}
+
+ddns_update()
+{
+	killall -9 ez-ipupdate
+	killall -15 updatednsip		#send SIGTERM for logout
+	killall -9 updatednsip
+	killall -9 phddns
+	killall -9 noip2
+	# Process ntgrddns must  be alive at anytime,even though ddns is disabled.
+	# Because we need ntgrddns to check  whether hostname is aviable or not  
+	if [ ! -f /tmp/ntgrpid ];then
+			print_ntgrddns_conf "$(ifconfig br0|grep "HWaddr"| awk '{print $NF}')" \
+               		  "$(cat /module_name)" "$(cat /firmware_version)" "$(cat /tmp/Seria_Number)" > $NTGRDNS_CONF
+			/usr/sbin/ntgrddns -c $NTGRDNS_CONF	
+	fi
+	rm -f ${pid}
+	$CONFIG unset oray_serv_type
+	$CONFIG unset oray_host_list
+	if [ "$ddns_provider" -ne "NETGEAR" ];then
+		echo -n "0" > $DDNS_STATUS
+	fi
+	if [ "$ddns_enable" = "1" ]; then        #ddns disable, do nothing
+		local DDNS_WILDCARD
+		if [ "$ddns_wildcard" = "1" ]; then
+			DDNS_WILDCARD="-w"
+		fi
+		if [ "$ddns_provider" = "www/var/www.DynDNS.org" ]; then
+			service_type="dyndns"
+		elif [ "$ddns_provider" = "www/var/www.3322.org" ]; then
+			service_type="qdns"
+		elif [ "$ddns_provider" = "www/var/www.oray.cn" ]; then
+			service_type="oray"
+		elif [ "$ddns_provider" = "www/var/dynupdate.no-ip.com" ];then
+			service_type="noipdns"
+		elif [ "$ddns_provider" = "NETGEAR" ];then
+			service_type="ntgr"
+		fi
+		
+		if [ "$service_type" = "oray" ];then
+			echo "/usr/sbin/phddns  $ORAY_SERVER  $usr_name $usr_password $(get_wan_ifname)"
+			/usr/sbin/phddns  $ORAY_SERVER $usr_name $usr_password $(get_wan_ifname)&
+		elif [ "$service_type" = "noipdns" ];then
+			#start the service
+			sleep 3
+			/usr/sbin/noip2 -I $wan_ifname -o $host_name -u $usr_name -p $usr_password -U 10 -C -c $no_ip_conf
+		elif [ "$service_type" = "ntgr" ]; then
+			# We have started process ntgrddns at the beginning,so we do not start it here 
+			echo "ntgrddns have started at the beginning"
+		else 
+			local ipaddr=$($CONFIG get update_ddns_ipaddr)
+			local time=$($CONFIG get update_ddns_time)
+			local format_time=$($CONFIG get update_ddns_format_time)
+			echo $time,$ipaddr>$DDNS_CACHE
+			# Produce /tmp/ez-ipupd.time when reboot. then when we check status on GUI,it will display.
+			if [ $time -gt 0 -a ! -f /tmp/ez-ipupd.time ] ;then
+				echo $format_time > /tmp/ez-ipupd.time
+			fi
+			if [ -f /tmp/ez-ipupd.time ] ;then
+				echo "1" > $DDNS_STATUS
+				echo `date` > /tmp/ez-ipupd.time
+			fi
+			printf_ddns_conf > $DDNS_CONF
+			echo "$prog -S $service_type -u $usr_name:$usr_password -h $host_name -i $wan_ifname $DDNS_WILDCARD -M 86400 -p 30 -P 10 -r 7 -F $pid -d -e $DDNS_SCRIPT -b $DDNS_CACHE -c $DDNS_CONF"
+			$prog -S $service_type -u "$usr_name":"$usr_password" -h $host_name -i $wan_ifname $DDNS_WILDCARD -M 86400 -p 30 -P 10 -r 7 -F $pid -d -e $DDNS_SCRIPT -b $DDNS_CACHE -c $DDNS_CONF
+		fi
+		#if file is not exist, create it. This file will be used in monitor.sh
+		echo `cat /proc/uptime | cut -d "." -f 1` >/tmp/ddns_force_update
+	fi
+}
+		
+
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	;;
+  restart|reload)
+	start
+	;;
+  ddns_update)
+	ddns_update	
+	;;
+  *)
+	echo $"Usage: $0 {start|stop|restart|ddns_update}"
+	exit 1
+esac
+
+exit 1

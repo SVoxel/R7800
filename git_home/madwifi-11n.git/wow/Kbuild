@@ -1,0 +1,17 @@
+ifeq ($(obj),)
+obj := .
+endif
+
+DEPTH := ..
+
+include $(obj)/$(DEPTH)/os/linux/Makefile-linux.common
+
+INCS += -I$(obj)/inc -I$(obj)/$(DEPTH)/umac/include -I$(HAL) -I$(HAL)/$(OS) -I$(ATH) -I$(IF_WLAN) -I$(obj)/$(DEPTH)/wow
+
+obj-m += sw_wow.o
+
+EXTRA_CFLAGS+= $(INCS) $(COPTS)
+
+
+sw_wow-objs := ieee80211_wow.o ah_wow.o
+

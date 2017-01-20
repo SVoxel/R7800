@@ -1,0 +1,4 @@
+#!/bin/sh
+. /lib/cfgmgr/cfgmgr.sh
+
+oc /etc/init.d/opmode restart

@@ -1,0 +1,48 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% func_header("_Wizard_setup", "RU_detcInetType.html", "ru_wizard_detwan") %>
+<div class="page_title">$wizard_head</div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+<% cfg_set("view_wizard", "0") %>
+
+<script>
+function click_next()
+{
+	if (document.forms[0].WANDetc[0].checked == true)
+	{
+		if(top.have_broadband == "1")
+			location.href = "WIZ_sel_3g_adsl.htm";
+		else
+			document.forms[0].submit();
+	}else
+	{
+		if(top.dsl_enable_flag == 0)
+		   location.href='BAS_basic.htm';
+		else
+		location.href='BAS_basic_dsl.htm';
+	}
+}
+</script>
+
+<TR><TD nowrap><B>$wizard_setup_info1</B></TD></TR>
+<TR><TD nowrap><B>$wizard_setup_info2</B></TD></TR>
+<TR><TD nowrap><INPUT type="radio"  checked name="WANDetc" value="AutoDetc">$yes_mark</TD></TR>
+<TR><TD nowrap><INPUT type="radio" name="WANDetc" value="MyDetc">$wizard_setup_no</TD></TR>
+$bluebar
+<TR><TD nowrap align=center>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<INPUT class="short_common_bt" type="button" name="Next" value="$next_mark" onClick="click_next()">');
+else
+	document.write('<INPUT class="short_common1_bt" type="button" name="Next" value="$next_mark" disabled>');
+</script>
+</TD></TR>
+</TABLE>
+
+</div>
+<% help_box("1","_Wizard_setup") %>
+</FORM>
+</BODY>
+</HTML>

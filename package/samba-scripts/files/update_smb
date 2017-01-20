@@ -1,0 +1,133 @@
+#!/bin/sh
+
+SMB_CONF=/etc/samba/smb.conf
+TMP_SAMBA_WLIST=/tmp/tmp_samba_wlist
+TMP_SAMBA_CHECK=/tmp/tmp_samba_check
+TMP_SAMBA_LOCK=/tmp/tmp_samba_lock
+
+add_smb_global()
+{
+	echo "[global]" > $SMB_CONF
+	echo -n " interfaces = br0 "  >> $SMB_CONF
+	br0ip=`config get lan_ipaddr`
+	echo $br0ip >>  $SMB_CONF	
+	cat /usr/config/smb.conf  >> $SMB_CONF
+}
+
+process_group()
+{	
+	echo -n "  valid users=" >> $SMB_CONF
+	echo -n "  write list=" > $TMP_SAMBA_WLIST
+
+	i=1
+	wc=1
+	while [ 1 ];do
+		grp=`echo $1 | awk -v cc=$i -F, {'print $ cc'}`
+		if [ -z $grp ]; then
+			break;
+		fi
+		if [ $i -ge 2 ]; then
+			echo -n "," >> $SMB_CONF
+		fi
+		echo -n "@$grp" >> $SMB_CONF
+
+		let i=$i+1
+
+		if [ $grp = "admin" ]; then
+			if [ $wc -ge 2 ]; then
+				echo -n "," >> $TMP_SAMBA_WLIST
+			fi
+			echo -n "@admin" >> $TMP_SAMBA_WLIST
+			let wc=$wc+1
+		else
+			access_mode=`config show |grep ^admin_group | sed 's/admin_group[0-9]*[=]/''/'|grep ^$grp | awk '{print$3}'`
+			[ -z $access_mode ] && continue
+
+			if  [ "$access_mode" = "R&W" ]; then
+	                        if [ $wc -ge 2 ]; then
+        	                        echo -n "," >> $TMP_SAMBA_WLIST
+				fi
+				echo -n "@$grp" >> $TMP_SAMBA_WLIST
+				let wc=$wc+1			
+			fi
+		fi	
+
+	done
+	echo  >> $SMB_CONF
+	echo >> $TMP_SAMBA_WLIST
+	cat $TMP_SAMBA_WLIST >> $SMB_CONF
+}
+
+reload_samba()
+{
+	samba_pid=`pidof smbd`
+	if [ -z "$samba_pid" ]; then 
+		smbd -D $SMBD_OPTIONS &
+	else
+		killall -SIGHUP smbd
+	fi
+}
+
+check_add_shares()
+{ 
+	while read abspath;
+	do
+		test -f $abspath/.wndr3700_disk_share_info || continue
+
+		cat $abspath/.wndr3700_disk_share_info | sed 's/disk_sharefolder[0-9]*[=]/''/'| while read sharefolder;
+		do
+			echo $sharefolder>/tmp/testone
+	        	display_name=`awk '{print$1}' /tmp/testone`
+			Partition=`awk '{print$2}' /tmp/testone`
+		        Location=`awk '{print$3}' /tmp/testone` 
+			group=`awk '{print$4}' /tmp/testone`
+			echo >> $SMB_CONF
+			echo "[$display_name]">> $SMB_CONF
+			echo "  path=$abspath$Location">> $SMB_CONF
+			echo "  read only=yes" >> $SMB_CONF
+			process_group $group
+			echo "  browseable=yes">> $SMB_CONF
+			echo "  public=no">> $SMB_CONF
+			rm -f /tmp/testone
+#	       	access_mode=`config show |grep ^admin_group | sed 's/admin_group[0-9]*[=]/''/'|grep ^$group | awk '{print$3}'`
+ #     		[ "$access_mode" = "R&W" ] && echo "writable=yes">> $SMB_CONF
+		done
+	done < $TMP_SAMBA_CHECK
+}
+
+while [ 1 ];do
+	test -f $TMP_SAMBA_LOCK && continue
+	touch $TMP_SAMBA_LOCK
+	break
+done
+
+# $1 = add/remove $2= DEVICENAME
+echo > $TMP_SAMBA_CHECK
+
+if [ $# -eq 0 ]; then
+	add_smb_global
+        df | grep ^/dev/sd | awk {' print$6 '} > $TMP_SAMBA_CHECK
+	check_add_shares
+elif [ $# -eq 2 ]; then
+	no_global=`grep "\[global\]" $SMB_CONF`
+	[ -z $no_global ] && add_smb_global
+	case $1 in
+	add)
+	        echo "/tmp/mnt/$2" > $TMP_SAMBA_CHECK
+		check_add_shares
+		;;
+	*)	
+		echo "remove not supported yet."
+		;;
+	esac
+else
+	echo "wrong call."
+	exit 1
+fi
+
+rm $TMP_SAMBA_CHECK -f
+rm $TMP_SAMBA_WLIST -f
+
+reload_samba
+
+rm $TMP_SAMBA_LOCK -f

@@ -1,0 +1,23 @@
+diff -ruN bc-1.06.orig/bc/scan.l bc-1.06/bc/scan.l
+--- bc-1.06.orig/bc/scan.l	2014-11-20 04:29:42.305776989 -0500
++++ bc-1.06/bc/scan.l	2014-11-20 04:30:42.035776980 -0500
+@@ -143,7 +143,6 @@
+ 
+ /* Definitions for readline access. */
+ extern FILE *rl_instream;
+-_PROTOTYPE(char *readline, (char *));
+ 
+ /* rl_input puts upto MAX characters into BUF with the number put in
+    BUF placed in *RESULT.  If the yy input file is the same as
+diff -ruN bc-1.06.orig/configure bc-1.06/configure
+--- bc-1.06.orig/configure	2014-11-20 04:29:42.305776989 -0500
++++ bc-1.06/configure	2014-11-20 04:30:19.695776955 -0500
+@@ -2245,7 +2245,7 @@
+ 
+ 
+ if test "$LEX" = "flex" ; then
+- LEX="flex -I8"
++ LEX="flex -I"
+ else
+  if test "$bcrl" = "y" ; then
+   echo "configure: warning: readline works only with flex." 1>&2

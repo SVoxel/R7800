@@ -1,0 +1,82 @@
+<html>
+<head>
+<title></title>
+<meta http-equiv="content-type" content="text/html; charset=<% lang_charset() %>" />
+<% hijack_language() %>
+<style type="text/css">
+BODY {
+	FONT-SIZE: 12px; FONT-FAMILY: Arial, Helvetica, Geneva, Swiss, SunSans-Regular, sans-serif; background-color: #ffffff; WIDTH: 100%; margin-left: 0; margin-right: 0;
+}
+.main{ width: 100%; overflow: auto; position: absolute; top: 20px; left: 0px; bottom: 30px;}
+.prgbar1 { font-family:Arial; padding:0px; height: 20px; width: 280px; font-weight: bolder; font-size: 10pt; border: 1px solid; border-color: #09c; color: #0000FF}  
+</style>
+<script language="javascript" type="text/javascript">
+/* qutoe the script file funcs.js will increase the page loading time, and the page will show blank, so copy the 
+   function isCDLESS() isWIZARD() getText() here */
+function isCDLESS()
+{
+        var flag = top.location.href.indexOf("BRS_index.htm") > -1 ;
+        return flag;
+}
+
+function isWIZARD()
+{
+        var flag = top.location.href.indexOf("adv_index.htm") != -1&& top.setup_wizard_flag == 1;
+        return flag;
+}
+function getText(str1, str2)
+{
+        if ( typeof(str1) != "undefined" && (isCDLESS() || isWIZARD()))
+                return str1;
+        else
+                return str2;
+}
+function printText(str1, str2)
+{
+        document.write(getText(str1, str2));
+}
+function makeStr(strSize, fillChar)
+{
+	var temp = "";
+	for (i=0; i < strSize ; i ++)
+		temp = temp + fillChar;
+	return temp;
+}
+
+var pchar = "||"; // progress char
+var maxchars = 40; 
+var delay_time = 700; // msecs
+var charcount = 0; 
+
+function updateProgress()
+{
+	var cf = document.forms[0];
+	if (charcount < maxchars)
+	{
+		charcount ++;
+		cf.progress.value = makeStr(charcount,pchar);
+		setTimeout("updateProgress()",delay_time);
+	}
+	else
+		location.href="/change_language_result.htm";
+}
+
+function loadvalue()
+{
+		updateProgress();
+}
+</script>
+</head>
+<body bgcolor="#ffffff" onload="loadvalue()">
+<div id="main" class="main">
+<form>
+	<div id="downloading_div">
+		<div><img src="liteblue.gif" width=100% height="12" /></div><br />
+		<div align="left"><script>printText(bh_wait_update_lang, "$wait_update_lang");</script></div><br />
+		<div align="center"><input type="text" name="progress" class="prgbar1" value="" /></div><br />
+		<div><img src="liteblue.gif" width=100% height="12" /></div>
+	</div>
+</form>
+</div>
+</body>
+</html>

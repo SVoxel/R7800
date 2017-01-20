@@ -1,0 +1,7 @@
+#btnsContainer_div1 { width:35%; float:left; }
+
+#btnsContainer_div2 { width:35%; float:left; }
+
+#allBtns_div { width:30%; }
+
+.type-file-file{position:absolute;opacity:0;filter:alpha(opacity=0);z-index: 2;font-size:15px;width:300px;padding-top:4px}

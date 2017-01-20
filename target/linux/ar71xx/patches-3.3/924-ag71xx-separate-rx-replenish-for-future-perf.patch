@@ -1,0 +1,113 @@
+From 3861601f548a23216543f51f8cbddcbf0052d10a Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Mon, 10 Jun 2013 18:09:40 -0500
+Subject: [ag71xx] separate rx replenish for future perf
+
+This patch separates the rx_replenish function in preparation for
+upcoming performance changes.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c | 41 +++++++++++++----------
+ 1 file changed, 24 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+index b6355b5..6e402d7 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+@@ -884,14 +884,10 @@ static int ag71xx_tx_packets(struct ag71xx *ag, struct net_device *dev)
+ 
+ static int ag71xx_rx_packets(struct ag71xx *ag, struct net_device *dev, int limit)
+ {
+-	unsigned int rx_buf_size = ag->rx_buf_size;
+-	unsigned int rx_buf_offset = ag->rx_buf_offset;
+ 	struct ag71xx_ring *ring = &ag->rx_ring;
+ 	struct ag71xx_buf *curr = ring->curr;
+-	struct ag71xx_buf *dirty = ring->dirty;
+ 	struct ag71xx_desc *desc = curr->desc;
+ 	unsigned int used = ring->used;
+-	unsigned int size = ring->size;
+ 	int done = 0;
+ 
+ 	DBG("%s: rx packets, limit=%d, curr=%u, dirty=%u\n",
+@@ -969,17 +965,28 @@ next:
+ 	}
+ 
+ 	ring->curr = curr;
+-	used -= done;
++	ring->used = used - done;
++	return done;
++}
++
++static int ag71xx_rx_packets_replenish(struct ag71xx *ag, struct net_device *dev)
++{
++	struct ag71xx_ring *ring = &ag->rx_ring;
++	unsigned int rx_buf_size = ag->rx_buf_size;
++	unsigned int rx_buf_offset = ag->rx_buf_offset;
++	struct ag71xx_buf *dirty = ring->dirty;
++	struct ag71xx_desc *desc = dirty->desc;
++	unsigned int used = ring->used;
++	unsigned int size = ring->size;
+ 
+-	/*
+-	 * Replenish the RX buffer entries.
+-	 */
+ 	while (used < size) {
+ 		struct sk_buff *skb;
+ 
+ 		skb = dev_alloc_skb(rx_buf_size);
+ 		if (unlikely(!skb)) {
+-			break;
++			ring->dirty = dirty;
++			ring->used = used;
++			return -ENOMEM;
+ 		}
+ 
+ 		skb_reserve(skb, rx_buf_offset);
+@@ -1000,13 +1007,13 @@ next:
+ 		used++;
+ 	}
+ 
+-	ring->dirty = dirty;
+-	ring->used = used;
+-
+ 	DBG("%s: rx finish, curr=%u, dirty=%u, done=%d\n",
+ 		dev->name, ring->curr, ring->dirty, done);
+ 
+-	return done;
++	ring->dirty = dirty;
++	ring->used = used;
++
++	return 0;
+ }
+ 
+ static int ag71xx_poll(struct napi_struct *napi, int limit)
+@@ -1014,21 +1021,21 @@ static int ag71xx_poll(struct napi_struct *napi, int limit)
+ 	struct ag71xx *ag = container_of(napi, struct ag71xx, napi);
+ 	struct ag71xx_platform_data *pdata = ag71xx_get_pdata(ag);
+ 	struct net_device *dev = ag->dev;
+-	struct ag71xx_ring *rx_ring;
+ 	unsigned long flags;
+ 	u32 status;
+ 	int tx_done;
+ 	int rx_done;
++	int rx_replenished;
+ 
+ 	pdata->ddr_flush();
+ 
+-	tx_done = ag71xx_tx_packets(ag, dev);
+ 	rx_done = ag71xx_rx_packets(ag, dev, limit);
++	tx_done = ag71xx_tx_packets(ag, dev);
++	rx_replenished = ag71xx_rx_packets_replenish(ag, dev);
+ 
+ 	ag71xx_debugfs_update_napi_stats(ag, rx_done, tx_done);
+ 
+-	rx_ring = &ag->rx_ring;
+-	if (unlikely(rx_ring->used != rx_ring->size)) {
++	if (unlikely(rx_replenished != 0)) {
+ 		if (netif_msg_rx_err(ag))
+ 			pr_info("%s: out of memory\n", dev->name);
+ 
+-- 
+1.8.1.2
+

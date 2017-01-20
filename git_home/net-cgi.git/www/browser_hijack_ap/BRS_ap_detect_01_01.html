@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<% hijack_title() %>
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_02_genieHelp.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_ap_detect_01_01.js"></script>
+<% hijack_language() %>
+</head>
+
+<body>
+<form>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+</script>
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		<h1 style="font: bold 17px arial; color: #000000"><script>document.write(bh_current_network);</script></h1>
+		<div style="text-align:center;"><img src="image/G3.gif" style="height:260px;width:598px;"></div>
+		<p><script>document.write(bh_help_choose_page1_str);</script></p>
+	</div>
+	
+	<div id="allBtns_div" class="wizard_buttons_div" align="center">
+		<div id="btnsContainer_div1" class="buttons_img_div" align="center">
+			<input type="button" name="Back" id="back" class="purple_short_btn"><!--back_mark-->
+		</div>
+		<div class="buttons_split"></div>
+		<div id="btnsContainer_div2" class="buttons_img_div" align="center">
+			<input type="button" name="Next" id="next" class="purple_short_btn"><!--next_mark-->
+		</div>
+	</div>
+	
+</div>
+</form>
+</body>
+</html>

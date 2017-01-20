@@ -1,0 +1,19 @@
+#!/bin/sh
+##
+## Compatability scripts for older versions
+##
+
+WPS_LED_OFF=1
+#echo $WPS_LED_OFF  > /proc/simple_config/simple_config_led  
+
+KER_VER_31=`set | uname -a | grep -c "2.6.31"`
+if [ "${KER_VER_31}" = 1 ]; then
+    pktlogconf -d
+fi
+
+
+killVAP all
+#Finally, unload all modules
+sleep 3
+/etc/rc.d/rc.wlan down
+rm -f /tmp/.apup

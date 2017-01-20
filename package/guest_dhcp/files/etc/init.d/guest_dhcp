@@ -1,0 +1,91 @@
+#!/bin/sh /etc/rc.common
+
+GUEST_CONFIG=/etc/dhcp.guest.conf
+
+DISPLAY_NAME="DHCP Guest Server"
+RUNDIR="/var/run/appflow"
+PIDFILE="${RUNDIR}/dhcp.guest.pid"
+OLDINFO="${RUNDIR}/dhcp.guest.info"
+DAEMON_BIN="/usr/sbin/dnsmasq"
+CFGFILE="${RUNDIR}/dnsmasq.guest.conf"
+OPTIONS="-k --dhcp-alternate-port=6700,68 --port=6701 -C $CFGFILE"
+DHCPORIG="/var/etc/dnsmasq.conf"
+
+guest_setup() {
+	[ -f "$DHCPORIG" ] || {
+		echo "dnsmasq service must be started before the $DISPLAY_NAME"
+		return 1
+	}
+
+	insmod xt_RAWNAT 2>/dev/null
+	insmod xt_physdev 2>/dev/null
+	lsmod | grep ^xt_RAWNAT >/dev/null && lsmod | grep ^xt_physdev >/dev/null || {
+		echo "Required iptables modules: xt_RAWNAT, xt_physdev"
+		return 1
+	}
+
+	echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
+
+	sed <"$DHCPORIG" >"$CFGFILE" 's/^\(dhcp-range=[^,]*\),.*/\1,'"$GUEST_DHCP_RANGE_START,$GUEST_DHCP_RANGE_END,$GUEST_DHCP_NETMASK,$GUEST_DHCP_LEASETIME/"
+	sed -i 's/^\(address=\)\/\([^/]*\)\/.*/\1\/\2\/'"${GUEST_DHCP_IPADDR}/" "${CFGFILE}"
+	sed -i '/ptr-record=/d' ${CFGFILE}
+	echo "dhcp-option=3,${GUEST_DHCP_IPADDR}" >> ${CFGFILE}
+	echo "dhcp-option=6,${GUEST_DHCP_IPADDR}" >> ${CFGFILE}
+
+	cp "$GUEST_CONFIG" "$OLDINFO"
+
+	GUEST_CIDR=$(awk -v "NMSK=$GUEST_DHCP_NETMASK" 'BEGIN {bits=8; for (i = 255; i >= 0; i -= 2^i++) cidr[i] = bits--; split(NMSK, arr, "[.]"); for (i = 1; i <= 4; i++) {total += cidr[arr[i]]; if (arr[i] < 255) break} print total}')
+	ip addr add "$GUEST_DHCP_IPADDR"/"$GUEST_CIDR" dev "$GUEST_DHCP_BRIDGE" 2>/dev/null
+
+	iptables -t raw -I PREROUTING 1 -i "$GUEST_DHCP_BRIDGE" -m physdev --physdev-in "$GUEST_DHCP_INTERFACE" -p udp --dport 67 -j RAWDNAT --to-destination 0.255.255.255
+	iptables -t nat -I PREROUTING 1 -i "$GUEST_DHCP_BRIDGE" -m physdev --physdev-in "$GUEST_DHCP_INTERFACE" -p udp --dport 67 -d 0.255.255.255 -j DNAT --to-destination 255.255.255.255:6700
+	iptables -t nat -I POSTROUTING 1 -o "$GUEST_DHCP_BRIDGE" -p udp --sport 6700 --dport 68 -j SNAT --to-source "$GUEST_DHCP_IPADDR":67
+}
+
+guest_teardown() {
+	. "$OLDINFO"
+
+	iptables -t raw -D PREROUTING -i "$GUEST_DHCP_BRIDGE" -m physdev --physdev-in "$GUEST_DHCP_INTERFACE" -p udp --dport 67 -j RAWDNAT --to-destination 0.255.255.255
+	iptables -t nat -D PREROUTING -i "$GUEST_DHCP_BRIDGE" -m physdev --physdev-in "$GUEST_DHCP_INTERFACE" -p udp --dport 67 -d 0.255.255.255 -j DNAT --to-destination 255.255.255.255:6700
+	iptables -t nat -D POSTROUTING -o "$GUEST_DHCP_BRIDGE" -p udp --sport 6700 --dport 68 -j SNAT --to-source "$GUEST_DHCP_IPADDR":67
+
+	rm ${CFGFILE}
+}
+
+start() {
+	[ -f "$GUEST_CONFIG" ] || {
+		echo "Config file $GUEST_CONFIG missing, can't start $DISPLAY_NAME"
+		return 1
+	}
+	. "$GUEST_CONFIG"
+	[ "$GUEST_DHCP_ENABLE" = "yes" ] || {
+		echo "${DISPLAY_NAME} is not enabled, skipping start"
+		return 0
+	}
+
+	echo -n "Starting ${DISPLAY_NAME}: "
+
+	guest_setup && start-stop-daemon -S -q -m -b -p $PIDFILE -x $DAEMON_BIN -- $OPTIONS "$@"
+
+	retval=$?
+	[ $retval -eq 0 ] && echo OK || echo FAIL
+	return $retval
+}
+
+stop() {
+	[ -f "${PIDFILE}" ] && {
+		echo -n "Stopping ${DISPLAY_NAME}: "
+
+		start-stop-daemon -K -q -p $PIDFILE
+		retval=$?
+		guest_teardown
+		[ $retval -eq 0 ] && { rm -f $PIDFILE; echo OK; } || echo FAIL
+		return $retval
+	}
+	return 0
+}
+
+restart() {
+	stop
+	start
+}

@@ -1,0 +1,68 @@
+#!/bin/sh /etc/rc.common
+
+START=50
+STOP=20
+
+start() {
+	# Check config file existence
+	if [ -f /etc/dnscrypt.conf ]; then
+		config=/etc/dnscrypt.conf
+	elif [ -f /root/dnscrypt-list ]; then
+		config=/root/dnscrypt-list
+	else
+		exit 0
+	fi
+
+	# Restore dnsmasq config file
+	cp -f /etc/dnsmasq-resolv.conf /tmp/dnsmasq.conf
+
+	# Start dnscrypt services, reading DNS servers from config file
+	echo "no-resolv" > /tmp/dnsmasq-ports
+	n=1
+	port=64001
+	while read -r server || [[ -n "$server" ]]; do
+		if [ ! -z "$server" ] ; then
+			ln -sf /usr/sbin/dnscrypt-proxy /tmp/dnscrypt-proxy$n
+			/tmp/dnscrypt-proxy$n --local-address=127.0.0.1:$port --daemonize -R $server
+			echo "server=127.0.0.1#$port" >>/tmp/dnsmasq-ports
+			n=$(($n+1))
+			port=$(($port+1))
+		fi
+	done < $config
+
+	# Append dnsmasq config file by ports to listen
+	cat /tmp/dnsmasq-ports >> /tmp/dnsmasq.conf
+	rm -f /tmp/dnsmasq-ports
+
+	# Restart dnsmasq
+	/etc/init.d/dnsmasq stop
+	/etc/init.d/dnsmasq start
+}
+
+stop() {
+	# Check config file existence
+	if [ -f /etc/dnscrypt.conf ]; then
+		config=/etc/dnscrypt.conf
+	elif [ -f /root/dnscrypt-list ]; then
+		config=/root/dnscrypt-list
+	else
+		exit 0
+	fi
+
+	# Restore dnsmasq config file
+	cp -f /etc/dnsmasq-resolv.conf /tmp/dnsmasq.conf
+
+	# Stop dnscrypt-proxy services
+	n=1
+	while read -r server || [[ -n "$server" ]]; do
+		if [ ! -z "$server" ] ; then
+			killall -9 dnscrypt-proxy$n
+			rm -f /tmp/dnscrypt-proxy$n
+			n=$(($n+1))
+		fi
+	done < $config
+
+	# Restart dnsmasq
+	/etc/init.d/dnsmasq stop
+	/etc/init.d/dnsmasq start
+}

@@ -1,0 +1,119 @@
+<% http_header("style/form2.css", "/funcs.js", "/qos_prru.js", "/streamboost.js") %>
+<% body_header("_qos", "QOS_basic_dynamic.htm", "apply_qos_basic_dynamic") %>
+<div class="qospage_title">$qos_head</div>
+<input type="hidden" name="hid_qos_enable" >
+<script>
+if(parent.type == "basic")
+	{
+		document.write("<div class=\"fix_button\">");
+	}
+	else if(parent.type == "advanced")
+	{
+		document.write("<div class=\"fix_adv_button\">");
+	}
+</script>
+<!--<div class="fix_button">-->
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+	<TD nowrap colspan=2 align=center>
+	<script>
+		var master="<% cfg_get("http_loginname") %>";
+		if( master == "admin" )
+			document.write('<input class="new_cancel_bt ui-corner-all" type="button" name="Cancel" value="$cancel_mark" onClick=\'location.href="QOS_basic_dynamic.htm";\'> &nbsp;&nbsp;<input class="new_apply_bt ui-corner-all" type="submit" name="apply" value="$apply_mark" onClick="return check_basic_dynamic(document.forms[0])">');
+		else
+			document.write('<input class="new_greycancel_bt ui-corner-all" type="button" name="Cancel" value="$cancel_mark" disabled> &nbsp;&nbsp;<input class="new_greyapply_bt ui-corner-all" type="submit" name="apply" value="$apply_mark" disabled>');
+	</script>
+	</TD>
+</TR>
+<tr id="labels"><td colspan=2>
+        <div id="streamboost_qos" class="label_unclick" onclick="select_lable(0)">
+                <div class="label_left"></div>
+                <div class="label_middle"><b><span>$home_net</span></b></div>
+                <div class="label_right"></div>
+        </div>
+        <div id="wmm" class="label_unclick" onclick="select_lable(1)">
+                <div class="label_left"></div>
+                <div class="label_middle"><b><span>  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;$wmm_mark  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;</span></b></div>
+                <div class="label_right"></div>
+        </div>
+
+<script>
+if(parent.type == "advanced")
+	document.getElementById("labels").style.display = "";
+else if(parent.type == "basic")
+	document.getElementById("labels").style.display = "none";
+</script>
+</td>
+</tr>
+<tr><td style="height:20px"></td></tr>
+<TR>
+<TD><input type="checkbox" name="qos_enable" onClick=" return enable_qos(document.forms[0])"><b>$enable_qos</b></TD>
+</TR>
+<TR>
+<TD>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="basic_dynamic_qos" onclick="location.href='QOS_dynamic.htm'" disabled>$dynamic_qos_more</TD>
+</TR>
+<TR>
+<TD>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="basic_dynamic_qos" onclick="location.href='QOS_wait.htm?adv_qos'" disabled>$adv_qos</TD>
+</TR>
+<TR><TD colspan=2 class="spliteline"></TD></TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button" style="top: 200px"></div>
+<script>
+var endis_basic_dynamic = "<% cfg_get("endis_basic_dynamic") %>";
+var enable_exteder_flag="<% cfg_get("extender_mode") %>";
+function loadvalue()
+{
+	document.getElementById("wmm").className="label_unclick";
+	document.getElementById("streamboost_qos").className="label_click";
+	if(enable_exteder_flag == "0"){
+	if(endis_basic_dynamic == "1"){
+		cf.qos_enable.checked = true;
+		cf.basic_dynamic_qos[0].disabled = false;
+                cf.basic_dynamic_qos[1].disabled = false;
+	}
+	}else if (enable_exteder_flag == "1"){
+		if(endis_basic_dynamic == "1"){
+                cf.qos_enable.checked = true;
+                cf.basic_dynamic_qos[0].disabled = true;
+                cf.basic_dynamic_qos[1].disabled = false;
+        }
+
+	}
+}
+
+function check_basic_dynamic(cf)
+{
+	if(cf.qos_enable.checked == true)
+		cf.hid_qos_enable.value = "1";
+	else
+		cf.hid_qos_enable.value = "0";
+		
+}
+
+function enable_qos(cf)
+{
+	if(enable_exteder_flag == "0"){
+		if(cf.qos_enable.checked == true)
+		{
+			cf.basic_dynamic_qos[0].disabled = false;
+			cf.basic_dynamic_qos[1].disabled = false;
+			if(endis_basic_dynamic == "" || endis_basic_dynamic == "0")
+				location.href="QOS_dynamic.htm";
+		}
+	}else if(enable_exteder_flag == "1"){
+		if(cf.qos_enable.checked == true)
+		{
+			cf.basic_dynamic_qos[0].disabled = true;
+			cf.basic_dynamic_qos[1].disabled = false;
+			if(endis_basic_dynamic == "" || endis_basic_dynamic == "0")
+				location.href="QOS_basic_setting.htm";
+		}
+
+	}
+}
+</script>
+<% help_box("0","_QOS_disable") %>
+</FORM>
+</BODY>
+</HTML>

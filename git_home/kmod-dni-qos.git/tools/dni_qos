@@ -1,0 +1,102 @@
+#!/bin/sh
+
+prog=${0##*/}
+
+exit_with_usage() # $1: exit_number
+{
+	cat <<EOF
+Usage: $prog
+
+eg: $prog 
+    * show dni_qos configs.
+    * exit status
+      0 : attached
+      1 : unattached
+
+Usage: $prog --dni_qos_if NET_IF --MFS MFS_VALUE 
+             --lan_1_prio LAN_PRIO_VALUE
+             --lan_2_prio LAN_PRIO_VALUE
+             --lan_3_prio LAN_PRIO_VALUE
+             --lan_4_prio LAN_PRIO_VALUE
+
+eg: $prog --dni_qos_if eth0 --MFS "30000:1" --lan_1_prio 1 --lan_2_prio 4
+	* attach dni-qos to eth0.
+	* bandwidth = 30000 Kbits, bandwitdth control : on
+	* lan_prio (1: highest, 2: high, 3: normal, 4: low)
+	  LAN1_prio=1, LAN2_prio=4
+EOF
+	exit $1
+}
+
+exit_with_invalid_command() # $1: exit_number
+{
+	cat <<EOF
+Invalid command, use "$prog -h" for more information.
+EOF
+	exit $1
+}
+
+exit_with_print_configs()
+{
+	local nif=$(cat /proc/dni_qos_if)
+
+	cat <<EOF
+dni_qos_if=$nif
+MFS=$(cat /proc/MFS)
+lan_prio=$(cat /proc/lan_prio)
+EOF
+
+	[ -z "$nif" ] && exit 1 || exit 0
+}
+
+if_is_up() # $1: net_if
+{
+	ip link show $1 | grep -q UP
+}
+
+[ $# -eq 0 ] && exit_with_print_configs
+[ "$1" = "-h" ] && exit_with_usage 0
+
+dni_qos_options="dni_qos_if:,MFS:,lan_1_prio:,lan_2_prio:,lan_3_prio:,lan_4_prio:"
+TEMP=$(getopt -o "" --long "$dni_qos_options" -n "dni_qos" -- "$@")
+[ $? != 0 ] && exit_with_invalid_command 1
+#echo "TEMP: //$TEMP//"
+
+eval set -- "$TEMP"
+while true ; do
+	case "$1" in
+	--dni_qos_if) new_if="$2"; shift 2;;
+	--MFS) mfs="$2"; shift 2;;
+	--lan_1_prio) lan_1_prio="$2"; shift 2;;
+	--lan_2_prio) lan_2_prio="$2"; shift 2;;
+	--lan_3_prio) lan_3_prio="$2"; shift 2;;
+	--lan_4_prio) lan_4_prio="$2"; shift 2;;
+	--) shift ; break ;;
+	*) exit_with_invalid_command 1;;
+	esac
+done
+
+old_if=$(cat /proc/dni_qos_if)
+old_if_link="down"
+if [ -n "$old_if" ] && if_is_up "$old_if"; then
+	old_if_link="up"
+	ip link set "$old_if" down
+fi
+
+new_if_link="down"
+if [ -n "$new_if" ] && [ "$new_if" != "$old_if" ]; then
+	if if_is_up "$new_if"; then
+		new_if_link="up"
+		ip link set "$new_if" down
+	fi
+	echo "$new_if" > /proc/dni_qos_if
+fi
+[ -n "$mfs" ] && echo "$mfs" > /proc/MFS
+[ -n "$lan_1_prio" ] && echo "1$lan_1_prio" > /proc/lan_prio
+[ -n "$lan_2_prio" ] && echo "2$lan_2_prio" > /proc/lan_prio
+[ -n "$lan_3_prio" ] && echo "3$lan_3_prio" > /proc/lan_prio
+[ -n "$lan_4_prio" ] && echo "4$lan_4_prio" > /proc/lan_prio
+
+[ "$old_if_link" == "up" ] && ip link set "$old_if" up
+[ "$new_if" != "$old_if" ] && [ "$new_if_link" == "up" ] && ip link set "$new_if" up
+

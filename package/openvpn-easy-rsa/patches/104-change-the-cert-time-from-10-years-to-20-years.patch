@@ -1,0 +1,36 @@
+--- a/easy-rsa/2.0/pkitool 2015-06-26 00:13:20.470003845 +0800
++++ b/easy-rsa/2.0/pkitool	2015-06-26 00:14:49.670003834 +0800
+@@ -237,14 +237,14 @@
+ 
+ # If undefined, set default key expiration intervals
+ if [ -z "$KEY_EXPIRE" ]; then
+-    KEY_EXPIRE=3650
++    KEY_EXPIRE=7300
+ fi
+ if [ -z "$CA_EXPIRE" ]; then
+-    CA_EXPIRE=3650
++    CA_EXPIRE=7300
+ fi
+ if [ $(date +%Y) = "1970" ]; then
+-	KEY_EXPIRE=19950
+-	CA_EXPIRE=19950
++	KEY_EXPIRE=23911
++	CA_EXPIRE=23911
+ fi
+ 
+ # Set organizational unit to empty string if undefined
+--- a/easy-rsa/2.0/vars 2015-06-26 03:10:17.710004336 +0800
++++ b/easy-rsa/2.0/vars	2015-06-26 03:10:49.580004167 +0800
+@@ -53,10 +53,10 @@
+ export KEY_SIZE=1024
+ 
+ # In how many days should the root CA key expire?
+-export CA_EXPIRE=3650
++export CA_EXPIRE=7300
+ 
+ # In how many days should certificates expire?
+-export KEY_EXPIRE=3650
++export KEY_EXPIRE=7300
+ 
+ # These are the default values for fields
+ # which will be placed in the certificate.

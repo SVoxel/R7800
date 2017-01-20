@@ -1,0 +1,53 @@
+#!/bin/sh
+
+. ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+#
+# Environment config
+#
+BINARY="nodedetectd"
+NAME=${BINARY}
+DISPLAY_NAME="nodedetectd"
+
+#
+# nodedetectd config
+#
+# path to nodedetectd binary
+NODEDETECTD_BIN="${BINDIR}/${BINARY}"
+
+# path to nodedetectd pid file
+PIDFILE="${RUNDIR}/${BINARY}.pid"
+
+# Redis server port
+PORT=6379
+
+# Format the command line parameters
+CMDLINE_OPTS="--daemon -o ${PORT} -p ${PIDFILE} -f /etc/appflow/devices"
+
+#
+# Functions
+#
+
+start() {
+	[ ! -d "${RUNDIR}" ] && {
+		mkdir ${RUNDIR}
+	}
+
+	[ -x ${NODEDETECTD_BIN} ] || {
+		echo "${BINARY} not found: ${NODEDETECTD_BIN}"
+		exit 2
+	}
+
+	echo -n "Starting ${NAME}: "
+	${NODEDETECTD_BIN} ${CMDLINE_OPTS} "$@"
+	retval=$?
+	echo
+	return ${retval}
+}
+
+boot() {
+	start "$@"
+}
+
+action "$@"
+exit $?

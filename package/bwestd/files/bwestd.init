@@ -1,0 +1,84 @@
+#!/bin/sh
+
+. ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+#
+# Environment config
+#
+BINARY="bwestd"
+NAME=${BINARY}
+DISPLAY_NAME="Bandwidth Estimator Daemon"
+
+# this daemon is not required to run in order for Streamboost to be ok
+SB_NONCRITICAL=1
+
+#
+# config
+#
+# path to binary
+BWESTD_BIN="${BINDIR}/${BINARY}"
+
+# path to pid file
+PIDFILE="${RUNDIR}/${BINARY}.pid"
+
+# Redis server port
+REDISPORT=6379
+
+ENDPOINT_HOST=www.google.com
+
+ENDPOINT_PORT=8888
+
+# Format the command line parameters
+CMDLINE_OPTS="\
+--daemon \
+--redis-port=${REDISPORT} \
+--path-endpoint=${ENDPOINT_HOST} \
+--path-endpoint-port=${ENDPOINT_PORT} \
+--dump-path=${BWEST_UPLOADABLE_DIR}"
+
+#
+# Functions
+#
+
+start() {
+	[ "$ENABLE_AUTO_BW" = "no" ] && {
+		$LOGGER "$DISPLAY_NAME turned off"
+		return 0
+	}
+
+	[ ! -d "${RUNDIR}" ] && {
+		mkdir ${RUNDIR}
+	}
+
+	[ ! -d "${BWEST_UPLOADABLE_DIR}" ] && {
+		mkdir -p ${BWEST_UPLOADABLE_DIR}
+	}
+
+	[ -x ${BWESTD_BIN} ] || {
+		echo "${BINARY} not found: ${BWESTD_BIN}"
+		exit 2
+	}
+
+	echo -n "Starting ${NAME}: "
+	${BWESTD_BIN} ${CMDLINE_OPTS} "$@"
+	retval=$?
+	echo
+	return 0
+}
+
+status() {
+	if [ "$ENABLE_AUTO_BW" = "no" ]; then
+		echo "$DISPLAY_NAME turned off"
+		return 1
+	fi
+
+	default_status
+}
+
+boot() {
+	mkdir -p /usr/lib/bwestd
+	start "$@"
+}
+
+action "$@"
+exit $?

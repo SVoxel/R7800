@@ -1,0 +1,172 @@
+<% http_header("style/form.css", "/funcs.js", "/block_sites.js") %>
+<% body_header("_BKS_keyword", "BKS_keyword.htm", "block_sites") %>
+<div class="page_title">$block_sites_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel_bt" id="cancel" type="button" name="Cancel" value="$cancel_mark" onClick="location.href=\'/BKS_keyword.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="button" id="apply" name="Apply" value="$apply_mark" onClick="return check_blocksites();return false;"></TD></TR>');
+else
+	document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" id="cancel" name="Cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="button" name="Apply" id="apply" value="$apply_mark" disabled></TD></TR>');
+</script>
+</TABLE>
+
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %> 
+
+<script>
+var lan_ip="<% cfg_get("lan_ipaddr") %>";
+var lan_subnet="<% cfg_get("lan_netmask") %>";
+var bs_trustedip='<% cfg_get("block_trustedip") %>';
+var endis_Trusted_IP = '<% cfg_get("block_endis_Trusted_IP") %>';
+var trustedip_array=new Array();
+var lanip_array=new Array();
+trustedip_array=bs_trustedip.split('.');
+lanip_array=lan_ip.split('.');
+var gui_region="<% cfg_get("GUI_Region") %>";
+var netgear_region=top.netgear_region;
+var is_jp_version=((gui_region == "Japanese" && (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "JP")? 1 : 0;
+
+function loadvalue()
+{
+	passForm=document.forms[0];
+	if(is_jp_version == 1)
+	{
+		document.getElementById("multipppoe").style.display = "";
+		var enable_multipppoe="<% cfg_get("enable_multipppoe") %>";
+		if(enable_multipppoe == "0")
+			passForm.session[0].checked = true;
+		else
+			passForm.session[1].checked = true;
+	}
+	else
+		document.getElementById("multipppoe").style.display = "none";
+
+	var selectnum='<% cfg_get("block_skeyword") %>';
+	if (parseInt(selectnum)=="")
+		selectnum=0;
+	show_trustedip();
+	if( selectnum == "1" )
+		passForm.skeyword[1].checked = true;
+	else if ( selectnum == "2" )
+		passForm.skeyword[2].checked = true;
+	else
+		passForm.skeyword[0].checked = true;
+	tbox=passForm.cfKeyWord_DomainList;
+	//29971
+	var list="<% cfg_sed_xss("block_KeyWord_DomainList") %>".replace(/&#92;/g, "\\").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+	webfilter = list.split(" ");
+	if(list !="")
+	{
+		for(i=0;i<webfilter.length;i++){
+			var webfilter2 = decodeURI(webfilter[i]);
+			tbox.options[i]=new Option(webfilter2,webfilter2);
+		}
+	}
+}
+</script>
+
+<input type="hidden" name="Trusted_IP_Enable">	
+<input type="hidden" name="cfTrusted_IPAddress">
+<input type="hidden" name="Text">
+<TR>
+	<TD colspan=2>
+	$block_sites_url
+	</TD>
+</TR>
+$bluebar
+<TR id="multipppoe" style="display:none;">
+	<TD nowrap colspan=2>
+	<input type="radio" name="session" value="session1">$mul_session1
+	<input type="radio" name="session" value="session2">$mul_session2
+	</TD>
+</TR>
+<script>
+	if(is_jp_version == 1)
+		document.write("$bluebar");
+</script>
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_BKS_keyword','blocking')"><B>$content_block_keyword_block</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="skeyword" id="skeyword_never" value="never" >$never_mark
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="skeyword" id="skeyword_sched" value="perschedule">$per_schedule_mark
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="skeyword" id="skeyword_always" value="always" >$always_mark
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_BKS_keyword','toaddword')"><B>$content_block_type_keyword</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="text" name="cfKeyWord_Domain" id="keyword_domain" size="32" maxlength="60">
+	</TD>
+</TR>
+<TR>
+<script>
+if( master == "admin" )
+	document.write('<TD nowrap colspan=2><input class="common_key_bt" id="keyword_addkeyword" type="button" name="cfKeyWord_AddKeyword" value="$content_block_add" onClick="checkKeyWord();"></TD>');
+else
+	document.write('<TD nowrap colspan=2><input class="common1_key_bt" id="keyword_addkeyword" type="button" name="cfKeyWord_AddKeyword" value="$content_block_add" disabled></TD>');
+	
+</script>
+	</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_BKS_keyword','blocklist')"><B>$content_block_contain</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<select name="cfKeyWord_DomainList" id="keyword_domainlist" size="6" multiple></select>
+	</TD>
+</TR>
+<TR>
+<script>
+if(master=="admin")
+	document.write('<TD nowrap colspan=2><input class="common_key_bt" type="button" id="keyword_deletekeyword" name="cfKeyWord_DeleteKeyword" onClick="checkKeyWordDomainList(\'delete\');" value="$content_block_del"><input class="common_key_bt" type="button" id="keyword_clearlist" name="cfKeyWord_ClearList" onClick="checkKeyWordDomainList(\'clear\');" value="$content_block_clear"></TD>');
+else
+	document.write('<TD nowrap colspan=2><input class="common1_key_bt" type="button" id="keyword_deletekeyword" name="cfKeyWord_DeleteKeyword" value="$content_block_del" disabled><input class="common1_key_bt" type="button" id="keyword_clearlist" name="cfKeyWord_ClearList" value="$content_block_clear" disabled></TD>');
+	
+</script>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="trustipenble" id="trust_ip_enble" value="1" onclick= "checkTrustIP();">
+	<A tabindex=-1 href="javascript:loadhelp('_BKS_keyword','trusted')"><B>$content_block_allow_trustedip</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><B>$trust_ip</B></TD>
+	<TD nowrap align=right>
+	<input type="text" name="cfTrusted_IPAddress1" id="trusted_ipaddress1" size="4" maxlength="3" disabled onKeyPress="return getkey('num',event)">.
+	<input type="text" name="cfTrusted_IPAddress2" id="trusted_ipaddress2" size="4" maxlength="3" disabled onKeyPress="return getkey('num',event)">.
+	<input type="text" name="cfTrusted_IPAddress3" id="trusted_ipaddress3" size="4" maxlength="3" disabled onKeyPress="return getkey('num',event)">.
+	<input type="text" name="cfTrusted_IPAddress4" id="trusted_ipaddress4" size="4" maxlength="3" disabled onKeyPress="return getkey('num',event)">
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_BKS_keyword") %>
+</FORM>
+</BODY>
+</HTML>

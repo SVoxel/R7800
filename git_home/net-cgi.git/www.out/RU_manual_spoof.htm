@@ -1,0 +1,137 @@
+<% ca_http_header("style/hijack_style.css","style/hijack_ru_welcome.css", "/funcs.js","/RU_mac_spoof.js") %>
+
+<BODY onLoad="loadvalue();" bgcolor=#ffffff>
+<FORM>
+	
+<script>
+var wan_factory_mac="<% cfg_get("wan_factory_mac") %>";
+var wan_remote_mac="<% cfg_get("wan_remote_mac") %>";
+var ether_get_this_mac=parent.Spoofmac;
+if (ether_get_this_mac == "")
+	ether_get_this_mac=wan_factory_mac;
+	
+function loadvalue()
+{
+	var form=document.forms[0];
+	if (parent.mac_spoof == '0'){
+		form.MACAssign[0].checked = true;
+		setMAC(form,wan_factory_mac);
+	}
+	else if(parent.mac_spoof == '1'){
+		form.MACAssign[1].checked = true;
+		setMAC(form,wan_remote_mac);
+	}
+	else{
+		form.MACAssign[2].checked = true;
+		setMAC(form,ether_get_this_mac);
+	}
+
+        //buttons left
+        var btns_div1 = document.getElementById("btnsContainer_div1");
+		if( master == "admin" )
+		{
+			btns_div1.onclick = function()
+			{
+                check_return_type();
+			}
+		}
+
+        //buttons right
+        var btns_div2 = document.getElementById("btnsContainer_div2");
+		if( master == "admin" )
+		{
+			btns_div2.onclick = function()
+			{
+                RU_check_spoof();
+			}
+		}
+
+}
+
+function check_return_type()
+{	
+	form=document.forms[0];
+	if(parent.welcome_wan_type == 1 || parent.welcome_wan_type == 2)
+		location.href="RU_login_no.htm";
+	else if(parent.welcome_wan_type == 3){
+		if(parent.dual_access == 0)
+			location.href="RU_manu_local_resources.htm";
+		else  
+			location.href="RU_manual_pppoe_dual.htm";
+	}
+	else if(parent.welcome_wan_type == 4){
+                if(parent.dual_access == 0)
+                        location.href="RU_manu_local_resources.htm";
+                else
+			location.href="RU_manual_pptp_dual.htm";
+	}
+	else if(parent.welcome_wan_type == 5){
+                if(parent.dual_access == 0)
+                        location.href="RU_manu_local_resources.htm";
+                else
+			location.href="RU_manual_l2tp_dual.htm";
+	}
+}
+
+</script>
+
+<div class="wizard_content_div">
+<div class="wizard_words_div">
+	<H1><script>document.write(RU_CA_head)</script></H1>
+<TABLE>
+<tr>
+	<td colspan=3><script>document.write(RU_manual_spoof_head)</script></td>
+</tr>
+	<tr><td><br></td></tr>
+<TR id=mac_default>
+	<TD nowrap colspan=2 class="RU_radio">
+	<input type="radio" name="MACAssign" value="0" onClick="setMAC(document.forms[0], wan_factory_mac)"><script>document.write(basic_int_default_mac)</script>
+	</TD>
+</tr>
+<TR id=mac_comp>
+	<TD nowrap colspan=2 class="RU_radio">
+	<input type="radio" name="MACAssign" value="1" onClick="setMAC(document.forms[0], wan_remote_mac)"><script>document.write(basic_int_computer_mac)</script>
+	</TD>
+</tr>
+<TR id=mac_this>
+	<TD nowrap colspan=2 class="RU_radio">
+	<input type="radio" name="MACAssign" value="2" onClick="setMAC(document.forms[0], ether_get_this_mac)"><script>document.write(basic_int_this_mac)</script>
+	</TD>
+	<TD align=right>
+  	<input type="text" value="" name="Spoofmac" maxlength="17" size="20" onKeyPress="return getkey('mac',event)">
+  </TD>
+</tr>
+
+<tr><td><br></td></tr>
+</TABLE>
+</div><!--wizard_words_div -->
+<div id="center_buttons">
+  <div id="allBtns_div" class="wizard_buttons_div" align="center">
+                <div id="btnsContainer_div1" class="buttons_img_div" align="center">
+                         <script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							document.write('<img src="image/ca-little-grey-button.png" />');
+                        </script>
+                        <div class="buttons_words_div"><script>document.write(RU_back)</script></div>
+                </div>
+                <div class="buttons_split"></div>
+                <div id="btnsContainer_div2" class="buttons_img_div" align="center">
+						<script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							
+							document.write('<img src="image/ca-little-grey-button.png" />');
+						</script>
+                        <div class="buttons_words_div"><script>document.write(RU_next)</script></div>
+                </div>
+  </div><!--allBtns_div -->
+</div>
+</div><!--wizard_content_div -->
+</FORM>
+</BODY>
+</HTML>

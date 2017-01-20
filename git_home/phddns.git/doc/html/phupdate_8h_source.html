@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>PhEmbed: D:/SkyVense/Code/vc6/Privatework/Projects.current/oray/PH50/Embed/src/phupdate.h源文件</title>
+<link href="tabs.css" rel="stylesheet" type="text/css">
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+</head><body>
+<!-- 制作者 Doxygen 1.5.9 -->
+<div class="navigation" id="top">
+  <div class="tabs">
+    <ul>
+      <li><a href="index.html"><span>首页</span></a></li>
+      <li><a href="annotated.html"><span>类</span></a></li>
+      <li class="current"><a href="files.html"><span>文件</span></a></li>
+    </ul>
+  </div>
+  <div class="tabs">
+    <ul>
+      <li><a href="files.html"><span>文件列表</span></a></li>
+      <li><a href="globals.html"><span>文件成员</span></a></li>
+    </ul>
+  </div>
+<h1>D:/SkyVense/Code/vc6/Privatework/Projects.current/oray/PH50/Embed/src/phupdate.h</h1><a href="phupdate_8h.html">浏览该文件的文档。</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">// phupdate.h: interface for the CBaseThread class.</span>
+<a name="l00002"></a>00002 <span class="comment">//</span>
+<a name="l00004"></a>00004 <span class="comment"></span>
+<a name="l00010"></a>00010 <span class="preprocessor">#ifndef _CUPDATECORE_H</span>
+<a name="l00011"></a>00011 <span class="preprocessor"></span><span class="preprocessor">#define _CUPDATECORE_H</span>
+<a name="l00012"></a>00012 <span class="preprocessor"></span>
+<a name="l00013"></a>00013 <span class="preprocessor">#include "common/PHSocket.h"</span>
+<a name="l00014"></a>00014 <span class="preprocessor">#include "<a class="code" href="_p_h_global_8h.html" title="PHDDNS 客户端实现.">PHGlobal.h</a>"</span>
+<a name="l00015"></a>00015 
+<a name="l00017"></a>00017 
+<a name="l00019"></a><a class="code" href="class_c_update_base.html">00019</a> <span class="keyword">class </span><a class="code" href="class_c_update_base.html" title="花生壳DDNS客户端实现基类">CUpdateBase</a>
+<a name="l00020"></a>00020 {
+<a name="l00021"></a>00021 <span class="keyword">public</span>:
+<a name="l00023"></a><a class="code" href="class_c_update_base.html#c9b9219bcf2d4ce88b430991d52d6736">00023</a>         <a class="code" href="class_c_update_base.html#c9b9219bcf2d4ce88b430991d52d6736" title="构造, 初始化必要的变量">CUpdateBase</a>()
+<a name="l00024"></a>00024         {
+<a name="l00025"></a>00025                 bNeed_connect = <span class="keyword">true</span>;
+<a name="l00026"></a>00026                 tmLastSend = 0;
+<a name="l00027"></a>00027         }
+<a name="l00028"></a>00028         
+<a name="l00030"></a><a class="code" href="class_c_update_base.html#401aaaec40b4bd2d80c591d690bc3b43">00030</a>         <a class="code" href="struct_p_h_global.html" title="全局变量">PHGlobal</a> <a class="code" href="class_c_update_base.html#401aaaec40b4bd2d80c591d690bc3b43" title="保存了启动参数与各种运行时信息">phglobal</a>;
+<a name="l00031"></a>00031         
+<a name="l00033"></a>00033         <span class="keywordtype">int</span> <a class="code" href="class_c_update_base.html#aa6ee745dabb4269176668d588cba941" title="步进调用，配置好参数后需要立即进入此函数，函数返回下次需要执行本函�...">step</a>();     
+<a name="l00034"></a>00034 
+<a name="l00036"></a>00036         <span class="keywordtype">void</span> <a class="code" href="class_c_update_base.html#b0915549308b8a7166f96ff5ab8ebe2b" title="停止花生壳DDNS更新，重新配置参数后可进入另一个">stop</a>();
+<a name="l00037"></a>00037 <span class="keyword">protected</span>:
+<a name="l00039"></a>00039 
+<a name="l00072"></a>00072         <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_c_update_base.html#46ef0b7f94feee9c355e8c3efcd8209b" title="重载此函数得到状态变更，必须重载">OnStatusChanged</a>(<span class="keywordtype">int</span> status, <span class="keywordtype">long</span> data) = 0;
+<a name="l00074"></a><a class="code" href="class_c_update_base.html#903f42a46b6b819110528e8d936fc1cf">00074</a>         <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_c_update_base.html#903f42a46b6b819110528e8d936fc1cf" title="重载此函数得到注册的域名，每条域名被执行一次">OnDomainRegistered</a>(std::string domain){}
+<a name="l00076"></a><a class="code" href="class_c_update_base.html#da93a2a984d05a33c664156de210c31d">00076</a>         <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_c_update_base.html#da93a2a984d05a33c664156de210c31d" title="重载此函数得到用户信息，XML格式">OnUserInfo</a>(std::string userInfo){}
+<a name="l00078"></a><a class="code" href="class_c_update_base.html#579317204265d70fe69424beaac47e99">00078</a>         <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_c_update_base.html#579317204265d70fe69424beaac47e99" title="重载此函数得到用户域名信息，XML格式">OnAccountDomainInfo</a>(std::string domainInfo){}
+<a name="l00079"></a>00079 <span class="keyword">private</span>:
+<a name="l00081"></a>00081         CPHSocket m_tcpsocket,m_udpsocket;
+<a name="l00083"></a>00083         <span class="keywordtype">bool</span> InitializeSockets();
+<a name="l00085"></a>00085         <span class="keywordtype">bool</span> DestroySockets();
+<a name="l00087"></a>00087         <span class="keywordtype">int</span> ExecuteUpdate();
+<a name="l00089"></a>00089         <span class="keywordtype">bool</span> BeginKeepAlive();
+<a name="l00091"></a>00091         <span class="keywordtype">bool</span> SendKeepAlive(<span class="keywordtype">int</span> opCode);
+<a name="l00093"></a>00093         <span class="keywordtype">int</span> RecvKeepaliveResponse();
+<a name="l00095"></a>00095         <span class="keywordtype">bool</span> bNeed_connect;
+<a name="l00097"></a>00097         <span class="keywordtype">long</span> tmLastSend;
+<a name="l00098"></a>00098 };
+<a name="l00099"></a>00099 <span class="preprocessor">#endif</span>
+</pre></div></div>
+<hr size="1"><address style="text-align: right;"><small>Generated at Tue Sep 15 11:01:32 2009 for PhEmbed by&nbsp;
+<a href="http://www.doxygen.org/index.html">
+<img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.9 </small></address>
+</body>
+</html>

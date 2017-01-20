@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML><HEAD>
+<meta http-equiv=content-type content='text/html; charset=UTF-8'>
+<link rel="stylesheet" href="style/advanced.css">
+<script>
+var host_name = "<% cat_file("/hardware_version") %>";
+function login()
+{
+	location.href="change_user.html";
+}
+function no_login()
+{
+	// bug24950
+	location.href="goodbye.html";
+}
+function do_search()
+{
+        var key = top.document.getElementsByTagName("input")[0].value;
+        var winoptions = "width=960,height=800,menubar=yes,scrollbars=yes,toolbar=yes,status=yes,location=yes,resizable=yes";
+        var url="";
+	if(key == "" || key == "$ent_srh_item") {
+		url = "http://support.netgear.com/product/"+host_name;
+	} else {
+		key = key.replace(/ /g,"%20")
+		url = "http://kb.netgear.com/app/answers/list/kw/"+key;
+	}
+
+        window.open(url,'_blank',winoptions);
+}
+
+function setFooterClass()
+{
+        var footer_div = top.document.getElementById("footer");
+	var width = top.document.getElementById("support").clientWidth + top.document.getElementById("search").clientWidth;
+        var screen_width = top.document.documentElement.clientWidth;
+
+        if( width < screen_width - 60 )
+                footer_div.className = "footer";
+        else
+                footer_div.className = "footer_double";
+
+
+        var go_btn = top.document.getElementById("search_button");
+        var content_len = go_btn.value.length;
+
+        if(content_len >= 7)
+                go_btn.className = go_btn.className + "_long";
+        else if(content_len >= 4)
+                go_btn.className = go_btn.className + "_middle";
+        else
+                go_btn.className = go_btn.className;
+}
+
+function detectEnter(type, e) //bug35984
+{
+	var keycode, event;
+	if (window.event)
+	{
+		event = window.event;
+		keycode = window.event.keyCode;
+	}
+	else if (e)
+	{
+		event = e;
+		keycode = e.which;
+	}
+	else
+		return true;
+	if(type == "num")
+	{
+		if(keycode==13)
+			do_search();
+	}
+	else
+		return false;
+}
+
+</script>
+</HEAD>
+
+<BODY onLoad="setFooterClass();" bgcolor=#ffffff>
+<div id="top">
+<div id="logo"> </div>
+<% top_hardware_version() %>
+<div id="firm_version" name="firm_version">$router_firmware_version<br /><% cat_file("/firmware_version") %></div>
+</div>
+<div id="container" class="container_center">
+<div class="single_middle">
+	<p>$multi_user_warning</p>
+
+	<div class="button">
+		<div id="yes" class="common_button_short" onClick="login();"> $yes_mark </div>
+		<div id="no" class="common_button_short" onClick="no_login();"> $exit_mark </div>
+	</div>
+</div>
+
+<div id="footer" class="footer">
+	<img class="footer_img" src="image/footer.gif">
+<div id="support">
+        <b> $help_and_support</b> &nbsp;
+                <a target="_blank" href="http://downloadcenter.netgear.com/">$docu_head</a> |
+                <a target="_blank" href="http://support.netgear.com">$online_support</a> |
+                <a target="_blank" href="http://kb.netgear.com/app/answers/detail/a_id/12923">$router_faq</a> |
+                <a target="_blank" href="license.htm">GNU GPL</a>
+</div>
+<div id="search">
+        <b> $search_help </b>
+	<input type="text" name="search" value="$ent_srh_item" onkeypress="detectEnter('num',event);" onFocus="this.value='';" onblur="(this.value=='')?(this.value='$ent_srh_item'):''" />
+        <input id="search_button" class="search_button" type="button" name="dosearch" value="$go_mark" onClick="do_search();">
+</div>
+</div>
+
+
+</div>
+</body>
+</html>
+

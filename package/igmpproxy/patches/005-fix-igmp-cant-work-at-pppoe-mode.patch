@@ -1,0 +1,21 @@
+--- igmpproxy-0.1/src/igmp.c	2015-01-29 15:42:09.000000000 +0800
++++ igmpproxy-0.1.bak3-0129/src/igmp.c	2015-01-29 15:43:23.000000000 +0800
+@@ -138,12 +138,12 @@
+                     inetFmt(src, s1), inetFmt(dst, s2));
+                 return;
+             }
+-            else if(!isAdressValidForIf(checkVIF, src)) {
+-                my_log(LOG_WARNING, 0, "The source address %s for group %s, is not in any valid net for upstream VIF.",
+-                    inetFmt(src, s1), inetFmt(dst, s2));
+-                return;
+-            }
+-            
++
++//            else if(!isAdressValidForIf(checkVIF, src)) {
++  //              my_log(LOG_WARNING, 0, "The source address %s for group %s, is not in any valid net for upstream VIF.",
++//                    inetFmt(src, s1), inetFmt(dst, s2));
++  //              return;
++//            }
+             // Activate the route.
+             my_log(LOG_DEBUG, 0, "Route activate request from %s to %s",
+ 		    inetFmt(src,s1), inetFmt(dst,s2));

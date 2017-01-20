@@ -1,0 +1,178 @@
+#!/bin/sh
+
+CONFIG=/bin/config
+ttl=1
+find_bw_router=0
+traceroute_got_there=0
+
+rm -f /tmp/traceroute_list
+rm -f /tmp/check_again_list
+rm -f /tmp/check_again_result
+
+re_check_test_router()
+{
+	local ttl1=0
+	while read line
+	do
+		ttl1=`echo $line | awk -F " " '{print $1}'`
+		traceroute -f $ttl1 -m $ttl1 -q 1 -w 1 www.netgear.com 128 >> /tmp/check_again_result
+	done</tmp/check_again_list
+	rm -f /tmp/check_again_list
+}
+
+update_test_router()
+{
+while read line
+do
+	local ttl1=`echo $line | awk -F " " '{print $1}'`
+	local pt_unrea=`echo $line | grep "ms" | awk -F " " '{print $6}'`
+	local ip=`echo $line | grep "ms" | awk -F " " '{print $2}'`
+	local ip_1=`echo $ip | awk -F "." '{print $1}'`
+	local ip_2=`echo $ip | awk -F "." '{print $2}'`
+	if [ "x$pt_unrea" = "x!PT" ]; then
+		traceroute_got_there=1
+		ttl=$ttl1
+		break;
+	else
+		case "$ip_1" in
+		10)
+			echo "10* Lan IP address, next!"
+                ;;
+		192)
+			if [ "$ip_2" = "168" ]; then
+				echo "192* Lan IP address, next!"
+			else
+				find_bw_router=1
+				ttl=$ttl1
+				break;
+			fi
+		;;
+		172)
+			if [ $ip_2 -ge 16 -a $ip_2 -le 31 ]; then
+				echo "172* Lan IP address, next!"
+			else
+				find_bw_router=1
+				ttl=$ttl1
+				break;
+			fi
+		;;
+		*)
+			if [ "x$ip" != "x" ];then
+				if [ "x$ip_2" != "x" ]; then
+					find_bw_router=1
+					ttl=$ttl1
+					break;
+				else
+					echo "$ip *Lan IP address, next!"
+				fi
+			else
+				echo $ttl1 >> /tmp/check_again_list
+			fi
+		;;
+		esac
+	fi
+done</tmp/check_again_result
+rm -f /tmp/check_again_result
+}
+
+find_test_router()
+{
+traceroute -m 20  -q 1 -w 1 www.netgear.com 128 > /tmp/traceroute_list &
+sleep 25
+
+killall traceroute
+sleep 2
+
+while read line
+do
+        ttl=`echo $line | awk -F " " '{print $1}'`
+	 local pt_unrea=`echo $line | grep "ms" | awk -F " " '{print $6}'`
+        local ip=`echo $line | grep "ms" | awk -F " " '{print $2}'`
+        local ip_1=`echo $ip | awk -F "." '{print $1}'`
+	local ip_2=`echo $ip | awk -F "." '{print $2}'`
+	# eg. Set 172.17.92.251 as www.netgear.com and the traceroute_list got:
+	#  2 172.17.92.251 (172.17.92.251) 0.775 ms !PT
+	# or 2 www.netgear.com (x.x.x.x) x ms !PT
+	if [ "x$pt_unrea" = "x!PT" ]; then
+		traceroute_got_there=1
+		break;
+	else
+		case "$ip_1" in
+			10)
+				echo "10* Lan IP address, next!"
+			;;
+			192)
+				if [ "$ip_2" = "168" ]; then
+					echo "192* Lan IP address, next!"
+				else
+					find_bw_router=1
+					break;
+				fi
+			;;
+			172)
+				if [ $ip_2 -ge 16 -a $ip_2 -le 31 ]; then
+					echo "172* Lan IP address, next!"
+				else
+					find_bw_router=1
+					break;
+				fi
+			;;
+			*)
+			if [ "x$ip" != "x" ];then
+				if [ "x$ip_2" != "x" ]; then
+					find_bw_router=1
+					break;
+				else
+					# eg. 1 WNR2200 (192.168.1.1) 0.775 ms
+					echo "$ip * Lan IP address, next!"
+				fi
+			else
+				echo $ttl >> /tmp/check_again_list
+			fi
+                        ;;
+		esac
+	fi
+done</tmp/traceroute_list
+}
+
+find_router()
+{
+	find_test_router
+	if [  -e /tmp/check_again_list ]; then
+		re_check_test_router
+		update_test_router
+	fi
+	if [  -e /tmp/check_again_list ]; then
+		re_check_test_router
+		update_test_router
+	fi
+	[ -e /tmp/check_again_list ] && rm -f  /tmp/check_again_list
+}
+
+find_router
+local proto=$($CONFIG get wan_proto)
+case "$proto" in
+        pppoe)
+                local mtu=$($CONFIG get wan_pppoe_mtu)
+                ;;
+        pptp)
+                local mtu=$($CONFIG get wan_pptp_mtu)
+                ;;
+        l2tp)
+                local mtu=$($CONFIG get wan_l2tp_mtu)
+                ;;
+        mulpppoe1)
+                local mtu=$($CONFIG get wan_mulppp_mtu)
+                ;;
+        *)
+                local mtu=$($CONFIG get wan_dhcp_mtu)
+                ;;
+esac
+
+[ "$find_bw_router" = "1" -o "$traceroute_got_there" = "1" ] &&  traceroute -T $ttl www.netgear.com $mtu || bw_check_failed=1
+
+if [ "x$bw_check_failed" = "x1" ]; then
+	# It shoud pop up warning with "Problem with Internet connection, unable to detect the bandwidth!"
+	$CONFIG set bw_check_failed=1
+	echo "Problem with Internet connection, unable to detect the bandwidth!"
+fi

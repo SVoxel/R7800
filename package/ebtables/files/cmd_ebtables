@@ -1,0 +1,44 @@
+#!/bin/sh
+
+CONFIG="/bin/config"
+
+start() {
+	if [ "$($CONFIG get ap_mode)" = 1 -o "$($CONFIG get bridge_mode)" = 1 ]; then
+		if [ "$($CONFIG get ParentalControl)" = "0" ]; then
+			# Parental Control disable: only redirect the URLs, such as www.routerlogin.net ..., up to layer 3
+			ebtables -t broute -A BROUTING -p ipv4 --ip-protocol UDP --ip-destination-port 53 --ip-dns-hijack -j redirect --redirect-target ACCEPT
+			ebtables -t broute -A BROUTING -p ipv6 --ip6-protocol UDP --ip6-destination-port 53 --ip6-dns-hijack -j redirect --redirect-target ACCEPT
+		else
+			# Parental Control enable: redirect all DNS packet up to layer 3
+			ebtables -t broute -A BROUTING -p ipv4 --ip-protocol UDP --ip-destination-port 53 -j redirect --redirect-target ACCEPT
+			ebtables -t broute -A BROUTING -p ipv6 --ip6-protocol UDP --ip6-destination-port 53 -j redirect --redirect-target ACCEPT
+		fi
+	fi
+}
+
+stop() {
+	if [ "$($CONFIG get ParentalControl)" = "0" ]; then
+		ebtables -t broute -D BROUTING -p ipv4 --ip-protocol UDP --ip-destination-port 53 --ip-dns-hijack -j redirect --redirect-target ACCEPT
+		ebtables -t broute -D BROUTING -p ipv6 --ip6-protocol UDP --ip6-destination-port 53 --ip6-dns-hijack -j redirect --redirect-target ACCEPT
+	else
+		ebtables -t broute -D BROUTING -p ipv4 --ip-protocol UDP --ip-destination-port 53 -j redirect --redirect-target ACCEPT
+		ebtables -t broute -D BROUTING -p ipv6 --ip6-protocol UDP --ip6-destination-port 53 -j redirect --redirect-target ACCEPT
+	fi
+}
+
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart|reload)
+	stop
+	start
+	;;
+  *)
+	echo $"Usage: $0 {start|stop|restart}"
+	exit 1
+esac

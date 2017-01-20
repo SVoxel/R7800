@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<!--<meta http-equiv="refresh" content="15; url=BRS_04_B_ppptp_pppoe_or_other_checkNet.html" />-->
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js">
+</script>
+<% hijack_language() %>
+<script language="javascript" type="text/javascript">
+function loadvalue()
+{
+	document.forms[0].submit();
+}
+</script>
+</head>
+
+<body onload="loadvalue()">
+<% form_submit("apply", "BRS_01_checkNet_ideth_pingi_wait.html", "eth_dhcp_ppp_ping")  %>
+
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+
+		<div class="waiting_connect_div" align="center">
+			<h1 class="h1_black"><script>document.write(bh_internet_checking);</script></h1>
+		</div>
+
+		<div class="waiting_img_div" align="center">
+			<img id="waiting_img" src="image/wait30.gif" />
+		</div>
+
+	</div>
+
+</div>
+
+</form>
+<!--<iframe name="ping_frame" src="BRS_ping.html" allowtransparency="true" scrolling="no" frameborder="0" ></iframe>-->
+</body>
+
+</html>
+
+

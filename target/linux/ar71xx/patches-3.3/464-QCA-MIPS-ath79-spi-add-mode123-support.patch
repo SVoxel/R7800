@@ -1,0 +1,161 @@
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+--- a/arch/mips/include/asm/mach-ath79/ath79_spi_platform.h
++++ b/arch/mips/include/asm/mach-ath79/ath79_spi_platform.h
+@@ -1,6 +1,7 @@
+ /*
+  *  Platform data definition for Atheros AR71XX/AR724X/AR913X SPI controller
+  *
++ *  Copyright (c) 2013 The Linux Foundation. All rights reserved.
+  *  Copyright (C) 2008-2010 Gabor Juhos <juhosg@openwrt.org>
+  *
+  *  This program is free software; you can redistribute it and/or modify it
+@@ -14,6 +15,7 @@
+ struct ath79_spi_platform_data {
+ 	unsigned	bus_num;
+ 	unsigned	num_chipselect;
++	unsigned	miso_line;
+ };
+ 
+ enum ath79_spi_cs_type {
+--- a/drivers/spi/spi-ath79.c
++++ b/drivers/spi/spi-ath79.c
+@@ -1,6 +1,7 @@
+ /*
+  * SPI controller driver for the Atheros AR71XX/AR724X/AR913X SoCs
+  *
++ * Copyright (c) 2013 The Linux Foundation. All rights reserved.
+  * Copyright (C) 2009-2011 Gabor Juhos <juhosg@openwrt.org>
+  *
+  * This driver has been based on the spi-gpio.c:
+@@ -49,6 +50,7 @@ struct ath79_spi {
+ 	void __iomem		*base;
+ 	struct clk		*clk;
+ 	unsigned		rrw_delay;
++	unsigned		miso_line;
+ 
+ 	enum ath79_spi_state	state;
+ 	u32			clk_div;
+@@ -239,6 +241,98 @@ static u32 ath79_spi_txrx_mode0(struct s
+ 	return ath79_spi_rr(sp, AR71XX_SPI_REG_RDS);
+ }
+ 
++static u32 ath79_spi_txrx_mode1(struct spi_device *spi, unsigned nsecs,
++			       u32 word, u8 bits)
++{
++	u32 readword = 0;
++	struct ath79_spi *sp = ath79_spidev_to_sp(spi);
++	u32 ioc = sp->ioc_base;
++
++	/* clock starts at inactive polarity */
++	for (word <<= (32 - bits); likely(bits); bits--) {
++		u32 out;
++
++		if (word & (1 << 31))
++			out = ioc | AR71XX_SPI_IOC_DO;
++		else
++			out = ioc & ~AR71XX_SPI_IOC_DO;
++
++		/* setup MSB (to slave) on trailing edge */
++		ath79_spi_wr(sp, AR71XX_SPI_REG_IOC, out | AR71XX_SPI_IOC_CLK);
++		ath79_spi_delay(sp, nsecs);
++		readword <<= 1;
++		readword |= gpio_get_value(sp->miso_line);
++		ath79_spi_wr(sp, AR71XX_SPI_REG_IOC, out);
++		ath79_spi_delay(sp, nsecs);
++
++		word <<= 1;
++	}
++
++	return readword;
++}
++
++static u32 ath79_spi_txrx_mode2(struct spi_device *spi, unsigned nsecs,
++			       u32 word, u8 bits)
++{
++	u32 readword = 0;
++	struct ath79_spi *sp = ath79_spidev_to_sp(spi);
++	u32 ioc = sp->ioc_base;
++
++	/* clock starts at inactive polarity */
++	for (word <<= (32 - bits); likely(bits); bits--) {
++		u32 out;
++
++		if (word & (1 << 31))
++			out = ioc | AR71XX_SPI_IOC_DO;
++		else
++			out = ioc & ~AR71XX_SPI_IOC_DO;
++
++		/* setup MSB (to slave) on trailing edge */
++		ath79_spi_wr(sp, AR71XX_SPI_REG_IOC, out);
++		ath79_spi_delay(sp, nsecs);
++		readword <<= 1;
++		readword |= gpio_get_value(sp->miso_line);
++		ath79_spi_wr(sp, AR71XX_SPI_REG_IOC, out & ~AR71XX_SPI_IOC_CLK);
++		ath79_spi_delay(sp, nsecs);
++		if (bits == 1)
++			ath79_spi_wr(sp, AR71XX_SPI_REG_IOC, out);
++
++		word <<= 1;
++	}
++
++	return readword;
++}
++
++static u32 ath79_spi_txrx_mode3(struct spi_device *spi, unsigned nsecs,
++			       u32 word, u8 bits)
++{
++	u32 readword = 0;
++	struct ath79_spi *sp = ath79_spidev_to_sp(spi);
++	u32 ioc = sp->ioc_base;
++
++	/* clock starts at inactive polarity */
++	for (word <<= (32 - bits); likely(bits); bits--) {
++		u32 out;
++
++		if (word & (1 << 31))
++			out = ioc | AR71XX_SPI_IOC_DO;
++		else
++			out = ioc & ~AR71XX_SPI_IOC_DO;
++
++		/* setup MSB (to slave) on trailing edge */
++		ath79_spi_wr(sp, AR71XX_SPI_REG_IOC, out & ~AR71XX_SPI_IOC_CLK);
++		ath79_spi_delay(sp, nsecs);
++		readword <<= 1;
++		readword |= gpio_get_value(sp->miso_line);
++		ath79_spi_wr(sp, AR71XX_SPI_REG_IOC, out);
++		ath79_spi_delay(sp, nsecs);
++
++		word <<= 1;
++	}
++
++	return readword;
++}
++
+ static int ath79_spi_do_read_flash_data(struct spi_device *spi,
+ 					struct spi_transfer *t)
+ {
+@@ -372,9 +466,14 @@ static __devinit int ath79_spi_probe(str
+ 	master->bus_num = pdata->bus_num;
+ 	master->num_chipselect = pdata->num_chipselect;
+ 
++	sp->miso_line = pdata->miso_line;
++
+ 	sp->bitbang.master = spi_master_get(master);
+ 	sp->bitbang.chipselect = ath79_spi_chipselect;
+ 	sp->bitbang.txrx_word[SPI_MODE_0] = ath79_spi_txrx_mode0;
++	sp->bitbang.txrx_word[SPI_MODE_1] = ath79_spi_txrx_mode1;
++	sp->bitbang.txrx_word[SPI_MODE_2] = ath79_spi_txrx_mode2;
++	sp->bitbang.txrx_word[SPI_MODE_3] = ath79_spi_txrx_mode3;
+ 	sp->bitbang.setup_transfer = ath79_spi_setup_transfer;
+ 	sp->bitbang.flags = SPI_CS_HIGH;
+ 

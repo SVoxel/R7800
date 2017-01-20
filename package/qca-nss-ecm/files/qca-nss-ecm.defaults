@@ -1,0 +1,13 @@
+#!/bin/sh
+
+uci -q batch << EOF
+	delete firewall.qcanssecm
+	set firewall.qcanssecm=include
+	set firewall.qcanssecm.type=script
+	set firewall.qcanssecm.path=/etc/firewall.d/qca-nss-ecm
+	set firewall.qcanssecm.family=any
+	set firewall.qcanssecm.reload=1
+	commit firewall
+EOF
+
+exit 0

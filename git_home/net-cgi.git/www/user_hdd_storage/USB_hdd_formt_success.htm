@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<!--link rel="stylesheet" type="text/css" href="hdd_cd_less.css" /-->
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/form.css" />
+</head>
+<style type="text/css">
+<!--
+A {
+	COLOR: #5956eb; TEXT-DECORATION: underline; font-size:14pt; font-family:Times;
+}
+-->
+</style>
+<body onLoad=loadvalue();>
+<form method="post" action="">
+<input type="hidden" name="submit_flag" value="" />
+
+
+<script language="javascript" type="text/javascript">var ts="";</script>
+
+<div class="wizard_words_div">
+<p style="font-family:Arial; font-size:18px;" align=center>$contrautlation! $hdd_formated!</p>
+</div>
+
+	<div id="buttons_div_02" class="wizard_buttons_div" align="center">
+		<TABLE align=center width="640px" width=100% border=0 cellpadding=0 cellspacing=2>
+         <TR>
+		 <TD nowrap colspan=4 align=center>
+		<INPUT  class="short_common_bt" type='button'  name="ok" value='OK' onClick='goto_usb_adv()' ></TD>
+       </TR>
+
+      </TABLE>
+	</div>	
+	
+<!--/div-->
+<script>
+function loadvalue() // uncomment this cause choose anpther method to test the time of format. 
+{
+    //var cf=document.forms[0];
+	
+	 //setTimeout( "goto_usb_adv();", 3000 );
+}
+
+function goto_usb_adv() 
+{
+   // var cf=document.forms[0];
+	location.href="USB_advanced.htm"; 
+}
+</script>
+</form>
+</body>
+</html>

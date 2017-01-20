@@ -1,0 +1,161 @@
+Index: iptables-1.4.10/extensions/libxt_DSCPREMARK.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ iptables-1.4.10/extensions/libxt_DSCPREMARK.c	2014-02-19 14:00:51.882779080 -0800
+@@ -0,0 +1,121 @@
++/*
++ **************************************************************************
++ * Copyright (c) 2014, The Linux Foundation. All rights reserved.
++ * Permission to use, copy, modify, and/or distribute this software for
++ * any purpose with or without fee is hereby granted, provided that the
++ * above copyright notice and this permission notice appear in all copies.
++ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
++ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
++ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
++ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
++ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
++ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
++ * OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
++ **************************************************************************
++ */
++
++/* Shared library add-on to iptables for DSCPREMARK */
++
++#include <stdio.h>
++#include <netdb.h>
++#include <string.h>
++#include <stdlib.h>
++#include <getopt.h>
++#include <xtables.h>
++#include <linux/netfilter/xt_DSCPREMARK.h>
++
++/*
++ * help()
++ *	Prints the usage of this target.
++ */
++static void help(void)
++{
++	printf(
++"DSCPREMARK target options\n"
++"	--imask value			Current input mask value of the packet\n"
++"	--itag value			Input DSCP tag value\n"
++"	--omask value			Output mask value\n"
++"	--oval value			This value will be OR'ed with the input packet's\n"
++"					DSCP value masked with the omask\n"
++"\n"
++);
++}
++
++static struct option opts[] = {
++	{"imask", 1, 0, '1'},
++	{"itag", 1, 0, '2' },
++	{"omask", 1, 0, '3' },
++	{"oval", 1, 0, '4' },
++	{ 0 }
++};
++
++/*
++ * parse()
++ *	Parses target parameters.
++ */
++static int parse(int c, char **argv, int invert, unsigned int *flags, const void *entry, struct xt_entry_target **target)
++{
++	struct xt_dscpremark_target_info *info = (struct xt_dscpremark_target_info *)(*target)->data;
++
++	switch(c) {
++		case '1':
++			info->imask = strtol(optarg, NULL, 0);
++			return 1;
++		case '2':
++			info->itag = strtol(optarg, NULL, 0);
++			return 1;
++		case '3':
++			info->omask = strtol(optarg, NULL, 0);
++			return 1;
++		case '4':
++			info->oval = strtol(optarg, NULL, 0);
++			return 1;
++		default:
++			return 0;
++	}
++}
++
++/*
++ * print()
++ *	Prints the target parameter values.
++ */
++static void print(const void *ip, const struct xt_entry_target *target)
++{
++	struct xt_dscpremark_target_info *info = (struct xt_dscpremark_target_info *)(target)->data;
++
++	printf("--imask: %x --itag: %x --omask: %x --oval: %x\n", info->imask, info->itag, info->omask, info->oval);
++}
++
++/*
++ * save()
++ *	Saves the target info in parsable form to stdout.
++ */
++static void save(const void *ip, const struct xt_entry_target *target)
++{
++	struct xt_dscpremark_target_info *info = (struct xt_dscpremark_target_info *)(target)->data;
++
++	printf("--imask: %x --itag: %x --omask: %x --oval: %x\n", info->imask, info->itag, info->omask, info->oval);
++
++}
++
++static struct xtables_target dscpremark = {
++	.name           = "DSCPREMARK",
++	.version        = XTABLES_VERSION,
++	.family         = NFPROTO_UNSPEC,
++	.size           = XT_ALIGN(sizeof(struct xt_dscpremark_target_info)),
++	.userspacesize  = XT_ALIGN(sizeof(struct xt_dscpremark_target_info)),
++	.help           = &help,
++	.parse          = &parse,
++	.print          = &print,
++	.save           = &save,
++	.extra_opts     = opts
++};
++
++/*
++ * _init()
++ *	Extension init function.
++ */
++void _init(void)
++{
++	xtables_register_target(&dscpremark);
++}
+Index: iptables-1.4.10/include/linux/netfilter/xt_DSCPREMARK.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ iptables-1.4.10/include/linux/netfilter/xt_DSCPREMARK.h	2014-02-19 14:01:16.814779077 -0800
+@@ -0,0 +1,30 @@
++/*
++ **************************************************************************
++ * Copyright (c) 2014, The Linux Foundation. All rights reserved.
++ * Permission to use, copy, modify, and/or distribute this software for
++ * any purpose with or without fee is hereby granted, provided that the
++ * above copyright notice and this permission notice appear in all copies.
++ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
++ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
++ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
++ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
++ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
++ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
++ * OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
++ **************************************************************************
++ */
++
++/* DSCP remark iptables target info. */
++
++#ifndef _XT_DSCPREMARK_H
++#define _XT_DSCPREMARK_H
++
++#include <linux/types.h>
++
++struct xt_dscpremark_target_info {
++	__u8 imask;
++	__u8 itag;
++	__u8 omask;
++	__u8 oval;
++};
++#endif /* _XT_DSCPREMARK_H */

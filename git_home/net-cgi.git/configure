@@ -1,0 +1,174 @@
+#! /bin/bash
+
+print_usage()
+{
+	printf "Usage:	configure [option]...\n\n"
+	printf "  %s\n" \
+		"--help		print this message" \
+		"--use_new_source	compile source code in src.new" \
+		"--install_prefix <prefix>" \
+		"			prefix of path where net-cgi will be installed" \
+		"--have_dsl		include DSL feature while compile" \
+		"--have_broadband	include broadband feature while compile" \
+		"--have_lte		include LTE feature while compile" \
+		"--have_ipv6		include IPv6 feature while compile" \
+		"--have_multi_opmode	include multiple operation mode while compile" \
+		"--have_qos		include QoS feature while compile" \
+		"--have_soap		include SOAP feature while compile" \
+		"--have_tr069		include TR069 feature while compile" \
+		"--have_usb		include USB feature while compile" \
+		"--have_vlan		include VLAN feature while compile" \
+		"--have_vpn		include VPN feature while compile" \
+		"--have_cd_less	include CD-Less feature while compile" \
+		"--have_wifi		include Wireless feature while compile" \
+		"--have_security	include security feature while compile" \
+		"--have_advanced	include advanced feature while compile" \
+		"--have_wan		include WAN feature while compile"
+		"--use_mtd_util		use common module mtd-util to take place artmtd"
+}
+
+# parse arguments
+parse_args()
+{
+	while true
+	do
+		[ $# -eq 0 ] && break	# no more args
+
+		case "$1" in
+			"--help")
+				print_usage; exit;;
+			"--use_new_source")
+				NEW_SOURCE="yes"; shift;;
+			"--install_prefix")
+				INS_DIR_PRE="$2"; shift 2;;
+			"--have_dsl")
+				HAVE_DSL=1; shift;;
+			"--have_broadband")
+				HAVE_BROADBAND=1; shift;;
+			"--have_lte")
+				HAVE_LTE=1; shift;;
+			"--have_ipv6")
+				HAVE_IPv6=1; shift;;
+			"--have_multi_opmode")
+				HAVE_MULTI_OPMODE=1; shift;;
+			"--have_qos")
+				HAVE_QOS=1; shift;;
+			"--have_soap")
+				HAVE_SOAP=1; shift;;
+			"--have_tr069")
+				HAVE_TR069=1; shift;;
+			"--have_usb")
+				HAVE_USB=1; shift;;
+			"--have_vlan")
+				HAVE_VLAN=1; shift;;
+			"--have_vpn")
+				HAVE_VPN=1; shift;;
+			"--have_cd_less")
+				HAVE_CD_LESS=1; shift;;
+			"--have_wifi")
+				HAVE_WIFI=1; shift;;
+			"--have_security")
+				HAVE_SECURITY=1; shift;;
+			"--have_advanced")
+				HAVE_ADVANCED=1; shift;;
+			"--have_wan")
+				HAVE_WAN=1; shift;;
+			"--use_mtd_util")
+				USE_MTD_UTIL=1; shift;;
+			*)
+				print_usage; exit 1;;
+		esac
+	done
+}
+
+WWW_OUT_DIR=$(pwd)/www.out
+
+INS_DIR_PRE=${INS_DIR_PRE}
+INS_BIN_DIR='$(INS_DIR_PRE)/usr/sbin'
+INS_WWW_DIR='$(INS_DIR_PRE)/www'
+
+NETCGI_CONF=$(pwd)/files/net-cgi.config
+
+generate_makefile()
+{
+	tab=$'\t'
+	cat <<-EOF
+		# GENERATED AUTOMATICALLY BY configure, DON'T EDIT THIS FILE MANUALLY.
+
+		##############################################
+		# net-cgi, DNI processor for web requesting. #
+		#             Copyright (c) 2015             #
+		##############################################
+
+		export INSTALL_DIR:=install -d -m0755
+		export INSTALL_BIN:=install -m0755
+		export INSTALL_DATA:=install -m0644
+		export INSTALL_CONF:=install -m0600
+		export LN:=ln -sf
+		export CP:=cp -fpR
+		export TOUCH:=touch
+
+		export WWW_OUT_DIR:=$WWW_OUT_DIR
+
+		export INS_DIR_PRE:=$INS_DIR_PRE
+		export INS_BIN_DIR:=$INS_BIN_DIR
+		export INS_WWW_DIR:=$INS_WWW_DIR
+
+		export NETCGI_CONF:=$NETCGI_CONF
+
+		export NEW_SOURCE:=$NEW_SOURCE
+
+		SOURCE_DIR:="src${NEW_SOURCE:+.new}"
+		FILES_DIR:="files"
+		SCRIPT_DIR:="scripts"
+		WWW_DIR:="www"
+
+		all %::
+			$tab\$(MAKE) -C \$(SOURCE_DIR) \$@
+			$tab\$(MAKE) -C \$(WWW_DIR) \$@
+			$tab\$(MAKE) -C \$(SCRIPT_DIR) \$@
+			$tab\$(MAKE) -C \$(FILES_DIR) \$@
+	EOF
+}
+
+generate_makeconf()
+{
+	cat <<-EOF
+		# GENERATED AUTOMATICALLY BY configure, DON'T EDIT THIS FILE MANUALLY.
+
+		HAVE_DSL=${HAVE_DSL:-0}
+		HAVE_BROADBAND=${HAVE_BROADBAND:-0}
+		HAVE_LTE=${HAVE_LTE:-0}
+
+		HAVE_WAN=${HAVE_WAN:-0}
+		HAVE_WIFI=${HAVE_WIFI:-0}
+
+		HAVE_IPv6=${HAVE_IPv6:-0}
+		HAVE_USB_STORAGE=${HAVE_USB:-0}
+		CD_LESS=${HAVE_CD_LESS:-0}
+
+		# multiple operation mode, like ap mode, bridge mode, extender mode.
+		MULTI_OPERATION=${HAVE_MULTI_OPMODE:-0}
+
+		HAVE_QOS=${HAVE_QOS:-0}
+		SOAP_ON=${HAVE_SOAP:-0}
+		HAVE_SECURITY=${HAVE_SECURITY:-0}
+		HAVE_ADVANCED=${HAVE_ADVANCED:-0}
+
+		HAVE_VLAN=${HAVE_VLAN:-0}
+		HAVE_VPN=${HAVE_VPN:-0}
+
+		HAVE_TR069=${HAVE_TR069:-0}
+
+		USE_MTD_UTIL=${USE_MTD_UTIL:-0}
+	EOF
+}
+
+parse_args $@
+
+# src.new: generate net-cgi.config file base on arguments
+# src: project will copy net-cgi.config from package/net-cgi/files/net-cgi.config
+[ -n "$NEW_SOURCE" ] && generate_makeconf > ${NETCGI_CONF}
+
+# top level Makefile
+generate_makefile > Makefile

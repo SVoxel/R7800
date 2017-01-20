@@ -1,0 +1,160 @@
+--- arch/arm/mach-msm/board-ipq806x-gpiomux.c
++++ arch/arm/mach-msm/board-ipq806x-gpiomux.c
+@@ -189,36 +189,131 @@
+ static struct gpiomux_setting ipq806x_leds_cfg = {
+ 	.func = GPIOMUX_FUNC_GPIO,
+ 	.drv = GPIOMUX_DRV_2MA,
+-	.pull = GPIOMUX_PULL_UP,
++	.pull = GPIOMUX_PULL_DOWN,
+ };
+-static struct gpiomux_setting usb30_pwr_en_n = {
++
++static struct gpiomux_setting ak01_1xx_eth_interrupt = {
++	.func = GPIOMUX_FUNC_GPIO,
++	.drv = GPIOMUX_DRV_8MA,
++	.pull = GPIOMUX_PULL_NONE,
++	.dir = GPIOMUX_OUT_HIGH,
++};
++
++static struct gpiomux_setting ak01_1xx_11ac_leds_cfg = {
+ 	.func = GPIOMUX_FUNC_GPIO,
+ 	.drv = GPIOMUX_DRV_12MA,
+ 	.pull = GPIOMUX_PULL_DOWN,
+-	.dir = GPIOMUX_OUT_HIGH,
++	.dir = GPIOMUX_IN,
+ };
+ 
+-static struct gpiomux_setting ipq806x_power_down_2g = {
++static struct gpiomux_setting ak01_1xx_fp_leds_cfg = {
++	.func = GPIOMUX_FUNC_GPIO,
++	.drv = GPIOMUX_DRV_2MA,
++	.pull = GPIOMUX_PULL_DOWN,
++	.dir = GPIOMUX_OUT_LOW,
++};
++
++static struct gpiomux_setting ak01_1xx_usb_enable = {
+ 	.func = GPIOMUX_FUNC_GPIO,
+ 	.drv = GPIOMUX_DRV_12MA,
+ 	.pull = GPIOMUX_PULL_UP,
+ 	.dir = GPIOMUX_OUT_HIGH
+ };
+ 
+-static struct gpiomux_setting ipq806x_power_down_5g = {
++static struct gpiomux_setting ak01_1xx_dl_reset = {
+ 	.func = GPIOMUX_FUNC_GPIO,
+ 	.drv = GPIOMUX_DRV_12MA,
+ 	.pull = GPIOMUX_PULL_UP,
+ 	.dir = GPIOMUX_OUT_HIGH
+ };
+ 
+-static struct gpiomux_setting r7500v2_usb_en_cfg = {
++static struct gpiomux_setting ak01_1xx_hub_reset = {
+ 	.func = GPIOMUX_FUNC_GPIO,
+-	.drv = GPIOMUX_DRV_8MA,
++	.drv = GPIOMUX_DRV_12MA,
+ 	.pull = GPIOMUX_PULL_UP,
++	.dir = GPIOMUX_OUT_HIGH
++};
++
++static struct gpiomux_setting ak01_1xx_11ac_disable = {
++	.func = GPIOMUX_FUNC_GPIO,
++	.drv = GPIOMUX_DRV_12MA,
++	.pull = GPIOMUX_PULL_UP,
++	.dir = GPIOMUX_OUT_HIGH
++};
++
++static struct gpiomux_setting ak01_1xx_eth_reset = {
++	.func = GPIOMUX_FUNC_GPIO,
++	.drv = GPIOMUX_DRV_12MA,
++	.pull = GPIOMUX_PULL_UP,
++	.dir = GPIOMUX_OUT_HIGH
++};
++
++static struct gpiomux_setting ak01_1xx_dl_uart_tx = {
++	.func = GPIOMUX_FUNC_GPIO,
++	.drv = GPIOMUX_DRV_12MA,
++	.pull = GPIOMUX_PULL_UP,
++};
++
++static struct gpiomux_setting ak01_1xx_rst_cfg = {
++	.func = GPIOMUX_FUNC_GPIO,
++	.drv = GPIOMUX_DRV_12MA,
++	.pull = GPIOMUX_PULL_UP,
++	.dir = GPIOMUX_IN,
++};
++
++static struct gpiomux_setting ak01_1xx_11ad_led_cfg = {
++	.func = GPIOMUX_FUNC_GPIO,
++	.drv = GPIOMUX_DRV_12MA,
++	.pull = GPIOMUX_PULL_UP,
++};
++
++static struct gpiomux_setting ak01_1xx_wifi_led_cfg = {
++	.func = GPIOMUX_FUNC_GPIO,
++	.drv = GPIOMUX_DRV_12MA,
++	.pull = GPIOMUX_PULL_UP,
++};
++
++static struct gpiomux_setting ak01_1xx_wps_switch = {
++	.func = GPIOMUX_FUNC_GPIO,
++	.drv = GPIOMUX_DRV_12MA,
++	.pull = GPIOMUX_PULL_UP,
++	.dir = GPIOMUX_IN,
++};
++
++static struct gpiomux_setting ak01_1xx_11ad_disable = {
++	.func = GPIOMUX_FUNC_GPIO,
++	.drv = GPIOMUX_DRV_12MA,
++	.pull = GPIOMUX_PULL_UP,
++	.dir = GPIOMUX_OUT_HIGH
++};
++
++static struct gpiomux_setting ak01_1xx_wifi_pwrdn = {
++	.func = GPIOMUX_FUNC_GPIO,
++	.drv = GPIOMUX_DRV_12MA,
++	.pull = GPIOMUX_PULL_UP,
++};
++
++static struct gpiomux_setting usb30_pwr_en_n = {
++	.func = GPIOMUX_FUNC_GPIO,
++	.drv = GPIOMUX_DRV_12MA,
++	.pull = GPIOMUX_PULL_DOWN,
+ 	.dir = GPIOMUX_OUT_HIGH,
+ };
+ 
++static struct gpiomux_setting ipq806x_power_down_2g = {
++	.func = GPIOMUX_FUNC_GPIO,
++	.drv = GPIOMUX_DRV_12MA,
++	.pull = GPIOMUX_PULL_UP,
++	.dir = GPIOMUX_OUT_HIGH
++};
++
++static struct gpiomux_setting ipq806x_power_down_5g = {
++	.func = GPIOMUX_FUNC_GPIO,
++	.drv = GPIOMUX_DRV_12MA,
++	.pull = GPIOMUX_PULL_UP,
++	.dir = GPIOMUX_OUT_HIGH
++};
++
+ #ifdef CONFIG_MSM_PCIE
+ static struct gpiomux_setting pcie_rst_n = {
+ 	.func = GPIOMUX_FUNC_GPIO,
+@@ -558,8 +665,8 @@
+ 	ipq_mux(12, gsbi4_active_cfg,			gsbi4_suspended_cfg),
+ 	ipq_mux(13, gsbi4_active_cfg,			gsbi4_suspended_cfg),
+ 	ipq_mux(14, pcm_out_act_cfg,			pcm_out_sus_cfg),
+-	ipq_mux(15, r7500v2_usb_en_cfg,			r7500v2_usb_en_cfg),
+-	ipq_mux(16, r7500v2_usb_en_cfg,			r7500v2_usb_en_cfg),
++	ipq_mux(15, pcm_in_act_cfg,			pcm_in_sus_cfg),
++	ipq_mux(16, pcm_out_act_cfg,			pcm_out_sus_cfg),
+ 	ipq_mux(17, pcm_out_act_cfg,			pcm_out_sus_cfg),
+ 	ipq_mux(18, gsbi5_spi_data_cfg,			gsbi5_spi_data_cfg),
+ 	ipq_mux(19, gsbi5_spi_data_cfg,			gsbi5_spi_data_cfg),
+@@ -593,7 +700,6 @@
+ 	ipq_mux(62, nss_gmac1_rgmii_set,		nss_gmac1_rgmii_set),
+ 	ipq_mux(63, reset_control,			reset_control),
+ 	ipq_mux(65, ipq806x_buttons_cfg,		ipq806x_buttons_cfg),
+-	ipq_mux(68, r7500v2_usb_en_cfg,			r7500v2_usb_en_cfg),
+ };
+ 
+ static struct msm_gpiomux_config ipq806x_ap145_gpiomux[] = {

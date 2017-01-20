@@ -1,0 +1,44 @@
+# Following 4 steps MUST BE followed, to use eventbus/tracerbus.
+1. Clear the tracer memory. Command is:
+	sudo ./athdiag --tracerClear 
+2. Config to use tracer as testbus or eventbus
+	a. To use as eventbus, you need to give a config file that has info on what events you want to capture etc.
+		sudo ./athdiag --eventCfg --file=<event_config_filename>
+	b. To use as testbus, 
+		sudo ./athdiag --tracerCfg --file=<tracer_config_filename>
+3. Start the tracer
+	sudo ./athdiag --tracerStart
+4. After running the test, stop the tracer
+	sudo ./athdiag --tracerStop
+5. Dump the tracer memory
+	sudo ./athdiag --tracerDump --file=<filename>
+
+Config file info:
+	1. Supports comments: any line starting with # is considered comment
+	2. blanks lines are supported
+
+Post processing:
+Have beeliner_mac_events.h file in the same folder as the perl script "rawToEvent.pl"
+Run the following command to generate a human readable file:
+	perl rawToEvent.pl -i <input event_dump filename> -o <output filename>
+
+Useful Commands:
+
+#To read a register
+	sudo ./athdiag --get --address=<regAddr>
+#To write a value to a register
+	sudo ./athdiag --set --address=<regAddr> --value=<value>
+	
+for phydbg_adccapture:
+                sudo ./athdiag --phydbgCfg --file=config_phydbg_adccapture.txt
+                sudo ./athdiag --phydbgDump --file=<filename>
+
+for phydbg_tlvcapture:
+                sudo ./athdiag --phydbgCfg --file=config_phydbg_tlvcapture.txt
+                sudo ./athdiag --phydbgStop
+                sudo ./athdiag --phydbgDump --file=<filename>
+
+There’s a perl script which parses the raw data “phydbg_dump_format.pl” the command to run is:
+
+	perl phydbg_dump_format.pl -i <dump> -o <output_file>
+

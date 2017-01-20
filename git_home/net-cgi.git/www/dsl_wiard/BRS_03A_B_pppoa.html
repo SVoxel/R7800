@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_03A_wanInput.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/funcs.js"></script>
+<% hijack_language() %>
+ <script language="javascript" type="text/javascript">
+var netgear_region="<% get_firmware_region() %>";
+var display_iptv2 = "<% cfg_get("wan2_active") %>";
+var enable_iptv = "<% cfg_get("dsl_wan_video_enable") %>";
+
+addLoadEvent(initPage);
+function initPage()
+{
+	cf=document.forms[0];
+	cf.pppoa_name.value="";
+	cf.pppoa_passwd.value="";	
+	if(display_iptv2 == "1"){
+		document.getElementById("iptv").style.display="";
+		if(enable_iptv == "1")
+			cf.use_iptv.checked = true;
+		else
+			cf.use_iptv.checked = false;
+	}
+	else
+		document.getElementById("iptv").style.display="none";
+        showFirmVersion("none");
+}
+</script>
+<% deleteFiles("/tmp/ping_result_error", "/tmp/ping_ip_result_error", "/tmp/ping_gateway_result_error")%>
+<% deleteFiles("/tmp/ping_result", "/tmp/wget_file_result") %>
+</head>
+
+<body>
+<% form_submit("apply", "BRS_04_applySettings.html", "hijack_pppoa") %>
+<input type="hidden" name="hid_use_iptv" />
+<input type="hidden" name="WANAssign" value="0" />
+
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+		<h1><script>document.write(bh_pppoa_connection)</script></h1>
+			<p><script>document.write(bh_enter_info_below)</script></p>
+			
+				
+			<div class="wanInput_content_div">
+				
+				<div id="loginName" class="wanInput_left_div" align="left">
+					<script>document.write(bh_pppoe_login_name)</script>
+				</div>
+				<div class="wanInput_Img_div">
+					<img src="image/ca_text_pic.gif" />
+					<input type="text" id="inputName" maxlength="64" align="left" name="pppoa_name" autocomplete="off" />
+				</div>
+				
+				<div id="passwd" class="wanInput_left_div" align="left">
+					<script>document.write(bh_ddns_passwd)</script>
+				</div>
+				<div class="wanInput_Img_div">
+					<img src="image/ca_text_pic.gif" />
+					<input type="password" id="inputPasswd" maxlength="16" align="left" name="pppoa_passwd" autocomplete="off" />
+				</div>
+				<div id="iptv" class="wanInput_left_divip" align="left">
+					<input type="checkbox" name="use_iptv" value="1">
+					<script>document.write(bh_eanble_iptv)</script>
+				</div>
+				<div style="clear:both"></div>
+			</div>														
+
+	</div>
+	
+	<div id="allBtns_div" class="wizard_buttons_div" align="right">
+		<div id="btnsContainer_div" class="buttons_img_div" onclick="checkPPPoA()">
+			<img src="image/ca-little-purple-button.gif" />
+			<div id="btn_text_div" class="buttons_words_div" align="center"><script>document.write(bh_next_mark)</script></div>
+		</div>	
+	</div>
+	
+
+</div>
+
+</form>
+</body>
+<script>
+function checkPPPoA()
+{
+		var forms = document.getElementsByTagName("form");
+        var cf = forms[0];
+
+       {
+                var pppoa_name = document.getElementById("inputName");
+                if(pppoa_name.value == "")
+                {
+                        alert(bh_login_name_null);
+                        return false;
+                }
+        }
+
+        var pppoa_password = document.getElementById("inputPasswd");
+        var i;
+        for(i=0;i<pppoa_password.value.length;i++)
+        {
+                if(isValidChar(pppoa_password.value.charCodeAt(i))==false)
+                {
+                        alert(bh_password_error);
+                        return false;
+                }
+        }
+		if(cf.use_iptv.checked == true)
+			cf.hid_use_iptv.value = "1";
+		else
+			cf.hid_use_iptv.value = "0";
+        cf.submit();
+
+		return true;
+}
+</script>
+</html>

@@ -1,0 +1,110 @@
+#!/bin/sh
+
+prog_name=`basename $0`
+ledcase=$1
+action=$2
+
+[ -z $action ] && {
+    echo "Usage:"
+    echo " wpsled wps_lock_down <on/off>"
+    exit
+}
+
+if eval "type ledcontrol" 2>/dev/null >/dev/null; then
+    led_off='/sbin/ledcontrol -n wps -c green -s off'
+    led_on='/sbin/ledcontrol -n wps -c green -s on'
+    wifiled_off='/sbin/ledcontrol -n wifi -c green -s off'
+    wifiled_on='/sbin/ledcontrol -n wifi -c green -s on'
+elif [ -e /proc/simple_config/tricolor_led ]; then
+    led_off='echo 0 > /proc/simple_config/tricolor_led'
+    led_on='echo 1 > /proc/simple_config/tricolor_led'
+    wifiled_off=''
+    wifiled_on=''
+elif [ -e /proc/simple_config/simple_config_led ]; then
+    led_off='echo 1 > /proc/simple_config/simple_config_led'
+    led_on='echo 2 > /proc/simple_config/simple_config_led'
+    wifiled_off=''
+    wifiled_on=''
+else
+    echo "WARNING: No method to control WPS LED"
+    led_off=''
+    led_on=''
+    wifiled_off=''
+    wifiled_on=''
+fi
+
+set_wifiled(){
+    g_enabled=`/bin/config get endis_wl_radio`
+    a_enabled=`/bin/config get endis_wla_radio`
+    g_sectype=`/bin/config get wl_sectype`
+    a_sectype=`/bin/config get wla_sectype`
+    if [ "$g_enabled" = "1" ] || [ "$a_enabled" = "1" ]; then
+        eval $wifiled_on
+    else
+        eval $wifiled_off
+    fi
+
+}
+
+set_finialwpsled(){
+    g_enabled=`/bin/config get endis_wl_radio`
+    a_enabled=`/bin/config get endis_wla_radio`
+    g_sectype=`/bin/config get wl_sectype`
+    a_sectype=`/bin/config get wla_sectype`
+    if [ "$g_enabled" = "1" -a "$g_sectype" != "1" ] ||
+        [ "$a_enabled" = "1" -a "$a_sectype" != "1" ]; then
+        eval $led_on
+    else
+        eval $led_off
+    fi
+
+}
+
+kill_wpsled(){
+    name=$1
+    ledpid=`ps | grep $prog_name | grep $name | grep on | awk '{print $1}'`
+    [ -n "$ledpid" ] && kill -9 $ledpid
+}
+
+wpsled_run_file=/tmp/.wpsled_is_running
+
+case $ledcase in
+    wps_lock_down)
+        if [ "$action" = "on" ]; then
+            if [ -e $wpsled_run_file ]; then
+                echo "Already on wpsled process running, exit..."
+                exit;
+            fi
+            touch $wpsled_run_file
+            led_next=off
+            while [ 1 ]; do
+	        if [ $led_next = "on" ]; then
+		    eval $led_on
+		    led_next=off
+                    usleep 100000 # 0.1 second
+	        else
+		    eval $led_off
+		    led_next=on
+                    is_lockdown=`config get wps_lock_down`
+                    if [ "x$is_lockdown" != "x1" ]; then
+                        rm -f $wpsled_run_file
+                        set_finialwpsled
+                        set_wifiled
+                        exit
+                    fi
+                    usleep 900000 # 0.9 second
+	        fi
+            done
+        elif [ "$action" = "stop" ]; then
+            kill_wpsled $ledcase
+            rm -f $wpsled_run_file
+        else
+            kill_wpsled $ledcase
+            set_finialwpsled
+            set_wifiled
+            rm -f $wpsled_run_file
+        fi
+        ;;
+    *)
+        ;;
+esac

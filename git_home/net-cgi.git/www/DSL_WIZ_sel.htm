@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/form.css" />
+<script language="javascript" type="text/javascript" src="funcs.js"></script>
+<% hijack_language() %>
+</head>
+<% body_header("_BAS_pppoe", "BRS_log04_wizardHelp_yes.html", "wizard_isp") %>
+<div class="page_title">$wizard_head</div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+<% cfg_set("view_wizard", "0") %>
+
+<script>
+var curr_country = "<% cfg_get("dsl_wan_country") %>";
+var curr_isp = "<% cfg_get("dsl_wan_isp") %>";
+function loadvalue()
+{	
+	cf=document.forms[0];
+	cf.country.value = curr_country;
+	setisp();
+}
+
+var ISP_ALL = 
+    new Array (
+	new Array ("Adam","Adam","Clubtelco","Clubtelco","Dodo","Dodo","Exetel","Exetel","iiNet","iiNet","Internode","Internode","Optus","Optus","People Telcom","People Telcom","Primus","Primus","Soul","Soul","Telstra","Telstra","Telstra Bigpond","Telstra Bigpond","TPG","TPG","TransACT","TransACT","Westnet","Westnet","Internode","Internode","Engin","Engin","Other","$dsl_other"),
+	new Array ("A1 Telekom","A1 Telekom","UPC Austria","UPC Austria","UTA2","UTA2","Comteam.at","Comteam.at","Other","$dsl_other"),
+	new Array ("Proximus(Belgacom)","Proximus(Belgacom)","Other","$dsl_other"),
+	new Array ("Gvt-Global Village Telecom","Gvt-Global Village Telecom","Oi","Oi","Telemar Oi Velox","Telemar Oi Velox","Other","$dsl_other"),
+	new Array ("Bell Canada(Western)","Bell Canada(Western)","SaskTel","SaskTel","TekSavvy","TekSavvy","Other","$dsl_other"),
+	new Array ("China Telecom","China Telecom","Other","$dsl_other"),
+	new Array ("O2","O2","Tiscali","Tiscali","T-Mobile","T-Mobile","Other","$dsl_other"),
+	new Array ("Telenor","Telenor","TDC","TDC","Other","$dsl_other"),
+	new Array ("Teliasonera","Teliasonera","Elisa Oyj","Elisa Oyj","DNA Welho","DNA Welho","Other","$dsl_other"),
+	new Array ("Free","Free","OVH","OVH","Orange","Orange","SFR","SFR","Nordnet","Nordnet","Other","$dsl_other"),
+	new Array ("1&1","1&1","Deutsche Telekom","Deutsche Telekom","m-net","m-net","Netcologne","Netcologne","Telefonica O2","Telefonica O2","Vodafone","Vodafone","Other","$dsl_other"),
+	new Array ("PCCW","PCCW","Other","$dsl_other"),
+	new Array ("Actel","Actel","GTS Datanet","GTS Datanet","Invitel","Invitel","T-Home","T-Home","Other","$dsl_other"),
+	new Array ("AIRTEL","AIRTEL","BSNL","BSNL","Inedit","Inedit","MTNL","MTNL","TataIndicom","TataIndicom","Other","$dsl_other"),
+	new Array ("Speedy","Speedy","Telkom Speedy","Telkom Speedy","Other","$dsl_other"),
+	new Array ("Eircom","Eircom","Other","$dsl_other"),
+	new Array ("Acantho","Acantho","Telecom Italia","Telecom Italia","Aruba","Aruba","Fastweb","Fastweb","KPN Qwest Italia","KPN Qwest Italia","Infostrada","Infostrada","TELE2","TELE2","Tiscali","Tiscali","Twt","Twt","Wind(Infostrada)","Wind(Infostrada)","Intred","Intred","MC-link","MC-link","Other","$dsl_other"),
+	new Array ("Streamyx","Streamyx","Other","$dsl_other"),
+	new Array ("Online-nl","Online-nl","Vodafonevast","Vodafonevast","Telfort","Telfort","Other","$dsl_other"),
+	new Array ("IHug","IHug","Kiwi Online(KOL)","Kiwi Online(KOL)","Orcon","Orcon","Paradise","Paradise","Slingshot","Slingshot","Telstra Clear","Telstra Clear","Xnet(World Exchange)","Xnet(World Exchange)","Spark","Spark","Bigpipe","Bigpipe","Snap","Snap","Vodafone","Vodafone","Trust power","Trust power","Other","$dsl_other"),
+	new Array ("PLDT","PLDT","TelPlus","TelPlus","Other","$dsl_other"),
+	new Array ("Multimo","Multimo","Netia","Netia","Orange","Orange","Tele2","Tele2","Other","$dsl_other"),
+	new Array ("PT","PT","Vodafone","Vodafone","Zon","Zon","Other","$dsl_other"),
+	new Array ("Avangard-DSL","Avangard-DSL","Beltelecom","Beltelecom","Combellga","Combellga","Domolink CentrTelekom","Domolink CentrTelekom","Jdsl Volgatelekom","Jdsl Volgatelekom","MGTS","MGTS","MTS Stream","MTS Stream","Rostelecom","Rostelecom","Other","$dsl_other"),
+	new Array ("STC","STC"),
+	new Array ("PacificNet","PacificNet","Singnet","Singnet","SingTel","SingTel","Other","$dsl_other"),
+	new Array ("Jazztel","Jazztel","Orange","Orange","Pepephone","Pepephone","Telefonica Movistar(dynamic IP)","Telefonica Movistar(dynamic IP)","Telefonica Movistar(fixed IP)","Telefonica Movistar(fixed IP)","Movistar","Movistar","Vodafone","Vodafone","Other","$dsl_other"),
+	new Array ("Bahnhof AB","Bahnhof AB","Bredbandsbolaget","Bredbandsbolaget","Ljusnet","Ljusnet","Telia","Telia","Other","$dsl_other"),
+	new Array ("Monzoon Networks","Monzoon Networks","Sunrise","Sunrise","Swisscom","Swisscom","Telfort","Telfort","Swisscom All IP(with phone)","Swisscom All IP(with phone)","Other","$dsl_other"),
+	new Array ("3BB","3BB","CAT-Telecom","CAT-Telecom","CS-Loxinfo","CS-Loxinfo","Samart","Samart","TOT","TOT","TRUE Internet","TRUE Internet","TT&T","TT&T","Other","$dsl_other"),
+	new Array ("Other","$dsl_other"),
+	new Array ("BT","BT","Media","Media","EE(Orange)","EE(Orange)","PlusNet","PlusNet","Sky","Sky","TalkTalk","TalkTalk","Virgin","Virgin","Other","$dsl_other"),
+	new Array ("AT&T","AT&T","Bigriver.net DSL","Bigriver.net DSL","CenturyLink","CenturyLink","Earthlink","Earthlink","Frontier Communications","Frontier Communications","Qwest","Qwest","Rivercity Internet Group","Rivercity Internet Group","Verizon","Verizon","Windstream","Windstream","BEVCOMM","BEVCOMM","cox communications","cox communications","Other","$dsl_other"),
+	new Array ("FPT","FPT","NATNAM","NATNAM","SPT","SPT","VNN(in Hanoi)","VNN(in Hanoi)","VNN(in HAM)","VNN(in HAM)","Viettel","Viettel","Other","$dsl_other"),
+	new Array ("Other","$dsl_other")
+        );
+
+function setisp()
+{
+    var cf = document.forms[0];
+    var isp_list = cf.isp;
+    var index = cf.country.selectedIndex;
+    var len=0, i=0;
+
+    isp_list.options.length = 100;
+    if (ISP_ALL[index].length > 0)
+    {
+        for (i=0; i<ISP_ALL[index].length; i+=2)
+        {
+            isp_list.options[len].text = ISP_ALL[index][i+1];
+            isp_list.options[len].value = ISP_ALL[index][i];
+            len++;
+        }
+        if (curr_country != cf.country.value)
+            curr_isp = ISP_ALL[index][0];
+    }
+
+    isp_list.options.length = len;
+
+    for (i=0; i<isp_list.options.length; i++)
+    {
+        if (isp_list.options[i].value == curr_isp)
+        {
+            isp_list[i].selected = true;
+            break;
+        }
+    }
+}
+		
+function click_next()
+{
+		var cf = document.forms[0];
+        if (document.forms[0].help_choice[0].checked == true){
+			cf.hidden_wiard_select_country.value = cf.country.value;
+			cf.hidden_wiard_select_isp.value = cf.isp.value;
+			cf.submit();
+		}
+        else  if (cf.help_choice[1].checked == true)
+		{
+			if(confirm(bh_no_genie_help_confirm) == false)
+			return false;
+			this.location.href = "BRS_log04_wizardHelp_no.html";
+		}
+		else if(cf.help_choice[2].checked == true)
+		{
+			this.location.href = "BRS_log04_wizardHelp_config.html";
+		}
+		else
+		{
+			alert(bh_select_an_option);
+			return false;
+		}
+         
+		return true;
+}
+</script>
+<input type="hidden" name="hidden_wiard_select_country" value="">
+<input type="hidden" name="hidden_wiard_select_isp" value="">
+
+<tr><td colspan=2><b><script>document.write(bh_country_select)</script></b></td></tr>
+<tr><td nowrap width="50%"><script>document.write(bh_country)</script></td>
+<td width="50%" ><select name="country" size="1" onchange="setisp();">
+<option  value="Australia"><script>document.write(bh_Australia)</script></option>
+<option  value="Austria"><script>document.write(bh_Austria)</script></option>
+<option  value="Belgium"><script>document.write(bh_Belgium)</script></option>
+<option  value="Brazil"><script>document.write(bh_Brazil)</script></option>
+<option  value="Canada"><script>document.write(bh_Canada)</script></option>
+<option  value="China"><script>document.write(bh_China)</script></option>
+<option  value="Czech Republic"><script>document.write(bh_Czech)</script></option>
+<option  value="Denmark"><script>document.write(bh_Denmark)</script></option>
+<option  value="Finland"><script>document.write(bh_Finland)</script></option>
+<option  value="France"><script>document.write(bh_France)</script></option>
+<option  value="Germany"><script>document.write(bh_Germany)</script></option>
+<option  value="HongKong"><script>document.write(bh_HongKong)</script></option>
+<option  value="Hungary"><script>document.write(bh_Hungary)</script></option>
+<option  value="India"><script>document.write(bh_India)</script></option>
+<option  value="Indonesia"><script>document.write(bh_Indonesia)</script></option>
+<option  value="Ireland">Ireland</option>
+<option  value="Italy"><script>document.write(bh_Italy)</script></option>
+<option  value="Malaysia"><script>document.write(bh_Malaysia)</script></option>
+<option  value="Netherlands"><script>document.write(bh_Netherlands)</script></option>
+<option  value="New Zealand"><script>document.write(bh_New_Zealand)</script></option>
+<option  value="Philippine"><script>document.write(bh_Philippine)</script></option>
+<option  value="Poland"><script>document.write(bh_Poland)</script></option>
+<option  value="Portugal"><script>document.write(bh_Portugal)</script></option>
+<option  value="Russia"><script>document.write(bh_Russia)</script></option>
+<option  value="Saudi Arabia"><script>document.write(bh_Saudi_Arabia)</script></option>
+<option  value="Singapore"><script>document.write(bh_Singapore)</script></option>
+<option  value="Spain"><script>document.write(bh_Spain)</script></option>
+<option  value="Sweden"><script>document.write(bh_Sweden)</script></option>
+<option  value="Switzerland"><script>document.write(bh_Switzerland)</script></option>
+<option  value="Thailand"><script>document.write(bh_Thailand)</script></option>
+<option  value="Turkey"><script>document.write(bh_Turkey)</script></option>
+<option  value="UK"><script>document.write(bh_UK)</script></option>
+<option  value="USA"><script>document.write(bh_USA)</script></option>
+<option  value="Vietnam"><script>document.write(bh_Vietnam)</script></option>
+<option  value="Other"><script>document.write(bh_Other)</script></option>
+</select>  
+</td>
+</tr>
+<tr><td colspan=2><b><script>document.write(bh_isp_select)</script></b></td></tr>
+<tr><td nowrap width="50%"><script>document.write(bh_isp)</script></td>
+<td width="50%"><select name="isp" size=1>
+<option selected  value="Adam">Adam</option>
+<option value="Clubtelco">Clubtelco</option>
+<option value="Dodo">Dodo</option>
+<option value="Exetel">Exetel</option>
+<option value="Other">Other</option>
+</select></td>
+</tr>
+$bluebar
+<TR><TD nowrap><script>document.write(bh_want_genie_help)</script></TD></TR>
+<TR><TD nowrap><INPUT id="wan_detect_type" type="radio"  checked name="help_choice" value="AutoDetc">				
+				<script>
+					document.write(bh_need_genie_help);
+				</script></TD></TR>
+<TR><TD nowrap><INPUT id="wan_detect_type" type="radio" name="help_choice" value="MyDetc">
+				<script>
+					document.write(bh_no_need_genie_help);
+				</script></TD></TR>
+<TR><TD nowrap><INPUT id="wan_detect_type" type="radio" name="help_choice" value="MyDetc">
+				<script>
+					document.write(bh_have_saved_copy);
+				</script></TD></TR>
+$bluebar
+<TR><TD nowrap align=center>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<INPUT class="short_common_bt" type="button" name="Next" value="$next_mark" onClick="click_next()">');
+else
+	document.write('<INPUT class="short_common1_bt" type="button" name="Next" value="$next_mark" disabled>');
+</script>
+</TD></TR>
+</TABLE>
+
+</div>
+<% help_box("1","_Wizard_setup") %>
+</FORM>
+</BODY>
+</HTML>

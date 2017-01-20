@@ -1,0 +1,112 @@
+<% ca_http_header("style/hijack_style.css","style/hijack_ru_welcome.css","/funcs.js") %>
+
+<BODY onLoad="loadvalue();" bgcolor=#ffffff>
+<FORM>
+
+<script>
+function loadvalue()
+{
+	var form=document.forms[0];
+	if(parent.manual_ppp_type == "0")
+		form.VPN_type.value = "0";
+	else if(parent.manual_ppp_type == "1")
+		form.VPN_type.value = "1";
+	else
+		form.VPN_type.value = "2";
+
+        //buttons left
+        var btns_div1 = document.getElementById("btnsContainer_div1");
+		if( master == "admin" )
+		{
+			btns_div1.onclick = function()
+			{
+                location.href="RU_MC_login.htm";
+			}
+		}
+
+        //buttons right
+        var btns_div2 = document.getElementById("btnsContainer_div2");
+		if( master == "admin" )
+		{
+			btns_div2.onclick = function()
+			{
+                check_vpn_type();
+			}
+		}
+
+}
+
+function check_vpn_type()
+{	
+	var form=document.forms[0];
+	if(form.VPN_type.value == "0"){
+		parent.manual_ppp_type="0";
+		location.href="RU_manual_pptp.htm";
+	}
+	else if(form.VPN_type.value == "1" && top.l2tp_flag == 1)
+	{
+		parent.manual_ppp_type="1";
+		location.href="RU_manual_l2tp.htm";
+	}
+	else
+	{
+		parent.manual_ppp_type="2";
+		location.href="RU_manual_pppoe.htm";
+	}	
+	return true;
+}
+</script>
+<div class="wizard_content_div">
+<div class="wizard_words_div">
+	<H1><script>document.write(RU_CA_head)</script></H1>
+<TABLE width=100%>
+<TR><TD colspan=2><script>document.write(RU_login_yes_str)</script></TD></TR>
+<TR><TD colspan=2><br></TD></TR>
+<TR><TD><script>document.write(RU_choose_vpn_str)</script></TD></TR>
+<TR>
+	<TD colspan=2>
+		<select class="RU_sel" name="VPN_type" size="1">
+			<option value="0"><script>document.write(basic_intserv_pptp)</script></option>
+		<script>
+			if( top.l2tp_flag == 1 )
+				document.write('<option value="1">'+basic_intserv_l2tp+'</option>');
+		</script>
+			<option value="2"><script>document.write(basic_intserv_pppoe)</script></option>
+  	</select>
+	</TD>
+</TR>
+<TR><TD colspan=2><br></TD></TR>
+
+</TABLE>
+</div><!--wizard_words_div -->
+<div id="center_buttons">
+  <div id="allBtns_div" class="wizard_buttons_div" align="center">
+                <div id="btnsContainer_div1" class="buttons_img_div" align="center">
+                        <script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							document.write('<img src="image/ca-little-grey-button.png" />');
+                        </script>
+                        <div class="buttons_words_div"><script>document.write(RU_back)</script></div>
+                </div>
+                <div class="buttons_split"></div>
+                <div id="btnsContainer_div2" class="buttons_img_div" align="center">
+						<script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							
+							document.write('<img src="image/ca-little-grey-button.png" />');
+						</script>
+                        <div class="buttons_words_div"><script>document.write(RU_next)</script></div>
+                </div>
+  </div><!--allBtns_div -->
+</div>
+</div><!--wizard_content_div -->
+<script>scroll_show();</script>
+</FORM>
+</BODY>
+</HTML>

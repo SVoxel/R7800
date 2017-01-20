@@ -1,0 +1,4685 @@
+=============================================================================
+This Notice.txt file contains certain notices of software components included with the software that Qualcomm Atheros, Inc. ("Qualcomm Atheros") is required to provide you. Notwithstanding anything in the notices in this file, your use of these software components together with the Qualcomm Atheros software (Qualcomm Atheros software hereinafter referred to as "Software") is subject to the terms of your license from Qualcomm Atheros. Compliance with all copyright laws and software license agreements included in the notice section of this file are the responsibility of the user. Except as may be granted by separate express written agreement, this file provides no license to any Qualcomm Atheros patents, trademarks, copyrights, or other intellectual property.
+Copyright (c) 2014 Qualcomm Atheros, Inc. All rights reserved. 
+Qualcomm is a trademark of Qualcomm Incorporated, registered in the United States and other countries. All Qualcomm Incorporated trademarks are used with permission. Atheros is a trademark of Qualcomm Atheros, Inc., registered in the United States and other countries. Other products and brand names may be trademarks or registered trademarks of their respective owners. 
+
+
+NOTICES:
+=============================================================================
+
+
+/*
+ * UPnP WPS Device
+ * Copyright (c) 2000-2003 Intel Corporation
+ * Copyright (c) 2006-2007 Sony Corporation
+ * Copyright (c) 2008-2009 Atheros Communications
+ * Copyright (c) 2009-2010, Jouni Malinen <j@w1.fi>
+ *
+ * See below for more details on licensing and code history.
+ */ * Copyright:
+ * Copyright 2008 Atheros Communications.
+ *
+ * The original header (of upnp_wps_device.c) reads:
+ *
+ *  Copyright (c) 2006-2007 Sony Corporation. All Rights Reserved.
+ *
+ *  File Name: upnp_wps_device.c
+ *  Description: EAP-WPS UPnP device source
+ *
+ *   Redistribution and use in source and binary forms, with or without
+ *   modification, are permitted provided that the following conditions
+ *   are met:
+ *
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in
+ *       the documentation and/or other materials provided with the
+ *       distribution.
+ *     * Neither the name of Sony Corporation nor the names of its
+ *       contributors may be used to endorse or promote products derived
+ *       from this software without specific prior written permission.
+ *
+ *   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *   ""AS IS"" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *   A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *   OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * Portions from Intel libupnp files, e.g. genlib/net/http/httpreadwrite.c
+ * typical header:
+ *
+ * Copyright (c) 2000-2003 Intel Corporation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * * Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ * * Neither name of Intel Corporation nor the names of its contributors
+ * may be used to endorse or promote products derived from this software
+ * without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ""AS IS"" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL INTEL OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+ * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+/*
+ * WPA Supplicant / shared MSCHAPV2 helper functions / RFC 2433 / RFC 2759
+ * Copyright (c) 2004-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * WPA Supplicant / UNIX domain socket -based control interface
+ * Copyright (c) 2004-2005, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * WPA Supplicant / Windows Named Pipe -based control interface
+ * Copyright (c) 2004-2006, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * WPA Supplicant / UDP socket -based control interface
+ * Copyright (c) 2004-2005, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * rijndael-alg-fst.c
+ *
+ * @version 3.0 (December 2000)
+ *
+ * Optimised ANSI C code for the Rijndael cipher (now AES)
+ *
+ * @author Vincent Rijmen <vincent.rijmen@esat.kuleuven.ac.be>
+ * @author Antoon Bosselaers <antoon.bosselaers@esat.kuleuven.ac.be>
+ * @author Paulo Barreto <paulo.barreto@terra.com.br>
+ *
+ * This code is hereby placed in the public domain.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHORS ''AS IS'' AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/*
+ * This code implements the MD4 message-digest algorithm.
+ * The algorithm is due to Ron Rivest.	This code was
+ * written by Colin Plumb in 1993, no copyright is claimed.
+ * This code is in the public domain; do with it what you wish.
+ * Todd C. Miller modified the MD5 code to do MD4 based on RFC 1186.
+ *"
+
+/*
+ * Minimal code for RSA support from LibTomMath 0.41
+ * http://libtom.org/
+ * http://libtom.org/files/ltm-0.41.tar.bz2
+ * This library was released in public domain by Tom St Denis.
+ *
+ * The combination in this file may not use all of the optimized algorithms
+ * from LibTomMath and may be considerable slower than the LibTomMath with its
+ * default settings. The main purpose of having this version here is to make it
+ * easier to build bignum.c wrapper without having to install and build an
+ * external library.
+ *
+ * If CONFIG_INTERNAL_LIBTOMMATH is defined, bignum.c includes this
+ * libtommath.c file instead of using the external LibTomMath library.
+ */
+
+
+/**
+ * rijndael-alg-fst.c
+ *
+ * @version 3.0 (December 2000)
+ *
+ * Optimised ANSI C code for the Rijndael cipher (now AES)
+ *
+ * @author Vincent Rijmen <vincent.rijmen@esat.kuleuven.ac.be>
+ * @author Antoon Bosselaers <antoon.bosselaers@esat.kuleuven.ac.be>
+ * @author Paulo Barreto <paulo.barreto@terra.com.br>
+ *
+ * This code is hereby placed in the public domain.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHORS ''AS IS'' AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+
+
+/*
+ * Copyright (c) 1988, 1993
+ *	The Regents of the University of California.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. All advertising materials mentioning features or use of this software
+ *    must display the following acknowledgement:
+ *	This product includes software developed by the University of
+ *	California, Berkeley and its contributors.
+ * 4. Neither the name of the University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ *	@(#)if_llc.h	8.1 (Berkeley) 6/10/93
+ * $FreeBSD: src/sys/net/if_llc.h,v 1.9 2002/09/23 06:25:08 alfred Exp $
+ */
+
+
+/**
+ * rijndael-alg-fst.h
+ *
+ * @version 3.0 (December 2000)
+ *
+ * Optimised ANSI C code for the Rijndael cipher (now AES)
+ *
+ * @author Vincent Rijmen <vincent.rijmen@esat.kuleuven.ac.be>
+ * @author Antoon Bosselaers <antoon.bosselaers@esat.kuleuven.ac.be>
+ * @author Paulo Barreto <paulo.barreto@terra.com.br>
+ *
+ * This code is hereby placed in the public domain.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHORS ''AS IS'' AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/*
+ * AES (Rijndael) cipher - decrypt
+ *
+ * Modifications to public domain implementation:
+ * - support only 128-bit keys
+ * - cleanup
+ * - use C pre-processor to make it easier to change S table access
+ * - added option (AES_SMALL_TABLES) for reducing code size by about 8 kB at
+ *   cost of reduced throughput (quite small difference on Pentium 4,
+ *   10-25% when using -O1 or -O2 optimization)
+ *
+ * Copyright (c) 2003-2005, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Driver interaction with Linux Host AP driver
+ * Copyright (c) 2002-2006, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer method: EAP-pwd (RFC 5931)
+ * Copyright (c) 2010, Dan Harkins <dharkins@lounge.org>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Event loop based on select() loop
+ * Copyright (c) 2002-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Event loop
+ * Copyright (c) 2002-2006, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details."
+
+Open source code.Contributions to hostap.git
+---------------------------
+
+This software is distributed under a permissive open source license to
+allow it to be used in any projects, whether open source or proprietary.
+Contributions to the project are welcome and it is important to maintain
+clear record of contributions and terms under which they are licensed.
+To help with this, following procedure is used to allow acceptance and
+recording of the terms.
+
+These terms are similar to the process used in Linux kernel development.
+The items (a) through (d) are identical to the Developer's Certificate
+of Origin 1.1. To enable cleaner licensing option to be provided in the
+future, an additional item (e) is included.
+
+Until February 11, 2012, in case of most files in hostap.git, ""under the
+open source license indicated in the file"" means that the contribution
+is licensed both under GPL v2 and modified BSD license (see below) and
+the choice between these licenses is given to anyone who redistributes
+or uses the software. As such, the contribution has to be licensed under
+both options to allow this choice.
+
+As of February 11, 2012, the project has chosen to use only the BSD
+license option for future distribution. As such, the GPL v2 license
+option is no longer used and the contributions are not required to be
+licensed until GPL v2. In case of most files in hostap.git, ""under the
+open source license indicated in the file"" means that the contribution
+is licensed under the modified BSD license (see below).
+
+
+The additional item (e) is used to collect explicit approval to license
+the contribution with only the modified BSD license (see below), i.e.,
+without the GPL v2 option. This was done to allow simpler licensing
+terms to be used in the future. It should be noted that the modified BSD
+license is compatible with GNU GPL and as such, this possible move to
+simpler licensing option does not prevent use of this software in
+GPL projects.
+
+
+By making a contribution to this project, I certify that:
+
+(a) The contribution was created in whole or in part by me and I
+    have the right to submit it under the open source license
+    indicated in the file; or
+
+(b) The contribution is based upon previous work that, to the best
+    of my knowledge, is covered under an appropriate open source
+    license and I have the right under that license to submit that
+    work with modifications, whether created in whole or in part
+    by me, under the same open source license (unless I am
+    permitted to submit under a different license), as indicated
+    in the file; or
+
+(c) The contribution was provided directly to me by some other
+    person who certified (a), (b) or (c) and I have not modified
+    it.
+
+(d) I understand and agree that this project and the contribution
+    are public and that a record of the contribution (including all
+    personal information I submit with it, including my sign-off) is
+    maintained indefinitely and may be redistributed consistent with
+    this project or the open source license(s) involved.
+
+Additionally, I certify that:
+
+(e) The contribution can be licensed under the modified BSD license
+    as shown below even in case of files that are currently licensed
+    under other terms.
+
+
+To indicate your acceptance of these terms, please add the following
+line to each contribution you make to the project:
+
+Signed-hostap: Your Name <your@email.example.org>
+
+using your real name. Pseudonyms or anonymous contributions cannot
+unfortunately be accepted.
+
+
+
+Modified BSD license (no advertisement clause):
+
+Copyright (c) 2002-2012, Jouni Malinen <j@w1.fi> and contributors
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+3. Neither the name(s) of the above-listed copyright holder(s) nor the
+   names of its contributors may be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+""AS IS"" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
+
+
+/*
+ * One-key CBC MAC (OMAC1) hash with AES-128
+ *
+ * Copyright (c) 2003-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+
+/*
+ * WPA Supplicant / Network configuration structures
+ * Copyright (c) 2003-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+
+/*
+SHA-1 in C
+By Steve Reid <sreid@sea-to-sky.net>
+100% Public Domain
+
+-----------------
+Modified 7/98 
+By James H. Brown <jbrown@burgoyne.com>
+Still 100% Public Domain"
+
+Open source code.
+Copyright (c) 2002-2012, Jouni Malinen <j@w1.fi> and contributors
+All Rights Reserved.
+
+This program is licensed under the BSD license (the one with
+advertisement clause removed).
+
+If you are submitting changes to the project, please see CONTRIBUTIONS
+file for more instructions."
+
+/* This is based on SHA256 implementation in LibTomCrypt that was released into
+ * public domain by Tom St Denis. */
+
+/*
+ * 32-bit CRC for FCS calculation
+ * Copyright (c) 2010, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * 3GPP AKA - Milenage algorithm (3GPP TS 35.205, .206, .207, .208)
+ * Copyright (c) 2006-2007 <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ *
+ * This file implements an example authentication algorithm defined for 3GPP
+ * AKA. This can be used to implement a simple HLR/AuC into hlr_auc_gw to allow
+ * EAP-AKA to be tested properly with real USIM cards.
+ *
+ * This implementations assumes that the r1..r5 and c1..c5 constants defined in
+ * TS 35.206 are used, i.e., r1=64, r2=0, r3=32, r4=64, r5=96, c1=00..00,
+ * c2=00..01, c3=00..02, c4=00..04, c5=00..08. The block cipher is assumed to
+ * be AES (Rijndael).
+ */
+
+/*
+ * 802.11 netlink interface public header
+ *
+ * Copyright 2006-2010 Johannes Berg <johannes@sipsolutions.net>
+ * Copyright 2008 Michael Wu <flamingice@sourmilk.net>
+ * Copyright 2008 Luis Carlos Cobo <luisca@cozybit.com>
+ * Copyright 2008 Michael Buesch <m@bues.ch>
+ * Copyright 2008, 2009 Luis R. Rodriguez <lrodriguez@atheros.com>
+ * Copyright 2008 Jouni Malinen <jouni.malinen@atheros.com>
+ * Copyright 2008 Colin McCabe <colin@cozybit.com>
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED ""AS IS"" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
+ */
+
+/*
+ * AES (Rijndael) cipher
+ * Copyright (c) 2003-2005, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * AES-based functions
+ *
+ * - AES Key Wrap Algorithm (128-bit KEK) (RFC3394)
+ * - One-Key CBC MAC (OMAC1) hash with AES-128
+ * - AES-128 CTR mode encryption
+ * - AES-128 EAX mode encryption/decryption
+ * - AES-128 CBC
+ *
+ * Copyright (c) 2003-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * AES-128 CBC
+ *
+ * Copyright (c) 2003-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * AES-128 CTR
+ *
+ * Copyright (c) 2003-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * AES-128 EAX
+ *
+ * Copyright (c) 2003-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * AES encrypt_block
+ *
+ * Copyright (c) 2003-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * AES (Rijndael) cipher
+ *
+ * Modifications to public domain implementation:
+ * - support only 128-bit keys
+ * - cleanup
+ * - use C pre-processor to make it easier to change S table access
+ * - added option (AES_SMALL_TABLES) for reducing code size by about 8 kB at
+ *   cost of reduced throughput (quite small difference on Pentium 4,
+ *   10-25% when using -O1 or -O2 optimization)
+ *
+ * Copyright (c) 2003-2005, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * AES (Rijndael) cipher - encrypt
+ *
+ * Modifications to public domain implementation:
+ * - support only 128-bit keys
+ * - cleanup
+ * - use C pre-processor to make it easier to change S table access
+ * - added option (AES_SMALL_TABLES) for reducing code size by about 8 kB at
+ *   cost of reduced throughput (quite small difference on Pentium 4,
+ *   10-25% when using -O1 or -O2 optimization)
+ *
+ * Copyright (c) 2003-2005, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * AES key unwrap (128-bit KEK, RFC3394)
+ *
+ * Copyright (c) 2003-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * AES Key Wrap Algorithm (128-bit KEK) (RFC3394)
+ *
+ * Copyright (c) 2003-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * AP mode helper functions
+ * Copyright (c) 2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * ASN.1 DER parsing
+ * Copyright (c) 2006, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Authentication server setup
+ * Copyright (c) 2002-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Base64 encoding/decoding (RFC1341)
+ * Copyright (c) 2005-2011, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Backtrace debugging
+ * Copyright (c) 2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Big number math
+ * Copyright (c) 2006, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * BSS list
+ * Copyright (c) 2010, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * BSS table
+ * Copyright (c) 2009-2010, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Control interface for shared AP commands
+ * Copyright (c) 2004-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Common driver-related functions
+ * Copyright (c) 2003-2011, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Command line editing and history
+ * Copyright (c) 2010-2011, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Command line editing and history
+ * Copyright (c) 2010, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Command line editing and history wrapper for readline
+ * Copyright (c) 2010, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+
+/*
+ * Crypto wrapper for Microsoft CryptoAPI
+ * Copyright (c) 2005-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Crypto wrapper for internal crypto implementation
+ * Copyright (c) 2006-2011, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Crypto wrapper for internal crypto implementation - Cipher wrappers
+ * Copyright (c) 2006-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Crypto wrapper for internal crypto implementation - modexp
+ * Copyright (c) 2006-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Crypto wrapper for internal crypto implementation - RSA parts
+ * Copyright (c) 2006-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * CTR with CBC-MAC Protocol (CCMP)
+ * Copyright (c) 2010, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * DES and 3DES-EDE ciphers
+ *
+ * Modifications to LibTomCrypt implementation:
+ * Copyright (c) 2006-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Diffie-Hellman groups
+ * Copyright (c) 2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Doubly-linked list
+ * Copyright (c) 2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Doubly-linked list - test program
+ * Copyright (c) 2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Driver interface definition
+ * Copyright (c) 2003-2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ *
+ * This file defines a driver interface used by both %wpa_supplicant and
+ * hostapd. The first part of the file defines data structures used in various
+ * driver operations. This is followed by the struct wpa_driver_ops that each
+ * driver wrapper will beed to define with callback functions for requesting
+ * driver operations. After this, there are definitions for driver event
+ * reporting with wpa_supplicant_event() and some convenience helper functions
+ * that can be used to report events.
+ */
+
+
+/*
+ * Driver interaction with Linux Host AP driver
+ * Copyright (c) 2003-2005, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Driver interaction with generic Linux Wireless Extensions
+ * Copyright (c) 2003-2010, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ *
+ * This file implements a driver interface for the Linux Wireless Extensions.
+ * When used with WE-18 or newer, this interface can be used as-is with number
+ * of drivers. In addition to this, some of the common functions in this file
+ * can be used by other driver interface implementations that use generic WE
+ * ioctls, but require private ioctls for some of the functionality.
+ */
+
+/*
+ * Driver interface list
+ * Copyright (c) 2004-2005, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Driver interaction with generic Linux Wireless Extensions
+ * Copyright (c) 2003-2011, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Dynamic data buffer
+ * Copyright (c) 2007-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP method registration
+ * Copyright (c) 2004-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAPOL definitions shared between hostapd and wpa_supplicant
+ * Copyright (c) 2002-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP common peer/server definitions
+ * Copyright (c) 2004-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP server/peer: Shared EAP definitions
+ * Copyright (c) 2004-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP-FAST common helper functions (RFC 4851)
+ * Copyright (c) 2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP-FAST definitions (RFC 4851)
+ * Copyright (c) 2004-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP server/peer: EAP-GPSK shared routines
+ * Copyright (c) 2006-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP-IKEv2 common routines
+ * Copyright (c) 2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP-IKEv2 definitions
+ * Copyright (c) 2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP server/peer: EAP-PAX shared routines
+ * Copyright (c) 2005, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP server/peer: EAP-PAX shared routines
+ * Copyright (c) 2005-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP-PEAP common routines
+ * Copyright (c) 2008-2011, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP server/peer: EAP-PSK shared routines
+ * Copyright (c) 2004-2006, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP server/peer: EAP-PSK shared routines
+ * Copyright (c) 2004-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP server/peer: EAP-pwd shared routines
+ * Copyright (c) 2010, Dan Harkins <dharkins@lounge.org>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP server/peer: EAP-pwd shared definitions
+ * Copyright (c) 2009, Dan Harkins <dharkins@lounge.org>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP server/peer: EAP-SAKE shared routines
+ * Copyright (c) 2006-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer/server: EAP-SIM/AKA/AKA' shared routines
+ * Copyright (c) 2004-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP-TLV definitions (draft-josefsson-pppext-eap-tls-eap-10.txt)
+ * Copyright (c) 2004-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP server/peer: EAP-TTLS (RFC 5281)
+ * Copyright (c) 2004-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP-WSC common routines for Wi-Fi Protected Setup
+ * Copyright (c) 2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP-WSC definitions for Wi-Fi Protected Setup
+ * Copyright (c) 2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer state machines (RFC 4137)
+ * Copyright (c) 2004-2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ *
+ * This file implements the Peer State Machine as defined in RFC 4137. The used
+ * states and state transitions match mostly with the RFC. However, there are
+ * couple of additional transitions for working around small issues noticed
+ * during testing. These exceptions are explained in comments within the
+ * functions in this file. The method functions, m.func(), are similar to the
+ * ones used in RFC 4137, but some small changes have used here to optimize
+ * operations and to add functionality needed for fast re-authentication
+ * (session resumption).
+ */
+
+/*
+ * EAP peer state machine functions (RFC 4137)
+ * Copyright (c) 2004-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer method: EAP-AKA (RFC 4187) and EAP-AKA' (RFC 5448)
+ * Copyright (c) 2004-2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer configuration data
+ * Copyright (c) 2003-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer method: EAP-FAST (RFC 4851)
+ * Copyright (c) 2004-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer method: EAP-FAST PAC file processing
+ * Copyright (c) 2004-2006, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer method: EAP-FAST PAC file processing
+ * Copyright (c) 2004-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer method: EAP-GPSK (RFC 5433)
+ * Copyright (c) 2006-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer method: EAP-GTC (RFC 3748)
+ * Copyright (c) 2004-2006, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer state machines internal structures (RFC 4137)
+ * Copyright (c) 2004-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP-IKEv2 peer (RFC 5106)
+ * Copyright (c) 2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer method: LEAP
+ * Copyright (c) 2004-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer method: EAP-MD5 (RFC 3748 and RFC 1994)
+ * Copyright (c) 2004-2006, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer: Method registration
+ * Copyright (c) 2004-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer method: EAP-MSCHAPV2 (draft-kamath-pppext-eap-mschapv2-00.txt)
+ * Copyright (c) 2004-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details."
+
+/*
+ * EAP peer method: EAP-OTP (RFC 3748)
+ * Copyright (c) 2004-2006, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer method: EAP-PAX (RFC 4746)
+ * Copyright (c) 2005-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer method: EAP-PEAP (draft-josefsson-pppext-eap-tls-eap-10.txt)
+ * Copyright (c) 2004-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer method: EAP-PSK (RFC 4764)
+ * Copyright (c) 2004-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ *
+ * Note: EAP-PSK is an EAP authentication method and as such, completely
+ * different from WPA-PSK. This file is not needed for WPA-PSK functionality.
+ */
+
+/*
+ * EAP peer method: EAP-SAKE (RFC 4763)
+ * Copyright (c) 2006-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer method: EAP-SIM (RFC 4186)
+ * Copyright (c) 2004-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer method: EAP-TLS (RFC 2716)
+ * Copyright (c) 2004-2008, 2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer: EAP-TLS/PEAP/TTLS/FAST common functions
+ * Copyright (c) 2004-2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer: EAP-TLS/PEAP/TTLS/FAST common functions
+ * Copyright (c) 2004-2009, 2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer method: EAP-TNC (Trusted Network Connect)
+ * Copyright (c) 2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer method: EAP-TTLS (RFC 5281)
+ * Copyright (c) 2004-2011, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP peer method: Test method for vendor specific (expanded) EAP type
+ * Copyright (c) 2005-2006, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ *
+ * This file implements a vendor specific test method using EAP expanded types.
+ * This is only for test use and must not be used for authentication since no
+ * security is provided.
+ */
+
+/*
+ * EAP-WSC peer for Wi-Fi Protected Setup
+ * Copyright (c) 2007-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP-TNC - TNCC (IF-IMC and IF-TNCCS)
+ * Copyright (c) 2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP server method registration
+ * Copyright (c) 2004-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP-FAST server (RFC 4851)
+ * Copyright (c) 2004-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP-IKEv2 server (RFC 5106)
+ * Copyright (c) 2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP-TLS/PEAP/TTLS/FAST server common functions
+ * Copyright (c) 2004-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP server method: EAP-TNC (Trusted Network Connect)
+ * Copyright (c) 2007-2010, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP-WSC server for Wi-Fi Protected Setup
+ * Copyright (c) 2007-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAP-TNC - TNCS (IF-IMV, IF-TNCCS, and IF-TNCCS-SOH)
+ * Copyright (c) 2007-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * EAPOL supplicant state machines
+ * Copyright (c) 2004-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Event loop - empty template (basic structure, but no OS specific operations)
+ * Copyright (c) 2002-2005, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Event loop based on Windows events and WaitForMultipleObjects
+ * Copyright (c) 2002-2006, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Example application showing how EAP peer code from wpa_supplicant can be
+ * used as a library.
+ * Copyright (c) 2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Example application showing how EAP server code from hostapd can be used as
+ * a library.
+ * Copyright (c) 2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Example application using RADIUS client as a library
+ * Copyright (c) 2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * FIPS 186-2 PRF for internal crypto implementation
+ * Copyright (c) 2006-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * FIPS 186-2 PRF for libcrypto
+ * Copyright (c) 2004-2005, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * HLR/AuC testing gateway for hostapd EAP-SIM/AKA database/authenticator
+ * Copyright (c) 2005-2007, 2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details."
+
+/*
+ * hostapd / Configuration file parser
+ * Copyright (c) 2003-2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / UNIX domain socket -based control interface
+ * Copyright (c) 2004-2010, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / UNIX domain socket -based control interface
+ * Copyright (c) 2004, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / State dump
+ * Copyright (c) 2002-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd - command line interface for hostapd daemon
+ * Copyright (c) 2004-2011, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / main()
+ * Copyright (c) 2002-2011, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd - Plaintext password to NtPasswordHash
+ * Copyright (c) 2005, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / RADIUS Accounting
+ * Copyright (c) 2002-2009, 2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / RADIUS Accounting
+ * Copyright (c) 2002-2005, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / Configuration helper functions
+ * Copyright (c) 2003-2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / Configuration definitions and helpers functions
+ * Copyright (c) 2003-2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd - Driver operations
+ * Copyright (c) 2009-2010, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd - Driver operations
+ * Copyright (c) 2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / AP table
+ * Copyright (c) 2002-2009, Jouni Malinen <j@w1.fi>
+ * Copyright (c) 2003-2004, Instant802 Networks, Inc.
+ * Copyright (c) 2006, Devicescape Software, Inc.
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / AP table
+ * Copyright (c) 2002-2003, Jouni Malinen <j@w1.fi>
+ * Copyright (c) 2003-2004, Instant802 Networks, Inc.
+ * Copyright (c) 2006, Devicescape Software, Inc.
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / IEEE 802.11 MLME
+ * Copyright 2003-2006, Jouni Malinen <j@w1.fi>
+ * Copyright 2003-2004, Instant802 Networks, Inc.
+ * Copyright 2005-2006, Devicescape Software, Inc.
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / IEEE 802.11 MLME
+ * Copyright 2003, Jouni Malinen <j@w1.fi>
+ * Copyright 2003-2004, Instant802 Networks, Inc.
+ * Copyright 2005-2006, Devicescape Software, Inc.
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / Callback functions for driver wrappers
+ * Copyright (c) 2002-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / Initialization and configuration
+ * Copyright (c) 2002-2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / Initialization and configuration
+ * Copyright (c) 2002-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / IEEE 802.11F-2003 Inter-Access Point Protocol (IAPP)
+ * Copyright (c) 2002-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ *"
+
+/*
+ * hostapd / IEEE 802.11F-2003 Inter-Access Point Protocol (IAPP)
+ * Copyright (c) 2002-2005, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / IEEE 802.11 Management
+ * Copyright (c) 2002-2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / IEEE 802.11 Management
+ * Copyright (c) 2002-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / IEEE 802.11 authentication (ACL)
+ * Copyright (c) 2003-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ *
+ * Access control list for IEEE 802.11 authentication can uses statically
+ * configured ACL from configuration files or an external RADIUS server.
+ * Results from external RADIUS queries are cached to allow faster
+ * authentication frame processing.
+ */
+
+/*
+ * hostapd / IEEE 802.11 authentication (ACL)
+ * Copyright (c) 2003-2005, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / IEEE 802.1X-2004 Authenticator
+ * Copyright (c) 2002-2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / IEEE 802.1X-2004 Authenticator
+ * Copyright (c) 2002-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd - PeerKey for Direct Link Setup (DLS)
+ * Copyright (c) 2006-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd - PMKSA cache for IEEE 802.11i RSN
+ * Copyright (c) 2004-2008, 2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd - Authenticator for IEEE 802.11i RSN pre-authentication
+ * Copyright (c) 2004-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd - Authenticator for IEEE 802.11i RSN pre-authentication
+ * Copyright (c) 2004-2005, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / Station table
+ * Copyright (c) 2002-2011, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / TKIP countermeasures
+ * Copyright (c) 2002-2011, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd - IEEE 802.11i-2004 / WPA Authenticator
+ * Copyright (c) 2004-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd - IEEE 802.11r - Fast BSS Transition
+ * Copyright (c) 2004-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / WPA authenticator glue code
+ * Copyright (c) 2002-2011, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd - IEEE 802.11i-2004 / WPA Authenticator: Internal definitions
+ * Copyright (c) 2004-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd - WPA/RSN IE and KDE definitions
+ * Copyright (c) 2004-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd - WPA/RSN IE and KDE definitions
+ * Copyright (c) 2004-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / WPS integration
+ * Copyright (c) 2008-2010, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / EAP Full Authenticator state machine (RFC 4137)
+ * Copyright (c) 2004-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / EAP Authenticator state machine internal structures (RFC 4137)
+ * Copyright (c) 2004-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / EAP Full Authenticator state machine (RFC 4137)
+ * Copyright (c) 2004-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ *
+ * This state machine is based on the full authenticator state machine defined
+ * in RFC 4137. However, to support backend authentication in RADIUS
+ * authentication server functionality, parts of backend authenticator (also
+ * from RFC 4137) are mixed in. This functionality is enabled by setting
+ * backend_auth configuration variable to TRUE.
+ */
+
+/*
+ * hostapd / EAP-AKA (RFC 4187) and EAP-AKA' (RFC 5448)
+ * Copyright (c) 2005-2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / EAP-GPSK (RFC 5433) server
+ * Copyright (c) 2006-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / EAP-GTC (RFC 3748)
+ * Copyright (c) 2004-2006, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / EAP-Identity
+ * Copyright (c) 2004-2006, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / EAP-MD5 server
+ * Copyright (c) 2004-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / EAP-MSCHAPv2 (draft-kamath-pppext-eap-mschapv2-00.txt) server
+ * Copyright (c) 2004-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / EAP-PAX (RFC 4746) server
+ * Copyright (c) 2005-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / EAP-PEAP (draft-josefsson-pppext-eap-tls-eap-10.txt)
+ * Copyright (c) 2004-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / EAP-PSK (RFC 4764) server
+ * Copyright (c) 2005-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ *
+ * Note: EAP-PSK is an EAP authentication method and as such, completely
+ * different from WPA-PSK. This file is not needed for WPA-PSK functionality.
+ */
+
+/*
+ * hostapd / EAP-pwd (RFC 5931) server
+ * Copyright (c) 2010, Dan Harkins <dharkins@lounge.org>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / EAP-SAKE (RFC 4763) server
+ * Copyright (c) 2006-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / EAP-SIM (RFC 4186)
+ * Copyright (c) 2005-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / EAP-TLS (RFC 2716)
+ * Copyright (c) 2004-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / EAP-TTLS (RFC 5281)
+ * Copyright (c) 2004-2011, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / Test method for vendor specific (expanded) EAP type
+ * Copyright (c) 2005-2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * hostapd / EAP-SIM database/authenticator gateway
+ * Copyright (c) 2005-2010, 2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details."
+
+/*
+ * hostapd / EAP-SIM database/authenticator gateway
+ * Copyright (c) 2005-2008, 2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * http_client - HTTP client
+ * Copyright (c) 2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * http_server - HTTP server
+ * Copyright (c) 2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * IEEE 802.11 RSN / WPA Authenticator
+ * Copyright (c) 2004-2011, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * IEEE 802.11 Common routines
+ * Copyright (c) 2002-2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * IEEE 802.11 Common routines
+ * Copyright (c) 2002-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * IEEE 802.11 Frame type definitions
+ * Copyright (c) 2002-2009, Jouni Malinen <j@w1.fi>
+ * Copyright (c) 2007-2008 Intel Corporation
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * IEEE 802.1X-2004 Authenticator - State dump
+ * Copyright (c) 2002-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * IEEE 802.1X-2004 Authenticator - EAPOL state machine
+ * Copyright (c) 2002-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * IEEE 802.1X-2004 Authenticator - EAPOL state machine (internal definitions)
+ * Copyright (c) 2002-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * IKEv2 common routines for initiator and responder
+ * Copyright (c) 2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * IKEv2 definitions
+ * Copyright (c) 2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * IKEv2 responder (RFC 4306) for EAP-IKEV2
+ * Copyright (c) 2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * IKEv2 initiator (RFC 4306) for EAP-IKEV2
+ * Copyright (c) 2007, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Internal WPA/RSN supplicant state machine definitions
+ * Copyright (c) 2004-2010, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * IP address processing
+ * Copyright (c) 2003-2006, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Linux ioctl helper functions for driver wrappers
+ * Copyright (c) 2002-2010, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Linux rfkill helper functions for driver wrappers
+ * Copyright (c) 2010, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Linux packet socket monitor
+ * Copyright (c) 2010, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * MD4 hash implementation
+ * Copyright (c) 2006, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * MD5 hash implementation and interface functions
+ * Copyright (c) 2003-2005, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * MD5 hash implementation and interface functions (non-FIPS allowed cases)
+ * Copyright (c) 2003-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Minimal command line editing
+ * Copyright (c) 2010, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * MSCHAPV2 (RFC 2759)
+ * Copyright (c) 2004-2008, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * ndis_events - Receive NdisMIndicateStatus() events using WMI
+ * Copyright (c) 2004-2006, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * NDEF(NFC Data Exchange Format) routines for Wi-Fi Protected Setup
+ *   Reference is ""NFCForum-TS-NDEF_1.0 2006-07-24"".
+ * Copyright (c) 2009-2012, Masashi Honma <masashi.honma@gmail.com>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Netlink helper functions for driver wrappers
+ * Copyright (c) 2002-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * OS specific functions
+ * Copyright (c) 2005-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * OS specific functions for UNIX/POSIX systems
+ * Copyright (c) 2005-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+
+/*
+ * PCAP capture file reader
+ * Copyright (c) 2010, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * PCAP capture file writer
+ * Copyright (c) 2010, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * PKCS #1 (RSA Encryption)
+ * Copyright (c) 2006-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * PKCS #5 (Password-based Encryption)
+ * Copyright (c) 2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * PKCS #8 (Private-key information syntax)
+ * Copyright (c) 2006-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Random number generator
+ * Copyright (c) 2010-2011, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ *"
+
+/*
+ * Random number generator
+ * Copyright (c) 2010-2011, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * RADIUS message processing
+ * Copyright (c) 2002-2009, 2011-2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * RADIUS message processing
+ * Copyright (c) 2002-2009, 2012, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * RADIUS client
+ * Copyright (c) 2002-2009, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * RADIUS authentication server
+ * Copyright (c) 2005-2009, 2011, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+/*
+ * Copyright (c) 1997
+ *	Jonathan Stone and Jason R. Thorpe.  All rights reserved.
+ *
+ * This software is derived from information provided by Matt Thomas.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. All advertising materials mentioning features or use of this software
+ *    must display the following acknowledgement:
+ *      This product includes software developed by Jonathan Stone
+ *	and Jason R. Thorpe for the NetBSD Project.
+ * 4. The names of the authors may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+
+
+
+/*
+ * Copyright (c) 1997
+ *  Jonathan Stone and Jason R. Thorpe.  All rights reserved.
+ *
+ * This software is derived from information provided by Matt Thomas.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. All advertising materials mentioning features or use of this software
+ *    must display the following acknowledgement:
+ *  This product includes software developed by Jonathan Stone
+ *  and Jason R. Thorpe for the NetBSD Project.
+ * 4. The names of the authors may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+""
+
+
+/*-
+ * Copyright (c) 2007-2008 Sam Leffler, Errno Consulting
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * $FreeBSD: src/sys/net80211/ieee80211_dfs.h,v 1.2 2008/12/15 01:26:33 sam Exp $
+ */
+
+
+/* $FreeBSD: src/sys/net80211/ieee80211_radiotap.h,v 1.5 2005/01/22 20:12:05 sam Exp $ */
+/* $NetBSD: ieee80211_radiotap.h,v 1.10 2005/01/04 00:34:58 dyoung Exp $ */
+
+/*-
+ * Copyright (c) 2003, 2004 David Young.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. The name of David Young may not be used to endorse or promote
+ *    products derived from this software without specific prior
+ *    written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY DAVID YOUNG ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL DAVID
+ * YOUNG BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
+ */
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+
+
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+
+
+/*! \file ah_adf.c
+**  \brief Linux support for HAL
+**    
+**  This file contains the supporting functions to operate the OS independant
+**  HAL implementation in the Linux environment, the so-called "OS Shim" for the
+**  HAL.
+**
+**  Copyright (c) 2002-2004 Sam Leffler, Errno Consulting.
+**  Copyright (c) 2005-2007 Atheros Communications Inc.
+**
+**  All rights reserved.
+**
+** Redistribution and use in source and binary forms are permitted
+** provided that the following conditions are met:
+** 1. The materials contained herein are unmodified and are used
+**    unmodified.
+** 2. Redistributions of source code must retain the above copyright
+**    notice, this list of conditions and the following NO
+**    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+**    modification.
+** 3. Redistributions in binary form must reproduce at minimum a
+**    disclaimer similar to the Disclaimer below and any redistribution
+**    must be conditioned upon including a substantially similar
+**    Disclaimer requirement for further binary redistribution.
+** 4. Neither the names of the above-listed copyright holders nor the
+**    names of any contributors may be used to endorse or promote
+**    product derived from this software without specific prior written
+**    permission.
+**
+** NO WARRANTY
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+** ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+** LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+** MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+** IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+** FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+** USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+** ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+** OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+** OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+** SUCH DAMAGES.
+**
+*/
+
+
+
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2010, Atheros Communications Inc.
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+/* 
+ * Copyright (c) 2013 Qualcomm Atheros, Inc.
+ * All Rights Reserved. 
+ * Qualcomm Atheros Confidential and Proprietary. 
+ * Notifications and licenses are retained for attribution purposes only.
+ */ 
+
+
+
+
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+/* 
+ * Copyright (c) 2013 Qualcomm Atheros, Inc.
+ * All Rights Reserved. 
+ * Qualcomm Atheros Confidential and Proprietary. 
+ * Notifications and licenses are retained for attribution purposes only.
+ */ 
+
+
+
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+/* 
+ * Copyright (c) 2013 Qualcomm Atheros, Inc.
+ * All Rights Reserved. 
+ * Qualcomm Atheros Confidential and Proprietary. 
+ * Notifications and licenses are retained for attribution purposes only.
+ */ 
+
+
+
+
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+/**
+ * Fix compile issue, due to the tool compliation doesn't include -D__KERNEL__, 
+ * cause some missing data type declaration...
+ **/
+
+
+
+
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+/* 
+ * Copyright (c) 2013 Qualcomm Atheros, Inc.
+ * All Rights Reserved. 
+ * Qualcomm Atheros Confidential and Proprietary. 
+ * Notifications and licenses are retained for attribution purposes only.
+ */ 
+
+
+
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+/* 
+ * Copyright (c) 2013 Qualcomm Atheros, Inc.
+ * All Rights Reserved. 
+ * Qualcomm Atheros Confidential and Proprietary. 
+ * Notifications and licenses are retained for attribution purposes only.
+ */ 
+
+
+
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+
+
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+
+
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2009 Atheros Communications, Inc.
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+
+
+
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+
+
+
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+/*
+ * Copyright (c) 2013 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+
+
+
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+
+
+
+
+
+/*
+ * SHA1 hash implementation and interface functions
+ * Copyright (c) 2003-2005, Jouni Malinen <j@w1.fi>
+ *
+ * This software may be distributed under the terms of the BSD license.
+ * See README for more details.
+ */
+
+
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+
+
+
+
+
+
+
+
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ */
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ */
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*-
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting, Atheros
+ * Communications, Inc.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ *
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ *
+ */
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ */
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ */
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2006 Sam Leffler, Errno Consulting
+ * Copyright (c) 2005-2006 Atheros Communications, Inc.
+ * Copyright (c) 2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ */
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ */
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ */
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ */
+
+
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ */
+
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ */
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ */
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ */
+
+
+
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ */
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ */
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+
+/*
+ * Copyright (c) 2011 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+/*
+ * Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+ * Copyright (c) 2002-2005 Atheros Communications, Inc.
+ * Copyright (c) 2008-2010, Atheros Communications Inc. 
+ * 
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ * 
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ * 
+ */
+
+
+/*-
+ * Copyright (c) 2002-2004 Sam Leffler, Errno Consulting, Atheros
+ * Communications, Inc.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ *
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ *
+ */
+/*
+ * Copyright (c) 2013 Qualcomm Atheros, Inc.
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary.
+ * Notifications and licenses are retained for attribution purposes only.
+ */
+
+
+
+/*-
+ * Copyright (c) 2002-2004 Sam Leffler, Errno Consulting, Atheros
+ * Communications, Inc.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms are permitted
+ * provided that the following conditions are met:
+ * 1. The materials contained herein are unmodified and are used
+ *    unmodified.
+ * 2. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following NO
+ *    ''WARRANTY'' disclaimer below (''Disclaimer''), without
+ *    modification.
+ * 3. Redistributions in binary form must reproduce at minimum a
+ *    disclaimer similar to the Disclaimer below and any redistribution
+ *    must be conditioned upon including a substantially similar
+ *    Disclaimer requirement for further binary redistribution.
+ * 4. Neither the names of the above-listed copyright holders nor the
+ *    names of any contributors may be used to endorse or promote
+ *    product derived from this software without specific prior written
+ *    permission.
+ *
+ * NO WARRANTY
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF NONINFRINGEMENT,
+ * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+ * FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGES.
+ *
+ */
+
+/*-
+ * Copyright (c) 2003, 2004 David Young.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. The name of David Young may not be used to endorse or promote
+ *    products derived from this software without specific prior
+ *    written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY DAVID YOUNG ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL DAVID
+ * YOUNG BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
+ */
+
+
+
+hostapd - user space IEEE 802.11 AP and IEEE 802.1X/WPA/WPA2/EAP
+     Authenticator and RADIUS authentication server
+================================================================
+
+Copyright (c) 2002-2014, Jouni Malinen <j@w1.fi> and contributors
+All Rights Reserved.
+
+This program is licensed under the BSD license (the one with
+advertisement clause removed).
+
+If you are submitting changes to the project, please see CONTRIBUTIONS
+file for more instructions.
+
+
+
+License
+-------
+
+This software may be distributed, used, and modified under the terms of
+BSD license:
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+3. Neither the name(s) of the above-listed copyright holder(s) nor the
+   names of its contributors may be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+ WPA Supplicant
+==============
+
+Copyright (c) 2003-2014, Jouni Malinen <j@w1.fi> and contributors
+All Rights Reserved.
+
+This program is licensed under the BSD license (the one with
+advertisement clause removed).
+
+If you are submitting changes to the project, please see CONTRIBUTIONS
+file for more instructions.
+
+
+
+License
+-------
+
+This software may be distributed, used, and modified under the terms of
+BSD license:
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+3. Neither the name(s) of the above-listed copyright holder(s) nor the
+   names of its contributors may be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+

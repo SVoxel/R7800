@@ -1,0 +1,119 @@
+<% ca_http_header() %>
+
+<script language="JavaScript">
+var info_get_wanip="<% wan_ip() %>";
+var info_get_wanproto="<% cfg_get("wan_proto") %>";
+var browser_lang="<% get_browser_language() %>";
+var dod="<% cfg_get("wan_endis_dod") %>";
+
+if ( (info_get_wanproto == "pptp" || info_get_wanproto == "l2tp" || info_get_wanproto == "pppoe" ) && dod == "1" )
+	var maxchars = 60;
+else
+	var maxchars = 30;
+	
+var delay_time = 350;
+var charcount = 0; 
+var wan_status = "<% detwan_valid() %>";
+var ping_ok= "<% hijack_apply_result("/tmp/ping_result") %>"
+
+function do_success()
+{
+	location.href="BRS_security.html";
+}
+
+function do_fail()
+{
+	if(parent.RU_manual_flag == 1)
+		location.href="RU_manual_fail.htm";
+	else
+		location.href="RU_isp_fail.htm";
+}
+
+function updateProgress()
+{
+	
+	if (charcount < maxchars)
+	{
+		charcount ++;
+		var i;
+		var tmp;
+		var dark;
+		var mid;
+		var cor1="#BAD6F4";
+		var cor2="#D4E6F8";
+		var cor3="#EEF5FC"
+    
+    		if(parseInt(charcount) %10==0  )
+		{
+			dark=0;
+			mid=100;
+		}
+		else if(parseInt(charcount) %10<=4)
+		{
+			dark=parseInt(charcount) %10;
+			mid=parseInt(dark)-1;
+		}
+		else if(parseInt(charcount) %10==5)
+		{
+	  		dark=4;
+			mid=100;
+		}
+		else
+		{
+	  		dark=9-parseInt(charcount) %10;
+			mid=parseInt(dark)+1;
+		}
+	  
+		for(i=0;i<5;i++)
+		{
+			tmp="wps_bar"+i;
+			if(i==dark)
+				document.getElementById(tmp).style.background=cor1;
+			else if(i==mid)
+				document.getElementById(tmp).style.background=cor2;
+			else
+				document.getElementById(tmp).style.background=cor3;	
+		}
+
+		if(ping_ok =="success" && "1" == wan_status)
+			do_success();
+		else
+			setTimeout("updateProgress()",delay_time);
+	}
+	else
+		do_fail();
+}
+
+</script>
+</HEAD>
+<BODY onLoad="updateProgress()" bgcolor="#ffffff" LINK=#000000 VLINK=#000000 ALINK=#000000>
+
+
+<div id=main style="margin:20px 0px 0px 20px">
+
+    <div id=head>
+    	  <p style="font-family: Verdana, Arial, Helvetica, sans-serif;	font-size: 16pt;	font-weight: bold;	color: #36019A;	line-height: 26px;">
+    	  	<script>document.write(Genie_18)</script>
+    	  </p>	
+    	  <p style="margin:20px 0px 0px 5px"><script>document.write(Genie_158)</script></p>    	  
+    </div>
+    
+    <script>
+    	  if(navigator.userAgent.indexOf("MSIE") != -1)
+    	      document.write("<div id=wps_bor style='width:164px;height:25px;border: 1px solid #09c; margin:20px 0px 0px 70px'>");
+    	  else    
+            document.write("<div id=wps_bor style='width:162px;height:22px;border: 1px solid #09c; margin:20px 0px 0px 70px'>");
+    </script>
+	      <div id=wps_bar0 style="position:absolute; height:18px;width:30px;background: #EEF5FC;margin: 2px 0 0px 2px;" ></div>
+	      <div id=wps_bar1 style="position:absolute; height:18px;width:30px;background: #EEF5FC;margin: 2px 0 0px 34px;" ></div>
+	      <div id=wps_bar2 style="position:absolute; height:18px;width:30px;background: #EEF5FC;margin: 2px 0 0px 66px;" ></div>
+	      <div id=wps_bar3 style="position:absolute; height:18px;width:30px;background: #D4E6F8;margin: 2px 0 0px 98px;" ></div>
+	      <div id=wps_bar4 style="position:absolute; height:18px;width:30px;background: #BAD6F4;margin: 2px 0 0px 130px;" ></div>
+    </div>
+</div>
+
+
+<iframe name="panel_query" id="panel_query" src="BSW_wan_query.htm" frameborder="0" border="0" style="display:none;"></iframe>
+</BODY>
+</html>
+

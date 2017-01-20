@@ -1,0 +1,40 @@
+<% http_header("style/form.css") %>
+
+<body>
+<div class="page_title">$info_mark_head</div>
+<div id="main" class="main">
+<script>
+function click_conn_status()
+{
+	window.open('get_mobile_conn_status.htm', 'conn_status', 'width=961,height=400,top=200,left=200,status=yes,resizable=yes');
+}
+
+function click_show_static()
+{
+	window.open('RST_statistic.htm', 'show_statistic', 'width=961,height=400,top=200,left=200,status=yes,resizable=yes');
+}
+
+</script>
+<% table_header() %>
+$bluebar
+<tr><td colspan="2"><h1></h1></td></tr>
+
+<% lte_router_status() %>
+
+$bluebar
+<tr>
+	<td nowrap colspan=2  align=center>
+		<input class="common_key_bt" type="button" name="conn_status" value="$constatus_head" onClick="click_conn_status()">&nbsp;&nbsp;
+		<input class="common_key_bt" type="button" name="static_status" value="$show_sta_mark" onClick="click_show_static()">
+
+	</td>
+</tr>
+<tr>
+	<td nowrap colspan=2  align=center>
+		<input  class="common_key_bt" type=button name="refresh" value="$refresh_mark" onclick="location.href='get_mobile_status.html'">
+	</td>
+</tr>
+</table>
+</div>
+</body>
+</html>

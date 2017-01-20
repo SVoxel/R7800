@@ -1,0 +1,35 @@
+#!/bin/sh
+
+. ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+# standard settings - accept overrides from the calling environment
+DISPLAY_NAME="policy-reader"
+PIDFILE="${RUNDIR}/${BINARY}.pid"
+
+INFILE="${CFGDIR}/policy.redis"
+REDIS_PORT=6379
+
+EXTRA_COMMANDS=status
+
+export DISPLAY_NAME
+
+start() {
+	redis-cli -p ${REDIS_PORT} --pipe < ${INFILE}
+}
+
+stop() {
+	return 0
+}
+
+status() {
+	EXISTS=$(redis-cli exists policydb:tags 2>/dev/null)
+	if [ "$EXISTS" = "1" ]; then
+		echo "$DISPLAY_NAME is running"
+	else
+		echo "$DISPLAY_NAME is not running"
+		return 1
+	fi
+}
+
+action "$@"
+exit $?

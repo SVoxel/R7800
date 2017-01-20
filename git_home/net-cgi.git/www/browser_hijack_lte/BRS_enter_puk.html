@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="/funcs.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_enter_puk.js"></script>
+<% hijack_language() %>
+</head>
+
+<body>
+<% form_submit("apply", "BRS_pin_puk_wait.html", "puk_code") %>
+<div class="wizard_content_div">
+	<div class="wizard_words_div">
+		<h1><!--bh_enter_pukcode--></h1>
+		<p><input type="text" maxlength="8" size="16" name="puk_code" onKeyPress="return getkey('num', event)"/></p>
+		<p><!--bh_enter_puk_msg--></p>
+		<p>New PIN Code:</p>
+		<p><input type="text" maxlength="8" size="16" name="new_pin1" onKeyPress="return getkey('num', event)"/></p>
+		<p>Confirm New PIN Code:</p>
+		<p><input type="text" maxlength="8" size="16" name="new_pin2" onKeyPress="return getkey('num', event)"/></p>
+	</div>
+				
+	<div class="wizard_buttons_div" align="center">
+		<div id="btnsContainer_div" class="buttons_img_div">
+			<img src="image/ca-little-purple-button.gif" />
+			<div id="btn_text_div" class="buttons_words_div" align="center"><!--next_mark--></div>
+		</div>	
+	</div>
+</div>
+
+</form>
+</body>
+
+</html>

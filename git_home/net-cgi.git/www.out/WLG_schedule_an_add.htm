@@ -1,0 +1,97 @@
+<% http_header_no_doc("style/form.css", "/funcs.js", "/wadv_sechdule.js") %>
+<% body_header("_wladv", "WLG_adv.htm", "wadv_schedule_add_an") %>
+
+<div class="page_title">$wlan_adv_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="edit_schedule" value="$cancel_mark" onClick="location.href=\'WLG_adv.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="submit" name="add_schedule" value="$apply_mark" onClick="return wireless_schedule_add(\'an\', \'add\');"></TD>');
+else
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="edit_schedule" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit" name="add_schedule" value="$apply_mark" disabled></TD>');
+</script>		
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button">
+<script>
+var ts="<% cfg_get("wadv_schedule_add_an") %>";
+
+var gui_region="<% cfg_get("GUI_Region") %>";
+var netgear_region=(top.netgear_region == "") ? "WW" : top.netgear_region;
+
+<% wireless_schedule_items_a() %>
+var edit_num = "<% cfg_get("wless_schedule_edit_num") %>";
+function loadvalue()
+{
+	var cf = document.forms[0];
+	//initSelect();
+	cf.selday[0].checked = true;
+	schedule_check_pattern();
+}
+</script>
+
+<input type="hidden" name="schedule_info" value="">
+
+<TABLE width="100%" border="0" cellpadding="2" cellspacing="3">
+<TR><TD colspan="2"><b>$adva_turnoff</b></TD></TR>
+<TR>
+	<TD width="10%" align="left">$adva_start :</td>
+	<TD align="left">
+		<select class="divselect" name="start_time">
+		<script>
+		var i=0;
+		for(i=0; i<48; i++)
+		{
+			if((gui_region=="German" && netgear_region=="WW") || netgear_region=="GR")
+				document.write('<option value="'+i+'">'+hour_schedule_24[i]+'</option>');
+			else
+				document.write('<option value="'+i+'">'+hour_schedule_12[i]+'</option>');
+		}
+		</script>
+		</select>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap width="10%" align="left">$adva_end :</td>
+	<TD align="left">
+		<select class="divselect" name="end_time">
+		<script>
+                var i=0;
+                for(i=0; i<48; i++)
+                {
+                        if((gui_region=="German" && netgear_region=="WW") || netgear_region=="GR")
+                                document.write('<option value="'+i+'">'+hour_schedule_24[i]+'</option>');
+                        else
+                                document.write('<option value="'+i+'">'+hour_schedule_12[i]+'</option>');
+                }
+                </script>
+		</select>
+	</TD>
+</TR>
+<TR><TD colspan="2"><b>$adva_recur_pattern</b></TD></TR>
+<TR><TD colspan="2"><input type="radio" name="selday" value="0" onClick="schedule_check_pattern();"><b>$email_daily</b></TD></TR>
+<TR><TD colspan="2"><input type="radio" name="selday" value="1" onClick="schedule_check_pattern();"><b>$adva_select_days</b></TD></TR>
+<TR><TD colspan="2">
+	<TABLE width="90%" align="center" cellpadding="2" cellspacing="3" border="0">
+	<TR><!-- bug 23395:all select by default -->
+		<TD nowrap width="25%" align="left"><input type="checkbox" name="sun" value="0" checked>$schedule_sun</TD>
+		<TD nowrap width="25%" align="left"><input type="checkbox" name="mon" value="1" checked>$schedule_mon</TD>
+		<TD nowrap width="25%" align="left"><input type="checkbox" name="tue" value="2" checked>$schedule_tue</TD>
+		<TD nowrap width="25%" align="left"><input type="checkbox" name="wed" value="3" checked>$schedule_wed</TD>
+	</TR>
+	<TR>
+		<TD nowrap width="25%" align="left"><input type="checkbox" name="thu" value="4" checked>$schedule_thu</TD>
+		<TD nowrap width="25%" align="left"><input type="checkbox" name="fri" value="5" checked>$schedule_fri</TD>
+		<TD nowrap width="25%" align="left"><input type="checkbox" name="sat" value="6" checked>$schedule_sat</TD>
+	</TR>
+	</TABLE>
+</td></tr>
+</TABLE>
+</div>
+<% help_box("0","_wladv") %>
+</FORM>
+</BODY>
+</HTML>

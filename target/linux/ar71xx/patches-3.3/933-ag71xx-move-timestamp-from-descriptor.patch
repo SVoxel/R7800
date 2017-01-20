@@ -1,0 +1,82 @@
+From a74f2ae5d1b82c189bbb4f06caeae8fa7405c27d Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Tue, 11 Jun 2013 15:30:35 -0500
+Subject: [ag71xx] move timestamp from descriptor
+
+We move the timestamp out of the descriptor, and use the linux
+net_dev trans_start mechanism for recording and checking when the last
+transmit started.  This has some small performance benefits.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx.h      |  5 +----
+ drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c | 11 ++++++-----
+ 2 files changed, 7 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+index b561814..770d51e 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+@@ -98,10 +98,7 @@ struct ag71xx_buf {
+ 	struct sk_buff		*skb;
+ 	struct ag71xx_desc	*desc;
+ 	struct ag71xx_buf	*next;
+-	union {
+-		dma_addr_t	dma_addr;
+-		unsigned long	timestamp;
+-	};
++	dma_addr_t		dma_addr;
+ };
+ 
+ /*
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+index abdf4b2..4bfa09f 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+@@ -726,7 +726,6 @@ static netdev_tx_t ag71xx_hard_start_xmit(struct sk_buff *skb,
+ 
+ 	netdev_sent_queue(dev, len);
+ 	curr->skb = skb;
+-	curr->timestamp = jiffies;
+ 
+ 	dma_addr = dma_map_single(&dev->dev, skb->data, len, DMA_TO_DEVICE);
+ 
+@@ -751,6 +750,8 @@ static netdev_tx_t ag71xx_hard_start_xmit(struct sk_buff *skb,
+ 
+ 	DBG("%s: packet injected into TX queue\n", ag->dev->name);
+ 
++	dev->trans_start = jiffies;
++
+ 	/* enable TX engine */
+ 	ag71xx_wr_fast(ag->tx_ctrl_reg, TX_CTRL_TXE);
+ 	ag71xx_wr_flush(ag->tx_ctrl_reg);
+@@ -830,14 +831,14 @@ static void ag71xx_restart_work_func(struct work_struct *work)
+ 	ag71xx_open(ag->dev);
+ }
+ 
+-static bool ag71xx_check_dma_stuck(struct ag71xx *ag, unsigned long timestamp)
++static bool ag71xx_check_dma_stuck(struct ag71xx *ag, struct net_device *dev)
+ {
+ 	u32 rx_sm, tx_sm, rx_fd;
+ 
+-	if (likely(time_before(jiffies, timestamp + HZ/10)))
++	if (likely(time_before(jiffies, dev->trans_start + HZ / 10)))
+ 		return false;
+ 
+-	if (!netif_carrier_ok(ag->dev))
++	if (!netif_carrier_ok(dev))
+ 		return false;
+ 
+ 	rx_sm = ag71xx_rr(ag, AG71XX_REG_RX_SM);
+@@ -873,7 +874,7 @@ static int ag71xx_tx_packets(struct ag71xx *ag, struct net_device *dev)
+ 
+ 		if (unlikely(!(desc->ctrl & DESC_EMPTY))) {
+ 			if (unlikely(pdata->is_ar7240)) {
+-				if (unlikely(ag71xx_check_dma_stuck(ag, dirty->timestamp))) {
++				if (unlikely(ag71xx_check_dma_stuck(ag, dev))) {
+ 					schedule_work(&ag->restart_work);
+ 				}
+ 			}
+-- 
+1.8.1.2
+

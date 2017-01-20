@@ -1,0 +1,13 @@
+Package: qca-wrapd
+Version: 10.4-4.0.1756.054-1
+Depends: libc, qca-hostap
+Provides: 
+Source: package/qca-wrapd
+Section: QCA
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: Qualcomm Atheros
+Architecture: ipq806x
+Installed-Size: 21335
+Description:  User Space application to support QWRAP feature

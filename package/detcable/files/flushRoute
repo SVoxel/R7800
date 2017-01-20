@@ -1,0 +1,18 @@
+#!/bin/sh
+#This script will flush WAN static route when WAN cable plugged off.
+num=1
+line=`config get static_router$num`
+while [ "X$line" != "X" ]
+do
+       wanlan=$(echo $line | awk '{print $NF}')
+       if [ $wanlan -eq 0 ]; then
+               dest=$(echo $line | awk '{print $4}')
+               mask=$(echo $line | awk '{print $5}')
+               gw=$(echo $line | awk '{print $6}')
+               echo "Delete static route: $dest"
+               /sbin/route del -net $dest netmask $mask gw $gw >&- 2>&-
+       fi
+       num=$(($num+1))
+       line=`config get static_router$num`
+done
+

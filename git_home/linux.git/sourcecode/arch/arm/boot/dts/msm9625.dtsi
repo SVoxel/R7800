@@ -1,0 +1,109 @@
+/* Copyright (c) 2012, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/include/ "skeleton.dtsi"
+
+/ {
+	model = "Qualcomm MSM 9625";
+	compatible = "qcom,msm9625";
+	interrupt-parent = <&intc>;
+
+	intc: interrupt-controller@F9000000 {
+		compatible = "qcom,msm-qgic2";
+		interrupt-controller;
+		#interrupt-cells = <3>;
+		reg = <0xF9000000 0x1000>,
+		      <0xF9002000 0x1000>;
+	};
+
+	l2: cache-controller@f9040000 {
+		compatible = "arm,pl310-cache";
+		reg = <0xf9040000 0x1000>;
+		arm,data-latency = <1 1 1>;
+		arm,tag-latency = <1 1 1>;
+		cache-unified;
+		cache-level = <2>;
+	};
+
+	msmgpio: gpio@fd510000 {
+		compatible = "qcom,msm-gpio";
+		gpio-controller;
+		#gpio-cells = <2>;
+		interrupt-controller;
+		#interrupt-cells = <2>;
+		reg = <0xfd510000 0x4000>;
+	};
+
+	timer: msm-qtimer@f9021000 {
+		compatible = "qcom,msm-qtimer", "arm,armv7-timer";
+		reg = <0xF9021000 0x1000>;
+		interrupts = <0 7 0>;
+		irq-is-not-percpu;
+		clock-frequency = <5000000>;
+	};
+
+	qcom,sps@f9980000 {
+		compatible = "qcom,msm_sps";
+		reg = <0xf9984000 0x15000>,
+		      <0xf9999000 0xb000>,
+		      <0xfe800000 0x4800>;
+		interrupts = <0 94 0>;
+		qcom,device-type = <2>;
+	};
+
+	serial@f991f000 {
+		compatible = "qcom,msm-lsuart-v14";
+		reg = <0xf991f000 0x1000>;
+		interrupts = <0 109 0>;
+	};
+
+	qcom,nand@f9ac0000 {
+		compatible = "qcom,msm-nand";
+		reg = <0xf9ac0000 0x1000>,
+		      <0xf9ac4000 0x8000>;
+		reg-names = "nand_phys",
+			    "bam_phys";
+		interrupts = <0 247 0>;
+		interrupt-names = "bam_irq";
+	};
+
+	spi@f9928000 {
+		compatible = "qcom,spi-qup-v2";
+		reg = <0xf9928000 0x1000>;
+		interrupts = <0 100 0>;
+		spi-max-frequency = <24000000>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		gpios = <&msmgpio 23 0>, /* CLK  */
+			<&msmgpio 21 0>, /* MISO */
+			<&msmgpio 20 0>; /* MOSI */
+
+		cs-gpios = <&msmgpio 69 0>;
+
+		ethernet-switch@0 {
+			compatible = "simtec,ks8851";
+			reg = <0>;
+			interrupt-parent = <&msmgpio>;
+			interrupts = <75 0>;
+			spi-max-frequency = <5000000>;
+		};
+	};
+
+	qcom,wdt@f9017000 {
+		compatible = "qcom,msm-watchdog";
+		reg = <0xf9017000 0x1000>;
+		interrupts = <1 2 0>, <1 1 0>;
+		qcom,bark-time = <11000>;
+		qcom,pet-time = <10000>;
+		qcom,ipi-ping = <0>;
+	};
+};

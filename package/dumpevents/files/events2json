@@ -1,0 +1,19 @@
+#!/usr/bin/awk -f
+
+# This script converts input of one json object per line.
+# The output will be one json object contain an array of input lines.
+
+BEGIN {
+	print "{\"events\": ["
+	first = 0
+}
+{
+	if (first == 1) {
+		print ","
+	}
+	print $0
+	first = 1
+}
+END {
+	print "]}"
+}

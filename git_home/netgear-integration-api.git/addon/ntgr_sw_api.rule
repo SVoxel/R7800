@@ -1,0 +1,32 @@
+#! /bin/sh
+
+# THIS IS A SCRIPT FOR NET-WALL EXTRA CALLING TO SET NETGEAR INTEGRATION SW API RULES.
+
+FIREWALL_NVCONF_PREFIX="ntgr_api_firewall"
+
+case $1 in
+	"start")
+		index=1
+		while true
+		do
+			value=$(config get ${FIREWALL_NVCONF_PREFIX}${index})
+			[ "x$value" = "x" ] && break || set $value
+			[ "x$3" = "xALL" ] && useport="" || useport="yes"
+			iptables -I INPUT -i $1 -p $2 ${useport:+--dport $3} -j ACCEPT
+			iptables -I OUTPUT -o $1 -p $2 ${useport:+--sport $3} -j ACCEPT
+			index=$((index + 1))
+		done;;
+	"stop")
+		index=1
+		while true
+		do
+			value=$(config get ${FIREWALL_NVCONF_PREFIX}${index})
+			[ "x$value" = "x" ] && break || set $value
+			[ "x$3" = "xALL" ] && useport="" || useport="yes"
+			iptables -D INPUT -i $1 -p $2 ${useport:+--dport $3} -j ACCEPT
+			iptables -D OUTPUT -o $1 -p $2 ${useport:+--sport $3} -j ACCEPT
+			index=$((index + 1))
+		done;;
+	*)
+		:;;
+esac

@@ -1,0 +1,19 @@
+#!/bin/sh /etc/rc.common
+
+START=98
+
+CONFIG=/bin/config
+
+start() {
+	# Set TimeZone for console
+	tz=$($CONFIG get time_zone)
+	echo "$tz" > /tmp/TZ
+
+	# Start SSH server
+	/usr/bin/dropbear -p 22 -a -s
+
+	# Create dummy fstab if does not exist
+	if [ ! -f /tmp/fstab ]; then
+		cat /tmp/fstab > /tmp/fstab
+	fi
+}

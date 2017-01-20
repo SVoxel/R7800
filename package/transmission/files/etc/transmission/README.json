@@ -1,0 +1,8 @@
+Currently transmission overwrites the settings.json configuration file
+on exit. The daemon can be instructed to reload the config with a SIGHUP,
+or
+ # invoke-rc.d transmission-daemon reload
+
+Otherwise changes made manually to the file while the daemon is running 
+will be silently overwritten on exit.
+

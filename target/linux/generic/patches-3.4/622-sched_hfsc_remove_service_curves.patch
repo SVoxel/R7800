@@ -1,0 +1,153 @@
+From 599557f19d69f8ea5b9876df2ed03fe436825f34 Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <bmenchac@qca.qualcomm.com>
+Date: Thu, 18 Oct 2012 13:00:06 -0500
+Subject: [PATCH] sch_hfsc: change_class can remove service curves
+
+The existing implementation of hfsc_change_class permits the addition of
+service curves by passing non-zero SCs.  However, after service curves
+are added, they cannot be removed.  Passing a NULL for a service curve
+does not change it, and passing m1/m2 == 0 is treated just like a NULL.
+
+This patch treats the m1/m2 == 0 case as a request for "zeroing" the
+curve.  If the curve exists, it is removed.  The NULL case is left in
+it's current state so that is is compatible with the behavior of tc
+today.
+---
+ net/sched/sch_hfsc.c |   82 ++++++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 60 insertions(+), 22 deletions(-)
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+--- a/net/sched/sch_hfsc.c
++++ b/net/sched/sch_hfsc.c
+@@ -1,4 +1,5 @@
+ /*
++ * Copyright (c) 2013 The Linux Foundation. All rights reserved.
+  * Copyright (c) 2003 Patrick McHardy, <kaber@trash.net>
+  *
+  * This program is free software; you can redistribute it and/or
+@@ -975,6 +976,7 @@ hfsc_change_class(struct Qdisc *sch, u32
+ 	struct nlattr *opt = tca[TCA_OPTIONS];
+ 	struct nlattr *tb[TCA_HFSC_MAX + 1];
+ 	struct tc_service_curve *rsc = NULL, *fsc = NULL, *usc = NULL;
++	bool prev_rsc = false, prev_fsc = false;
+ 	u64 cur_time;
+ 	int err;
+ 
+@@ -985,23 +987,14 @@ hfsc_change_class(struct Qdisc *sch, u32
+ 	if (err < 0)
+ 		return err;
+ 
+-	if (tb[TCA_HFSC_RSC]) {
++	if (tb[TCA_HFSC_RSC])
+ 		rsc = nla_data(tb[TCA_HFSC_RSC]);
+-		if (rsc->m1 == 0 && rsc->m2 == 0)
+-			rsc = NULL;
+-	}
+ 
+-	if (tb[TCA_HFSC_FSC]) {
++	if (tb[TCA_HFSC_FSC])
+ 		fsc = nla_data(tb[TCA_HFSC_FSC]);
+-		if (fsc->m1 == 0 && fsc->m2 == 0)
+-			fsc = NULL;
+-	}
+ 
+-	if (tb[TCA_HFSC_USC]) {
++	if (tb[TCA_HFSC_USC])
+ 		usc = nla_data(tb[TCA_HFSC_USC]);
+-		if (usc->m1 == 0 && usc->m2 == 0)
+-			usc = NULL;
+-	}
+ 
+ 	if (cl != NULL) {
+ 		if (parentid) {
+@@ -1022,24 +1015,70 @@ hfsc_change_class(struct Qdisc *sch, u32
+ 		}
+ 
+ 		sch_tree_lock(sch);
+-		if (rsc != NULL)
+-			hfsc_change_rsc(cl, rsc, cur_time);
+-		if (fsc != NULL)
+-			hfsc_change_fsc(cl, fsc);
+-		if (usc != NULL)
+-			hfsc_change_usc(cl, usc, cur_time);
++		/* Changed class: if any new curves are zero, and that curve
++		   exists for this class, remove the curve. */
++		prev_rsc = cl->cl_flags & HFSC_RSC;
++		if (rsc != NULL) {
++			if (rsc->m1 == 0 && rsc->m2 == 0) {
++				if (prev_rsc) {
++					cl->cl_flags &= ~HFSC_RSC;
++					if (cl->qdisc->q.qlen != 0)
++						eltree_remove(cl);
++				}
++			} else {
++				hfsc_change_rsc(cl, rsc, cur_time);
++			}
++		}
++
++		prev_fsc = cl->cl_flags & HFSC_FSC;
++		if (fsc != NULL) {
++			if (fsc->m1 == 0 && fsc->m2 == 0) {
++				if (prev_fsc) {
++					cl->cl_flags &= ~HFSC_FSC;
++					if (cl->qdisc->q.qlen != 0) {
++						vttree_remove(cl);
++						cftree_remove(cl);
++					}
++				}
++			} else
++				hfsc_change_fsc(cl, fsc);
++		}
++
++		if (usc != NULL) {
++			if (usc->m1 == 0 && usc->m2 == 0)
++				cl->cl_flags &= ~HFSC_USC;
++			else
++				hfsc_change_usc(cl, usc, cur_time);
++		}
+ 
+ 		if (cl->qdisc->q.qlen != 0) {
+-			if (cl->cl_flags & HFSC_RSC)
+-				update_ed(cl, qdisc_peek_len(cl->qdisc));
+-			if (cl->cl_flags & HFSC_FSC)
+-				update_vf(cl, 0, cur_time);
++			unsigned int len = qdisc_peek_len(cl->qdisc);
++			if (cl->cl_flags & HFSC_RSC) {
++				if (prev_rsc)
++					update_ed(cl, len);
++				else
++					init_ed(cl, len);
++			}
++			if (cl->cl_flags & HFSC_FSC) {
++				if (prev_fsc)
++					update_vf(cl, 0, cur_time);
++				else
++					init_vf(cl, len);
++			}
+ 		}
+ 		sch_tree_unlock(sch);
+ 
+ 		return 0;
+ 	}
+ 
++	/* New class: if any curves are zero, do not create them */
++	if (rsc && (rsc->m1 == 0 && rsc->m2 == 0))
++		rsc = NULL;
++	if (fsc && (fsc->m1 == 0 && fsc->m2 == 0))
++		fsc = NULL;
++	if (usc && (usc->m1 == 0 && usc->m2 == 0))
++		usc = NULL;
++
+ 	if (parentid == TC_H_ROOT)
+ 		return -EEXIST;
+ 

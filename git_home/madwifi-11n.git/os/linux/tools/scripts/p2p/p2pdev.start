@@ -1,0 +1,2 @@
+wpa_supplicant -Dathr -iwlan1 -c /etc/ath/p2p/p2pdev.conf -ddKt 
+exit 1

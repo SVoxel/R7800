@@ -1,0 +1,198 @@
+<% http_header("style/form.css", "/funcs.js", "/USB_NETStorage.js", "advanced.js") %>
+<% body_header("_USB_basic", "USB_basic.htm", "disk_remove") %>
+<div class="page_title">$usb_bas_header</div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+
+<script language="javascript" type="text/javascript">
+<!--
+var enable_action=1;
+var consolidate_device_name = parent.consolidate_device_name;
+var show_deviceName="<% cfg_sed_xss("usb_deviceName") %>";
+if(consolidate_device_name == 1)
+	show_deviceName="<% cfg_sed_xss("Readyshare_name") %>";
+var show_lanip="<% cfg_sed_xss("lan_ipaddr") %>";
+<% show_devices() %>
+function remove_disk(cf)
+{
+	var wleft=(screen.width-400)/2;
+	var wtop=(screen.height-400)/2;
+	if(device_num == 1)
+	{
+		cf.hidden_name.value="***";
+		cf.submit_flag.value = "disk_remove";
+		cf.submit();
+		str="USB_disk_rm.htm?opener=USB_basic.htm&dev_name=***";		
+		removeDisk=window.open(str,'removeDisk','width=400,height=400,left=440,top=312,status=yes');
+		removeDisk.moveTo(wleft,wtop);
+	}
+	else
+	{
+		removeDisk=window.open('USB_disk_rm_part.htm?opener=USB_basic.htm','removeDisk','width=400,height=400,left=440,top=312,status=yes');
+		removeDisk.moveTo(wleft,wtop);
+	}
+}
+
+function loadvalue()
+{
+	var form = document.forms[0];
+	/*if( device_num == 0 )
+		form.safeRemove.disabled = true;
+	else
+		form.safeRemove.disabled = false;	*/
+
+	main_div_show_scroll();
+}
+
+-->
+</script>
+<input type="hidden" name="hidden_name">
+<input type="hidden" name="hidden_share_serv_type" value="" />
+<% readycloud_radio() %>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<script>
+/*Bug 24943: follow spec 2.0 12.8.2, all displayed as \\readyshare\.. */
+if(isIE())
+	document.write('<TR><TD colspan=2><a tabindex=-1 href="javascript:loadhelp(\'_USB_basic\',\'device\')"><b>$device_name:</b></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a id="readyshare_link" class="linktype" href="\\\\'+show_deviceName+'" target="_blank">\\\\'+show_deviceName+'</a></TD></TR>');
+else if( get_browser() == "Safari" )
+	document.write('<TR><TD colspan=2><a tabindex=-1 href="javascript:loadhelp(\'_USB_basic\',\'device\')"><b>$device_name:</b></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a id="readyshare_link" class="linktype" href="smb://'+show_lanip+'" >\\\\'+show_deviceName+'</a></TD></TR>');
+else
+	document.write('<TR><TD colspan=2><a tabindex=-1 href="javascript:loadhelp(\'_USB_basic\',\'device\')"><b>$device_name:</b></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a id="readyshare_link">\\\\'+show_deviceName+'</a></TD></TR>');
+</script>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD colspan=2><img src=/liteblue.gif width=100%% height=12></TD></TR>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD colspan=2><a tabindex=-1 href="javascript:loadhelp('_USB_basic','available_folder')"><b>$available_folder</b></a></TD></TR>
+<TR><TD colspan=2>
+	<TABLE id="available_folder" class=tables border ="0" cellpadding ="2" cellspacing ="0" width="100%">
+	<TR class=table_header>
+		<TD nowrap><span class="thead">$share_name</span></TD>
+		<TD nowrap><span class="thead">$read_access</span></TD>
+		<TD nowrap><span class="thead">$write_access</span></TD>
+		<TD nowrap><span class="thead">$folder_name</span></TD>
+		<TD nowrap><span class="thead">$volume_name</span></TD>
+		<TD nowrap><span class="thead">$total_sapce</span></TD>
+		<TD nowrap><span class="thead">$free_space</span></TD>
+
+	</TR>
+<script>
+<% show_usb_fileder_items() %>
+i=0;	
+for( j=0; j<list_disk_num; j++){		
+	var fd_num_in_disk = eval('fd_num_in_disk' + j );
+	var volname_str = eval('usb_sharefolder_volname' + i);
+
+	volname_str = volname_str.replace( / /g,"&nbsp;");
+	for( t=0; t<fd_num_in_disk; t++){
+
+		var allaccess = eval('readycloud_access'+i);
+		var cloudarray=allaccess.split(':');
+		var cloudread="";
+		var cloudwrite="";
+		if( cloudarray.length == 2 )
+		{
+			rarr=cloudarray[0].split(',');
+			for(cr=0; cr<rarr.length; cr++)
+				if(rarr[cr] != "")
+					cloudread = cloudread +",<br/> "+ rarr[cr]+ "(ReadyCloud)"
+			carr=cloudarray[1].split(',');
+			for(cc=0; cc<carr.length; cc++)
+				if(carr[cc] != "")
+					cloudwrite = cloudwrite +",<br/> "+carr[cc] + "(ReadyCloud)"
+		}
+
+                var str = eval('usb_sharefolder' + i );
+                //str = str.replace( / /g,"&nbsp;");
+                each_info = str.split('*');
+                show_folderName= each_info[4].replace( / /g,"&nbsp;");
+				 if( i%2== 1 )
+                       document.write("<TR class=\"even_line\">");
+               else
+                       document.write("<TR class=\"odd_line\">");
+                //document.write('<TR>');
+                //displayName=each_info[0].replace(/\//g,"\\\\");
+                var foldername = each_info[0].replace(/\//g,"\\").replace( / /g,"&nbsp;");
+                if( each_info[9] == "Not Shared" )
+                      // document.write('<TD nowrap><pre><a class="linktype" href="USB_advanced.htm"></pre>'+show_folderName+'</a></TD>');
+					   document.write('<TD nowrap><a class="linktype" href="USB_advanced.htm">'+show_folderName+'</a></TD>');
+                else{
+			/*Bug 24943: follow spec 2.0 12.8.2, all displayed as \\readyshare\.. */
+                        if(isIE())
+				document.write('<TD nowrap><a class="linktype" href="\\\\'+show_deviceName+'\\'+each_info[4]+'" target="_blank">\\\\'+show_deviceName+'\\'+show_folderName+'</a></TD>');
+                        else if( get_browser() == "Safari")
+				document.write('<TD nowrap><a class="linktype" href="smb://'+show_lanip+'\\'+each_info[4]+'">\\\\'+show_deviceName+'\\'+show_folderName+'</a></TD>');
+                        else
+				document.write('<TD nowrap><a>\\\\'+show_deviceName+'\\'+show_folderName+'</a></TD>');
+                }
+
+		if (each_info[5] == "$usb_access_admin")
+			each_info[5] = each_info[5] + cloudread;
+		if (each_info[6] == "$usb_access_admin")
+			each_info[6] = each_info[6] + cloudwrite;
+                document.write('<TD nowrap>'+each_info[5]+'</TD>');
+                document.write('<TD nowrap>'+each_info[6]+'</TD>');				
+               // document.write('<TD nowrap>'+'<pre>'+each_info[8]+':'+foldername+'</TD>'+'</pre>');
+			   document.write('<TD nowrap>'+each_info[8]+':'+foldername+'</TD>');
+	    //if( t == 0 ){	
+                document.write('<TD nowrap>'+volname_str+'</TD>');
+                document.write('<TD nowrap>'+each_info[2]+'</TD>');
+                document.write('<TD nowrap>'+each_info[3]+'</TD>');
+	    //}
+                document.write('</TR>');
+		i++;
+	}		
+}
+
+</script>
+	
+	</TABLE>
+</TD></TR>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD colspan=2 >
+<input class="edit_bt" type="button" name="edit" id="edit" value="$edit_mark" onClick='usb_redirect();'>
+</TD></TR>
+<script>
+// onClick='location.href="USB_advanced.htm";'
+function usb_redirect()
+{
+var cf=document.forms[0];
+
+location.href="USB_advanced.htm";
+
+if( top.location.href.indexOf("adv_index.htm") != -1 )		//to fix bug 32119
+	menu_color_change('usb_adv');
+//top.location.href="adv_index.htm";
+}
+</script>	
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD colspan=2><img src=/liteblue.gif width=100%% height=12></TD></TR>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD colspan=2>
+
+<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if(device_num == 0 || master == "guest")
+		document.write('<input class="long_common_gray_bt" type="button" name="safely_remove" id="safely_remove" value=" $safely_remove_device " disabled >');
+	else
+		document.write('<input class="long_common_bt" type="button" name="safeRemove" value=" $safely_remove_device " onClick=\'remove_disk(document.forms[0]);\'>');
+</script>	
+
+<!--input class="long_common_bt" type="button" name="safeRemove" value=" $safely_remove_device " onClick='remove_disk(document.forms[0]);'-->
+
+</TD></TR>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD colspan=2><img src=/liteblue.gif width=100%% height=12></TD></TR>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD colspan=2>
+<input class="short_refresh_bt" type="button" name="Refresh" id="refresh" value="  $refresh_mark " onClick="location.href='/USB_basic.htm';">
+</TD></TR>
+
+</TABLE>
+
+</div>
+<% help_box("1","_USB_basic") %>
+</FORM>
+</BODY>
+</HTML>
+

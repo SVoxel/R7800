@@ -1,0 +1,13 @@
+--- a/easy-rsa/2.0/pkitool	2014-08-18 02:44:04.790247962 +0800
++++ b/easy-rsa/2.0/pkitool	2014-08-18 02:48:54.800247945 +0800
+@@ -242,6 +242,10 @@
+ if [ -z "$CA_EXPIRE" ]; then
+     CA_EXPIRE=3650
+ fi
++if [ $(date +%Y) = "1970" ]; then
++	KEY_EXPIRE=19950
++	CA_EXPIRE=19950
++fi
+ 
+ # Set organizational unit to empty string if undefined
+ if [ -z "$KEY_OU" ]; then

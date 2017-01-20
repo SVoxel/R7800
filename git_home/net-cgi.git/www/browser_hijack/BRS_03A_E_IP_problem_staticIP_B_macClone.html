@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_03A_E_IP_problem_staticIP_B_macClone.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_hijack_03A_E_IP_problem_staticIP_B_macClone.js"></script>
+<script language="javascript" type="text/javascript" src="script/funcs.js"></script>
+<% hijack_language() %>
+</head>
+<% wizlog_problem_ck10("1") %>
+<body>
+<% form_submit("apply", "BRS_03A_E_IP_problem_staticIP_B_macClone_plzWait.html", "hijack_mac_clone") %>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+</script>
+
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		<h1 class="h1_red"><!--no_internet_ip--></h1>
+		<p><!--use_pc_mac--></p>
+		<p><!--mac_in_product_label--></p>
+		<p><!--enter_mac--></p>
+		
+		<div id="mac_input_div" align="center">
+			<input type="text" id="spoofmac" name="spoofmac" maxlength="17" class="mac_input"  /><!--mac_format-->
+		</div>
+	
+	</div>
+
+	<div id="buttons_div" class="wizard_buttons_div" align="center">
+		<input type="button" name="Next" id="next" class="purple_short_btn"><!--next_mark-->
+	</div>
+	
+</div>
+
+</form>
+</body>
+
+</html>

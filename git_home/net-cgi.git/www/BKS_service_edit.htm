@@ -1,0 +1,243 @@
+<% http_header("style/form.css", "/funcs.js", "/block_services.js") %>
+<% body_header("_BKS_service_edit", "BKS_service.htm", "block_services_edit") %>
+<div class="page_title">$block_ser_setup</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" name="Cancel" type="button" value="$cancel_mark" onClick="location.href=\'BKS_service.htm\';">&nbsp;&nbsp;<input class="apply_bt" name="apply" type="submit" value="$accept_mark" onClick="return check_block_services_add(document.forms[0],\'edit\')"></TD>');
+else
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel1_bt" name="Cancel" type="button" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" name="apply" type="submit" value="$accept_mark" disabled></TD>');
+</script>       
+</TR>
+</TABLE>
+
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %> 
+
+<script>
+<% blksvc_items_xss() %>
+<% refresh_timestamp("block_services_editnum") %>
+var select_edit='<% cfg_get("blockserv_editnum") %>';
+var lan_ip="<% cfg_get("lan_ipaddr") %>";
+var lan_subnet="<% cfg_get("lan_netmask") %>";
+
+function loadvalue()
+{
+	var cf=document.forms[0];
+	var str = eval ( 'block_servicesArray' + select_edit ).replace(/&#92;/g, "\\").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+	var each_info=str.split(' ');
+	cf.service_type.value=each_info[0];
+	chg_by_service(0,cf);
+	var ip_array=lan_ip.split('.');
+	//to fix bug32258 BKS_service.htm and BKS_service_edit.htm show different.
+	/*	cf.f_pcip1.value=ip_array[0];
+        cf.f_pcip2.value=ip_array[1];
+        cf.f_pcip3.value=ip_array[2];
+        cf.f_startip1.value=ip_array[0];
+        cf.f_startip2.value=ip_array[1];
+        cf.f_startip3.value=ip_array[2];
+        cf.f_endip1.value=ip_array[0];
+        cf.f_endip2.value=ip_array[1];
+        cf.f_endip3.value=ip_array[2];*/
+	if (cf.service_type.value == "User_Defined")
+	{
+		cf.protocol.value=each_info[1];
+		cf.portstart.value=each_info[2];
+		cf.portend.value=each_info[3];
+		cf.userdefined.value=each_info[4].replace(/&nbsp;/g," ");;
+	}
+	if (each_info[5] == '0')
+	{
+		cf.iptype[0].checked =true;
+		cf.only_ip.value=each_info[6];
+		var only_array=each_info[6].split('.');
+		cf.f_pcip1.value=only_array[0];
+		cf.f_pcip2.value=only_array[1];
+		cf.f_pcip3.value=only_array[2];
+		cf.f_pcip4.value=only_array[3];
+		cf.f_startip1.value=ip_array[0];
+		cf.f_startip2.value=ip_array[1];
+		cf.f_startip3.value=ip_array[2];
+		cf.f_endip1.value=ip_array[0];
+		cf.f_endip2.value=ip_array[1];
+		cf.f_endip3.value=ip_array[2];
+	}
+	else if (each_info[5] == '1')
+	{
+		cf.iptype[1].checked =true;
+		var each_ip = each_info[6].split('-');
+		cf.iprange_start.value=each_ip[0];
+		cf.iprange_end.value=each_ip[1];
+		var start_array=each_ip[0].split('.');
+		var end_array=each_ip[1].split('.');
+		cf.f_pcip1.value=ip_array[0];
+		cf.f_pcip2.value=ip_array[1];
+		cf.f_pcip3.value=ip_array[2];
+		cf.f_startip1.value=start_array[0];
+		cf.f_startip2.value=start_array[1];
+		cf.f_startip3.value=start_array[2];
+		cf.f_startip4.value=start_array[3];
+		cf.f_endip1.value=end_array[0];
+		cf.f_endip2.value=end_array[1];
+		cf.f_endip3.value=end_array[2];
+		cf.f_endip4.value=end_array[3];
+	}
+	else	
+	{
+		cf.iptype[2].checked =true;
+		cf.f_pcip1.value=ip_array[0];
+		cf.f_pcip2.value=ip_array[1];
+		cf.f_pcip3.value=ip_array[2];
+		cf.f_startip1.value=ip_array[0];
+		cf.f_startip2.value=ip_array[1];
+		cf.f_startip3.value=ip_array[2];
+		cf.f_endip1.value=ip_array[0];
+		cf.f_endip2.value=ip_array[1];
+		cf.f_endip3.value=ip_array[2];
+	}
+	change_radio(each_info[5],cf);
+}
+</script>
+<input type="hidden" name="iplist">
+<input type="hidden" name="hidden_protocol">
+<input type="hidden" name="hidden_portstart">
+<input type="hidden" name="hidden_portend">
+<input type="hidden" name="hidden_userdefined">
+<input type="hidden" name="iprange_start">
+<input type="hidden" name="iprange_end">
+<input type="hidden" name="only_ip">
+<TR>
+	<TD nowrap>$block_ser_service_type</TD>
+	<TD nowrap>
+	<select name="service_type" size="1" onchange="chg_by_service(0,document.forms[0]);">
+		<option value="User_Defined">$block_ser_setup_userdefined</option>
+		<option value="Any">$any</option>
+		<option value="Any(TCP)">$block_ser_setup_anyTCP</option>
+		<option value="Any(UDP)">$block_ser_setup_anyUDP</option>
+		<option value="AIM">$block_ser_setup_aim</option>
+<!--		<option value="AIM6.x/SSL">AIM6.x/SSL</option> -->
+		<option value="Age-of-Empire">$block_ser_setup_age</option>
+                <option value="BGP">$block_ser_setup_bgp</option>
+                <option value="BOOTP-CLIENT">$block_ser_setup_bootclient</option>
+                <option value="BOOTP-SERVER">$block_ser_setup_bootserver</option>
+                <option value="CU-SEEME">$block_ser_setup_cuseeme</option>
+                <option value="DNS">$block_ser_setup_dns</option>
+                <option value="FINGER">$block_ser_setup_finger</option>
+                <option value="FTP">$block_ser_setup_ftp</option>
+                <option value="H.323">$block_ser_setup_h323</option>
+                <option value="HTTP">$block_ser_setup_http</option>
+                <option value="HTTPS">$block_ser_setup_https</option>
+                <option value="ICUII">$block_ser_setup_icu</option>
+                <option value="IDENT">$block_ser_setup_ident</option>
+                <option value="IP_Phone">$block_ser_setup_ipphone</option>
+                <option value="IRC">$block_ser_setup_irc</option>
+                <option value="NetMeeting">$block_ser_setup_netmeet</option>
+                <option value="NFS">$block_ser_setup_nfs</option>
+                <option value="News">$block_ser_setup_news</option>
+                <!--Bug 30136 - [New GUI][Block Service]PPTP should not include in the preset service types -->
+		<!--<option value="PPTP">$block_ser_setup_pptp</option>-->
+                <option value="QuakeII/III">$block_ser_setup_quake</option>
+                <option value="RCMD">$block_ser_setup_rcmd</option>
+                <option value="Real-Audio">$block_ser_setup_real</option>
+                <option value="REXEC">$block_ser_setup_rexec</option>
+                <option value="RLOGIN">$block_ser_setup_rlogin</option>
+                <option value="RTELNET">$block_ser_setup_rtelnet</option>
+                <option value="RTSP">$block_ser_setup_rtsp</option>
+                <option value="SFTP">$block_ser_setup_sftp</option>
+                <option value="SMTP">$block_ser_setup_smtp</option>
+                <option value="SNMP">$block_ser_setup_snmp</option>
+                <option value="SNMP_TRAPS">$block_ser_setup_snmptraps</option>
+                <option value="SQL-NET">$block_ser_setup_sqlnet</option>
+                <option value="SSH">$block_ser_setup_ssh</option>
+                <option value="STRMWORKS">$block_ser_setup_strmworks</option>
+                <option value="TACACS">$block_ser_setup_tacacs</option>
+                <option value="Telnet">$block_ser_setup_telnet</option>
+                <option value="TFTP">$block_ser_setup_tftp</option>
+                <option value="VDOLIVE">$block_ser_setup_vdolive</option>
+                <option value="VPN-IPSEC">$block_ser_setup_vpn_ipsec</option>
+                <option value="VPN-L2TP">$block_ser_setup_vpn_l2tp</option>
+                <option value="VPN-PPTP">$block_ser_setup_vpn_pptp</option>
+	</select>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$block_ser_setup_pro</TD>	
+	<TD nowrap>
+	<select NAME="protocol" size="1" >
+		<option value="TCP">$block_ser_setup_tcp</option>
+		<option value="UDP">$block_ser_setup_udp</option>
+		<option value="TCP/UDP">$block_ser_setup_tcp_udp</option>
+	</select>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$block_ser_start_port</TD>
+	<TD nowrap>
+	<input type="text" name="portstart" size="7" maxlength="5" onKeyPress="return getkey('num', event)">(1~65535)
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$block_ser_end_port</TD>
+	<TD nowrap>
+	<input type="text" name="portend" size="7" maxlength="5" onKeyPress="return getkey('num', event)">(1~65535)
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$block_ser_setup_type</TD>
+	<TD nowrap>
+	<input type="text" name="userdefined" size="20" maxlength="30">
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_BKS_service_edit','ip')"><B>$block_ser_setup_filter :</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<input type="radio" name="iptype" value="single" onClick="change_radio(0,document.forms[0])">$block_ser_setup_thisip:
+	</TD>
+	<TD nowrap>
+	<input type="text" name="f_pcip1" disabled size="3" maxlength="3" onFocus="this.select();" onKeyPress="return getkey('num',event)" >.
+	<input type="text" name="f_pcip2" disabled size="3" maxlength="3" onFocus="this.select();" onKeyPress="return getkey('num',event)">.
+	<input type="text" name="f_pcip3" disabled size="3" maxlength="3" onFocus="this.select();" onKeyPress="return getkey('num',event)">.
+	<input type="text" name="f_pcip4" size="3" maxlength="3" onFocus="this.select();" onKeyPress="return getkey('num',event)">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><BR>
+	<input type="radio" name="iptype" value="range_addr" onClick="change_radio(1,document.forms[0])">$block_ser_setup_iprang:
+	</TD>
+	<TD nowrap><BR>
+	<input type="text" name="f_startip1" disabled size="3" maxlength="3" onFocus="this.select();" onKeyPress="return getkey('num',event)" >.
+	<input type="text" name="f_startip2" disabled size="3" maxlength="3" onFocus="this.select();" onKeyPress="return getkey('num',event)">.
+	<input type="text" name="f_startip3" disabled size="3" maxlength="3" onFocus="this.select();" onKeyPress="return getkey('num',event)">.
+	<input type="text" name="f_startip4" size="3" maxlength="3" onFocus="this.select();" onKeyPress="return getkey('num',event)">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap align=right>$block_ser_setup_to&nbsp;</TD>
+	<TD nowrap>
+	<input type="text" name="f_endip1" disabled size="3" maxlength="3" onFocus="this.select();" onKeyPress="return getkey('num',event)" >.
+	<input type="text" name="f_endip2" disabled size="3" maxlength="3" onFocus="this.select();" onKeyPress="return getkey('num',event)">.
+	<input type="text" name="f_endip3" disabled size="3" maxlength="3" onFocus="this.select();" onKeyPress="return getkey('num',event)">.
+	<input type="text" name="f_endip4" size="3" maxlength="3" onFocus="this.select();" onKeyPress="return getkey('num',event)">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" checked name="iptype" value="all" onClick="change_radio(2,document.forms[0])">$block_ser_setup_allip
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_BKS_service_edit") %>
+</FORM>
+</BODY>
+</HTML>

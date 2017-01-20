@@ -1,0 +1,69 @@
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/form.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_02_genieHelp.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="/funcs.js"></script>
+<% hijack_language() %>
+</head>
+<body>
+<% form_submit("func", "BRS_03A_detcInetType_fullscan.html", "wizard_detwan")  %>
+<% save_timestamp("wizard_detwan", "hijack_toBasic")%>
+<div class="page_title"><script>document.write("Setup Wizard")</script></div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+<% cfg_set("view_wizard", "0") %>
+<input type=hidden name=wizard_select_country value="">
+<script>
+var ts="<% cfg_get("wizard_detwan") %>";
+var netgear_region="<% get_firmware_region() %>";
+wan_phy_mode="<% cfg_get("wan_phy_mode") %>";
+wan_phy_auto="<% cfg_get("wan_phy_auto") %>";
+wan_phy="<% cfg_get("wan_phy") %>";
+var hijack_process="<% cfg_get("hijack_process") %>";
+//var wizard_select_country="<% wiz_country_id() %>";
+//var wizard_select_isp="<% wiz_isp_id() %>";
+var qq=0;
+function click_next()
+{   
+	var forms = document.getElementsByTagName("form");
+	var cf = forms[0];
+	if (document.forms[0].WANDetc[0].checked == true)
+		this.location.href = "BRS_03A_detcInetType_fullscan.html";
+	else{
+		if(confirm(bh_no_genie_help_confirm) == false)
+			return false;
+
+		if( hijack_process == "1")
+		{
+			cf.action = "/apply.cgi?/index.htm timestamp=" + ts;
+			cf.target = "_top";
+			cf.submit_flag.value = "hijack_toBasic";
+			cf.submit();
+		}
+		else
+		top.location.href = "index.htm";
+		}
+}
+
+
+</script>
+
+<TR><TD nowrap><script>document.write(bh_quick_failed)</script></TD></TR>
+<TR><TD nowrap><INPUT id="wan_detect_type" type="radio"  checked name="WANDetc" value="AutoDetc"><script>document.write(bh_quick_failed_slect1)</script></TD></TR>
+<TR><TD nowrap><INPUT id="wan_detect_type" type="radio" name="WANDetc" value="MyDetc"><script>document.write(bh_quick_failed_slect2)</script></TD></TR>
+$bluebar
+<TR><TD nowrap align=center>
+<script>document.write('<INPUT id="next" class="short_common_bt" type="button" name="Next" value="'+bh_next_mark+'"onClick="click_next()">')</script>
+</TD></TR>
+</TABLE>
+
+</div>
+</FORM>
+</BODY>
+</HTML>

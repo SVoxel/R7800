@@ -1,0 +1,344 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% noload_header("_attach_device") %>
+<div class="page_title">$attach_device</div>
+<div id="main" class="main">
+<% table_header() %> 
+<TR>
+	<TD nowrap align=right>
+	<input class="common_bt" type='button' name='refresh' value='$refresh_mark' onClick='location.href="DEV_device.htm";'>
+	</TD>
+</TR>
+$bluebar
+
+<script>
+var cf = document.forms[0];
+
+var attach_device_list="<% echo_file("/tmp/netscan/attach_device") %>";
+
+var attach_array=attach_device_list.split(' @#$$&*! ');
+var attach_ip_array = new Array();
+var attach_mac_array = new Array();
+var attach_name_array = new Array();
+var repeater_basic="<% cfg_get("wds_repeater_basic") %>";
+var repeater_basic_a="<% cfg_get("wds_repeater_basic_a") %>";
+var wds_endis_fun="<% cfg_get("wds_endis_fun") %>";
+var wla_wds_endis_fun="<% cfg_get("wla_wds_endis_fun") %>";
+var an_router_flag = parent.an_router_flag;
+var p=0;
+
+<% list_attach_device()  %>
+<% list_attach_name() %>
+<% list_repeater_wireless_device() %>
+
+if(attach_device_list != "")
+{
+        for(i=0;i<attach_array.length;i++)
+        {
+                var each_info=attach_array[i].split(' ');
+                if(each_info.length>2)
+                {
+                        attach_ip_array[p]=each_info[0];
+                        attach_mac_array[p]=each_info[1];
+                        if (each_info[2].length>0)
+                        {
+                                attach_name_array[p]=each_info[2];
+                        }
+                        else
+                        {
+                                attach_name_array[p]="----";
+                        }
+                }
+                else
+                {
+                        attach_ip_array[p]=each_info[0];
+                        attach_mac_array[p]=each_info[1];
+                        attach_name_array[p]="----";
+                }
+                if(attach_ip_array[p] == "<unknown>")
+                {
+                        attach_ip_array[p]="&lt;$unknown_mark&gt;"
+                }
+                if(attach_mac_array[p] == "<unknown>")
+                {
+                        attach_mac_array[p]="&lt;$unknown_mark&gt;"
+                }
+
+		if(attach_name_array[p] == "<unknown>" || attach_name_array[p] == "&lt;unknown&gt;" || attach_name_array[p] == "----" )
+                {
+                        for( t=0; t<deviceIP_name_num; t++)
+                        {
+                                var dev_name = eval ( 'deviceIP_name' + t );
+                                var dev_name_array = dev_name.split(' ');
+                                if( attach_ip_array[p] == dev_name_array[0] && dev_name_array[1] != "")
+                                {
+                                        attach_name_array[p] = dev_name_array[1];
+                                }
+                        }
+                }
+
+                if( attach_mac_array[p].toUpperCase() == "<% cfg_sed_xss("macAddr") %>".toUpperCase().replace(/-/g,":")&& (attach_name_array[p] == "<unknown>" || attach_name_array[p] == "&lt;unknown&gt;" || attach_name_array[p] == "----" ) )
+                {
+                        attach_name_array[p] = "<% cfg_sed_xss("client_name") %>";
+                }
+
+                if(attach_name_array[p] == "<unknown>") 
+                {
+                        attach_name_array[p]="&lt;$unknown_mark&gt;"
+                }
+                p++;
+        }
+}
+</script>
+
+<TR>
+        <TD nowrap colspan=2>
+	<br>
+        <A tabindex=-1 href="javascript:loadhelp('_attach_device','')"><B>$wired_devices</B></A>
+        </TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<TABLE class=tables border=0 cellpadding=2 cellspacing=0 width=100% id="tableSort1">
+	<thead>
+	<TR class=table_header>
+		<TD nowrap align=center style="width:15%"><span class="subhead"># </span></TD>
+		<TD nowrap align=center style="width:25%"><span class="subhead">$lan_mark_ip</span></TD>
+		<TD nowrap align=center style="width:25%"><span class="subhead">$qos_mac</span></TD>
+		<TD nowrap align=center style="width:35%"><span class="subhead">$lan_mark_name</span></TD>
+	</TR>
+	</thead>
+<script>
+var num = 0;
+var same_flag = 0;
+for(i=0; i<attach_array.length; i++)
+{
+	same_flag = 0;
+	for(j=0;j<wl_attach_dev_num;j++)
+	{
+		var wl_mac = eval ( 'wl_attach_dev_mac' + j );
+		if( attach_mac_array[i].toLowerCase() == wl_mac.toLowerCase() )	
+			same_flag = 1;
+	}
+	for(j=0;j<wla_attach_dev_num;j++)
+        {
+                var wla_mac = eval ( 'wla_attach_dev_mac' + j );
+                if( attach_mac_array[i].toLowerCase() == wla_mac.toLowerCase() )
+                        same_flag = 1;
+        }
+	for(j=0;j<wl_guest_attach_dev_num;j++)
+        {
+                var wl_guest_mac = eval ( 'wl_guest_attach_dev_mac' + j );
+                if( attach_mac_array[i].toLowerCase() == wl_guest_mac.toLowerCase() )
+                        same_flag = 1;
+        }
+	for(j=0;j<wla_guest_attach_dev_num;j++)
+        {
+                var wla_guest_mac = eval ( 'wla_guest_attach_dev_mac' + j );
+                if( attach_mac_array[i].toLowerCase() == wla_guest_mac.toLowerCase() )
+                        same_flag = 1;
+        }
+	if( repeater_wireless_attach_device_num > 0 )
+		if( attach_mac_array[i].toLowerCase() == repeater_wireless_attach_device_mac.toLowerCase() )
+			same_flag = 1;
+	if( same_flag == 0 )	
+	{
+		num = num +1;
+		if( num%2== 0 )
+		document.write('<TR class=\"even_line\"><TD nowrap align=center><span class="subhead">'+num+'</span></TD><TD nowrap align=center>'+attach_ip_array[i]+'</TD><TD nowrap align=center>'+attach_mac_array[i].toUpperCase()+'</TD><TD nowrap align=center>'+attach_name_array[i]+'</TD></TR>');
+		else
+		document.write('<TR class=\"odd_line\"><TD nowrap align=center><span class="subhead">'+num+'</span></TD><TD nowrap align=center>'+attach_ip_array[i]+'</TD><TD nowrap align=center>'+attach_mac_array[i].toUpperCase()+'</TD><TD nowrap align=center>'+attach_name_array[i]+'</TD></TR>');
+	}
+}
+sortTable('tableSort1', 1, 'int');
+</script>
+</TABLE>
+</TD>
+</TR>
+
+<TR id="wireless_l1">
+        <TD nowrap colspan=2>
+	<br>
+	<br>
+        <A tabindex=-1 href="javascript:loadhelp('_attach_device','')"><B><script>if(an_router_flag==1)document.write('2.4GHz&nbsp;');</script>$wireless_devices</B></A>
+        </TD>
+</TR>
+<TR id="wireless_l2">
+        <TD nowrap colspan=2>
+        <TABLE class=tables border=0 cellpadding=2 cellspacing=0 width=100%>
+        <TR class=table_header>
+        <TD nowrap align=center style="width:15%"><span class="subhead">SSID </span></TD>
+	<TD nowrap align=center style="width:25%"><span class="subhead">$lan_mark_ip</span></TD>
+	<TD nowrap align=center style="width:25%"><span class="subhead">$qos_mac</span></TD>
+	<TD nowrap align=center style="width:35%"><span class="subhead">$lan_mark_name</span></TD>
+        </TR>
+<script>
+if(typeof(top.have_wifi_flag) != "undefined" && top.have_wifi_flag == 0)
+{
+	document.getElementById("wireless_l1").style.display = "none";
+	document.getElementById("wireless_l2").style.display = "none";
+}
+else{
+
+num = 0;
+var ssid_count=0;
+for(i=0; i<wl_attach_dev_num; i++)
+{
+	var wl_mac = eval ( 'wl_attach_dev_mac' + i );
+	for(j=0; j<attach_array.length; j++)
+	{
+		if( attach_mac_array[j].toLowerCase() == wl_mac.toLowerCase())
+		{
+			num = num + 1;
+			if(ssid_count==0)
+			{
+				if(num%2== 0)
+					document.write('<TR class=\"even_line\"><TD nowrap align=center><span class="subhead"><% cfg_get_ssid_html("wl_ssid") %></span></TD><TD nowrap align=center>'+attach_ip_array[j]+'</TD><TD nowrap align=center>'+attach_mac_array[j]+'</TD><TD nowrap align=center>'+attach_name_array[j]+'</TD></TR>');
+				else
+					document.write('<TR class=\"odd_line\" ><TD nowrap align=center><span class="subhead"><% cfg_get_ssid_html("wl_ssid") %></span></TD><TD nowrap align=center>'+attach_ip_array[j]+'</TD><TD nowrap align=center>'+attach_mac_array[j]+'</TD><TD nowrap align=center>'+attach_name_array[j]+'</TD></TR>');
+				ssid_count++;
+			}
+			else
+			{
+				if(num%2== 0)
+					document.write('<TR class=\"even_line\"><TD nowrap align=center><span class="subhead">&nbsp;</span></TD><TD nowrap align=center>'+attach_ip_array[j]+'</TD><TD nowrap align=center>'+attach_mac_array[j]+'</TD><TD nowrap align=center>'+attach_name_array[j]+'</TD></TR>');
+				else
+					document.write('<TR class=\"odd_line\" ><TD nowrap align=center><span class="subhead">&nbsp;</span></TD><TD nowrap align=center>'+attach_ip_array[j]+'</TD><TD nowrap align=center>'+attach_mac_array[j]+'</TD><TD nowrap align=center>'+attach_name_array[j]+'</TD></TR>');
+
+			}
+		}
+	}
+}
+ssid_count=0;
+for(i=0; i<wl_guest_attach_dev_num; i++)
+{
+	var wl_guest_mac = eval ( 'wl_guest_attach_dev_mac' + i );
+	for(j=0; j<attach_array.length; j++)
+	{
+		if( attach_mac_array[j].toLowerCase() == wl_guest_mac.toLowerCase())
+		{
+			num = num + 1;
+			if(ssid_count==0)
+			{
+				if(num%2== 0)
+					document.write('<TR class=\"even_line\"><TD nowrap align=center><span class="subhead"><% cfg_get_ssid_html("wlg1_ssid") %></span></TD><TD nowrap align=center>'+attach_ip_array[j]+'</TD><TD nowrap align=center>'+attach_mac_array[j]+'</TD><TD nowrap align=center>'+attach_name_array[j]+'</TD></TR>');
+				else
+					document.write('<TR class=\"odd_line\" ><TD nowrap align=center><span class="subhead"><% cfg_get_ssid_html("wlg1_ssid") %></span></TD><TD nowrap align=center>'+attach_ip_array[j]+'</TD><TD nowrap align=center>'+attach_mac_array[j]+'</TD><TD nowrap align=center>'+attach_name_array[j]+'</TD></TR>');
+				ssid_count++;
+			}
+			else
+			{
+				if(num%2== 0)
+					document.write('<TR class=\"even_line\"><TD nowrap align=center><span class="subhead">&nbsp;</span></TD><TD nowrap align=center>'+attach_ip_array[j]+'</TD><TD nowrap align=center>'+attach_mac_array[j]+'</TD><TD nowrap align=center>'+attach_name_array[j]+'</TD></TR>');
+				else
+					document.write('<TR class=\"odd_line\" ><TD nowrap align=center><span class="subhead">&nbsp;</span></TD><TD nowrap align=center>'+attach_ip_array[j]+'</TD><TD nowrap align=center>'+attach_mac_array[j]+'</TD><TD nowrap align=center>'+attach_name_array[j]+'</TD></TR>');
+			}
+		}
+	}
+}
+if( repeater_basic=="0" && wds_endis_fun=="1" && repeater_wireless_attach_device_num > 0 )
+{
+	for(j=0; j<attach_array.length; j++)
+	{
+	      	if( attach_mac_array[j].toLowerCase() == repeater_wireless_attach_device_mac.toLowerCase() )
+		{
+			num = num + 1;
+			document.write('<TR><TD nowrap align=center><span class="subhead">'+num+'</span></TD><TD nowrap align=center>'+attach_ip_array[j]+'</TD><TD nowrap align=center>'+attach_mac_array[j]+'</TD><TD nowrap align=center>'+attach_name_array[j]+'</TD></TR>');	
+		}
+	}
+}
+
+}
+</script>
+</TABLE>
+</TD>
+</TR>
+
+<script>
+if(an_router_flag==1)
+{
+	document.write("<TR><TD nowrap colspan=2><br><br><A tabindex=-1 href=\"javascript:loadhelp('_attach_device','')\"><B>5GHz&nbsp;$wireless_devices</B></A></TD></TR>");
+	document.write("<TR><TD nowrap colspan=2><TABLE class=tables border=0 cellpadding=2 cellspacing=0 width=100%><TR class=table_header>");
+        document.write('<TD nowrap align=center style="width:15%"><span class="subhead">SSID</span></TD>');
+	document.write('<TD nowrap align=center style="width:25%"><span class="subhead">$lan_mark_ip</span></TD>');
+        document.write('<TD nowrap align=center style="width:25%"><span class="subhead">$qos_mac</span></TD>');
+        document.write('<TD nowrap align=center style="width:35%"><span class="subhead">$lan_mark_name</span></TD></TR>');
+	num = 0;
+	ssid_count=0;
+	for(i=0; i<wla_attach_dev_num; i++)
+	{
+        	var wla_mac = eval ( 'wla_attach_dev_mac' + i );
+        	for(j=0; j<attach_array.length; j++)
+        	{
+                	if( attach_mac_array[j].toLowerCase() == wla_mac.toLowerCase())
+                	{
+                        	num = num + 1;
+				if(ssid_count==0)
+				{
+					if(num%2== 0)
+                        			document.write('<TR class=\"even_line\"><TD nowrap align=center><span class="subhead"><% cfg_get_ssid_html("wla_ssid") %></span></TD><TD nowrap align=center>'+attach_ip_array[j]+'</TD><TD nowrap align=center>'+attach_mac_array[j]+'</TD><TD nowrap align=center>'+attach_name_array[j]+'</TD></TR>');
+                        		else
+                        			document.write('<TR class=\"odd_line\" ><TD nowrap align=center><span class="subhead"><% cfg_get_ssid_html("wla_ssid") %></span></TD><TD nowrap align=center>'+attach_ip_array[j]+'</TD><TD nowrap align=center>'+attach_mac_array[j]+'</TD><TD nowrap align=center>'+attach_name_array[j]+'</TD></TR>');
+					ssid_count++;
+				}
+				else
+				{
+					if(num%2== 0)
+						document.write('<TR class=\"even_line\"><TD nowrap align=center><span class="subhead">&nbsp;</span></TD><TD nowrap align=center>'+attach_ip_array[j]+'</TD><TD nowrap align=center>'+attach_mac_array[j]+'</TD><TD nowrap align=center>'+attach_name_array[j]+'</TD></TR>');
+					else
+						document.write('<TR class=\"odd_line\" ><TD nowrap align=center><span class="subhead">&nbsp;</span></TD><TD nowrap align=center>'+attach_ip_array[j]+'</TD><TD nowrap align=center>'+attach_mac_array[j]+'</TD><TD nowrap align=center>'+attach_name_array[j]+'</TD></TR>');
+				}
+                	}
+        	}
+	}
+	ssid_count=0;
+	for(i=0; i<wla_guest_attach_dev_num; i++)
+	{
+		var wla_guest_mac = eval ( 'wla_guest_attach_dev_mac' + i );
+		for(j=0; j<attach_array.length; j++)
+		{
+			if( attach_mac_array[j].toLowerCase() == wla_guest_mac.toLowerCase())
+			{
+				num = num + 1;
+				if(ssid_count==0)
+				{
+					if(num%2== 0)
+						document.write('<TR class=\"even_line\"><TD nowrap align=center><span class="subhead"><% cfg_get_ssid_html("wla1_ssid") %></span></TD><TD nowrap align=center>'+attach_ip_array[j]+'</TD><TD nowrap align=center>'+attach_mac_array[j]+'</TD><TD nowrap align=center>'+attach_name_array[j]+'</TD></TR>');
+					else
+						document.write('<TR class=\"odd_line\" ><TD nowrap align=center><span class="subhead"><% cfg_get_ssid_html("wla1_ssid") %></span></TD><TD nowrap align=center>'+attach_ip_array[j]+'</TD><TD nowrap align=center>'+attach_mac_array[j]+'</TD><TD nowrap align=center>'+attach_name_array[j]+'</TD></TR>');
+					ssid_count++;
+				}
+				else
+				{
+					if(num%2== 0)
+						document.write('<TR class=\"even_line\"><TD nowrap align=center><span class="subhead">&nbsp;</span></TD><TD nowrap align=center>'+attach_ip_array[j]+'</TD><TD nowrap align=center>'+attach_mac_array[j]+'</TD><TD nowrap align=center>'+attach_name_array[j]+'</TD></TR>');
+					else
+						document.write('<TR class=\"odd_line\" ><TD nowrap align=center><span class="subhead">&nbsp;</span></TD><TD nowrap align=center>'+attach_ip_array[j]+'</TD><TD nowrap align=center>'+attach_mac_array[j]+'</TD><TD nowrap align=center>'+attach_name_array[j]+'</TD></TR>');
+				}
+			}
+		}
+	}
+	if( repeater_basic_a=="0" && wla_wds_endis_fun=="1" && repeater_wireless_attach_device_num > 0 )
+	{
+		for(j=0; j<attach_array.length; j++)
+		{
+			if( attach_mac_array[j].toLowerCase() == repeater_wireless_attach_device_mac.toLowerCase() )
+			{
+				num = num + 1;
+				document.write('<TR><TD nowrap align=center><span class="subhead">'+num+'</span></TD><TD nowrap align=center>'+attach_ip_array[j]+'</TD><TD nowrap align=center>'+attach_mac_array[j]+'</TD><TD nowrap align=center>'+attach_name_array[j]+'</TD></TR>');
+			}
+		}
+	}
+	document.write('</TABLE></TD></TR>');
+}
+</script>
+
+<TD>
+<br>
+</TD>
+</TABLE>
+
+</div>
+<% help_box("1","_attach_device") %>
+</FORM>
+</BODY>
+</HTML>

@@ -1,0 +1,695 @@
+diff -Naur a/bin/ad/ad_cp.c b/bin/ad/ad_cp.c
+--- a/bin/ad/ad_cp.c	2011-07-22 00:30:42.000000000 -0400
++++ b/bin/ad/ad_cp.c	2012-01-13 05:44:14.345223250 -0500
+@@ -215,7 +215,7 @@
+ int ad_cp(int argc, char *argv[])
+ {
+     struct stat to_stat, tmp_stat;
+-    int r, ch, have_trailing_slash;
++    int i, r, ch, have_trailing_slash;
+     char *target;
+ #if 0
+     afpvol_t srcvol;
+@@ -354,7 +354,7 @@
+     /* Load .volinfo file for destination*/
+     openvol(to.p_path, &dvolume);
+ 
+-    for (int i = 0; argv[i] != NULL; i++) {
++    for (i = 0; argv[i] != NULL; i++) {
+         /* Load .volinfo file for source */
+         openvol(argv[i], &svolume);
+ 
+diff -Naur a/bin/ad/ad_rm.c b/bin/ad/ad_rm.c
+--- a/bin/ad/ad_rm.c	2011-07-22 00:30:42.000000000 -0400
++++ b/bin/ad/ad_rm.c	2012-01-13 05:44:14.345223250 -0500
+@@ -135,7 +135,7 @@
+ 
+ int ad_rm(int argc, char *argv[])
+ {
+-    int ch;
++    int ch, i;
+ 
+     pdid = htonl(1);
+     did = htonl(2);
+@@ -164,7 +164,7 @@
+     /* Set end of argument list */
+     argv[argc] = NULL;
+ 
+-    for (int i = 0; argv[i] != NULL; i++) {
++    for (i = 0; argv[i] != NULL; i++) {
+         /* Load .volinfo file for source */
+         openvol(argv[i], &volume);
+ 
+diff -Naur a/bin/ad/ad_util.c b/bin/ad/ad_util.c
+--- a/bin/ad/ad_util.c	2011-07-22 00:30:42.000000000 -0400
++++ b/bin/ad/ad_util.c	2012-01-13 05:44:14.345223250 -0500
+@@ -268,6 +268,7 @@
+ {
+     EC_INIT;
+ 
++    int i;
+     cnid_t cnid;
+     bstring rpath = NULL;
+     bstring statpath = NULL;
+@@ -281,7 +282,7 @@
+     EC_ZERO(bcatcstr(statpath, "/"));
+ 
+     l = bsplit(rpath, '/');
+-    for (int i = 0; i < l->qty ; i++) {
++    for (i = 0; i < l->qty ; i++) {
+         *did = cnid;
+ 
+         EC_ZERO(bconcat(statpath, l->entry[i]));
+@@ -335,6 +336,7 @@
+ {
+     EC_INIT;
+ 
++    int i;
+     cnid_t cnid;
+     bstring rpath = NULL;
+     bstring statpath = NULL;
+@@ -351,7 +353,7 @@
+     if (l->qty == 1)
+         /* only one path element, means parent dir cnid is volume root = 2 */
+         goto EC_CLEANUP;
+-    for (int i = 0; i < (l->qty - 1); i++) {
++    for (i = 0; i < (l->qty - 1); i++) {
+         *did = cnid;
+         EC_ZERO(bconcat(statpath, l->entry[i]));
+         EC_ZERO_LOGSTR(lstat(cfrombstr(statpath), &st),
+diff -Naur a/bin/misc/logger_test.c b/bin/misc/logger_test.c
+--- a/bin/misc/logger_test.c	2011-07-22 00:30:42.000000000 -0400
++++ b/bin/misc/logger_test.c	2012-01-13 05:33:15.915232926 -0500
+@@ -5,6 +5,7 @@
+ 
+ int main(int argc, char *argv[])
+ {
++	int i;
+   set_processname("logger_Test");
+ #if 0
+   LOG(log_severe, logtype_logger, "Logging Test starting: this should only log to syslog");
+@@ -37,7 +38,7 @@
+ 
+   /* flooding prevention check */
+   LOG(log_debug, logtype_default, "Flooding 3x");
+-  for (int i = 0; i < 3; i++) {
++  for (i = 0; i < 3; i++) {
+       LOG(log_debug, logtype_default, "Flooding...");
+   }
+   /* wipe the array */
+@@ -45,34 +46,34 @@
+ 
+   LOG(log_debug, logtype_default, "-============");
+   LOG(log_debug, logtype_default, "Flooding 5x");
+-  for (int i = 0; i < 5; i++) {
++  for (i = 0; i < 5; i++) {
+       LOG(log_debug, logtype_default, "Flooding...");
+   }
+   LOG(log_debug, logtype_default, "1"); LOG(log_debug, logtype_default, "2"); LOG(log_debug, logtype_default, "3");
+ 
+   LOG(log_debug, logtype_default, "o============");
+   LOG(log_debug, logtype_default, "Flooding 2005x");
+-  for (int i = 0; i < 2005; i++) {
++  for (i = 0; i < 2005; i++) {
+       LOG(log_debug, logtype_default, "Flooding...");
+   }
+   LOG(log_debug, logtype_default, "1"); LOG(log_debug, logtype_default, "2"); LOG(log_debug, logtype_default, "3");
+ 
+   LOG(log_debug, logtype_default, "0============");
+   LOG(log_debug, logtype_default, "Flooding 11x1");
+-  for (int i = 0; i < 11; i++) {
++  for (i = 0; i < 11; i++) {
+       LOG(log_error, logtype_default, "flooding 11x1 1");
+   }
+ 
+   LOG(log_debug, logtype_default, "1============");
+   LOG(log_debug, logtype_default, "Flooding 11x2");
+-  for (int i = 0; i < 11; i++) {
++  for (i = 0; i < 11; i++) {
+       LOG(log_error, logtype_default, "flooding 11x2 1");
+       LOG(log_error, logtype_default, "flooding 11x2 2");
+   }
+ 
+   LOG(log_debug, logtype_default, "2============");
+   LOG(log_debug, logtype_default, "Flooding 11x3");
+-  for (int i = 0; i < 11; i++) {
++  for (i = 0; i < 11; i++) {
+       LOG(log_error, logtype_default, "flooding 11x3 1");
+       LOG(log_error, logtype_default, "flooding 11x3 2");
+       LOG(log_error, logtype_default, "flooding 11x3 3");
+@@ -80,7 +81,7 @@
+ 
+   LOG(log_debug, logtype_default, "3============");
+   LOG(log_debug, logtype_default, "Flooding 11x4");
+-  for (int i = 0; i < 11; i++) {
++  for (i = 0; i < 11; i++) {
+       LOG(log_error, logtype_default, "flooding 11x4 1");
+       LOG(log_error, logtype_default, "flooding 11x4 2");
+       LOG(log_error, logtype_default, "flooding 11x4 3");
+diff -Naur a/bin/misc/netacnv.c b/bin/misc/netacnv.c
+--- a/bin/misc/netacnv.c	2011-07-22 00:30:42.000000000 -0400
++++ b/bin/misc/netacnv.c	2012-01-13 05:34:02.135232867 -0500
+@@ -37,7 +37,7 @@
+ 
+ int main(int argc, char **argv)
+ {
+-    int opt;
++    int opt, i;
+     uint16_t flags = 0;
+     char *string;
+     char *f = NULL, *t = NULL;
+@@ -46,7 +46,7 @@
+     while ((opt = getopt(argc, argv, ":o:f:t:")) != -1) {
+         switch(opt) {
+         case 'o':
+-            for (int i = 0; i < sizeof(flag_map)/sizeof(struct flag_map) - 1; i++)
++            for (i = 0; i < sizeof(flag_map)/sizeof(struct flag_map) - 1; i++)
+                 if ((strcmp(flag_map[i].flagname, optarg)) == 0)
+                     flags |= flag_map[i].flag;
+             break;
+@@ -63,7 +63,7 @@
+         printf("Usage: test [-o <conversion option> [...]] [-f <from charset>] [-t <to charset>] <string>\n");
+         printf("Defaults: -f: UTF8-MAC , -t: UTF8 \n");
+         printf("Available conversion options:\n");
+-        for (int i = 0; i < (sizeof(flag_map)/sizeof(struct flag_map) - 1); i++) {
++        for (i = 0; i < (sizeof(flag_map)/sizeof(struct flag_map) - 1); i++) {
+             printf("%s\n", flag_map[i].flagname);
+         }
+         return 1;
+diff -Naur a/etc/afpd/acls.c b/etc/afpd/acls.c
+--- a/etc/afpd/acls.c	2011-09-06 06:55:57.000000000 -0400
++++ b/etc/afpd/acls.c	2012-01-13 05:52:20.825220682 -0500
+@@ -694,6 +694,7 @@
+     EC_INIT;
+     int mapped_aces = 0;
+     int entry_id = ACL_FIRST_ENTRY;
++    int i;
+     acl_entry_t e;
+     acl_tag_t tag;
+     uid_t *uid = NULL;
+@@ -762,7 +763,7 @@
+     } /* while */
+ 
+     /* Loop through the mapped ACE buffer once again, applying the mask */
+-    for (int i = mapped_aces; i > 0; i--) {
++    for (i = mapped_aces; i > 0; i--) {
+         saved_darwin_aces->darwin_ace_rights &= htonl(maskrights);
+         saved_darwin_aces++;
+     }
+diff -Naur a/etc/afpd/directory.c b/etc/afpd/directory.c
+--- a/etc/afpd/directory.c	2011-08-29 05:47:55.000000000 -0400
++++ b/etc/afpd/directory.c	2012-01-13 05:52:20.825220682 -0500
+@@ -453,6 +453,7 @@
+ {
+     EC_INIT;
+ 
++    int i;
+     struct dir *dir = NULL;
+     cnid_t cnid, did;
+     bstring rpath = NULL;
+@@ -467,7 +468,7 @@
+     EC_NULL(statpath = bfromcstr(vol->v_path));          /* 2. */
+ 
+     l = bsplit(rpath, '/');
+-    for (int i = 0; i < l->qty ; i++) {                  /* 3. */
++    for (i = 0; i < l->qty ; i++) {                  /* 3. */
+         did = cnid;
+         EC_ZERO(bcatcstr(statpath, "/"));
+         EC_ZERO(bconcat(statpath, l->entry[i]));
+diff -Naur a/etc/afpd/fce_api.c b/etc/afpd/fce_api.c
+--- a/etc/afpd/fce_api.c	2011-08-15 07:52:41.000000000 -0400
++++ b/etc/afpd/fce_api.c	2012-01-13 05:52:20.825220682 -0500
+@@ -90,7 +90,7 @@
+  * */
+ void fce_init_udp()
+ {
+-    int rv;
++    int i, rv;
+     struct addrinfo hints, *servinfo, *p;
+ 
+     if (udp_initialized == FCE_TRUE)
+@@ -100,7 +100,7 @@
+     hints.ai_family = AF_UNSPEC;
+     hints.ai_socktype = SOCK_DGRAM;
+ 
+-    for (int i = 0; i < udp_sockets; i++) {
++    for (i = 0; i < udp_sockets; i++) {
+         struct udp_entry *udp_entry = udp_socket_list + i;
+ 
+         /* Close any pending sockets */
+@@ -138,10 +138,12 @@
+ 
+ void fce_cleanup()
+ {
++	int i;
++
+     if (udp_initialized == FCE_FALSE )
+         return;
+ 
+-    for (int i = 0; i < udp_sockets; i++)
++    for (i = 0; i < udp_sockets; i++)
+     {
+         struct udp_entry *udp_entry = udp_socket_list + i;
+ 
+@@ -233,6 +235,7 @@
+ {    
+     static int first_event = FCE_TRUE;
+ 
++    int i;
+     struct fce_packet packet;
+     void *data = &packet;
+     static uint32_t event_id = 0; /* the unique packet couter to detect packet/data loss. Going from 0xFFFFFFFF to 0x0 is a valid increment */
+@@ -252,7 +255,7 @@
+     ssize_t data_len = build_fce_packet( &packet, path, mode, ++event_id );
+     pack_fce_packet(&packet, iobuf);
+ 
+-    for (int i = 0; i < udp_sockets; i++)
++    for (i = 0; i < udp_sockets; i++)
+     {
+         int sent_data = 0;
+         struct udp_entry *udp_entry = udp_socket_list + i;
+@@ -362,6 +365,7 @@
+ static int register_fce(const char *u_name, int is_dir, int mode)
+ {
+     static int first_event = FCE_TRUE;
++    int i;
+ 
+     if (udp_sockets == 0)
+         /* No listeners configured */
+@@ -377,7 +381,7 @@
+ 	}
+ 
+ 	/* handle files which should not cause events (.DS_Store atc. ) */
+-	for (int i = 0; skip_files[i] != NULL; i++)
++	for (i = 0; skip_files[i] != NULL; i++)
+ 	{
+ 		if (!strcmp( u_name, skip_files[i]))
+ 			return AFP_OK;
+diff -Naur a/etc/afpd/fce_util.c b/etc/afpd/fce_util.c
+--- a/etc/afpd/fce_util.c	2011-08-15 07:52:41.000000000 -0400
++++ b/etc/afpd/fce_util.c	2012-01-13 05:52:20.825220682 -0500
+@@ -91,7 +91,9 @@
+ 
+ void fce_initialize_history()
+ {
+-	for (int i = 0; i < FCE_HISTORY_LEN; i++) {
++	int i;
++
++	for (i = 0; i < FCE_HISTORY_LEN; i++) {
+ 		memset( &fce_history_list[i], 0, sizeof(fce_history_list[i]) );
+ 	}
+ }
+@@ -102,6 +104,7 @@
+ 	/* the history is unsorted, speed should not be a problem, length is 10 */
+ 	unsigned long oldest_entry = (unsigned long )((long)-1);
+ 	int oldest_entry_idx = -1;
++	int i;
+ 	struct timeval tv;
+ 
+ 	if (coalesce == 0)
+@@ -115,7 +118,7 @@
+ 	gettimeofday(&tv, 0);
+ 
+ 	/* Now detect events in the very near history */
+-	for (int i = 0; i < FCE_HISTORY_LEN; i++) {
++	for (i = 0; i < FCE_HISTORY_LEN; i++) {
+ 		struct fce_history *fh = &fce_history_list[i];
+ 
+ 		/* Not inited ? */
+diff -Naur a/etc/afpd/main.c b/etc/afpd/main.c
+--- a/etc/afpd/main.c	2011-08-31 02:11:34.000000000 -0400
++++ b/etc/afpd/main.c	2012-01-13 05:52:20.825220682 -0500
+@@ -251,6 +251,7 @@
+     struct sigaction	sv;
+     sigset_t            sigs;
+     int                 ret;
++    int                 i;
+ 
+ #ifdef TRU64
+     argc = ac;
+@@ -468,7 +469,7 @@
+             break;
+         }
+ 
+-        for (int i = 0; i < fdset_used; i++) {
++        for (i = 0; i < fdset_used; i++) {
+             if (fdset[i].revents & (POLLIN | POLLERR | POLLHUP)) {
+                 switch (polldata[i].fdtype) {
+ 
+diff -Naur a/etc/afpd/status.c b/etc/afpd/status.c
+--- a/etc/afpd/status.c	2011-09-06 04:25:47.000000000 -0400
++++ b/etc/afpd/status.c	2012-01-13 05:52:20.825220682 -0500
+@@ -444,7 +444,7 @@
+     DSI *dsi;
+     char *status = NULL;
+     size_t statuslen;
+-    int c, sigoff, ipok;
++    int c, i, sigoff, ipok;
+ 
+     if (!(aspconfig || dsiconfig) || !options)
+         return;
+@@ -466,7 +466,7 @@
+             ipok = sa4->sin_addr.s_addr ? 1 : 0;
+         } else { /* IPv6 */
+             const struct sockaddr_in6 *sa6 = (struct sockaddr_in6 *)&dsi->server;
+-            for (int i=0; i<16; i++) {
++            for (i=0; i<16; i++) {
+                 if (sa6->sin6_addr.s6_addr[i]) {
+                     ipok = 1;
+                     break;
+diff -Naur a/etc/afpd/volume.c b/etc/afpd/volume.c
+--- a/etc/afpd/volume.c	2011-09-06 04:25:47.000000000 -0400
++++ b/etc/afpd/volume.c	2012-01-13 05:52:20.825220682 -0500
+@@ -2073,8 +2073,10 @@
+ #ifdef SERVERTEXT
+         /* kill ourself with SIGUSR2 aka msg pending */
+         if (volume->v_cdb) {
++#if 0 /* ASL */
+             setmessage("Something wrong with the volume's CNID DB, using temporary CNID DB instead."
+                        "Check server messages for details!");
++#endif
+             kill(getpid(), SIGUSR2);
+             /* deactivate cnid caching/storing in AppleDouble files */
+             volume->v_flags &= ~AFPVOL_CACHE;
+@@ -2787,7 +2789,7 @@
+     char buf[1024], uuid[UUID_PRINTABLE_STRING_LENGTH], *p;
+     FILE *fp;
+     struct stat tmpstat;
+-    int fd;
++    int fd, i;
+     
+     if ((fp = fopen(obj->options.uuidconf, "r")) != NULL) {  /* read open? */
+         /* scan in the conf file */
+@@ -2817,7 +2819,7 @@
+                 p++;
+ 
+             if (sscanf(p, "%36s", uuid) == 1 ) {
+-                for (int i=0; uuid[i]; i++)
++                for (i=0; uuid[i]; i++)
+                     uuid[i] = toupper(uuid[i]);
+                 LOG(log_debug, logtype_afpd, "get_uuid('%s'): UUID: '%s'", volname, uuid);
+                 fclose(fp);
+diff -Naur a/include/atalk/compat.h b/include/atalk/compat.h
+--- a/include/atalk/compat.h	2011-07-22 00:30:42.000000000 -0400
++++ b/include/atalk/compat.h	2012-01-13 05:37:02.995234198 -0500
+@@ -99,7 +99,7 @@
+ #endif
+ 
+ #if !defined(HAVE_PSELECT) || defined(__OpenBSD__)
+-extern int pselect(int, fd_set * restrict, fd_set * restrict,
+-                   fd_set * restrict, const struct timespec * restrict,
+-                   const sigset_t * restrict);
++extern int pselect(int, fd_set * __restrict, fd_set * __restrict,
++                   fd_set * __restrict, const struct timespec * __restrict,
++                   const sigset_t * __restrict);
+ #endif
+diff -Naur a/include/atalk/ea.h b/include/atalk/ea.h
+--- a/include/atalk/ea.h	2011-07-22 00:30:42.000000000 -0400
++++ b/include/atalk/ea.h	2012-01-13 05:37:16.595231128 -0500
+@@ -151,16 +151,16 @@
+ extern int sys_ea_copyfile(VFS_FUNC_ARGS_COPYFILE);
+ 
+ /* dbd needs access to these */
+-extern int ea_open(const struct vol * restrict vol,
+-                   const char * restrict uname,
++extern int ea_open(const struct vol * __restrict vol,
++                   const char * __restrict uname,
+                    eaflags_t eaflags,
+-                   struct ea * restrict ea);
+-extern int ea_openat(const struct vol * restrict vol,
++                   struct ea * __restrict ea);
++extern int ea_openat(const struct vol * __restrict vol,
+                      int dirfd,
+-                     const char * restrict uname,
++                     const char * __restrict uname,
+                      eaflags_t eaflags,
+-                     struct ea * restrict ea);
+-extern int ea_close(struct ea * restrict ea);
+-extern char *ea_path(const struct ea * restrict ea, const char * restrict eaname, int macname);
++                     struct ea * __restrict ea);
++extern int ea_close(struct ea * __restrict ea);
++extern char *ea_path(const struct ea * __restrict ea, const char * __restrict eaname, int macname);
+ 
+ #endif /* ATALK_EA_H */
+diff -Naur a/include/atalk/vfs.h b/include/atalk/vfs.h
+--- a/include/atalk/vfs.h	2011-07-22 00:30:42.000000000 -0400
++++ b/include/atalk/vfs.h	2012-01-13 05:37:29.865232925 -0500
+@@ -74,19 +74,19 @@
+ #define VFS_FUNC_ARGS_REMOVE_ACL const struct vol *vol, const char *path, int dir
+ #define VFS_FUNC_VARS_REMOVE_ACL vol, path, dir
+ 
+-#define VFS_FUNC_ARGS_EA_GETSIZE const struct vol * restrict vol, char * restrict rbuf, size_t * restrict rbuflen, const char * restrict uname, int oflag, const char * restrict attruname
++#define VFS_FUNC_ARGS_EA_GETSIZE const struct vol * __restrict vol, char * __restrict rbuf, size_t * __restrict rbuflen, const char * __restrict uname, int oflag, const char * __restrict attruname
+ #define VFS_FUNC_VARS_EA_GETSIZE vol, rbuf, rbuflen, uname, oflag, attruname
+ 
+-#define VFS_FUNC_ARGS_EA_GETCONTENT const struct vol * restrict vol, char * restrict rbuf, size_t * restrict rbuflen,  const char * restrict uname, int oflag, const char * restrict attruname, int maxreply
++#define VFS_FUNC_ARGS_EA_GETCONTENT const struct vol * __restrict vol, char * __restrict rbuf, size_t * __restrict rbuflen,  const char * __restrict uname, int oflag, const char * __restrict attruname, int maxreply
+ #define VFS_FUNC_VARS_EA_GETCONTENT vol, rbuf, rbuflen, uname, oflag, attruname, maxreply
+ 
+-#define VFS_FUNC_ARGS_EA_LIST const struct vol * restrict vol, char * restrict attrnamebuf, size_t * restrict buflen, const char * restrict uname, int oflag
++#define VFS_FUNC_ARGS_EA_LIST const struct vol * __restrict vol, char * __restrict attrnamebuf, size_t * __restrict buflen, const char * __restrict uname, int oflag
+ #define VFS_FUNC_VARS_EA_LIST vol, attrnamebuf, buflen, uname, oflag
+ 
+-#define VFS_FUNC_ARGS_EA_SET const struct vol * restrict vol, const char * restrict uname, const char * restrict attruname, const char * restrict ibuf, size_t attrsize, int oflag
++#define VFS_FUNC_ARGS_EA_SET const struct vol * __restrict vol, const char * __restrict uname, const char * __restrict attruname, const char * __restrict ibuf, size_t attrsize, int oflag
+ #define VFS_FUNC_VARS_EA_SET vol, uname, attruname, ibuf, attrsize, oflag
+ 
+-#define VFS_FUNC_ARGS_EA_REMOVE const struct vol * restrict vol, const char * restrict uname, const char * restrict attruname, int oflag
++#define VFS_FUNC_ARGS_EA_REMOVE const struct vol * __restrict vol, const char * __restrict uname, const char * __restrict attruname, int oflag
+ #define VFS_FUNC_VARS_EA_REMOVE vol, uname, attruname, oflag
+ 
+ /*
+@@ -122,6 +122,6 @@
+     int (*vfs_ea_remove)     (VFS_FUNC_ARGS_EA_REMOVE);
+ };
+ 
+-extern void initvol_vfs(struct vol * restrict vol);
++extern void initvol_vfs(struct vol * __restrict vol);
+ 
+ #endif /* ATALK_VFS_H */
+diff -Naur a/libatalk/cnid/dbd/cnid_dbd.c b/libatalk/cnid/dbd/cnid_dbd.c
+--- a/libatalk/cnid/dbd/cnid_dbd.c	2011-07-22 00:30:42.000000000 -0400
++++ b/libatalk/cnid/dbd/cnid_dbd.c	2012-01-13 05:39:46.025235284 -0500
+@@ -65,6 +65,10 @@
+     select(0, NULL, NULL, NULL, &tv);
+ }
+ 
++#ifndef AI_NUMERICSERV
++#define AI_NUMERICSERV 0
++#endif
++
+ static int tsock_getfd(const char *host, const char *port)
+ {
+     int sock = -1;
+diff -Naur a/libatalk/compat/pselect.c b/libatalk/compat/pselect.c
+--- a/libatalk/compat/pselect.c	2011-07-22 00:30:42.000000000 -0400
++++ b/libatalk/compat/pselect.c	2012-01-13 05:42:13.735215472 -0500
+@@ -48,9 +48,9 @@
+  * and allows the user to specify a signal mask to apply during the select.
+  */
+ int
+-pselect(int count, fd_set * restrict rfds, fd_set * restrict wfds,
+-        fd_set * restrict efds, const struct timespec * restrict timo,
+-        const sigset_t * restrict mask)
++pselect(int count, fd_set * __restrict rfds, fd_set * __restrict wfds,
++        fd_set * __restrict efds, const struct timespec * __restrict timo,
++        const sigset_t * __restrict mask)
+ {
+     sigset_t omask;
+     struct timeval tvtimo, *tvp;
+diff -Naur a/libatalk/util/logger.c b/libatalk/util/logger.c
+--- a/libatalk/util/logger.c	2011-08-10 04:40:30.000000000 -0400
++++ b/libatalk/util/logger.c	2012-01-13 05:42:36.765232694 -0500
+@@ -477,6 +477,7 @@
+      * with LOGGER it's a little late source name and line number
+      * are already changed. */
+     static int inlog = 0;
++    int i, j;
+     int fd, len;
+     char temp_buffer[MAXLOGSIZE];
+     char log_details_buffer[MAXLOGSIZE];
+@@ -546,7 +547,7 @@
+     int hash = hash_message(temp_buffer) + log_src_linenumber;
+ 
+     /* Search for the same message by hash */
+-    for (int i = log_flood_entries - 1; i >= 0; i--) {
++    for (i = log_flood_entries - 1; i >= 0; i--) {
+         if (log_flood_array[i].hash == hash) {
+ 
+             /* found same message */
+@@ -567,7 +568,7 @@
+                     goto exit;
+                 }
+                 /* move array elements down */
+-                for (int j = i + 1; j != LOG_FLOODING_ARRAY_SIZE ; j++)
++                for (j = i + 1; j != LOG_FLOODING_ARRAY_SIZE ; j++)
+                     log_flood_array[j-1] = log_flood_array[j];
+                 log_flood_entries--;
+             }
+@@ -589,7 +590,7 @@
+                     log_flood_array[0].count - LOG_FLOODING_MINCOUNT + 1);
+             write(fd, log_details_buffer, strlen(log_details_buffer));
+         }
+-        for (int i = 1; i < LOG_FLOODING_ARRAY_SIZE; i++) {
++        for (i = 1; i < LOG_FLOODING_ARRAY_SIZE; i++) {
+             log_flood_array[i-1] = log_flood_array[i];
+         }
+         log_flood_entries--;
+diff -Naur a/libatalk/util/socket.c b/libatalk/util/socket.c
+--- a/libatalk/util/socket.c	2011-08-18 08:19:14.000000000 -0400
++++ b/libatalk/util/socket.c	2012-01-13 05:42:52.285232989 -0500
+@@ -505,11 +505,12 @@
+ {
+     struct pollfd *fdset = *fdsetp;
+     struct polldata *polldata = *polldatap;
++    int i;
+ 
+     if (*fdset_usedp < 1)
+         return;
+ 
+-    for (int i = 0; i < *fdset_usedp; i++) {
++    for (i = 0; i < *fdset_usedp; i++) {
+         if (fdset[i].fd == fd) { /* 1 */
+             if ((i + 1) == *fdset_usedp) { /* 2a */
+                 fdset[i].fd = -1;
+diff -Naur a/libatalk/vfs/ea.c b/libatalk/vfs/ea.c
+--- a/libatalk/vfs/ea.c	2011-07-22 00:30:42.000000000 -0400
++++ b/libatalk/vfs/ea.c	2012-01-13 05:43:15.135232488 -0500
+@@ -118,7 +118,7 @@
+  *
+  * Verifies magic and version.
+  */
+-static int unpack_header(struct ea * restrict ea)
++static int unpack_header(struct ea * __restrict ea)
+ {
+     int ret = 0;
+     unsigned int count = 0;
+@@ -197,7 +197,7 @@
+  *
+  * adjust ea->ea_count in case an ea entry deletetion is detected
+  */
+-static int pack_header(struct ea * restrict ea)
++static int pack_header(struct ea * __restrict ea)
+ {
+     unsigned int count = 0, eacount = 0;
+     uint16_t uint16;
+@@ -293,8 +293,8 @@
+  * Grow array ea->ea_entries[]. If ea->ea_entries is still NULL, start allocating.
+  * Otherwise realloc and put entry at the end. Increments ea->ea_count.
+  */
+-static int ea_addentry(struct ea * restrict ea,
+-                       const char * restrict attruname,
++static int ea_addentry(struct ea * __restrict ea,
++                       const char * __restrict attruname,
+                        size_t attrsize,
+                        int bitmap)
+ {
+@@ -384,8 +384,8 @@
+  * We therefor currently just break with an error.
+  * On return the header file is still r/w locked.
+  */
+-static int create_ea_header(const char * restrict uname,
+-                            struct ea * restrict ea)
++static int create_ea_header(const char * __restrict uname,
++                            struct ea * __restrict ea)
+ {
+     int fd = -1, err = 0;
+     char *ptr;
+@@ -440,9 +440,9 @@
+  * Creates/overwrites EA file.
+  *
+  */
+-static int write_ea(const struct ea * restrict ea,
+-                    const char * restrict attruname,
+-                    const char * restrict ibuf,
++static int write_ea(const struct ea * __restrict ea,
++                    const char * __restrict attruname,
++                    const char * __restrict ibuf,
+                     size_t attrsize)
+ {
+     int fd = -1, ret = AFP_OK;
+@@ -508,7 +508,7 @@
+  * Marks it as unused just by freeing name and setting it to NULL.
+  * ea_close and pack_buffer must honor this.
+  */
+-static int ea_delentry(struct ea * restrict ea, const char * restrict attruname)
++static int ea_delentry(struct ea * __restrict ea, const char * __restrict attruname)
+ {
+     int ret = 0;
+     unsigned int count = 0;
+@@ -547,7 +547,7 @@
+  *
+  * Returns: 0 on success, -1 on error
+  */
+-static int delete_ea_file(const struct ea * restrict ea, const char *eaname)
++static int delete_ea_file(const struct ea * __restrict ea, const char *eaname)
+ {
+     int ret = 0;
+     char *eafile;
+@@ -595,7 +595,7 @@
+  * Dirs: "dir" -> "dir/.AppleDouble/.Parent::EA"
+  * "file" with EA "myEA" -> "file/.AppleDouble/file::EA:myEA"
+  */
+-char *ea_path(const struct ea * restrict ea, const char * restrict eaname, int macname)
++char *ea_path(const struct ea * __restrict ea, const char * __restrict eaname, int macname)
+ {
+     char *adname;
+     static char pathbuf[MAXPATHLEN + 1];
+@@ -644,10 +644,10 @@
+  * file is either read or write locked depending on the open flags.
+  * When you're done with struct ea you must call ea_close on it.
+  */
+-int ea_open(const struct vol * restrict vol,
+-            const char * restrict uname,
++int ea_open(const struct vol * __restrict vol,
++            const char * __restrict uname,
+             eaflags_t eaflags,
+-            struct ea * restrict ea)
++            struct ea * __restrict ea)
+ {
+     int ret = 0;
+     char *eaname;
+@@ -818,11 +818,11 @@
+  * file is either read or write locked depending on the open flags.
+  * When you're done with struct ea you must call ea_close on it.
+  */
+-int ea_openat(const struct vol * restrict vol,
++int ea_openat(const struct vol * __restrict vol,
+               int dirfd,
+-              const char * restrict uname,
++              const char * __restrict uname,
+               eaflags_t eaflags,
+-              struct ea * restrict ea)
++              struct ea * __restrict ea)
+ {
+     int ret = 0;
+     int cwdfd = -1;
+@@ -869,7 +869,7 @@
+  * Flushes and then closes and frees all resouces held by ea handle.
+  * Pack data in ea into ea_data, then write ea_data to disk
+  */
+-int ea_close(struct ea * restrict ea)
++int ea_close(struct ea * __restrict ea)
+ {
+     int ret = 0; 
+     unsigned int count = 0;
+diff -Naur a/test/afpd/afpfunc_helpers.c b/test/afpd/afpfunc_helpers.c
+--- a/test/afpd/afpfunc_helpers.c	2011-07-27 07:58:30.000000000 -0400
++++ b/test/afpd/afpfunc_helpers.c	2012-01-13 05:45:33.125237859 -0500
+@@ -65,6 +65,7 @@
+ 
+ static int push_path(char **bufp, const char *name)
+ {
++    int i;
+     int len = 0;
+     int slen = strlen(name);
+     char *p = *bufp;
+@@ -73,7 +74,7 @@
+     PUSHVAL(p, uint32_t, kTextEncodingUTF8, len); /* text encoding hint */
+     PUSHVAL(p, uint16_t, htons(slen), len);
+     if (slen) {
+-        for (int i = 0; i < slen; i++) {
++        for (i = 0; i < slen; i++) {
+             if (name[i] == '/')
+                 p[i] = 0;
+             else

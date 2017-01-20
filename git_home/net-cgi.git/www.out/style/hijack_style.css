@@ -1,0 +1,137 @@
+html, body{ margin: 0; border:none; background-color:transparent; font-family:Arial, Helvetica, sans-serif; font-size:10pt; font-style:normal; font-weight:normal; background-color: #ffffff; }
+
+/*bug 22044*/
+#page_container{ width:980px; margin:0 auto; background:#EEEEEE; overflow:visible; }
+
+#header{ height:97px; width:98%; background: #FFFFFF; overflow:hidden; margin:0 10px;}
+
+.header_frame{ margin:0 auto 0 30px; padding:0; overflow:hidden }
+hr{color:#9D98FF;}
+
+/*bug 22044*/
+.wizard_body_container { height:500px; width:960px; margin:5px auto 0 auto; background:#FFFFFF; }
+
+/*bug 23316 Add the hidden firmware upgrade page in new gui style*/
+.checkfirmware_page_container{ width:750px; margin:0 auto; background:#EEEEEE; overflow:visible; }
+.checkfirmware_body_container { height:410px; width:625px; margin:5px auto 0 auto; background:#FFFFFF; }
+
+/*bug 22044*/
+.wizard_gcontent_div{ margin:0;  overflow:auto; height:99%; position:absolute;}
+.wizard_content_div{ margin:0;}
+.wizard_content_div .confirm_40{position:relative;float:right; width: 40px; height: 44px; background: url(../image/hdd_icons.jpg) no-repeat 0 0}
+.wizard_content_div .header_close{ position:relative;float:left; width: 18px; height: 18px; background: url(../image/hdd_icons.jpg) no-repeat -40px -50px;}
+.wizard_content_div .header_open{ position:relative;float:left; width: 18px; height: 18px; background: url(../image/hdd_icons.jpg) no-repeat -60px -50px;}
+.wizard_content_div .case_green_font div{position:relative;float:left; width: 18px; height: 18px; background: url(../image/hdd_icons.jpg) no-repeat 0 -50px} 
+.wizard_content_div .case_red_large div{position:relative;float:left; width: 40px; height: 44px; background: url(../image/hdd_icons.jpg) no-repeat -39px 0 }
+.wizard_content_div .case_red_font div{position:relative;float:left; width: 18px; height: 18px; background: url(../image/hdd_icons.jpg) no-repeat -20px -50px;}
+.wizard_content_div .apple_time{position:relative;float:right; width: 35px; height: 35px; background: url(../image/hdd_icons.jpg) no-repeat -40px -70px;}
+.wizard_content_div .case_not_find{position:relative;float:right; width: 40px; height: 40px; background: url(../image/hdd_icons.jpg) no-repeat -40px 0px;}
+
+.bottom_margin{ height:5px; width:100%; }
+
+
+
+
+.wizard_words_div{ width:80%; padding:5% 10% 0px 10%; font-family:Arial; font-size:10pt; font-weight:normal; color:#404040; }
+
+.wizard_words_div .waiting_connect_div { height:30px; width:100%; margin:15% 0 0 0; }
+
+.wizard_words_div h1, .wizard_words_div h2{ font-family:Arial; font-size:12pt; font-weight:bold; color:#9D98FF; }
+
+.wizard_words_div .h1_red { font-family:Arial; font-size:12pt; font-weight:bold; color:#FF0000; }
+
+.wizard_words_div .h1_red_large { font-family:Arial; font-size:16pt; font-weight:bold; color:#FF0000; }
+
+.wizard_words_div p{ font-family:Arial; font-size:10pt; font-weight:normal; color:#404040; }
+
+
+.wizard_words_div .left_div{ height:30px; width:46%; margin:3px 0 3px 0; line-height:30px; float:left; }
+
+.wizard_words_div .right_div{ height:30px; width:50%; margin:3px 0 3px 3px; line-height:30px; float:left; font-weight:bold; }
+
+
+.wizard_words_div .radio_div{ height:40px; margin:3px 0 auto 0; line-height:20px; }
+
+.wizard_words_div .waiting_img_div { height:40px; width:100%; margin:50px auto }
+
+.wizard_words_div .waiting_img_div img { height:40px; width:40px; margin:0 }
+.wait_main_content {text-align:center; position:relative;top:-26px}
+.bluebar_div {z-index:999; display:inline-block; width:258px; *display:inline; zoom:1}
+.bluebar_div .bluebar_left{width:10px; height:8px; float:left; background: url(../image/blue_bar.png) no-repeat 0 0;}
+.bluebar_div .bluebar_middle{ width:0px;height:8px; float:left; background: url(../image/blue_bar.png) no-repeat -10px 0;}
+.bluebar_div .bluebar_right{width:10px; height:8px; float:left; background: url(../image/blue_bar.png) no-repeat -248px 0;}
+
+
+.wizard_words_div .input_left_div { height:30px; width:45%; margin:0 0 5px 0; line-height:30px; float:left;}
+
+.wizard_words_div .input_img_div { height:30px; width:50%; line-height:30px; margin:0 0 5px 3%; float:right; position:relative; }
+
+.input_img_div input { height:20px; width:80%; position:absolute; top:2px; left:10%; z-index:99; line-height:20px; font-family:Arial; font-size:10pt; font-weight:bold; color:#6448B7; }
+
+.wizard_words_div img { height:100%; width:100%; }
+
+.wizard_words_div .mac_input { height:20px; width:25%; font-family:Arial; font-size:10pt; font-weight:bold; color:#6448B7;}
+
+
+
+/* according new spec version 4, on 10/2010 */
+/* pppoe pptp l2tp, pppoe_reenter pptp_reenter, l2tp_reenter have the same style, so save it in this file */
+.wizard_words_div .wanInput_content_div { width:60%; margin:20px auto; }
+.wizard_words_div  .checked{width:28px; height: 24px; position:relative;float:left; background: url(../image/hdd_icons.jpg) no-repeat -50px -105px;}
+.wizard_words_div  .uncheck{width:28px; height: 24px; position:relative;float:left; background: url(../image/hdd_icons.jpg) no-repeat -20px -105px;}
+.wizard_words_div .grey_dot{width:20px; height: 20px; position:relative;float:left; background: url(../image/hdd_icons.jpg) no-repeat -20px -70px;}
+.wizard_words_div .black_dot{width:20px; height: 20px; position:relative;float:left; background: url(../image/hdd_icons.jpg) no-repeat 0px -70px;}
+.wizard_words_div .gren_show{width:18px; height: 18px; position:relative;float:left; background: url(../image/hdd_icons.jpg) no-repeat 0px -50px;}
+
+.wanInput_content_div .wanInput_left_div { height:30px; width:30%; margin:30px 0 0 0; line-height:30px; float:left; }
+.wanInput_content_div .wanInput_left_divs { height:30px; width:30%; margin:10px 0 0 0; display:inline; line-height:30px; float:left; }
+.wanInput_content_div .wanInput_left_divs1 { height:30px; width:15%; margin:10px 0 0 0; display:inline; line-height:30px; float:left; }
+.wanInput_content_div .wanInput_left_divbf { height:30px; width:20%; margin:10px 0 0 0; display:inline; line-height:30px; float:left; }
+.wanInput_left_divip { height:auto; width:99%; margin:30px 0 0 0; line-height:10px; float:left; }
+.iptvdoc{color:blue; height:60px; margin:0 0 auto 0; line-height:20px;}
+.iptvdoc2{height:40px; margin:0 0 auto 0; line-height:20px; padding-left:25px}
+
+.wanInput_content_div .wanInput_Img_div { height:50px; width:65%; line-height:50px; margin:20px 0 0 1%; float:left; position:relative; }
+.wanInput_content_div .wanInput_Imgsw_div { height:50px; width:65%; line-height:50px; display:inline-block; margin:20px 0 0 1%; float:left; position:relative;}
+.wanInput_content_div .wanInput_Imgs_div { height:50px; width:65%; display:inline; margin:0 0 0 1%; float:left;  position:relative; }
+.wanInput_Imgs_div input { height:20px; width:60%; top:10px; left:10%; z-index:99; line-height:20px;  border:hidden; font-family:Arial; font-size:10pt; font-weight:bold; color:#6448B7;  position:absolute; }
+.wanInput_content_div .wanInput_Imgs1_div { height:50px; width:60%; display:inline; margin:0 0 0 1%; float:left;  position:relative; }
+.wanInput_Imgs1_div input { height:20px; width:60%; top:10px; left:10%; z-index:99; line-height:20px;  border:hidden; font-family:Arial; font-size:10pt; font-weight:bold; color:#6448B7;  position:absolute; }
+.wanInput_Img_div input { height:20px; width:80%; position:absolute; top:12px; left:10%; z-index:99; line-height:20px; border:hidden; font-family:Arial; font-size:10pt; font-weight:bold; color:#6448B7; }
+
+
+
+
+
+.wizard_buttons_div{ height:50px; width:90%; line-height:50px; padding:0; margin:50px auto; }
+
+.wizard_buttons_div .buttons_img_div { height:35px; width:20%; position:relative; top:7px; line-height:35px; cursor:pointer; }
+
+.wizard_buttons_div .buttons_words_div { height:100%; width:100%; position:absolute; top:0; left:0; z-index:99; font-family: Arial; font-weight: Bold; color:#FFFFFF; }
+
+.wizard_buttons_div img { height:100%; width:100%; }
+
+.wizard_buttons_div .buttons_split { height:30px; width:20%; margin:10px 0; float:left; }
+.wizard_buttons_div .long_common_hdd,  .wizard_buttons_div .short_common_hdd{ height: 37px; color: #f2f2f2; font-family: Verdana; font-weight: Bold; font-size: 12px; background-color: transparent; border: none; cursor: pointer; padding-bottom: 2px;}
+.wizard_buttons_div .long_common_hdd{width:320px; background: Transparent url(../image/centria_cd_less.gif) no-repeat 0  0}
+.wizard_buttons_div .short_common_hdd{width:135px; background: Transparent url(../image/centria_cd_less.gif) no-repeat 0  -40px}
+
+
+.file_input_div { height:50px; width:100%; margin:50px auto; }
+
+.file_input_style { margin:13px auto; }
+
+.file_input_style_safari { margin:13px auto; background:#DAD9DD; width:50%; }
+
+.wanInput_content_div .wanInput_left_divdhcp { height:90px; width:100%; margin:30px 0 0 0; line-height:30px;}
+.wanInput_left_divdhcp p{ font-family:Arial; font-size:10pt; font-weight:normal; }
+
+
+
+.purple_short_btn, .grey_short_btn, .purple_common_btn, .grey_common_btn, .purple_long_btn, .grey_long_btn{height: 35px; color:#f2f2f2; font-family:Arial; font-size:12pt; font-weight:Bold; background-color: transparent; border:none; cursor: pointer; padding-bottom: 2px;}
+.purple_short_btn{width: 150px; background:url(../image/hijack_buttons.gif) no-repeat 0px 0px}
+.grey_short_btn{width: 150px; background:url(../image/hijack_buttons.gif) no-repeat 0px -35px}
+.purple_common_btn{width: 250px; background:url(../image/hijack_buttons.gif) no-repeat -150px 0px}
+.grey_common_btn{width: 250px; background:url(../image/hijack_buttons.gif) no-repeat -150px -35px}
+.purple_long_btn{width: 500px; background:url(../image/hijack_buttons.gif) no-repeat 0px -70px}
+.grey_long_btn{width: 500px; background:url(../image/hijack_buttons.gif) no-repeat 0px -70px}

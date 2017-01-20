@@ -1,0 +1,30 @@
+config wifi-device  wifi0
+	option type	qcawifi
+	option channel	auto
+	option macaddr	20:14:07:24:02:60
+	option hwmode	11ac
+	# REMOVE THIS LINE TO ENABLE WIFI:
+	option disabled 1
+
+config wifi-iface
+	option device	wifi0
+	option network	lan
+	option mode	ap
+	option ssid	OpenWrt
+	option encryption none
+
+config wifi-device  wifi1
+	option type	qcawifi
+	option channel	auto
+	option macaddr	20:14:07:24:02:58
+	option hwmode	11ng
+	# REMOVE THIS LINE TO ENABLE WIFI:
+	option disabled 1
+
+config wifi-iface
+	option device	wifi1
+	option network	lan
+	option mode	ap
+	option ssid	OpenWrt
+	option encryption none
+

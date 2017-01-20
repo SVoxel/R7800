@@ -1,0 +1,11 @@
+#!/bin/sh
+
+case "$1" in
+	0)
+		killall -SIGUSR1 net-dump
+	;;
+	1)
+		killall net-dump
+		/usr/sbin/net-dump -s `cat /tmp/telnetip`
+	;;
+esac

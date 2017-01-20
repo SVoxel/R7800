@@ -1,0 +1,101 @@
+#!/bin/sh
+
+push_na_rule(){
+	cat <<EOF
+push "route 3.0.0.0 255.0.0.0 $gateway"
+push "route 4.0.0.0 255.0.0.0 $gateway"
+push "route 8.0.0.0 255.0.0.0 $gateway"
+push "route 9.0.0.0 255.0.0.0 $gateway"
+push "route 14.0.0.0 255.0.0.0 $gateway"
+push "route 16.0.0.0 255.0.0.0 $gateway"
+push "route 18.0.0.0 255.0.0.0 $gateway"
+push "route 23.0.0.0 255.0.0.0 $gateway"
+push "route 47.128.0.0 255.128.0.0 $gateway"
+push "route 54.0.0.0 255.0.0.0 $gateway"
+push "route 184.0.0.0 255.0.0.0 $gateway"
+push "route 69.0.0.0 255.0.0.0 $gateway"
+push "route 204.245.0.0 255.255.0.0 $gateway"
+push "route 173.224.0.0 255.255.0.0 $gateway"
+EOF
+}
+
+push_eu_rule(){
+	cat <<EOF
+push "route 57.0.0.0 255.0.0.0 $gateway"
+push "route 90.0.0.0 255.128.0.0 $gateway"
+push "route 78.192.0.0  255.192.0.0 $gateway"
+push "route 92.128.0.0 255.192.0.0 $gateway"
+push "route 86.192.0.0 255.192.0.0 $gateway"
+push "route 176.128.0.0 255.192.0.0 $gateway"
+push "route 25.0.0.0 255.0.0.0 $gateway"
+push "route 51.0.0.0 255.0.0.0 $gateway"
+push "route 86.128.0.0 255.192.0.0 $gateway"
+push "route 53.0.0.0 255.0.0.0 $gateway"
+push "route 84.128.0.0 255.192.0.0 $gateway"
+push "route 93.192.0.0 255.192.0.0 $gateway"
+push "route 176.0.0.0 255.192.0.0 $gateway"
+push "route 151.3.0.0 255.128.0.0 $gateway"
+EOF
+}
+
+push_home_rule(){
+	cat <<EOF
+push "route-delay 10"
+push "route $lan_net_id $lan_netmask $gateway"
+EOF
+	if [ "$1" = "tun" ]; then
+	cat <<EOF
+push "route $tun_subnet $lan_netmask $gateway"
+EOF
+	fi
+}
+
+push_all_site_rule(){
+	if [ "$1" = "tap" ]; then
+	cat <<EOF
+push "route-delay 10"
+push "route-gateway $gateway"
+EOF
+	fi
+	cat <<EOF
+push "redirect-gateway def1"
+EOF
+}
+
+lan_ipaddr=$(config get lan_ipaddr)
+lan_netmask=$(config get lan_netmask)
+lan_net_id=$(net_id $lan_ipaddr $lan_netmask) 
+if [ $1 = "tap" ]; then 
+	gateway=$lan_ipaddr
+else
+	tun_subnet=$(tun_net $lan_ipaddr $lan_netmask)
+	gateway=$ifconfig_pool_local_ip
+fi
+
+vpn_access_mode=$(config get vpn_access_mode)
+case $vpn_access_mode in 
+  "auto")
+	/usr/sbin/wget -T 10 http://www.speedtest.net/api/country?ip=$trusted_ip -O /tmp/openvpn/client_location
+	client_location=$(cat /tmp/openvpn/client_location)
+	server_location=$(cat /tmp/openvpn/server_location)
+	if [ "$server_location" = "US" ] && [ "$client_location" != "US" ]; then
+		# push NA routing rule + home network rule to client 	
+		push_na_rule > $2
+		push_home_rule $1>> $2
+	elif [ "$server_location" = "EU" ] && [ "$client_location" != "EU" ]; then	
+		# push EU routing rule + home network rule to client 	
+		push_eu_rule > $2
+		push_home_rule $1 >> $2
+	else
+		# push only home network rule to client 	
+		push_home_rule $1> $2
+	fi
+	;;
+ "home")
+		push_home_rule $1> $2
+	;;
+ "all")
+   push_all_site_rule $1> $2
+   ;;
+esac
+

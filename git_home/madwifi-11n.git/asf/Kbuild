@@ -1,0 +1,63 @@
+ifeq ($(obj),)
+obj := .
+endif
+
+DEPTH := ..
+
+#
+# Path to the Atheros driver framework source base
+#
+ADF := $(src)/../adf
+
+#
+# Path to the Atheros service framework source base
+#
+ASF := $(src)
+
+ifeq ($(strip ${QCA_PARTNER_MAKE_F_SUPPORT}),1)
+export QCA_PARTNER_MAKE_F_INC=1
+endif
+include $(obj)/$(DEPTH)/os/linux/Makefile-linux.common
+
+ifeq ($(ATH_SUPPORT_HTC),1)
+INCS = -include $(COMINC)/compat.h -I$(COMINC) -I$(WLAN_TOP)/os/$(OS)/include -I$(WLAN_TOP)/os/$(OS)/src -I$(KERNELPATH)/include
+INCS += -I$(WLAN_TOP)/asf/include
+INCS +=                            \
+    -I$(WLAN_TOP)/adf/include/os   \
+    -I$(WLAN_TOP)/adf/include/net  \
+    -I$(WLAN_TOP)/adf/include/nbuf
+INCS +=                            \
+    -I$(WLAN_TOP)/adf/os/$(OS)     \
+    -I$(WLAN_TOP)/adf/net/$(OS)    \
+    -I$(WLAN_TOP)/adf/nbuf/$(OS)
+endif
+
+INCS += -I$(ASF)/include -I$(ADF)/include/os -I$(ADF)/os/linux
+obj-m += asf.o
+
+EXTRA_CFLAGS+= $(INCS) $(COPTS) -Wno-unused-function
+
+ifeq ($(strip ${QCA_PARTNER_MAKE_F_SUPPORT}),1)
+MOD_CFLAGS = -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(asf.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(asf)" 
+endif
+
+asf-objs := asf_print.o asf_amem.o linux/asf_module.o
+
+clean-files := modules.order
+
+ifeq ($(strip ${QCA_PARTNER_MAKE_F_SUPPORT}),1)
+all: asf.ko
+
+asf.mod.o: asf.mod.c
+	${CC} -c -o $@ ${EXTRA_CFLAGS} ${MOD_CFLAGS} $<
+
+asf.o: ${asf-objs}
+	$(LD) -m elf32btsmip -r -o asf.o $(asf-objs)
+	$(KERNELPATH)/scripts/mod/modpost asf.o
+
+asf.ko: asf.o asf.mod.o
+	$(LD) $(LDOPTS) -o asf.ko asf.o asf.mod.o
+
+%.o: %.c 
+	${CC} -c -o $@ ${EXTRA_CFLAGS} $<
+endif

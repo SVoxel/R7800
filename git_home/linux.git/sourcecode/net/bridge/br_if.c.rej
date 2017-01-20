@@ -1,0 +1,50 @@
+--- net/bridge/br_if.c
++++ net/bridge/br_if.c
+@@ -470,38 +470,27 @@
+ {
+ 	struct net_bridge_fdb_entry *fdbe;
+ 	struct net_bridge *br;
+-	struct net_device *pdev;
++	struct net_device *netdev = NULL;
+ 
+ 	/*
+ 	 * Is this a bridge?
+ 	 */
+-	if (!(dev->priv_flags & IFF_EBRIDGE)) {
++	if (!(dev->priv_flags & IFF_EBRIDGE))
+ 		return NULL;
+-	}
+ 
+-	/*
+-	 * Lookup the fdb entry
+-	 */
+ 	br = netdev_priv(dev);
+-	rcu_read_lock();
+-	fdbe = __br_fdb_get(br, addr);
+-	if (!fdbe) {
+-		rcu_read_unlock();
+-		return NULL;
+-	}
+ 
+ 	/*
+-	 * Get reference to the port dev
++	 * Lookup the fdb entry and get reference to the port dev
+ 	 */
+-	if (!fdbe->dst) {
+-		rcu_read_unlock();
+-		return NULL;
++	rcu_read_lock();
++	fdbe = __br_fdb_get(br, addr);
++	if (fdbe && fdbe->dst) {
++		netdev = fdbe->dst->dev; /* port device */
++		dev_hold(netdev);
+ 	}
+-	pdev = fdbe->dst->dev;
+-	dev_hold(pdev);
+ 	rcu_read_unlock();
+-
+-	return pdev;
++	return netdev;
+ }
+ EXPORT_SYMBOL_GPL(br_port_dev_get);
+ 

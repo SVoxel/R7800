@@ -1,0 +1,470 @@
+<% ca_http_header("style/hijack_style.css", "style/hijack_ru_finish_manual.css","/funcs.js","/RU_welcome.js") %>
+<% nohelp_header("BSW_wan.htm", "RU_welcome") %>
+
+<script>
+var str_type1="";
+var str_type2="";
+var str_type3="";
+var str_type4="";
+var str_type5="";
+var master="<% cfg_get("http_loginname") %>";
+var consolidate_device_name = parent.consolidate_device_name;
+
+function loadvalue()
+{
+	var cf = document.forms[0];
+
+	str_type1=document.getElementById("type1").innerHTML;
+	document.getElementById("type1").innerHTML='';
+	str_type2=document.getElementById("type2").innerHTML;
+	document.getElementById("type2").innerHTML='';
+	str_type3=document.getElementById("type3").innerHTML;
+	document.getElementById("type3").innerHTML='';
+	str_type4=document.getElementById("type4").innerHTML;
+	document.getElementById("type4").innerHTML='';
+	str_type5=document.getElementById("type5").innerHTML;
+	document.getElementById("type5").innerHTML='';
+  
+	if(parent.welcome_wan_type == 1){
+		document.getElementById("view").innerHTML=str_type1;
+	}
+	else if(parent.welcome_wan_type == 2){
+		document.getElementById("view").innerHTML=str_type2;
+	}
+	else if(parent.welcome_wan_type == 3){
+		document.getElementById("view").innerHTML=str_type3;
+	}
+	else if(parent.welcome_wan_type == 4){
+		document.getElementById("view").innerHTML=str_type4;
+	}
+	else if(parent.welcome_wan_type == 5){
+		document.getElementById("view").innerHTML=str_type5;
+	}
+
+        //buttons left
+        var btns_div1 = document.getElementById("btnsContainer_div1");
+		if( master == "admin" )
+		{
+			btns_div1.onclick = function()
+			{
+				if(parent.vlan_iptv_flag==1)
+        	                        location.href="RU_check_vlan.htm";
+	                        else
+                	                location.href="RU_manual_spoof.htm";
+
+			}
+		}
+
+        //buttons right
+        var btns_div2 = document.getElementById("btnsContainer_div2");
+		if( master == "admin" )
+		{
+			btns_div2.onclick = function()
+			{
+				RU_manual_check_summary();
+			}
+		}
+
+
+	if(consolidate_device_name == 1)
+		cf.system_name.value = "<% cfg_sed("Device_name") %>";
+	else
+		cf.system_name.value = "<% cfg_sed("wan_hostname") %>";
+}
+
+</script>
+<input type="hidden" name="welcome_wan_type">
+<input type="hidden" name="conflict_wanlan">
+<input type="hidden" name="MACAssign">
+<input type="hidden" name="Spoofmac">
+<input type="hidden" name="basic_type">
+<input type="hidden" name="ppp_login_type">
+<input type="hidden" name="run_test">
+<input type="hidden" name="DNSAssign">
+<input type="hidden" name="change_wan_type">
+<input type="hidden" name="WANAssign">
+<input type="hidden" name="STATIC_DNS">
+
+<!-- DHCP & Static -->
+<input type="hidden" name="ether_ipaddr">
+<input type="hidden" name="ether_subnet">
+<input type="hidden" name="ether_gateway">
+<input type="hidden" name="ether_dnsaddr1">
+<input type="hidden" name="ether_dnsaddr2">
+<input type="hidden" name="system_name">
+<input type="hidden" name="domain_name">
+
+<!-- PPPoE -->
+<input type="hidden" name="pppoe_username">
+<input type="hidden" name="pppoe_passwd">
+<input type="hidden" name="pppoe_servername">
+<input type="hidden" name="pppoe_ipaddr">
+<input type="hidden" name="dual_access">
+<input type="hidden" name="pppoe_dod">
+<input type="hidden" name="pppoe_dual_ipaddr">
+<input type="hidden" name="pppoe_dual_subnet">
+<input type="hidden" name="pppoe_dual_gateway">
+<input type="hidden" name="pppoe_dual_assign">
+<input type="hidden" name="hidden_pppoe_idle_time">
+<input type="hidden" name="pppoe_dnsaddr1">
+<input type="hidden" name="pppoe_dnsaddr2">
+
+<!-- PPTP -->
+<input type="hidden" name="pptp_username">
+<input type="hidden" name="pptp_passwd">
+<input type="hidden" name="pptp_myip">
+<input type="hidden" name="pptp_serv_ip">
+<input type="hidden" name="pptp_gateway">
+<input type="hidden" name="pptp_conn_id">
+<input type="hidden" name="pptp_dnsaddr1">
+<input type="hidden" name="pptp_dnsaddr2">
+<input type="hidden" name="pptp_dod">
+<input type="hidden" name="pptp_mynetmask">
+<input type="hidden" name="hidden_pptp_idle_time">
+
+<!-- L2TP -->
+<input type="hidden" name="l2tp_username">
+<input type="hidden" name="l2tp_passwd">
+<input type="hidden" name="l2tp_myip">
+<input type="hidden" name="l2tp_serv_ip">
+<input type="hidden" name="l2tp_gateway">
+<input type="hidden" name="l2tp_conn_id">
+<input type="hidden" name="l2tp_dnsaddr1">
+<input type="hidden" name="l2tp_dnsaddr2">
+<input type="hidden" name="l2tp_dod">
+<input type="hidden" name="l2tp_mynetmask">
+<input type="hidden" name="hidden_l2tp_idle_time">
+	
+<div class="wizard_content_div">
+<div class="wizard_words_div">
+<h1><script>document.write(RU_CA_head)</script></h1>
+<table>
+<tr><td><script>document.write(RU_finish_head)</script></td></tr>
+<tr><td>&nbsp;</td></tr>
+</table>
+	<div id=view></div>
+<!-- Static -->  
+	<div align="center" ID="type1" style="position:absolute;top:0;left:0;visibility:hidden">
+ 	<TABLE width=100%> 
+ 		<TR> 
+			<TD nowrap><script>document.write(bh_info_mark_ip)</script></TD>
+			<script>document.write("<TD nowrap>"+parent.static_ip+"</TD>");</script>
+		</TR>
+		<TR> 
+			<TD nowrap><script>document.write(lan_mark_subnet)</script></TD>
+			<script>document.write("<TD nowrap>"+parent.static_subnet+"</TD>");</script>
+		</TR>
+		<TR> 
+			<TD nowrap><script>document.write(lan_mark_gateway)</script></TD>
+			<script>	document.write("<TD nowrap>"+parent.static_gateway+"</TD>");</script>
+		</TR>
+		<TR>
+			<TD nowrap><script>document.write(router_status_domain_ser)</script></TD>
+			<script>
+				if(parent.static_dns1 == "" && parent.static_dns2 != "")
+					document.write("<TD nowrap>"+parent.static_dns2+"</TD></TR>");
+				else if(parent.static_dns1 != "" && parent.static_dns2 == "")
+					document.write("<TD nowrap>"+parent.static_dns1+"</TD></TR>");
+				else{
+					document.write("<TD nowrap>"+parent.static_dns1+"</TD></TR>");
+					document.write("<TR><TD nowrap><BR></TD><TD nowrap>"+parent.static_dns2+"</TD></TR>");
+				}
+			</script>
+		<TR>
+			<TD nowrap><script>document.write(RU_router_mac)</script></TD>
+			<script>
+				if(parent.mac_spoof == '0')
+					document.write("<TD nowrap>"+RU_mac_default+"</TD>");
+				else if(parent.mac_spoof == '1')
+					document.write("<TD nowrap>"+RU_mac_pc+"</TD>");
+				else
+					document.write("<TD nowrap>"+parent.Spoofmac+"</TD>");
+			</script>
+		</TR>
+	</TABLE>
+	</div>
+<!-- DHCP -->
+	<div align="center" ID="type2" style="position:absolute;top:0;left:0;visibility:hidden">
+	<TABLE width=100%> 
+		<TR> 
+			<TD nowrap><script>document.write(basic_int_intip)</script></TD>
+			<TD nowrap><script>document.write(basic_int_autoip)</script></TD>
+		</TR>
+		<TR>
+			<TD nowrap><script>document.write(router_status_domain_ser)</script></TD>
+			<script>
+				if(parent.static_dns1 == "" && parent.static_dns2 == "")
+					document.write("<TD nowrap>"+basic_int_autoip+"</TD></TR>");
+				else if(parent.static_dns1 == "" && parent.static_dns2 != "")
+					document.write("<TD nowrap>"+parent.static_dns2+"</TD></TR>");
+				else if(parent.static_dns1 != "" && parent.static_dns2 == "")
+					document.write("<TD nowrap>"+parent.static_dns1+"</TD></TR>");
+				else{
+					document.write("<TD nowrap>"+parent.static_dns1+"</TD></TR>");
+					document.write("<TR><TD nowrap><BR></TD><TD nowrap>"+parent.static_dns2+"</TD></TR>");
+				}
+			</script>
+		<TR>
+			<TD nowrap><script>document.write(RU_router_mac)</script></TD>
+			<script>
+				if(parent.mac_spoof == '0')
+					document.write("<TD nowrap>"+RU_mac_default+"</TD>");
+				else if(parent.mac_spoof == '1')
+					document.write("<TD nowrap>"+RU_mac_pc+"</TD>");
+				else
+					document.write("<TD nowrap>"+parent.Spoofmac+"</TD>");
+			</script>
+		</TR>
+	</TABLE>   
+	</div>
+<!-- PPPoE -->
+	<div align="center" ID="type3" style="position:absolute;top:0;left:0;visibility:hidden">
+	<TABLE width=100%>
+		<TR> 
+			<TD nowrap><script>document.write(RU_vpn_type)</script></TD>
+			<TD nowrap>PPPoE</TD>
+		</TR>
+		<TR> 
+			<TD nowrap><script>document.write(basic_pppoe_login)</script></TD>
+			<script>document.write("<TD nowrap>"+parent.pppoe_username+"</TD>");</script>
+		</TR>
+		<TR> 
+			<TD nowrap><script>document.write(basic_pppoe_passwd)</script></TD>
+			<script>document.write("<TD nowrap>"+parent.pppoe_password+"</TD>");</script>
+		</TR>
+		<TR> 
+			<TD nowrap><script>document.write(forward_service_name)</script></TD>
+			<script>
+			if(parent.pppoe_server == "")
+				document.write("<TD nowrap>"+sec_off+"</TD>");
+			else
+				document.write("<TD nowrap>"+parent.pppoe_server+"</TD>");
+			</script>
+		</TR>
+		<TR> 
+			<TD nowrap><script>document.write(RU_pppoe_ip)</script></TD>
+			<script>
+				if(parent.pppoe_static_ip == "")
+					document.write("<TD nowrap>"+auto_mark+"</TD>");
+				else
+					document.write("<TD nowrap>"+parent.pppoe_static_ip+"</TD>");
+			</script>
+		</TR>
+		<TR> 
+			<TD nowrap><script>document.write(router_status_domain_ser)</script></TD>
+			<script>
+				if(parent.pppoe_dns1 == "" && parent.pppoe_dns2 == "")
+					document.write("<TD nowrap>"+basic_int_autoip+"</TD></TR>");
+				else if(parent.pppoe_dns1 == "" && parent.pppoe_dns2 != "")
+					document.write("<TD nowrap>"+parent.pppoe_dns2+"</TD></TR>");
+				else if(parent.pppoe_dns1 != "" && parent.pppoe_dns2 == "")
+					document.write("<TD nowrap>"+parent.pppoe_dns1+"</TD></TR>");
+				else{
+					document.write("<TD nowrap>"+parent.pppoe_dns1+"</TD></TR>");
+					document.write("<TR><TD nowrap><BR></TD><TD nowrap>"+parent.pppoe_dns2+"</TD></TR>");
+				}
+			</script>
+		</TR>
+		<TR> 
+			<TD><script>document.write(RU_pppoe_local)</script></TD>
+			<script>
+				if(parent.dual_access == "0")
+					document.write("<TD nowrap>"+no_mark+"</TD>");
+				else{
+					document.write("<TD nowrap>"+bh_yes_mark+"</TD>");
+					if(parent.pppoe_dual_assign == '0'){
+						document.write("<TR><TD nowrap>"+RU_intra_ip+"</TD>");
+						document.write("<TD nowrap>"+basic_int_autoip+"</TD></TR>");
+					}
+					else{
+						document.write("<TR><TD nowrap>"+RU_intra_ip+"</TD>");
+						document.write("<TD nowrap>"+parent.pppoe_eth_ip+"</TD></TR>");
+						document.write("<TR><TD nowrap>"+lan_mark_subnet+"</TD>");
+						document.write("<TD nowrap>"+parent.pppoe_eth_netmask+"</TD></TR>");
+					}
+				}
+			</script>
+		<TR>
+			<TD nowrap><script>document.write(RU_router_mac)</script></TD>
+			<script>
+				if(parent.mac_spoof == '0')
+					document.write("<TD nowrap>"+RU_mac_default+"</TD>");
+				else if(parent.mac_spoof == '1')
+					document.write("<TD nowrap>"+RU_mac_pc+"</TD>");
+				else
+					document.write("<TD nowrap>"+parent.Spoofmac+"</TD>");
+			</script>
+		</TR>     
+	</TABLE>
+	</div>
+<!-- PPTP -->
+	<div align="center" ID="type4" style="position:absolute;top:0;left:0;visibility:hidden">
+	<TABLE width=100%> 
+		<TR> 
+			<TD nowrap><script>document.write(RU_vpn_type)</script></TD>
+			<TD nowrap>PPTP</TD>
+		</TR>
+		<TR> 
+			<TD nowrap><script>document.write(basic_pppoe_login)</script></TD>
+			<script>document.write("<TD nowrap>"+parent.pptp_username+"</TD>");</script>
+		</TR>
+		<TR> 
+			<TD nowrap><script>document.write(basic_pppoe_passwd)</script></TD>
+			<script>document.write("<TD nowrap>"+parent.pptp_password+"</TD>");</script>
+		</TR>
+		<TR> 
+			<TD nowrap><script>document.write(bh_basic_pptp_servip)</script></TD>
+			<script>document.write("<TD nowrap>"+parent.pptp_server_ipaddr+"</TD>");</script>
+		</TR>
+		<TR><TD><script>document.write(RU_pppoe_local)</script></TD>
+			<script>
+				if(parent.dual_access == '0')//to fix bug32809
+					document.write("<TD>"+no_mark+"</TD>");
+				else
+					document.write("<TD>"+bh_yes_mark+"</TD>");
+			</script>
+		</TR>
+		<TR>
+			<TD nowrap><script>document.write(RU_intra_ip)</script></TD>
+			<script>
+				if(parent.pptp_wan_assign == '0')
+					document.write("<TD nowrap>"+basic_int_autoip+"</TD></TR>");
+				else{
+					document.write("<TD nowrap>"+parent.pptp_local_ipaddr+"</TD></TR>");
+					document.write("<TR><TD nowrap>"+lan_mark_subnet+"</TD>");
+					document.write("<TD nowrap>"+parent.pptp_local_netmask+"</TD></TR>");
+					document.write("<TR><TD nowrap>"+lan_mark_gateway+"</TD>");
+					document.write("<TD nowrap>"+parent.pptp_local_gateway+"</TD></TR>");
+				}
+			</script>
+		<TR>
+			<TD nowrap><script>document.write(router_status_domain_ser)</script></TD>
+			<script>
+				if(parent.pptp_dns1 == "" && parent.pptp_dns2 == "")
+					document.write("<TD nowrap>"+basic_int_autoip+"</TD></TR>");
+				else if(parent.pptp_dns1 == "" && parent.pptp_dns2 != "")
+					document.write("<TD nowrap>"+parent.pptp_dns2+"</TD></TR>");
+				else if(parent.pptp_dns1 != "" && parent.pptp_dns2 == "")
+					document.write("<TD nowrap>"+parent.pptp_dns1+"</TD></TR>");
+				else{
+					document.write("<TD nowrap>"+parent.pptp_dns1+"</TD></TR>");
+					document.write("<TR><TD nowrap><BR></TD><TD nowrap>"+parent.pptp_dns2+"</TD></TR>");
+				}
+			</script>
+		<TR>
+			<TD nowrap><script>document.write(RU_router_mac)</script></TD>
+			<script>
+				if(parent.mac_spoof == '0')
+					document.write("<TD nowrap>"+RU_mac_default+"</TD>");
+				else if(parent.mac_spoof == '1')
+					document.write("<TD nowrap>"+RU_mac_pc+"</TD>");
+				else
+					document.write("<TD nowrap>"+parent.Spoofmac+"</TD>");
+			</script>
+		</TR>
+	</TABLE>
+	</div>
+<!-- L2TP -->
+	<div align="center" ID="type5" style="position:absolute;top:0;left:0;visibility:hidden">
+	<TABLE width=100%>
+		<TR> 
+			<TD nowrap><script>document.write(RU_vpn_type)</script></TD>
+			<TD nowrap>L2TP</TD>
+		</TR>
+		<TR> 
+			<TD nowrap><script>document.write(basic_pppoe_login)</script></TD>
+			<script>document.write("<TD nowrap>"+parent.l2tp_username+"</TD>");</script>
+		</TR>
+		<TR> 
+			<TD nowrap><script>document.write(basic_pppoe_passwd)</script></TD>
+			<script>document.write("<TD nowrap>"+parent.l2tp_password+"</TD>");</script>
+		</TR>
+		<TR> 
+			<TD nowrap><script>document.write(bh_basic_pptp_servip)</script></TD>
+			<script>document.write("<TD nowrap>"+parent.l2tp_server_ipaddr+"</TD>");</script>
+		</TR>
+		<TR><TD><script>document.write(RU_pppoe_local)</script></TD>
+			<script>
+				if(parent.dual_access == '0') //to fix bug32809
+					document.write("<TD>"+no_mark+"</TD>");
+				else
+					document.write("<TD>"+bh_yes_mark+"</TD>");
+			</script>
+		</TR>
+		<TR>
+			<TD nowrap><script>document.write(RU_intra_ip)</script></TD>
+			<script>
+				if(parent.l2tp_wan_assign == '0')
+					document.write("<TD nowrap>"+basic_int_autoip+"</TD></TR>");
+				else{
+					document.write("<TD nowrap>"+parent.l2tp_local_ipaddr+"</TD></TR>");
+					document.write("<TR><TD nowrap>"+lan_mark_subnet+"</TD>");
+					document.write("<TD nowrap>"+parent.l2tp_local_netmask+"</TD></TR>");
+					document.write("<TR><TD nowrap>"+lan_mark_gateway+"</TD>");
+					document.write("<TD nowrap>"+parent.l2tp_local_gateway+"</TD></TR>");
+				}
+			</script>
+		<TR>
+			<TD nowrap><script>document.write(router_status_domain_ser)</script></TD>
+			<script>
+				if(parent.l2tp_dns1 == "" && parent.l2tp_dns2 == "")
+					document.write("<TD nowrap>"+basic_int_autoip+"</TD></TR>");
+				else if(parent.l2tp_dns1 == "" && parent.l2tp_dns2 != "")
+					document.write("<TD nowrap>"+parent.l2tp_dns2+"</TD></TR>");
+				else if(parent.l2tp_dns1 != "" && parent.l2tp_dns2 == "")
+					document.write("<TD nowrap>"+parent.l2tp_dns1+"</TD></TR>");
+				else{
+					document.write("<TD nowrap>"+parent.l2tp_dns1+"</TD></TR>");
+					document.write("<TR><TD nowrap><BR></TD><TD nowrap>"+parent.l2tp_dns2+"</TD></TR>");
+				}
+			</script>
+		<TR>
+			<TD nowrap><script>document.write(RU_router_mac)</script></TD>
+			<script>
+				if(parent.mac_spoof == '0')
+					document.write("<TD nowrap>"+RU_mac_default+"</TD>");
+				else if(parent.mac_spoof == '1')
+					document.write("<TD nowrap>"+RU_mac_pc+"</TD>");
+				else
+					document.write("<TD nowrap>"+parent.Spoofmac+"</TD>");
+			</script>
+		</TR>
+	</TABLE>
+	</div>
+<TABLE width=100%>
+<TR> 
+	<TD><script>document.write(RU_finish_tail)</script></a>
+</TD>
+</TR>
+</TABLE>
+</div><!--wizard_words_div -->
+<div id="center_buttons">
+	<div id="allBtns_div" class="wizard_buttons_div" align="center">	
+                <div id="btnsContainer_div1" class="buttons_img_div" align="center">
+				<script>
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							document.write('<img src="image/ca-little-grey-button.png" />');
+                        </script>
+                        <div class="buttons_words_div"><script>document.write(RU_back)</script></div>
+                </div>
+                <div class="buttons_split"></div>
+                <div id="btnsContainer_div2" class="buttons_img_div" align="center">
+						<script>
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							
+							document.write('<img src="image/ca-little-grey-button.png" />');
+						</script>
+                        
+                        <div class="buttons_words_div"><script>document.write(RU_check_connect)</script></div>
+                </div>
+	</div><!--allBtns_div -->
+</div>
+</div><!--wizard_content_div -->
+<script>scroll_show();</script>
+</form>
+</BODY>
+</HTML>

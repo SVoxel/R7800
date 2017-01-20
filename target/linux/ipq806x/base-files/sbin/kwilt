@@ -1,0 +1,219 @@
+#!/bin/sh
+# app version format :
+#    <app name>-<app version>-<model name>-<firmware version>-<dash version>.<ext file name>
+#    eg: kwilt-v<kwilt version>-r7800-v<r7800 version>-<dash version>.<ext file name>
+#    eg: kwilt-v1.2-r7800-v1.0.4.60-002.tar.gz
+#
+
+oc () { "$@" >> /dev/console 2>&1 ; } # stdout & stderr to /dev/console
+
+appname=kwilt
+modelname=r7800
+app_pid_file=/var/run/$appname.pid
+app_info_file=/tmp/$appname.info
+app_tgz_file=/tmp/$appname.tar.gz
+app_update_url="ftp://updates1.netgear.com/sw-apps/$appname/$modelname/"
+#app_update_url="-u user:passwd ftp://172.16.83.218/tmp/$modelname/"
+
+app_updated_file="/tmp/.$appname.updated"
+
+app_has_updated()
+{
+	[ -f $app_updated_file ]
+}
+
+touch_app_has_updated()
+{
+	touch $app_updated_file
+}
+
+app_local_version_file=/hipplay/version
+
+get_app_local_version()
+{
+	[ -f $app_local_version_file ] && cat $app_local_version_file
+}
+
+set_app_local_version() # $1: fullversion
+{
+	echo $1 > $app_local_version_file
+}
+
+dlna_has_run()
+{
+	[ -n "$(pidof minidlna)" ]
+}
+
+start()
+{
+	app_has_updated || { oc echo "[$appname] no run, has not been updated !"; return; }
+	dlna_has_run || { oc echo "[$appname] no run, dlna has not been run !"; return; }
+	if [ -d /hipplay ]; then
+		# do not print the log to console.
+		/hipplay/bin/busybox sh /hipplay/daemon start >/dev/null 2>&1 &
+	fi
+}
+
+stop()
+{
+	[ -d /hipplay ] && /hipplay/bin/busybox sh /hipplay/daemon stop
+}
+
+filter_app_info()
+{
+	local lapp=$(echo $appname | tr "A-Z" "a-z")
+	local lmodel=$(echo $modelname | tr "A-Z" "a-z")
+	local app
+
+	while read app; do
+		echo "$app" | tr "A-Z" "a-z" | grep -q '^'$lapp'-v[0-9.]*-'$lmodel'-v[0-9.]*-[0-9]*\..*$' \
+			&& echo "$app"
+	done
+}
+
+get_device_firmware_version()
+{
+	sed -n 's/^V\([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\).*$/\1/p' /firmware_version
+}
+
+newer_version() # $1: x.x.x.x, $2: x.x.x.x, (return true if $1 >= $2)
+{
+	local v1 v2 n=1
+
+	while [ 1 ]; do
+		v1=$(echo $1 |awk -F. '{print $'$n'}')
+		v2=$(echo $2 |awk -F. '{print $'$n'}')
+		[ -z "$v2" ] && return 0
+		[ -z "$v1" ] && return 1
+		[ "$v1" -gt "$v2" ] && return 0
+		[ "$v1" -lt "$v2" ] && return 1
+		n=$(($n + 1))
+	done
+}
+
+app_version_allowed() # $1: fullversion
+{
+	local v1=$(get_device_firmware_version)
+	local v2=$(echo $1 | sed -n 's/^.*-v[0-9.]*-.*-v\([0-9.]*\)-[0-9]*\..*$/\1/p')
+	[ -z "$v2" ] && return 1
+	newer_version $v1 $v2 && return 0 || return 1
+}
+
+exit_update() # $1: exit_status, $2: message
+{
+	oc echo "$2"
+	rm -f $app_info_file
+	rm -f $app_tgz_file
+	rm -f $app_pid_file
+	exit $1
+}
+
+run_local_version_and_exit() # $1: exit_status, $2: message
+{
+	oc echo "[$appname] run local version, since $2"
+	touch_app_has_updated && start
+	exit_update "$1"
+}
+
+try_to_run_local_version_and_exit() # $1: exit_status, $2: message
+{
+	app_version_allowed $(get_app_local_version) || return 
+	run_local_version_and_exit "$1" "$2"
+}
+
+newer_app() # $1: fullversion, $2: fullversion, (return true if $1 >= $2)
+{
+	local v1=$(echo $1 | sed -n 's/^.*-v[0-9.]*-.*-v\([0-9.]*\)-[0-9]*\..*$/\1/p')
+	local v2=$(echo $2 | sed -n 's/^.*-v[0-9.]*-.*-v\([0-9.]*\)-[0-9]*\..*$/\1/p')
+
+	if [ "$v1" = "$v2" ]; then
+		v1=$(echo $1 | sed -n 's/^.*-v[0-9.]*-.*-v[0-9.]*-\([0-9]*\)\..*$/\1/p')
+		v2=$(echo $2 | sed -n 's/^.*-v[0-9.]*-.*-v[0-9.]*-\([0-9]*\)\..*$/\1/p')
+	fi
+
+	newer_version "$v1" "$v2" && return 0 || return 1
+}
+
+get_fullversion() # $1: app_info_file
+{
+	local app apps="$(awk '{print $1}' $1)"
+	local app_final=""
+
+	for app in $apps; do
+		app_version_allowed "$app" && newer_app "$app" "$app_final" && app_final="$app"
+	done
+	echo "$app_final"
+}
+
+get_dynamic_sleep_time() # $1: retry
+{
+	case "$1" in
+		1) echo 30 ;;
+		2) echo 60 ;;
+		3) echo 360 ;;
+		4) echo 900 ;;
+		*) echo 3600 ;;
+	esac
+}
+
+update()
+{
+	# Check if kwilt is disabled
+	if [ -f /.nokwilt ]; then
+		exit 0
+	fi
+
+	local retry fullversion localversion
+
+	app_has_updated && { oc echo "[$appname] no update, has ever been updated !"; return 1; }
+	[ -f $app_pid_file ] && { oc echo "[$appname] no update, others running now !"; return 1; }
+	echo "$$" > $app_pid_file
+
+	oc echo "[$appname] start to get info from update-sever : $app_update_url"
+	retry=0
+	while [ 1 ]; do
+		curl -l $app_update_url 2>/dev/null | filter_app_info > $app_info_file
+		[ -s $app_info_file ] && break
+
+		oc echo "[$appname] retry=$retry, fail to get update-server info."
+		[ "$retry" = "2" ] && try_to_run_local_version_and_exit "1" "update is given up !"
+
+		retry=$(($retry + 1)) && sleep $(get_dynamic_sleep_time $retry)
+	done
+
+	fullversion="$(get_fullversion $app_info_file)"
+	if [ -z "$fullversion" ]; then
+		try_to_run_local_version_and_exit "1" "bug in update-server"
+		exit_update "2" "[$appname] bug in local versoin & update-server !"
+	fi
+
+	localversion=$(get_app_local_version)
+	app_version_allowed "$localversion" && newer_app "$localversion" "$fullversion" && \
+		run_local_version_and_exit "0" "no newer version !"
+
+	oc echo "[$appname] start to download image : $app_update_url$fullversion"
+	retry=0
+	while [ 1 ]; do
+		curl $app_update_url$fullversion -o $app_tgz_file 2>/dev/null && break
+
+		oc echo "[$appname] retry=$retry, fail to download image."
+		[ "$retry" = "2" ] && try_to_run_local_version_and_exit "1" "download is given up !"
+
+		retry=$(($retry + 1)) && sleep $(get_dynamic_sleep_time $retry)
+	done
+
+	rm -rf /hipplay
+	mkdir /hipplay
+	tar xfz $app_tgz_file -C /hipplay
+	set_app_local_version "$fullversion"
+	oc echo "[$appname] install image \"$app_update_url$fullversion\" to R/W filesystem successfully."
+
+	run_local_version_and_exit "0" "the newly installed."
+}
+
+case "$1" in
+	start) start ;;
+	stop) stop ;;
+	update) update ;;
+esac
+

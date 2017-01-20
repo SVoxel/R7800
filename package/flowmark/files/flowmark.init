@@ -1,0 +1,69 @@
+#!/bin/sh
+
+. ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+#
+# Environment config
+#
+NAME="flowmark"
+DISPLAY_NAME=${NAME}
+
+# path to binary
+BINARY="${BINDIR}/${NAME}"
+
+# path to pid file
+PIDFILE="${RUNDIR}/${NAME}.pid"
+
+# Redis server port
+REDIS_PORT=6379
+
+# path to redis unix socket
+REDIS_UNIXSOCK=/var/run/appflow/redis.sock
+
+# to get UCI values to determine if we run in NSS mode or not
+. $STREAMBOOST_USER_CFG
+
+nss_qdisc_is_installed() {
+	/bin/opkg list | grep 'kmod-qca-nss-.*qdisc' >/dev/null 2>&1
+	[ "$?" = "0" ] || return 1
+}
+
+[ "${nss_qdisc}" = "yes" ] && nss_qdisc_is_installed &&
+	EXTRA_CMD_ARGS="--nss"
+
+# Format the command line parameters
+CMDLINE_OPTS="\
+--daemon \
+--run-dir=${RUNDIR} \
+--pid-file=${PIDFILE} \
+--redis-unixsocket=${REDIS_UNIXSOCK} \
+${EXTRA_CMD_ARGS} \
+"
+
+#
+# Functions
+#
+
+start() {
+	[ ! -d "${RUNDIR}" ] && {
+		mkdir ${RUNDIR}
+	}
+
+	[ -x ${BINARY} ] || {
+		echo "${NAME} not found: ${BINARY}"
+		exit 2
+	}
+
+	echo -n "Starting ${NAME}: "
+	${BINARY} ${CMDLINE_OPTS} "$@"
+	retval=$?
+	echo
+	return ${retval}
+}
+
+boot() {
+	start "$@"
+}
+
+action "$@"
+exit $?

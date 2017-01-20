@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>PhEmbed: D:/SkyVense/Code/vc6/Privatework/Projects.current/oray/PH50/Embed/src/PHGlobal.h源文件</title>
+<link href="tabs.css" rel="stylesheet" type="text/css">
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+</head><body>
+<!-- 制作者 Doxygen 1.5.9 -->
+<div class="navigation" id="top">
+  <div class="tabs">
+    <ul>
+      <li><a href="index.html"><span>首页</span></a></li>
+      <li><a href="annotated.html"><span>类</span></a></li>
+      <li class="current"><a href="files.html"><span>文件</span></a></li>
+    </ul>
+  </div>
+  <div class="tabs">
+    <ul>
+      <li><a href="files.html"><span>文件列表</span></a></li>
+      <li><a href="globals.html"><span>文件成员</span></a></li>
+    </ul>
+  </div>
+<h1>D:/SkyVense/Code/vc6/Privatework/Projects.current/oray/PH50/Embed/src/PHGlobal.h</h1><a href="_p_h_global_8h.html">浏览该文件的文档。</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">// PHGlobal.h: interface for the CBaseThread class.</span>
+<a name="l00002"></a>00002 <span class="comment">//</span>
+<a name="l00004"></a>00004 <span class="comment"></span>
+<a name="l00010"></a>00010 <span class="preprocessor">#ifndef __PHGLOBAL__H__</span>
+<a name="l00011"></a>00011 <span class="preprocessor"></span><span class="preprocessor">#define __PHGLOBAL__H__</span>
+<a name="l00012"></a>00012 <span class="preprocessor"></span><span class="preprocessor">#ifndef WIN32</span>
+<a name="l00013"></a>00013 <span class="preprocessor"></span><span class="preprocessor">#include &lt;sys/types.h&gt;</span>
+<a name="l00014"></a>00014 <span class="preprocessor">#include &lt;sys/socket.h&gt;</span>
+<a name="l00015"></a>00015 <span class="preprocessor">#include &lt;sys/ioctl.h&gt;</span>
+<a name="l00016"></a>00016 <span class="preprocessor">#include &lt;netinet/in.h&gt;</span>
+<a name="l00017"></a>00017 <span class="preprocessor">#include &lt;arpa/inet.h&gt;</span>
+<a name="l00018"></a>00018 <span class="preprocessor">#include &lt;unistd.h&gt;</span>
+<a name="l00019"></a>00019 <span class="preprocessor">#include &lt;errno.h&gt;</span>
+<a name="l00020"></a>00020 <span class="preprocessor">#include &lt;netdb.h&gt;</span>
+<a name="l00021"></a>00021 <span class="preprocessor">#include &lt;string.h&gt;</span>
+<a name="l00022"></a>00022 <span class="preprocessor">#include &lt;time.h&gt;</span>
+<a name="l00023"></a>00023 <span class="preprocessor">#include &lt;sys/timeb.h&gt;</span>
+<a name="l00024"></a>00024 <span class="preprocessor">#endif</span>
+<a name="l00025"></a>00025 <span class="preprocessor"></span>
+<a name="l00026"></a>00026 <span class="preprocessor">#ifdef WIN32</span>
+<a name="l00027"></a>00027 <span class="preprocessor"></span><span class="preprocessor">#include &lt;winsock.h&gt;</span>
+<a name="l00028"></a>00028 <span class="preprocessor">#define sleep(x) Sleep(x*1000)</span>
+<a name="l00029"></a>00029 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00030"></a>00030 <span class="preprocessor"></span>
+<a name="l00031"></a>00031 <span class="preprocessor">#include &lt;list&gt;</span>
+<a name="l00032"></a>00032 <span class="preprocessor">#include &lt;string&gt;</span>
+<a name="l00033"></a>00033 
+<a name="l00034"></a>00034 <span class="keyword">using namespace </span>std;
+<a name="l00035"></a>00035 <span class="preprocessor">#define MAX_TCP_PACKET_LEN      8192</span>
+<a name="l00036"></a>00036 <span class="preprocessor"></span>
+<a name="l00038"></a><a class="code" href="_p_h_global_8h.html#a83348a94fdc277f7b72e018dcd26c73">00038</a> <span class="keyword">enum</span> <a class="code" href="_p_h_global_8h.html#a83348a94fdc277f7b72e018dcd26c73" title="客户端状态">MessageCodes</a>
+<a name="l00039"></a>00039 {
+<a name="l00040"></a>00040         okConnected = 0,
+<a name="l00041"></a>00041         okAuthpassed,
+<a name="l00042"></a>00042         okDomainListed,
+<a name="l00043"></a>00043         okDomainsRegistered,
+<a name="l00044"></a>00044         okKeepAliveRecved,
+<a name="l00045"></a>00045         okConnecting,
+<a name="l00046"></a>00046         okRetrievingMisc,
+<a name="l00047"></a>00047         okRedirecting,
+<a name="l00048"></a>00048 
+<a name="l00049"></a>00049         errorConnectFailed = 0x100,
+<a name="l00050"></a>00050         errorSocketInitialFailed,
+<a name="l00051"></a>00051         errorAuthFailed,
+<a name="l00052"></a>00052         errorDomainListFailed,
+<a name="l00053"></a>00053         errorDomainRegisterFailed,
+<a name="l00054"></a>00054         errorUpdateTimeout,
+<a name="l00055"></a>00055         errorKeepAliveError,
+<a name="l00056"></a>00056         errorRetrying,
+<a name="l00057"></a>00057         errorAuthBusy,
+<a name="l00058"></a>00058         errorStatDetailInfoFailed,
+<a name="l00059"></a>00059         
+<a name="l00060"></a>00060 
+<a name="l00061"></a>00061         okNormal = 0x120,
+<a name="l00062"></a>00062         okNoData,
+<a name="l00063"></a>00063         okServerER,
+<a name="l00064"></a>00064         errorOccupyReconnect,
+<a name="l00065"></a>00065 };
+<a name="l00066"></a>00066 
+<a name="l00068"></a><a class="code" href="_p_h_global_8h.html#c82f0bdab7470de364dfd7dece1ef734">00068</a> <span class="preprocessor">#define COMMAND_AUTH    "auth router6\r\n"</span>
+<a name="l00069"></a>00069 <span class="preprocessor"></span><span class="preprocessor">#define COMMAND_REGI    "regi a"</span>
+<a name="l00070"></a>00070 <span class="preprocessor"></span><span class="preprocessor">#define COMMAND_CNFM    "cnfm\r\n"</span>
+<a name="l00071"></a>00071 <span class="preprocessor"></span><span class="preprocessor">#define COMMAND_STAT_USER    "stat user\r\n"</span>
+<a name="l00072"></a>00072 <span class="preprocessor"></span><span class="preprocessor">#define COMMAND_STAT_DOM     "stat domain\r\n"</span>
+<a name="l00073"></a>00073 <span class="preprocessor"></span><span class="preprocessor">#define COMMAND_QUIT    "quit\r\n"</span>
+<a name="l00074"></a>00074 <span class="preprocessor"></span>
+<a name="l00076"></a><a class="code" href="_p_h_global_8h.html#d0e9e2cb1721dcf14b6e0d5447df79b4">00076</a> <span class="preprocessor">#define UDP_OPCODE_UPDATE_VER2          0x2010</span>
+<a name="l00078"></a><a class="code" href="_p_h_global_8h.html#c02fe57c8f978aee50c8181a0e1c6e16">00078</a> <span class="preprocessor">#define UDP_OPCODE_UPDATE_OK            0x2050</span>
+<a name="l00080"></a><a class="code" href="_p_h_global_8h.html#f0e575dfcc72e7f1e6919dc129bee6a1">00080</a> <span class="preprocessor">#define UDP_OPCODE_UPDATE_ERROR         1000</span>
+<a name="l00081"></a>00081 <span class="preprocessor"></span>
+<a name="l00083"></a><a class="code" href="_p_h_global_8h.html#533205154887244a17605f3546b0715d">00083</a> <span class="preprocessor">#define UDP_OPCODE_LOGOUT                       11</span>
+<a name="l00084"></a>00084 <span class="preprocessor"></span>
+<a name="l00086"></a><a class="code" href="_p_h_global_8h.html#117ecf2714e5a79f42c1691fc37dfb65">00086</a> <span class="preprocessor">#define KEEPALIVE_PACKET_LEN    20</span>
+<a name="l00087"></a>00087 <span class="preprocessor"></span>
+<a name="l00089"></a>00089 <span class="keyword">const</span> <span class="keywordtype">char</span> *convert_status_code(<span class="keywordtype">int</span> nCode);
+<a name="l00090"></a>00090 
+<a name="l00092"></a>00092 <span class="keyword">const</span> <span class="keywordtype">char</span> *my_inet_ntoa(<span class="keywordtype">long</span> ip);
+<a name="l00093"></a>00093 
+<a name="l00095"></a><a class="code" href="struct_d_a_t_a___k_e_e_p_a_l_i_v_e.html">00095</a> <span class="keyword">struct </span><a class="code" href="struct_d_a_t_a___k_e_e_p_a_l_i_v_e.html" title="心跳包结构">DATA_KEEPALIVE</a> 
+<a name="l00096"></a>00096 {
+<a name="l00098"></a><a class="code" href="struct_d_a_t_a___k_e_e_p_a_l_i_v_e.html#dbbe5324bef8f9032c4005635748c0c5">00098</a>         <span class="keywordtype">long</span> <a class="code" href="struct_d_a_t_a___k_e_e_p_a_l_i_v_e.html#dbbe5324bef8f9032c4005635748c0c5" title="对话ID">lChatID</a>;
+<a name="l00100"></a><a class="code" href="struct_d_a_t_a___k_e_e_p_a_l_i_v_e.html#d0b8f964a4032f5b6448f208f0801661">00100</a>         <span class="keywordtype">long</span> <a class="code" href="struct_d_a_t_a___k_e_e_p_a_l_i_v_e.html#d0b8f964a4032f5b6448f208f0801661" title="操作码">lOpCode</a>;
+<a name="l00102"></a><a class="code" href="struct_d_a_t_a___k_e_e_p_a_l_i_v_e.html#1e1a039e987cb231a59eafd18b4e0701">00102</a>         <span class="keywordtype">long</span> <a class="code" href="struct_d_a_t_a___k_e_e_p_a_l_i_v_e.html#1e1a039e987cb231a59eafd18b4e0701" title="包ID">lID</a>;
+<a name="l00104"></a><a class="code" href="struct_d_a_t_a___k_e_e_p_a_l_i_v_e.html#36b7eb901c300b3d0b4707bcf1a25f04">00104</a>         <span class="keywordtype">long</span> <a class="code" href="struct_d_a_t_a___k_e_e_p_a_l_i_v_e.html#36b7eb901c300b3d0b4707bcf1a25f04" title="校验和">lSum</a>;
+<a name="l00106"></a><a class="code" href="struct_d_a_t_a___k_e_e_p_a_l_i_v_e.html#23b90c112e3402814ebd873a255b3f88">00106</a>         <span class="keywordtype">long</span> <a class="code" href="struct_d_a_t_a___k_e_e_p_a_l_i_v_e.html#23b90c112e3402814ebd873a255b3f88" title="保留字">lReserved</a>;
+<a name="l00107"></a>00107 };
+<a name="l00108"></a>00108 
+<a name="l00110"></a><a class="code" href="struct_d_a_t_a___k_e_e_p_a_l_i_v_e___e_x_t.html">00110</a> <span class="keyword">struct </span><a class="code" href="struct_d_a_t_a___k_e_e_p_a_l_i_v_e___e_x_t.html" title="更新包扩展结构，用于服务器返回时IP地址">DATA_KEEPALIVE_EXT</a>
+<a name="l00111"></a>00111 {
+<a name="l00112"></a>00112         <a class="code" href="struct_d_a_t_a___k_e_e_p_a_l_i_v_e.html" title="心跳包结构">DATA_KEEPALIVE</a> keepalive;
+<a name="l00113"></a>00113         <span class="keywordtype">long</span> ip;
+<a name="l00114"></a>00114 };
+<a name="l00115"></a>00115 
+<a name="l00117"></a><a class="code" href="struct_p_h_global.html">00117</a> <span class="keyword">struct </span><a class="code" href="struct_p_h_global.html" title="全局变量">PHGlobal</a>
+<a name="l00118"></a>00118 {
+<a name="l00119"></a>00119         <a class="code" href="struct_p_h_global.html" title="全局变量">PHGlobal</a>();
+<a name="l00120"></a>00120         ~<a class="code" href="struct_p_h_global.html" title="全局变量">PHGlobal</a>();
+<a name="l00121"></a>00121 <span class="comment">//basic system info</span>
+<a name="l00123"></a><a class="code" href="struct_p_h_global.html#17140fc628b5fa93b30d976677131350">00123</a> <span class="comment"></span>        <span class="keywordtype">long</span> <a class="code" href="struct_p_h_global.html#17140fc628b5fa93b30d976677131350" title="嵌入式客户端信息，4位客户端ID + 4位版本号">clientinfo</a>;
+<a name="l00125"></a><a class="code" href="struct_p_h_global.html#69f44b1a747b75350421f938a8b42eb4">00125</a>         <span class="keywordtype">long</span> <a class="code" href="struct_p_h_global.html#69f44b1a747b75350421f938a8b42eb4" title="嵌入式验证码">challengekey</a>;
+<a name="l00126"></a>00126 
+<a name="l00128"></a><a class="code" href="struct_p_h_global.html#44e42d892b537ab4370e411bbf40fab8">00128</a>         <span class="keywordtype">char</span> <a class="code" href="struct_p_h_global.html#44e42d892b537ab4370e411bbf40fab8" title="服务器地址">szHost</a>[256];
+<a name="l00130"></a><a class="code" href="struct_p_h_global.html#a4ed1c54fcb345089d33a79cd40f1751">00130</a>         <span class="keywordtype">short</span> <a class="code" href="struct_p_h_global.html#a4ed1c54fcb345089d33a79cd40f1751" title="服务器端口，6060固定">nPort</a>;
+<a name="l00132"></a><a class="code" href="struct_p_h_global.html#4d20922205a80e0db61b112e286bb563">00132</a>         <span class="keywordtype">char</span> <a class="code" href="struct_p_h_global.html#4d20922205a80e0db61b112e286bb563" title="用户账号名">szUserID</a>[256];
+<a name="l00134"></a><a class="code" href="struct_p_h_global.html#6a34fcdf84006d0c415efd5ea1378bee">00134</a>         <span class="keywordtype">char</span> <a class="code" href="struct_p_h_global.html#6a34fcdf84006d0c415efd5ea1378bee" title="用户密码明码">szUserPWD</a>[256];
+<a name="l00136"></a><a class="code" href="struct_p_h_global.html#0cc63f82e2d25f89929cabed35989c37">00136</a>         <span class="keywordtype">char</span> <a class="code" href="struct_p_h_global.html#0cc63f82e2d25f89929cabed35989c37" title="本地绑定地址，默认填空，用于多个网卡时指定出口">szBindAddress</a>[256];
+<a name="l00137"></a>00137 <span class="comment">//run-time controll variables</span>
+<a name="l00139"></a><a class="code" href="struct_p_h_global.html#f28035ec5783bca26374bf82987136d6">00139</a> <span class="comment"></span>        <span class="keywordtype">int</span> <a class="code" href="struct_p_h_global.html#f28035ec5783bca26374bf82987136d6" title="用户类型">nUserType</a>;
+<a name="l00140"></a>00140         <span class="keywordtype">bool</span> bTcpUpdateSuccessed;
+<a name="l00141"></a>00141         <span class="keywordtype">char</span> szChallenge[256];
+<a name="l00142"></a>00142         <span class="keywordtype">int</span> nChallengeLen;
+<a name="l00143"></a>00143         <span class="keywordtype">int</span> nChatID,nStartID,nLastResponseID;
+<a name="l00144"></a>00144         <span class="keywordtype">long</span> tmLastResponse;
+<a name="l00145"></a>00145         <span class="keywordtype">int</span> nAddressIndex;
+<a name="l00146"></a>00146         <span class="keywordtype">char</span> szTcpConnectAddress[32];
+<a name="l00147"></a>00147 
+<a name="l00148"></a>00148         <span class="keywordtype">int</span> cLastResult;
+<a name="l00149"></a>00149         <span class="keywordtype">long</span> ip;
+<a name="l00150"></a>00150 
+<a name="l00151"></a>00151         <span class="keywordtype">long</span> uptime;
+<a name="l00152"></a>00152         <span class="keywordtype">long</span> lasttcptime;
+<a name="l00153"></a>00153 
+<a name="l00154"></a>00154         <span class="keywordtype">char</span> szActiveDomains[255][255];
+<a name="l00155"></a>00155 
+<a name="l00156"></a>00156         std::string szUserInfo;
+<a name="l00157"></a>00157         std::string szDomainInfo;
+<a name="l00158"></a>00158 
+<a name="l00159"></a>00159         <span class="keywordtype">void</span> init();
+<a name="l00160"></a>00160 };
+<a name="l00161"></a>00161 
+<a name="l00162"></a>00162 
+<a name="l00163"></a>00163 <span class="preprocessor">#endif</span>
+</pre></div></div>
+<hr size="1"><address style="text-align: right;"><small>Generated at Tue Sep 15 11:01:32 2009 for PhEmbed by&nbsp;
+<a href="http://www.doxygen.org/index.html">
+<img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.9 </small></address>
+</body>
+</html>

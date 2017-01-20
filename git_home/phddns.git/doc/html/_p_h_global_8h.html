@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>PhEmbed: D:/SkyVense/Code/vc6/Privatework/Projects.current/oray/PH50/Embed/src/PHGlobal.h文件参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css">
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+</head><body>
+<!-- 制作者 Doxygen 1.5.9 -->
+<div class="navigation" id="top">
+  <div class="tabs">
+    <ul>
+      <li><a href="index.html"><span>首页</span></a></li>
+      <li><a href="annotated.html"><span>类</span></a></li>
+      <li class="current"><a href="files.html"><span>文件</span></a></li>
+    </ul>
+  </div>
+  <div class="tabs">
+    <ul>
+      <li><a href="files.html"><span>文件列表</span></a></li>
+      <li><a href="globals.html"><span>文件成员</span></a></li>
+    </ul>
+  </div>
+</div>
+<div class="contents">
+<h1>D:/SkyVense/Code/vc6/Privatework/Projects.current/oray/PH50/Embed/src/PHGlobal.h文件参考</h1>PHDDNS 客户端实现.  
+<a href="#_details">更多...</a>
+<p>
+<code>#include &lt;sys/types.h&gt;</code><br>
+<code>#include &lt;sys/socket.h&gt;</code><br>
+<code>#include &lt;sys/ioctl.h&gt;</code><br>
+<code>#include &lt;netinet/in.h&gt;</code><br>
+<code>#include &lt;arpa/inet.h&gt;</code><br>
+<code>#include &lt;unistd.h&gt;</code><br>
+<code>#include &lt;errno.h&gt;</code><br>
+<code>#include &lt;netdb.h&gt;</code><br>
+<code>#include &lt;string.h&gt;</code><br>
+<code>#include &lt;time.h&gt;</code><br>
+<code>#include &lt;sys/timeb.h&gt;</code><br>
+<code>#include &lt;list&gt;</code><br>
+<code>#include &lt;string&gt;</code><br>
+
+<p>
+<a href="_p_h_global_8h_source.html">浏览该文件的源代码。</a><table border="0" cellpadding="0" cellspacing="0">
+<tr><td></td></tr>
+<tr><td colspan="2"><br><h2>组合类型</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_a_t_a___k_e_e_p_a_l_i_v_e.html">DATA_KEEPALIVE</a></td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">心跳包结构  <a href="struct_d_a_t_a___k_e_e_p_a_l_i_v_e.html#_details">更多...</a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_d_a_t_a___k_e_e_p_a_l_i_v_e___e_x_t.html">DATA_KEEPALIVE_EXT</a></td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">更新包扩展结构，用于服务器返回时IP地址  <a href="struct_d_a_t_a___k_e_e_p_a_l_i_v_e___e_x_t.html#_details">更多...</a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_p_h_global.html">PHGlobal</a></td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">全局变量  <a href="struct_p_h_global.html#_details">更多...</a><br></td></tr>
+<tr><td colspan="2"><br><h2>宏定义</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="4cd601076fe485747634126d22a4209e"></a><!-- doxytag: member="PHGlobal.h::MAX_TCP_PACKET_LEN" ref="4cd601076fe485747634126d22a4209e" args="" -->
+#define&nbsp;</td><td class="memItemRight" valign="bottom"><b>MAX_TCP_PACKET_LEN</b>&nbsp;&nbsp;&nbsp;8192</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="c82f0bdab7470de364dfd7dece1ef734"></a><!-- doxytag: member="PHGlobal.h::COMMAND_AUTH" ref="c82f0bdab7470de364dfd7dece1ef734" args="" -->
+#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_p_h_global_8h.html#c82f0bdab7470de364dfd7dece1ef734">COMMAND_AUTH</a>&nbsp;&nbsp;&nbsp;&quot;auth router6\r\n&quot;</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">TCP指令表. <br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="6c8ab58b0cae1a108ed5a3be7ad65945"></a><!-- doxytag: member="PHGlobal.h::COMMAND_REGI" ref="6c8ab58b0cae1a108ed5a3be7ad65945" args="" -->
+#define&nbsp;</td><td class="memItemRight" valign="bottom"><b>COMMAND_REGI</b>&nbsp;&nbsp;&nbsp;&quot;regi a&quot;</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="565d65d5a454fa9bedcae0cbc07da1c7"></a><!-- doxytag: member="PHGlobal.h::COMMAND_CNFM" ref="565d65d5a454fa9bedcae0cbc07da1c7" args="" -->
+#define&nbsp;</td><td class="memItemRight" valign="bottom"><b>COMMAND_CNFM</b>&nbsp;&nbsp;&nbsp;&quot;cnfm\r\n&quot;</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="395aec8645354ffb98c4b39245f4de6e"></a><!-- doxytag: member="PHGlobal.h::COMMAND_STAT_USER" ref="395aec8645354ffb98c4b39245f4de6e" args="" -->
+#define&nbsp;</td><td class="memItemRight" valign="bottom"><b>COMMAND_STAT_USER</b>&nbsp;&nbsp;&nbsp;&quot;stat user\r\n&quot;</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="f315d8ae11cf97f7f1602133098f220a"></a><!-- doxytag: member="PHGlobal.h::COMMAND_STAT_DOM" ref="f315d8ae11cf97f7f1602133098f220a" args="" -->
+#define&nbsp;</td><td class="memItemRight" valign="bottom"><b>COMMAND_STAT_DOM</b>&nbsp;&nbsp;&nbsp;&quot;stat domain\r\n&quot;</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="a233a540329ec11b1b6d396c7aba428c"></a><!-- doxytag: member="PHGlobal.h::COMMAND_QUIT" ref="a233a540329ec11b1b6d396c7aba428c" args="" -->
+#define&nbsp;</td><td class="memItemRight" valign="bottom"><b>COMMAND_QUIT</b>&nbsp;&nbsp;&nbsp;&quot;quit\r\n&quot;</td></tr>
+
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="d0e9e2cb1721dcf14b6e0d5447df79b4"></a><!-- doxytag: member="PHGlobal.h::UDP_OPCODE_UPDATE_VER2" ref="d0e9e2cb1721dcf14b6e0d5447df79b4" args="" -->
+#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_p_h_global_8h.html#d0e9e2cb1721dcf14b6e0d5447df79b4">UDP_OPCODE_UPDATE_VER2</a>&nbsp;&nbsp;&nbsp;0x2010</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">心跳包更新指令 <br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="c02fe57c8f978aee50c8181a0e1c6e16"></a><!-- doxytag: member="PHGlobal.h::UDP_OPCODE_UPDATE_OK" ref="c02fe57c8f978aee50c8181a0e1c6e16" args="" -->
+#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_p_h_global_8h.html#c02fe57c8f978aee50c8181a0e1c6e16">UDP_OPCODE_UPDATE_OK</a>&nbsp;&nbsp;&nbsp;0x2050</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">心跳包服务器返回正常 <br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="f0e575dfcc72e7f1e6919dc129bee6a1"></a><!-- doxytag: member="PHGlobal.h::UDP_OPCODE_UPDATE_ERROR" ref="f0e575dfcc72e7f1e6919dc129bee6a1" args="" -->
+#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_p_h_global_8h.html#f0e575dfcc72e7f1e6919dc129bee6a1">UDP_OPCODE_UPDATE_ERROR</a>&nbsp;&nbsp;&nbsp;1000</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">心跳包服务器返回错误 <br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="533205154887244a17605f3546b0715d"></a><!-- doxytag: member="PHGlobal.h::UDP_OPCODE_LOGOUT" ref="533205154887244a17605f3546b0715d" args="" -->
+#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_p_h_global_8h.html#533205154887244a17605f3546b0715d">UDP_OPCODE_LOGOUT</a>&nbsp;&nbsp;&nbsp;11</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">心跳包注销登录 <br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="117ecf2714e5a79f42c1691fc37dfb65"></a><!-- doxytag: member="PHGlobal.h::KEEPALIVE_PACKET_LEN" ref="117ecf2714e5a79f42c1691fc37dfb65" args="" -->
+#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_p_h_global_8h.html#117ecf2714e5a79f42c1691fc37dfb65">KEEPALIVE_PACKET_LEN</a>&nbsp;&nbsp;&nbsp;20</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">心跳包核心大小 <br></td></tr>
+<tr><td colspan="2"><br><h2>枚举</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">enum &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_p_h_global_8h.html#a83348a94fdc277f7b72e018dcd26c73">MessageCodes</a> { <br>
+&nbsp;&nbsp;<b>okConnected</b> =  0, 
+<b>okAuthpassed</b>, 
+<b>okDomainListed</b>, 
+<b>okDomainsRegistered</b>, 
+<br>
+&nbsp;&nbsp;<b>okKeepAliveRecved</b>, 
+<b>okConnecting</b>, 
+<b>okRetrievingMisc</b>, 
+<b>okRedirecting</b>, 
+<br>
+&nbsp;&nbsp;<b>errorConnectFailed</b> =  0x100, 
+<b>errorSocketInitialFailed</b>, 
+<b>errorAuthFailed</b>, 
+<b>errorDomainListFailed</b>, 
+<br>
+&nbsp;&nbsp;<b>errorDomainRegisterFailed</b>, 
+<b>errorUpdateTimeout</b>, 
+<b>errorKeepAliveError</b>, 
+<b>errorRetrying</b>, 
+<br>
+&nbsp;&nbsp;<b>errorAuthBusy</b>, 
+<b>errorStatDetailInfoFailed</b>, 
+<b>okNormal</b> =  0x120, 
+<b>okNoData</b>, 
+<br>
+&nbsp;&nbsp;<b>okServerER</b>, 
+<b>errorOccupyReconnect</b>
+<br>
+ }</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">客户端状态 <br></td></tr>
+<tr><td colspan="2"><br><h2>函数</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="ce32c8d31fb667e67af8676f3e3197f2"></a><!-- doxytag: member="PHGlobal.h::convert_status_code" ref="ce32c8d31fb667e67af8676f3e3197f2" args="(int nCode)" -->
+const char *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_p_h_global_8h.html#ce32c8d31fb667e67af8676f3e3197f2">convert_status_code</a> (int nCode)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">转换状态码到文本串 <br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="5b7368889e915077c67d42d71a96f658"></a><!-- doxytag: member="PHGlobal.h::my_inet_ntoa" ref="5b7368889e915077c67d42d71a96f658" args="(long ip)" -->
+const char *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_p_h_global_8h.html#5b7368889e915077c67d42d71a96f658">my_inet_ntoa</a> (long ip)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">转换IP地址到文本串 <br></td></tr>
+</table>
+<hr><h2>详细描述</h2>
+PHDDNS 客户端实现. 
+<p>
+<dl class="author" compact><dt><b>作者:</b></dt><dd>skyvense </dd></dl>
+<dl class="date" compact><dt><b>日期:</b></dt><dd>2009-09-14 </dd></dl>
+
+<p>在文件<a class="el" href="_p_h_global_8h_source.html">PHGlobal.h</a>中定义。</p>
+</div>
+<hr size="1"><address style="text-align: right;"><small>Generated at Tue Sep 15 11:01:32 2009 for PhEmbed by&nbsp;
+<a href="http://www.doxygen.org/index.html">
+<img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.9 </small></address>
+</body>
+</html>

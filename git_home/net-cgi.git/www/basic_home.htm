@@ -1,0 +1,255 @@
+<% http_header("style/basic_home.css", "funcs.js", "basic.js", "jquery-1.7.2.min.js") %>
+
+<% func_header("_Wizard_setup", "BRS_03A_detcInetType.html", "wizard_detwan") %>
+<style>
+#pwd_div {width:176px; margin:0 auto; white-space: nowrap; overflow:hidden;}
+#passwd {width:auto; margin:0 auto; white-space: nowrap; overflow:hidden;}
+#pwd_div #pwd_begin, #pwd_div #pwd_end {display: inline;}
+#pwd_label {float:left; padding-right:3px;}
+</style>
+<script language="javascript" type="text/javascript">
+var portstatus = "<% cat_file("/tmp/port_status")  %>";
+var enable_action=1;
+var enabled_wds="<% wds_enable() %>";
+var enabled_wps="<% wps_menu() %>";
+var enable_ap_flag="<% cfg_get("ap_mode") %>";
+var enable_bridge_flag="<% cfg_get("bridge_mode") %>";
+var gui_region="<% cfg_get("GUI_Region") %>";
+var parental_ctrl_flag = parent.parental_ctrl_flag;
+parent.ParentalControl = "<% cfg_get("ParentalControl") %>";
+ParentalControl = parent.ParentalControl;
+
+var select_basic="<% cfg_get("internet_type") %>";
+var select_type="<% cfg_get("internet_ppp_type") %>";
+var endis_wl_radio='<% enable_ap_orNot("bgn") %>';
+var endis_wla_radio='<% enable_ap_orNot("an") %>';
+var enable_qos="<% cfg_get("streamboost_enable") %>";
+var gui_region="<% cfg_get("GUI_Region") %>";
+var basic_dynamic_page = "<% cfg_get("basic_dynamic_page") %>";
+
+var SH=[
+	["\\", "&#92;"],
+	["\"", "&#34;"],
+	["(",  "&#40;"],
+	[")",  "&#41;"],
+	["#",  "&#35;"],
+	["&",  "&#38;"],
+	["&",  "&amp;"],
+	["<",  "&lt;" ],
+	[">",  "&gt;" ],
+	["'",  "&#39;"],
+	[" ",  "&nbsp;"]
+	];
+
+function StoH(s)
+{
+	var val="";
+	var changed=0;
+	for(var i=0; i<s.length; i++)
+	{
+		changed=0;
+		for(var j=0; j<SH.length; j++)
+		{
+			if(s.charAt(i) == SH[j][0])
+			{
+				changed=1;
+				break;
+			}
+		}
+		if(changed == 1 )
+			val = val + SH[j][1];
+		else
+			val = val + s.charAt(i);
+	}
+	return val;
+}
+
+function HtoS(s)
+{
+	var val="";
+	var changed=0;
+	for(var i=0; i<s.length;)
+	{
+		changed=0;
+		for(var j=0; j<SH.length; j++)
+		{
+			if(s.substr(i, Math.min(SH[j][1].length, s.length-i+1)) == SH[j][1])
+			{
+				changed=1;
+				break;
+			}
+		}
+		if(changed == 1 )
+		{
+			val = val + SH[j][0];
+			i=i+SH[j][1].length;
+		}
+		else
+		{
+			val = val + s.charAt(i);
+			i++;
+		}
+	}
+	return val;
+}
+
+var isSynchronous=0;
+
+$$(document).ready(function(){
+	please_wait(false);
+	scrollPassword();
+	setIconClass("internet_stat","wlan_stat","attached_stat","parant_control_stat","readyshare_stat","guestNetwork_stat");
+
+	//$$(".scroll").css("font-family", "Courier, MonoSpace");
+	bs = $$("div.scroll");
+	seq=[];
+	originner=[];
+	max=18;
+	maxlen=0;
+	interval=700;
+
+	for(var i=0; i<bs.length; i++)
+	{
+		originner[i]=splitHtml(bs[i].innerHTML);
+		seq[i]=0;
+
+		var sum = originner[i][0].length + originner[i][2].length;
+		//alert("["+originner[i][0]+"]["+originner[i][2]+"]");
+		if(maxlen < sum)// get the max string's length
+			maxlen = sum;
+		}
+		if(enable_ap_flag == "1" || enable_bridge_flag == "1")
+			scroll();
+	}
+);
+
+function splitHtml(str)
+{
+	//str = "111: <b> 333 </b>"
+	//result = ["111", "<b>", "333", "</b>"]
+	var result=[];
+	var a = str.split('<');
+	var b = a[1].split('>');
+	result[0] = a[0];
+	result[1] = '<'+b[0]+'>';
+	result[2] = HtoS(b[1]);
+	result[3] = '<'+a[2];
+
+	return result;
+}
+
+function scroll()
+{
+	for( var i=0; i<bs.length; i++)
+	{
+		var len1 = originner[i][0].length;
+		var len2 = originner[i][2].length;
+		var sum = len1 + len2;
+		var msg1=originner[i][0];
+		var tag1=originner[i][1];
+		var msg2=originner[i][2];
+		var tag2=originner[i][3];
+		var s = seq[i];
+		var m = max;
+		var result="";
+
+		if(sum <= m )//short strings not need to scroll
+			continue;
+
+		if(isSynchronous == 1)
+		{
+			for(var t=0; t<maxlen-sum+1; t++)//add spaces, to make all strings have the same length, then scroll synchronous
+				msg2=msg2+" ";
+		}
+		else
+			msg2=msg2+" ";
+
+		len2 = msg2.length;
+		sum = len1+len2;
+		//alert(s+"/"+sum);
+
+		if( (sum-s) >= m)
+		{
+			if( s < len1 )
+				result = StoH(msg1.substring(s, len1)) + tag1 + StoH(msg2.substr(0, m-len1+s)) + tag2;
+			else
+				result = tag1 + StoH(msg2.substr(s-len1, m)) + tag2;
+		}
+		else
+		{
+			var backnum = m-(sum-s);
+			if( s < len1)
+				result = StoH(msg1.substring(s, len1)) + tag1 + StoH(msg2) + tag2 + StoH(msg1.substr(0, backnum));
+			else if( backnum < len1)
+				result = tag1 + StoH(msg2.substring(s-len1, len2)) + tag2 + StoH(msg1.substr(0, backnum));
+			else
+				result = tag1 + StoH(msg2.substring(s-len1, len2)) + tag2 + StoH(msg1) + tag1 + StoH(msg2.substr(0, backnum - len1))+ tag2;
+
+		}
+
+		bs[i].innerHTML=result;
+		seq[i]++;
+
+		if(seq[i] >= sum)
+			seq[i] = 0;
+	}
+
+	setTimeout("scroll();", interval);
+}
+
+function scrollPassword() {
+	var speed = 40;
+	var scroll_begin = document.getElementById("pwd_begin");
+	var scroll_end = document.getElementById("pwd_end");
+	var scroll_div = document.getElementById("passwd");
+	var content_div = document.getElementById("pwd_div");
+	var label = document.getElementById("pwd_label");
+
+	var len = label.offsetWidth + scroll_begin.offsetWidth;
+	if(len < 176)
+	{
+		label.style.marginLeft = (175-len)/2 + "px";
+		scroll_div.style.float = "left";
+		return;
+	}
+	scroll_begin.style.marginRight = "15px";
+	scroll_end.style.marginRight = "15px";
+	scroll_end.innerHTML = scroll_begin.innerHTML;
+
+	function marquee(){
+		if(scroll_end.offsetWidth - scroll_div.scrollLeft <= -13)
+			scroll_div.scrollLeft = scroll_div.scrollLeft - scroll_begin.offsetWidth -13;
+		else
+			scroll_div.scrollLeft++;
+	}
+	var myScroll = setInterval(marquee, speed);
+	scroll_div.onmouseover = function(){ clearInterval(myScroll); };
+	scroll_div.onmouseout = function(){ myScroll = setInterval(marquee, speed); }
+}
+</script>
+
+<div id="form">
+<div id="form_content">
+	<% basic_internet() %>
+	<% basic_wireless() %>
+	<div id="attached" class="basic_icon">
+		<div class="icon_click" onclick="click_action('attached');"></div>
+		<script>
+		if(gui_region == "Polish")
+			document.write('<div class="icon1_name" onclick="click_action(\'attached\');">$attach_device</div>');
+		else
+			document.write('<div class="icon_name" onclick="click_action(\'attached\');">$attach_device</div>');
+		</script>
+		<div id="attached_stat" class="icon_status"><span><div onclick="click_action('attached');">$num_devs:<b><% basic_device_num() %></b></div></span></div>
+	</div>
+	<div id="parental" class="basic_icon" onclick="click_action('parental');">
+		<div class="icon_name">$parental_control</div>
+		<div id="parant_control_stat" class="icon_status"><span>$status_mark <b><% basic_parental_state() %></b></span></div>
+	</div>
+	<% basic_readyshare() %>
+	<% basic_guest() %>
+</div><!-- form_content -->
+</div><!-- form -->
+</form>
+</body>
+</html>

@@ -1,0 +1,113 @@
+--- a/Documentation/devicetree/bindings/net/qcom-ag71xx.txt
++++ b/Documentation/devicetree/bindings/net/qcom-ag71xx.txt
+@@ -0,0 +1,110 @@
++* Qualcomm MDIO IO device
++
++Required properties:
++- compatible : Should be "qcom,ag71xx-mdio"
++- reg : Address and length of the register set for the device
++- reg-names : Resource name
++
++Optional properties:
++- bi-phy-addr : phy address
++- bi-port0-cfg : <force_link speed txpause rxpause duplex>
++		force_link: 0 disable, 1 enable
++		speed: 0 10M, 1 100M, 2 1000M
++		txpause: 0 disable, 1 enable
++		rxpause: 0 disable, 1 enable
++		duplex: 0 half, 1 full
++- bi-port5-cfg : <force_link speed txpause rxpause duplex>
++		Definition is same as bi-port0-cfg.
++- bi-port6-cfg : <force_link speed txpause rxpause duplex>
++		Definition is same as bi-port0-cfg.
++- bi-led-cfg : <led_ctrl0 led_ctrl1 led_ctrl2 led_ctrl3 open_drain>
++		led_ctrl0: value of LED control Register 0
++		led_ctrl1: value of LED control Register 1
++		led_ctrl2: value of LED control Register 2
++		led_ctrl3: value of LED control Register 3
++		open_drain: 0 disable, 1 enable
++- bi-pad0-cfg : <mode rxclk_sel txclk_sel pipe_rxclk_sel txclk_delay_en
++		rxclk_delay_en txclk_delay_sel rxclk_delay_sel
++		sgmii_txclk_phase_sel sgmii_rxclk_phase_sel>
++		mode: 0 invalid, 1 MAC2MAC_MII, 2 MAC2MAC_GMII, 3 MAC_SGMII,
++		      4 MAC2PHY_MII, 5 MAC2PHY_GMII, 6 MAC_RGMII, 7 PHY_GMII,
++		      8 PHY_RGMII, 9 PHY_MII
++		rxclk_sel: 0 disable, 1 enable
++		txclk_sel: 0 disable, 1 enable
++		pipe_rxclk_sel: 0 disable, 1 enable
++		txclk_delay_en: 0 disable, 1 enable
++		rxclk_delay_en: 0 disable, 1 enable
++		txclk_delay_sel: 0 disable, 1 enable
++		rxclk_delay_sel: 0 disable, 1 enable
++		sgmii_txclk_phase_sel: Valid value should be 0, 1, 2, 3, refer to
++				       the user manul of ar8327 for detail.
++		sgmii_rxclk_phase_sel: Valid value should be 0, 1, 2, 3, refer to
++				       the user manul of ar8327 for detail.
++- bi-pad5-cfg : <mode rxclk_sel txclk_sel pipe_rxclk_sel txclk_delay_en
++		rxclk_delay_en txclk_delay_sel rxclk_delay_sel
++		sgmii_txclk_phase_sel sgmii_rxclk_phase_sel>
++		Definition is same as bi-pad0-cfg.
++- bi-pad6-cfg : <mode rxclk_sel txclk_sel pipe_rxclk_sel txclk_delay_en
++		rxclk_delay_en txclk_delay_sel rxclk_delay_sel
++		sgmii_txclk_phase_sel sgmii_rxclk_phase_sel>
++		Definition is same as bi-pad0-cfg.
++
++Example:
++
++MDIO0: mdio@19000000 {
++	compatible = "qcom,ag71xx-mdio";
++	reg = <0x19000000 0x200>;
++	reg-names = "mdio_base";
++
++	bi-phy-addr = <0>;
++	bi-port0-cfg = <1 2 1 1 1>;
++	bi-led-cfg = <0 0xc737c737 0 0x00c30c00 1>;
++	bi-pad0-cfg = <6 0 0 0 1 1 1 2 0 0>;
++};
++
++* Qualcomm ag71xx Ethernet driver
++
++Required properties:
++- compatible : Should be "qcom,ag71xx-eth"
++- reg : Address and length of the register set for the device
++- reg-names : Memory resource name
++- interrupts : Interrupt resourse
++- interrupt-names : Interrupt resource name
++- interrupt-parent : The phandle of the interrupt controller
++- mdio-handle : The phandle for the PHY connected to this ethernet controller
++
++Optional properties:
++- eth-cfg : The value is to configure GMAC Register(ETH_CFG), the bit definition
++	    is different of platforms, refer to the user manual for detail.
++- eth-phy-cfg : < phy_if_mode phy_mask speed duplex>
++	    phy_if_mode: 0 invalid, 1 MII, 2 GMII, 3 SGMII, 4 TBI, 5 RMII, 6 RGMII,
++	    		 7 RGMII_ID, 8 RGMII_RXID, 9 RGMII_TXID, 10 RTBI, 11 SMII
++	    phy_mask: Phy mask
++	    speed:  10 10M, 100 100M, 1000 1000M
++	    duplex: 0 half, 1 full
++- eth-fifo-cfg : <fifo_cfg1 fifo_cfg2 fifo_cfg3>
++	    The values of fifo Registers, refer to user manual for detail.
++- eth-pll-data : <pll_10 pll_100 pll_1000>
++	    The values of pll Registers, refer to user manual for detail.
++- eth-sw-cfg :  <phy4_mii_en phy_poll_mask>
++	    phy4_mii_en: Enable phy4 MII
++	    phy_poll_mask: Phy polling mask
++
++Example:
++
++ETH0: ethernet@19000000 {
++	compatible = "qcom,ag71xx-eth";
++	reg = <0x19000000 0x200>,
++	    <0x18070000 0x14>;
++	reg-names = "mac_base",
++		"cfg_base";
++	interrupts = <4>;
++	interrupt-names = "mac_irq";
++	interrupt-parent = <&vic>;
++	mdio-handle = <&MDIO0>;
++
++	eth-cfg = <0x00000041>;
++	eth-phy-cfg = <6 1 1000 1>;
++	eth-fifo-cfg = <0 0 0>;
++	eth-pll-data = <0 0 0x06000000>;
++};

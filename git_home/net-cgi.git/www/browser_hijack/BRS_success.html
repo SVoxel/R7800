@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_success.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_hijack_success.js"></script>
+<% hijack_language() %>
+<% hijack_success_page() %>
+</head>
+<% wizlog_congratulations_ck15() %>
+<% wan1_and_wan2_configed() %>
+<body>
+<form action="NETGEAR_WNDR3700.cfg" method="post" enctype="multipart/form-data">
+<input type="hidden" name="submit_flag" value="hijack_success" />
+<input type="hidden" name="click_flag" value="0" />
+<script language="javascript" type="text/javascript">
+var ts = "<% hijack_get_timestamp("hijack_success") %>";
+var have_click_take_me_to_internet = "<% cfg_get("have_click_take_me_to_internet") %>";
+var an_router_flag = "<% get_an_router_flag() %>";
+<% cd_less_flag() %>
+<% cfg_set("wiz_success", "1") %>
+//fix bug 29052
+var wl_sectype="<% cfg_get("wl_sectype") %>";
+var wla_sectype="<% cfg_get("wla_sectype") %>";
+var wl_passphrase="<% passphrase_bg_msg() %>";
+var wla_passphrase="<% passphrase_ag_msg() %>";
+var wl_tooltip1=0;
+var wla_tooltip1=0;
+var netgear_region="<% get_firmware_region() %>"
+var gui_region = "<% cfg_get("GUI_Region") %>";
+var browser_lang="<% get_browser_language() %>";
+</script>
+
+<div class="wizard_content_div">
+
+	<div id="words_div_success" class="wizard_words_div">
+		
+		<h2 id="message"><!--congratulations--></h2>
+
+		<p><!--connect_success_1--></p>
+		
+		<p>
+			<script language="javascript" type="text/javascript">
+			if(an_router_flag == "0")
+			{
+				if(wl_sectype == 1)
+				{
+					document.write(bh_success_no_wireless_security_1);				
+					document.write("<font id=\"a\" onclick=\"click_here();\" >"+bh_success_no_wireless_security_2+"</font>");
+					document.write(bh_success_no_wireless_security_3);
+				}
+				else
+				{
+					document.write(bh_connect_success_2);
+					if(wl_sectype == 4)
+					{
+						wl_tooltip1 = 1;
+						document.write('<u id="key_tooltip_1">'+bh_network_key+'</u>');
+					}
+					else
+						document.write(bh_network_key);
+				}
+			}
+			else
+			{
+				if(wl_sectype == 1 && wla_sectype == 1)
+				{
+					document.write(bh_success_no_wireless_security_1);				
+					document.write("<font id=\"a\" onclick=\"click_here();\" >"+bh_success_no_wireless_security_2+"</font>");
+					document.write(bh_success_no_wireless_security_3);
+				}					
+				else
+				{
+					document.write(bh_connect_success_2);
+					if(wl_sectype == 4 && wla_sectype == 4)
+					{
+						wla_tooltip1 = 1;
+						document.write('<u id="key_tooltip_1">'+bh_network_key+'</u>');
+					}
+					else
+						document.write(bh_network_key);
+				}
+			}							
+			</script>
+		</p>
+		
+		<script>
+		if(an_router_flag == "0")
+			document.write('<div id="info_div_24">');
+		else
+			document.write('<div id="info_div">');
+		</script>
+			<div id="network_name" class="left_div"><!--wirless_name--></div>
+			<div class="right_div"><% cfg_get_ssid_html("wl_ssid") %></div>
+
+			<div id="div_5G">
+			<div id="network_name_5G" class="left_div"><!--wirless_name--></div>
+			<div class="right_div"><% cfg_get_ssid_html("wla_ssid") %></div>
+			</div>
+			
+			<div id="passpharse" class="left_div">
+			<script language="javascript" type="text/javascript">
+				if(an_router_flag == "0" || (wl_sectype == wla_sectype && wl_passphrase == wla_passphrase))
+					document.write(bh_wireless +" ");
+				else
+					document.write("2.4GHz " + bh_wireless +" ");
+				if(wl_tooltip1 == 1 || wla_tooltip1 == 1)
+					document.write('<u id="key_tooltip_2">'+bh_wpa_wpa2_passpharse+'</u>');
+				else
+					document.write(bh_wpa_wpa2_passpharse);
+			</script>
+			</div>
+			<div class="right_div"><% passphrase_bg_msg() %>
+			</div>
+			
+			<div id="passwd_5G">
+			<div id="passpharse_5G" class="left_div">
+			<script language="javascript" type="text/javascript">
+				document.write("5GHz " + bh_wireless + " ");
+				if(wla_tooltip1 == 1)
+					document.write('<u id="key_tooltip_3">'+bh_wpa_wpa2_passpharse+'</u>');
+				else
+					document.write(bh_wpa_wpa2_passpharse);
+			</script>
+			</div>
+			<div class="right_div"><% passphrase_ag_msg() %></div>
+			</div>
+			
+			<div style="clear:both"></div>
+		</div>
+	
+	</div>
+
+	<div id="allBtns_div" class="wizard_buttons_div">
+
+		<div id="btnsContainer_div1" class="buttons_img_div" align="center">
+		<script>
+			var master="<% cfg_get("http_loginname") %>";
+			if( master == "admin" )
+				document.write('<img src="image/ca-little-purple-button.gif" />');
+			else
+				document.write('<img src="image/ca-little-grey-button.png" />');
+		</script>
+			<div class="buttons_words_div"><!--save_settings--></div>
+		</div>
+		
+		<!--div class="success_buttons_split"></div-->
+		
+		<div id="btnsContainer_div2" class="buttons_img_div" align="center">
+			<script>
+			
+			if( master == "admin" )
+				document.write('<img src="image/ca-little-purple-button.gif" />');
+			else
+				document.write('<img src="image/ca-little-grey-button.png" />');
+		</script>
+			<div class="buttons_words_div"><!--print_this--></div>
+		</div>
+		
+		<!--div class="success_buttons_split"></div-->
+		
+		<div  id="btnsContainer_div3" class="buttons_img_div" align="center">
+		<script>
+			if( master == "admin" )
+				document.write('<img src="image/ca-little-green-buitton.gif" />');
+			else
+				document.write('<img src="image/ca-little-grey-button.png" />');
+		</script>
+			<div class="buttons_words_div"><!--take_to_internet--></div>
+		</div>
+
+		<!--div class="success_buttons_split"></div-->
+		<div id="btnsContainer_div4" class="buttons_img_div" align="center">
+			<img src="image/ca-little-purple-button.gif" />
+			<div class="buttons_words_div"><!--next--></div>
+		</div>
+
+
+	</div>
+
+</div>
+
+</form>
+</body>
+
+</html>

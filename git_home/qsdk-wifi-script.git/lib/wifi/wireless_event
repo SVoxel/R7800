@@ -1,0 +1,11 @@
+#!/bin/sh
+
+case "$ACTION" in
+    RADARDETECT)
+        [ -f /tmp/radardetect.pid ] || /usr/sbin/radardetect
+
+        for chan in `echo $CHANNEL | sed 's/,/ /g'`; do 
+            /usr/sbin/radardetect_cli -a $chan
+        done
+esac
+

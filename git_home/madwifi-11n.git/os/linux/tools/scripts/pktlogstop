@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#
+# Copyright (c) 2013 Qualcomm Atheros, Inc.
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary.
+#
+
+pktlogconf  -d
+pktlogdump  -b pktlogdump.dat
+owldump.pl -Bea pktlogdump.dat > dump.text

@@ -1,0 +1,112 @@
+#!/bin/sh
+# in brmode & extmode, this script is used to monitor wireless link
+
+. /lib/cfgmgr/cfgmgr.sh
+
+brmode_wlg_linked() {
+	[ "$(awk 'NR==3' /proc/sys/net/ath1/status)" = "RUN" ]
+}
+
+brmode_wla_linked() {
+	[ "$(awk 'NR==3' /proc/sys/net/ath0/status)" = "RUN" ]
+}
+
+extmode_wlg_linked() {
+	[ "$(awk 'NR==3' /proc/sys/net/ath1/status)" = "RUN" ]
+}
+
+extmode_wla_linked() {
+	[ "$(awk 'NR==3' /proc/sys/net/ath0/status)" = "RUN" ]
+}
+
+extmode_wlg_fixup()
+{
+	oc echo "unable to estabilish extmode 2.4G wireless link !"
+	local extchannel=$(/usr/sbin/extkit 2g scan | awk -v ssid=$(config get wlg_ext_ssid) '
+	BEGIN {var = "\x22" ssid "\x22"}
+	{ if ($1 == var) { print $2; exit } }
+	')
+
+	[ -n ${extchannel} -a "${extchannel}" != "$($CONFIG get wlg_ext_channel)" ] && {
+		oc echo "new 2.4G ext channel : $extchannel !"
+		$CONFIG set wlg_ext_channel="$extchannel" && $CONFIG commit
+		/etc/init.d/wlan-common restart
+	}
+}
+
+brmode_wlg_fixup() { oc echo "unable to estabilish brmode 2.4G wireless link !"; }
+brmode_wla_fixup() { oc echo "unable to estabilish brmode 5G wireless link !"; }
+extmode_wlg_fixup() { oc echo "unable to estabilish extmode 2.4G wireless link !"; }
+extmode_wla_fixup() { oc echo "unable to estabilish extmode 5G wireless link !"; }
+
+get_hostname() {
+	cat /proc/sys/kernel/hostname
+}
+
+udhcpc_existed() {
+	[ "x$(pidof udhcpc)" != "x" ]
+}
+
+# global variables : g_wl_linked means judge wireless link success or fail funtion.
+# g_wl_fixup means wireless link failed. 
+setup_global_variables_or_exit()
+{
+	case "$($CONFIG get i_opmode)" in
+	brmode)
+		if [ "$($CONFIG get bridge_band_choose)" = "5g" ]; then
+			g_wl_linked=brmode_wla_linked
+			g_wl_fixup=brmode_wla_fixup
+		else
+			g_wl_linked=brmode_wlg_linked
+			g_wl_fixup=brmode_wlg_fixup
+		fi
+		;;
+	extmode)
+		if [ "x$($CONFIG get wla_ext_enabled)" = "x1" ]; then
+			g_wl_linked=extmode_wla_linked
+			g_wl_fixup=extmode_wla_fixup
+		else
+			g_wl_linked=extmode_wlg_linked
+			g_wl_fixup=extmode_wlg_fixup
+		fi
+		;;
+	*)
+		echo "only for brmode or extmode !"
+		exit
+		;;
+	esac
+}
+
+setup_global_variables_or_exit
+g_udhcpc_h_arg="-h $(get_hostname)"
+g_udhcpc_r_arg="-r $($CONFIG get ap_dhcp_ipaddr)"
+oc echo "g_wl_linked=$g_wl_linked, g_wl_fixup=$g_wl_fixup"
+oc echo "g_udhcpc_h_arg=$g_udhcpc_h_arg, g_udhcpc_r_arg=$g_udhcpc_r_arg"
+
+tmp_on_time=0
+tmp_off_time=0
+newlinkstate=off
+unlink_time=0
+linkstate=off
+while true; do
+	#oc echo "xxxxxx on=$tmp_on_time, off=$tmp_off_time, s=$linkstate, ult=$unlink_time xxxxxx"
+	sleep 5
+	udhcpc_existed || udhcpc -a -b -i br0 "$g_udhcpc_h_arg" "$g_udhcpc_r_arg" &
+
+	#Check if wireless link success and keep more than 20 sec then judge it final stable.
+	if eval $g_wl_linked; then
+		tmp_off_time=0; tmp_on_time=$(($tmp_on_time + 5))
+		[ $tmp_on_time -ge 20 ] && tmp_on_time=0 && newlinkstate=on
+	else
+		tmp_on_time=0; tmp_off_time=$(($tmp_off_time + 5))
+		[ $tmp_off_time -ge 10 ] && tmp_off_time=0 && newlinkstate=off
+	fi
+
+	if [ "$newlinkstate" = "on" ]; then
+		[ "$linkstate" = "off" ] && linkstate=on && unlink_time=0 && killall -SIGUSR1 udhcpc
+	else
+		[ "$linkstate" = "on" ] && linkstate=off && killall -SIGUSR2 udhcpc
+		unlink_time=$(( $unlink_time + 5 ))
+		[ $unlink_time -ge 60 ] && unlink_time=0 && eval $g_wl_fixup
+	fi
+done

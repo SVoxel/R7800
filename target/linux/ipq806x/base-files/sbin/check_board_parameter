@@ -1,0 +1,40 @@
+#!/bin/sh
+ARTMTD=$(grep \"ART\" /proc/mtd | awk -F ':' '{print $1}')
+BAKMTD=$(grep \"ART.bak\" /proc/mtd | awk -F ':' '{print $1}')
+validlen=65536
+hwid_len=34
+
+is_valid_board_parameter()
+{
+	[ "$(dd if=$1 bs=1 count=$hwid_len skip=41 2>/dev/null | cat)" != "$(cat /hw_id)" ] && return 255
+	# add other check here if necessary
+	return 0
+	# Note: return 0 means true, return other value means false
+}
+
+if [ "x$BAKMTD" = "x" ]; then
+	echo "Not find ART.bak mtd partition"
+	exit
+fi
+
+nanddump /dev/$ARTMTD -l $validlen -f /tmp/$ARTMTD 2>/dev/null
+nanddump /dev/$BAKMTD -l $validlen -f /tmp/$BAKMTD 2>/dev/null
+if is_valid_board_parameter /tmp/$ARTMTD
+then
+	if diff -q /tmp/$ARTMTD /tmp/$BAKMTD > /dev/null
+	then
+		echo "board parameter in $ARTMTD and $BAKMTD partition are same and valid"
+	else
+		echo "backup board parameter from $ARTMTD to $BAKMTD partition"
+		nandwrite -p -m -q /dev/$BAKMTD /tmp/$ARTMTD
+	fi
+else
+	if is_valid_board_parameter /tmp/$BAKMTD
+	then
+		echo "restore board parameter from $BAKMTD to $ARTMTD partition"
+		nandwrite -p -m -q /dev/$ARTMTD /tmp/$BAKMTD
+	else
+		echo "!!! board parameter in $ARTMTD and $BAKMTD partition both are invalid"
+	fi
+fi
+rm -f /tmp/$ARTMTD /tmp/$BAKMTD

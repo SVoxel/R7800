@@ -1,0 +1,53 @@
+#!/bin/sh
+
+. ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+#
+# Environment config
+#
+NAME="celes"
+DISPLAY_NAME=${NAME}
+
+# path to binary
+BINARY="${BINDIR}/${NAME}"
+
+# path to pid file
+PIDFILE="${RUNDIR}/${NAME}.pid"
+
+# Redis server port
+REDIS_PORT=6379
+
+# Format the command line parameters
+CMDLINE_OPTS="\
+--daemon \
+--pid-file=${PIDFILE} \
+--redis-port=${REDIS_PORT} \
+"
+
+#
+# Functions
+#
+
+start() {
+	[ ! -d "${RUNDIR}" ] && {
+		mkdir ${RUNDIR}
+	}
+
+	[ -x ${BINARY} ] || {
+		echo "${NAME} not found: ${BINARY}"
+		exit 2
+	}
+
+	echo -n "Starting ${NAME}: "
+	${BINARY} ${CMDLINE_OPTS} "$@"
+	retval=$?
+	echo
+	return ${retval}
+}
+
+boot() {
+	start "$@"
+}
+
+action "$@"
+exit $?

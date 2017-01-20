@@ -1,0 +1,21 @@
+--- ssmtp-2.64/ssmtp.c.orig	2013-06-13 19:25:22.400832712 +0800
++++ ssmtp-2.64/ssmtp.c	2013-06-13 19:25:50.620821243 +0800
+@@ -2052,6 +2052,7 @@
+ 	return(&new_argv[0]);
+ }
+ 
++extern char *config_get(char *name);
+ /*
+ main() -- make the program behave like sendmail, then call ssmtp
+ */
+@@ -2074,6 +2075,10 @@
+ 		perror("xgethostname");
+ 		die("Cannot get the name of this machine");
+ 	}
++	port = atoi(config_get("email_port"));
++	if (port < 0 || port > 65535)
++		port = 25;
++
+ 	new_argv = parse_options(argc, argv);
+ 
+ 	exit(ssmtp(new_argv));

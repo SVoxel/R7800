@@ -1,0 +1,77 @@
+#!/bin/sh
+. /etc/net6conf/6data.conf
+
+WAN_IF=`config get wan_ifname`
+
+reset_iface_ip6() {
+	local dev=$1
+
+	ip6s=`ifconfig $dev |grep "inet6 addr" |grep "Link" |awk '{print $3}'`
+	echo "$ip6s" |while read ip6; do
+	$IP -6 addr del ${ip6} dev $dev
+	done
+}
+
+start_service() {
+	brctl addif $bridge $WAN_IF
+	brctl setfd $bridge 0
+	ifconfig $bridge up
+	reset_iface_ip6 $WAN_IF
+	reset_iface_ip6 $bridge
+}
+
+stop_service() {
+	brctl delif $bridge $WAN_IF
+	ifconfig $bridge down
+	ifconfig $bridge up
+	/sbin/cmdroute start
+
+	# add the wan link addr if there's no wan link addr
+	ip6s=`ifconfig $WAN_IF |grep "inet6 addr" |grep "Link" |awk '{print $3}'`
+	[ "x$ip6s" != "x" ] && return
+	local wanhw=$(ifconfig $WAN_IF | grep "HWaddr" | awk '{print $5}')
+	local eui64=$(geneui64 $wanhw)
+	$IP -6 addr add fe80::$eui64/64 dev $WAN_IF
+}
+
+start() {
+	# Fixed bug25674: The DUT will crash and reboot after config IPv6 Pass Phrough
+	${BASEDIR}/ipv6_bridge_rules.sh restart
+	if [ -e $IPV6_PSS_PROC ]; then
+		echo 1 > $IPV6_PSS_PROC
+		ifconfig $WAN_IF promisc
+	else
+		start_service
+	fi
+	brctl addif $bridge pas0
+	ifconfig pas0 up
+}
+
+stop () {
+	ifconfig pas0 down
+	brctl delif $bridge pas0
+	if [ -e $IPV6_PSS_PROC ]; then
+		echo 0 > $IPV6_PSS_PROC
+		ifconfig $WAN_IF -promisc
+	else
+		stop_service
+	fi
+	${BASEDIR}/ipv6_bridge_rules.sh stop
+}
+
+restart() {
+	stop
+	start
+}
+
+case "$1" in
+	start)
+	start
+	;;
+	stop)
+    stop
+    ;;
+    restart)
+	restart
+	;;
+esac

@@ -1,0 +1,13 @@
+diff -Nur forked-daapd-23.0-dni1_bak/src/player.c forked-daapd-23.0-dni1/src/player.c
+--- forked-daapd-23.0-dni1_bak/src/player.c	2015-05-15 20:18:02.000000000 +0800
++++ forked-daapd-23.0-dni1/src/player.c	2015-06-05 12:17:24.066581094 +0800
+@@ -3233,7 +3233,8 @@
+   flags.has_password = 0;
+   flags.has_video = 0;
+ 
+-  spk_enum->cb(0, laudio_name, laudio_relvol, flags, spk_enum->arg);
++  /*Need not show local audio device */
++  //spk_enum->cb(0, laudio_name, laudio_relvol, flags, spk_enum->arg);
+ 
+ #ifdef DEBUG_RELVOL
+   DPRINTF(E_DBG, L_PLAYER, "*** master: %d\n", master_volume);

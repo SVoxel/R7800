@@ -1,0 +1,318 @@
+From f35a0181d42daf5b65011db1842305c74bcf2685 Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Fri, 7 Jun 2013 10:23:09 -0500
+Subject: [ag71xx] switch to pointer sentinel rings
+
+Change to a ring structure that reduces the number of instructions per
+entry, and reduces the amount of state needed per entry in preparation
+for future alignment opportunities.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx.h      |  26 ++++--
+ drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c | 102 +++++++++++-----------
+ 2 files changed, 68 insertions(+), 60 deletions(-)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+index e79e8f9..c0f0ad1 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+@@ -92,20 +92,30 @@ struct ag71xx_desc {
+ struct ag71xx_buf {
+ 	struct sk_buff		*skb;
+ 	struct ag71xx_desc	*desc;
+-	dma_addr_t		dma_addr;
+-	unsigned long		timestamp;
++	struct ag71xx_buf	*next;
++	union {
++		dma_addr_t	dma_addr;
++		unsigned long	timestamp;
++	};
+ };
+ 
+ struct ag71xx_ring {
++	/*
++	 * "Hot" fields in the data path.
++	 */
++	struct ag71xx_buf	*curr;
++	struct ag71xx_buf	*dirty;
++	uint16_t		size;
++	uint16_t		used;
++
++	/*
++	 * "Cold" fields - not used in the data path.
++	 */
+ 	struct ag71xx_buf	*buf;
++	uint16_t		mask;
++	uint16_t		desc_size;
+ 	u8			*descs_cpu;
+ 	dma_addr_t		descs_dma;
+-	unsigned int		desc_size;
+-	unsigned int		curr;
+-	unsigned int		dirty;
+-	unsigned int		size;
+-	unsigned int		mask;
+-	unsigned int		used;
+ };
+ 
+ struct ag71xx_mdio {
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+index f685da7..b6355b5 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+@@ -131,8 +131,7 @@ static void ag71xx_ring_tx_clean(struct ag71xx *ag)
+ 	struct net_device *dev = ag->dev;
+ 	unsigned int bytes_compl = 0;
+ 	unsigned int pkts_compl = 0;
+-	unsigned int dirty = ring->dirty;
+-	unsigned int mask = ring->mask;
++	struct ag71xx_buf *dirty = ring->dirty;
+ 	unsigned int used = ring->used;
+ 
+ 	if (!ring->buf) {
+@@ -140,8 +139,7 @@ static void ag71xx_ring_tx_clean(struct ag71xx *ag)
+ 	}
+ 
+ 	while (used) {
+-		struct ag71xx_buf *buf = &ring->buf[dirty];
+-		struct ag71xx_desc *desc = buf->desc;
++		struct ag71xx_desc *desc = dirty->desc;
+ 		struct sk_buff *skb;
+ 
+ 		/*
+@@ -153,16 +151,14 @@ static void ag71xx_ring_tx_clean(struct ag71xx *ag)
+ 			dev->stats.tx_errors++;
+ 		}
+ 
+-		skb = buf->skb;
+-		buf->skb = NULL;
++		skb = dirty->skb;
++		dirty->skb = NULL;
++		dirty = dirty->next;
+ 
+ 		bytes_compl += skb->len;
+ 		pkts_compl++;
+ 		dev_kfree_skb(skb);
+ 
+-		dirty++;
+-		dirty &= mask;
+-
+ 		used--;
+ 	}
+ 
+@@ -188,10 +184,11 @@ static void ag71xx_ring_tx_init(struct ag71xx *ag)
+ 
+ 		desc->ctrl = DESC_EMPTY;
+ 		buf->skb = NULL;
++		buf->next = &ring->buf[(i + 1) & mask];
+ 	}
+ 
+-	ring->curr = 0;
+-	ring->dirty = 0;
++	ring->curr = ring->buf;
++	ring->dirty = ring->buf;
+ 	ring->used = 0;
+ 	netdev_reset_queue(ag->dev);
+ }
+@@ -245,6 +242,7 @@ static int ag71xx_ring_rx_init(struct ag71xx *ag)
+ 		skb_reserve(skb, rx_buf_offset);
+ 
+ 		buf->skb = skb;
++		buf->next = &ring->buf[(i + 1) & mask];
+ 		buf->dma_addr = dma_map_single(&dev->dev, skb->data,
+ 					       rx_buf_size, DMA_FROM_DEVICE);
+ 
+@@ -252,8 +250,8 @@ static int ag71xx_ring_rx_init(struct ag71xx *ag)
+ 		desc->ctrl = DESC_EMPTY;
+ 	}
+ 
+-	ring->curr = 0;
+-	ring->dirty = 0;
++	ring->curr = ring->buf;
++	ring->dirty = ring->buf;
+ 	ring->used = size;
+ 
+ 	return 0;
+@@ -653,12 +651,10 @@ static netdev_tx_t ag71xx_hard_start_xmit(struct sk_buff *skb,
+ {
+ 	struct ag71xx *ag = netdev_priv(dev);
+ 	struct ag71xx_ring *ring = &ag->tx_ring;
+-	unsigned int curr = ring->curr;
+-	unsigned int mask = ring->mask;
++	struct ag71xx_buf *curr = ring->curr;
++	struct ag71xx_desc *desc = curr->desc;
+ 	unsigned int used = ring->used;
+ 	unsigned int size = ring->size;
+-	struct ag71xx_buf *buf = &ring->buf[curr];
+-	struct ag71xx_desc *desc = buf->desc;
+ 	unsigned int len;
+ 	dma_addr_t dma_addr;
+ 
+@@ -685,15 +681,14 @@ static netdev_tx_t ag71xx_hard_start_xmit(struct sk_buff *skb,
+ 	dma_addr = dma_map_single(&dev->dev, skb->data, len, DMA_TO_DEVICE);
+ 
+ 	netdev_sent_queue(dev, len);
+-	buf->skb = skb;
+-	buf->timestamp = jiffies;
++	curr->skb = skb;
++	curr->timestamp = jiffies;
+ 
+ 	/* setup descriptor fields */
+ 	desc->data = (u32)dma_addr;
+ 	desc->ctrl = len & DESC_PKTLEN_M;
+ 
+-	curr++;
+-	curr &= mask;
++	curr = curr->next;
+ 	ring->curr = curr;
+ 
+ 	used++;
+@@ -825,20 +820,18 @@ static int ag71xx_tx_packets(struct ag71xx *ag, struct net_device *dev)
+ 	struct ag71xx_platform_data *pdata = ag71xx_get_pdata(ag);
+ 	unsigned int sent = 0;
+ 	unsigned int bytes_compl = 0;
+-	unsigned int dirty = ring->dirty;
+-	unsigned int mask = ring->mask;
++	struct ag71xx_buf *dirty = ring->dirty;
++	struct ag71xx_desc *desc = dirty->desc;
+ 	unsigned int used = ring->used;
+ 
+ 	DBG("%s: processing TX ring\n", dev->name);
+ 
+ 	while (used) {
+-		struct ag71xx_buf *buf = &ring->buf[dirty];
+-		struct ag71xx_desc *desc = buf->desc;
+ 		struct sk_buff *skb;
+ 
+ 		if (unlikely(!(desc->ctrl & DESC_EMPTY))) {
+ 			if (unlikely(pdata->is_ar7240)) {
+-				if (unlikely(ag71xx_check_dma_stuck(ag, buf->timestamp))) {
++				if (unlikely(ag71xx_check_dma_stuck(ag, dirty->timestamp))) {
+ 					schedule_work(&ag->restart_work);
+ 				}
+ 			}
+@@ -847,16 +840,19 @@ static int ag71xx_tx_packets(struct ag71xx *ag, struct net_device *dev)
+ 
+ 		ag71xx_wr(ag, AG71XX_REG_TX_STATUS, TX_STATUS_PS);
+ 
+-		skb = buf->skb;
+-		buf->skb = NULL;
++		skb = dirty->skb;
++		dirty->skb = NULL;
++
++		/* Move forward to the next descriptor */
++		dirty = dirty->next;
++		desc = dirty->desc;
++
++		/* Update stats and free the skb */
+ 		bytes_compl += skb->len;
+ 		sent++;
+ 
+ 		dev_kfree_skb(skb);
+ 
+-		dirty++;
+-		dirty &= mask;
+-
+ 		used--;
+ 	}
+ 
+@@ -888,13 +884,13 @@ static int ag71xx_tx_packets(struct ag71xx *ag, struct net_device *dev)
+ 
+ static int ag71xx_rx_packets(struct ag71xx *ag, struct net_device *dev, int limit)
+ {
+-	struct ag71xx_ring *ring = &ag->rx_ring;
+ 	unsigned int rx_buf_size = ag->rx_buf_size;
+ 	unsigned int rx_buf_offset = ag->rx_buf_offset;
+-	unsigned int curr = ring->curr;
+-	unsigned int mask = ring->mask;
++	struct ag71xx_ring *ring = &ag->rx_ring;
++	struct ag71xx_buf *curr = ring->curr;
++	struct ag71xx_buf *dirty = ring->dirty;
++	struct ag71xx_desc *desc = curr->desc;
+ 	unsigned int used = ring->used;
+-	unsigned int dirty = ring->dirty;
+ 	unsigned int size = ring->size;
+ 	int done = 0;
+ 
+@@ -912,8 +908,6 @@ static int ag71xx_rx_packets(struct ag71xx *ag, struct net_device *dev, int limi
+ 	 * Process newly received packets.
+ 	 */
+ 	while (done < limit) {
+-		struct ag71xx_buf *buf = &ring->buf[curr];
+-		struct ag71xx_desc *desc = buf->desc;
+ 		u32 desc_ctrl;
+ 		struct sk_buff *skb;
+ 		int pktlen;
+@@ -931,15 +925,21 @@ static int ag71xx_rx_packets(struct ag71xx *ag, struct net_device *dev, int limi
+ 		pktlen = desc_ctrl & DESC_PKTLEN_M;
+ 		pktlen -= ETH_FCS_LEN;
+ 
+-		dma_unmap_single(&dev->dev, buf->dma_addr,
+-				 rx_buf_size, DMA_FROM_DEVICE);
++		dma_unmap_single(&dev->dev, curr->dma_addr, pktlen,
++				 DMA_FROM_DEVICE);
+ 
+ 		dev->last_rx = jiffies;
+ 		dev->stats.rx_packets++;
+ 		dev->stats.rx_bytes += pktlen;
+ 
+-		skb = buf->skb;
+-		buf->skb = NULL;
++		skb = curr->skb;
++		curr->skb = NULL;
++
++		/*
++		 * Move forward to the next descriptor.
++		 */
++		curr = curr->next;
++		desc = curr->desc;
+ 
+ 		/*
+ 		 * Set up the offset and length of the skb.
+@@ -965,9 +965,6 @@ static int ag71xx_rx_packets(struct ag71xx *ag, struct net_device *dev, int limi
+ 		netif_receive_skb(skb);
+ 
+ next:
+-		curr++;
+-		curr &= mask;
+-
+ 		done++;
+ 	}
+ 
+@@ -978,8 +975,6 @@ next:
+ 	 * Replenish the RX buffer entries.
+ 	 */
+ 	while (used < size) {
+-		struct ag71xx_buf *buf = &ring->buf[dirty];
+-		struct ag71xx_desc *desc = buf->desc;
+ 		struct sk_buff *skb;
+ 
+ 		skb = dev_alloc_skb(rx_buf_size);
+@@ -989,15 +984,18 @@ next:
+ 
+ 		skb_reserve(skb, rx_buf_offset);
+ 
+-		buf->skb = skb;
+-		buf->dma_addr = dma_map_single(&dev->dev, skb->data,
+-					       rx_buf_size, DMA_FROM_DEVICE);
++		dirty->skb = skb;
++		dirty->dma_addr = dma_map_single(&dev->dev, skb->data,
++						 rx_buf_size, DMA_FROM_DEVICE);
+ 
+-		desc->data = (u32)buf->dma_addr;
++		desc->data = (u32)dirty->dma_addr;
+ 		desc->ctrl = DESC_EMPTY;
+ 
+-		dirty++;
+-		dirty &= mask;
++		/*
++		 * Move to the next descriptor.
++		 */
++		dirty = dirty->next;
++		desc = dirty->desc;
+ 
+ 		used++;
+ 	}
+-- 
+1.8.1.2
+

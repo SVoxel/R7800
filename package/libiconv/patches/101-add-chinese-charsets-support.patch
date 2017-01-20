@@ -1,0 +1,733 @@
+diff -Nur libiconv-1.11/lib/aliases.gperf libiconv-1.11.ok/lib/aliases.gperf
+--- libiconv-1.11/lib/aliases.gperf	2012-02-15 03:14:02.616696910 -0500
++++ libiconv-1.11.ok/lib/aliases.gperf	2012-02-14 15:53:35.336701782 -0500
+@@ -79,3 +79,9 @@
+ MS-EE, ei_cp1250
+ CHAR, ei_local_char
+ WCHAR_T, ei_local_wchar_t
++GB_2312-80, ei_gb2312
++GBK, ei_ces_gbk
++CP936, ei_cp936
++GB18030, ei_gb18030
++BIG5, ei_ces_big5
++EUC-TW, ei_euc_tw
+diff -Nur libiconv-1.11/lib/aliases.h libiconv-1.11.ok/lib/aliases.h
+--- libiconv-1.11/lib/aliases.h	2012-02-15 03:14:02.616696910 -0500
++++ libiconv-1.11.ok/lib/aliases.h	2012-02-14 15:39:35.186701936 -0500
+@@ -1,4 +1,4 @@
+-/* ANSI-C code produced by gperf version 3.0.2 */
++/* ANSI-C code produced by gperf version 3.0.4 */
+ /* Command-line: gperf -m 10 lib/aliases.gperf  */
+ /* Computed positions: -k'4-7,10,$' */
+ 
+@@ -32,12 +32,12 @@
+ #line 1 "lib/aliases.gperf"
+ struct alias { int name; unsigned int encoding_index; };
+ 
+-#define TOTAL_KEYWORDS 70
++#define TOTAL_KEYWORDS 76
+ #define MIN_WORD_LENGTH 2
+ #define MAX_WORD_LENGTH 17
+-#define MIN_HASH_VALUE 4
+-#define MAX_HASH_VALUE 98
+-/* maximum key range = 95, duplicates = 0 */
++#define MIN_HASH_VALUE 2
++#define MAX_HASH_VALUE 90
++/* maximum key range = 89, duplicates = 0 */
+ 
+ #ifdef __GNUC__
+ __inline
+@@ -51,19 +51,19 @@
+ {
+   static const unsigned char asso_values[] =
+     {
+-      99, 99, 99, 99, 99, 99, 99, 99, 99, 99,
+-      99, 99, 99, 99, 99, 99, 99, 99, 99, 99,
+-      99, 99, 99, 99, 99, 99, 99, 99, 99, 99,
+-      99, 99, 99, 99, 99, 99, 99, 99, 99, 99,
+-      99, 99, 99, 99, 99,  6, 99, 99, 22,  3,
+-       2,  2, 17,  3,  2,  7,  3,  2, 99, 99,
+-      99, 99, 99, 99, 99,  4, 53,  2, 21,  2,
+-      99,  7, 99, 15, 99, 99, 19, 99, 33,  2,
+-       4, 99, 11, 26, 17, 99, 99,  3, 26, 99,
+-      99, 99, 99, 99, 99, 10, 99, 99, 99, 99,
+-      99, 99, 99, 99, 99, 99, 99, 99, 99, 99,
+-      99, 99, 99, 99, 99, 99, 99, 99, 99, 99,
+-      99, 99, 99, 99, 99, 99, 99, 99
++      91, 91, 91, 91, 91, 91, 91, 91, 91, 91,
++      91, 91, 91, 91, 91, 91, 91, 91, 91, 91,
++      91, 91, 91, 91, 91, 91, 91, 91, 91, 91,
++      91, 91, 91, 91, 91, 91, 91, 91, 91, 91,
++      91, 91, 91, 91, 91,  0, 91, 91,  6,  1,
++       0,  3, 14,  1, 12, 16,  1, 27, 91, 91,
++      91, 91, 91, 91, 91, 13, 47, 24, 25,  5,
++      91,  8, 91,  3, 91,  1, 19, 91, 13,  3,
++      12, 91,  2, 21,  7, 91, 91, 19,  7, 91,
++      91, 91, 91, 91, 91, 31, 91, 91, 91, 91,
++      91, 91, 91, 91, 91, 91, 91, 91, 91, 91,
++      91, 91, 91, 91, 91, 91, 91, 91, 91, 91,
++      91, 91, 91, 91, 91, 91, 91, 91
+     };
+   register int hval = len;
+ 
+@@ -95,310 +95,339 @@
+ 
+ struct stringpool_t
+   {
+-    char stringpool_str4[sizeof("L2")];
+-    char stringpool_str5[sizeof("L1")];
+-    char stringpool_str11[sizeof("MS-EE")];
+-    char stringpool_str12[sizeof("CP819")];
+-    char stringpool_str15[sizeof("UCS-2")];
+-    char stringpool_str16[sizeof("IBM819")];
+-    char stringpool_str17[sizeof("UTF-8")];
+-    char stringpool_str18[sizeof("UTF-32")];
+-    char stringpool_str19[sizeof("UTF-16")];
+-    char stringpool_str21[sizeof("CP367")];
+-    char stringpool_str22[sizeof("ISO8859-2")];
+-    char stringpool_str23[sizeof("ISO8859-1")];
+-    char stringpool_str24[sizeof("IBM367")];
+-    char stringpool_str25[sizeof("UTF-7")];
+-    char stringpool_str26[sizeof("CHAR")];
+-    char stringpool_str27[sizeof("ISO8859-15")];
+-    char stringpool_str28[sizeof("US")];
+-    char stringpool_str29[sizeof("ISO-8859-2")];
+-    char stringpool_str31[sizeof("ISO-8859-1")];
+-    char stringpool_str32[sizeof("ISO-8859-15")];
+-    char stringpool_str33[sizeof("ISO_8859-2")];
+-    char stringpool_str35[sizeof("ISO_8859-1")];
+-    char stringpool_str36[sizeof("ISO_8859-15")];
+-    char stringpool_str37[sizeof("KOI8-R")];
+-    char stringpool_str38[sizeof("UCS-2LE")];
+-    char stringpool_str39[sizeof("UTF-32LE")];
+-    char stringpool_str40[sizeof("UTF-16LE")];
+-    char stringpool_str41[sizeof("ISO_8859-15:1998")];
+-    char stringpool_str43[sizeof("ISO_8859-2:1987")];
+-    char stringpool_str44[sizeof("ISO_8859-1:1987")];
+-    char stringpool_str45[sizeof("UCS-4")];
+-    char stringpool_str47[sizeof("UNICODE-1-1")];
+-    char stringpool_str48[sizeof("ISO-IR-6")];
+-    char stringpool_str49[sizeof("CSKOI8R")];
+-    char stringpool_str50[sizeof("ASCII")];
+-    char stringpool_str51[sizeof("UNICODEBIG")];
+-    char stringpool_str52[sizeof("ISO-IR-203")];
+-    char stringpool_str53[sizeof("UCS-4LE")];
+-    char stringpool_str54[sizeof("ISO-IR-101")];
+-    char stringpool_str55[sizeof("CP1250")];
+-    char stringpool_str56[sizeof("ISO-10646-UCS-2")];
+-    char stringpool_str57[sizeof("UNICODE-1-1-UTF-7")];
+-    char stringpool_str58[sizeof("LATIN2")];
+-    char stringpool_str59[sizeof("UNICODELITTLE")];
+-    char stringpool_str60[sizeof("LATIN1")];
+-    char stringpool_str61[sizeof("ISO_646.IRV:1991")];
+-    char stringpool_str62[sizeof("ISO646-US")];
+-    char stringpool_str63[sizeof("CSUNICODE")];
+-    char stringpool_str64[sizeof("UCS-2-INTERNAL")];
+-    char stringpool_str65[sizeof("LATIN-9")];
+-    char stringpool_str66[sizeof("WCHAR_T")];
+-    char stringpool_str68[sizeof("CSUCS4")];
+-    char stringpool_str69[sizeof("CSUNICODE11")];
+-    char stringpool_str70[sizeof("US-ASCII")];
+-    char stringpool_str71[sizeof("ISO-10646-UCS-4")];
+-    char stringpool_str72[sizeof("UCS-2BE")];
+-    char stringpool_str73[sizeof("UTF-32BE")];
+-    char stringpool_str74[sizeof("UTF-16BE")];
+-    char stringpool_str75[sizeof("ANSI_X3.4-1986")];
+-    char stringpool_str76[sizeof("ANSI_X3.4-1968")];
+-    char stringpool_str77[sizeof("CSUNICODE11UTF7")];
+-    char stringpool_str78[sizeof("UCS-2-SWAPPED")];
+-    char stringpool_str79[sizeof("UCS-4-INTERNAL")];
+-    char stringpool_str80[sizeof("CSASCII")];
+-    char stringpool_str87[sizeof("UCS-4BE")];
+-    char stringpool_str88[sizeof("WINDOWS-1250")];
+-    char stringpool_str92[sizeof("ISO-IR-100")];
+-    char stringpool_str93[sizeof("UCS-4-SWAPPED")];
+-    char stringpool_str97[sizeof("CSISOLATIN2")];
+-    char stringpool_str98[sizeof("CSISOLATIN1")];
++    char stringpool_str2[sizeof("L2")];
++    char stringpool_str3[sizeof("L1")];
++    char stringpool_str4[sizeof("GBK")];
++    char stringpool_str5[sizeof("UCS-2")];
++    char stringpool_str6[sizeof("BIG5")];
++    char stringpool_str7[sizeof("UTF-8")];
++    char stringpool_str8[sizeof("CHAR")];
++    char stringpool_str9[sizeof("UTF-32")];
++    char stringpool_str11[sizeof("KOI8-R")];
++    char stringpool_str13[sizeof("ISO-8859-2")];
++    char stringpool_str14[sizeof("ASCII")];
++    char stringpool_str15[sizeof("ISO-8859-1")];
++    char stringpool_str16[sizeof("ISO-8859-15")];
++    char stringpool_str17[sizeof("ISO-IR-101")];
++    char stringpool_str18[sizeof("CSKOI8R")];
++    char stringpool_str19[sizeof("CP1250")];
++    char stringpool_str20[sizeof("MS-EE")];
++    char stringpool_str21[sizeof("ISO-IR-203")];
++    char stringpool_str22[sizeof("LATIN2")];
++    char stringpool_str23[sizeof("US")];
++    char stringpool_str24[sizeof("LATIN1")];
++    char stringpool_str25[sizeof("ISO-IR-6")];
++    char stringpool_str26[sizeof("GB_2312-80")];
++    char stringpool_str27[sizeof("ISO-IR-100")];
++    char stringpool_str29[sizeof("GB18030")];
++    char stringpool_str31[sizeof("UTF-16")];
++    char stringpool_str32[sizeof("CP936")];
++    char stringpool_str33[sizeof("UCS-4")];
++    char stringpool_str34[sizeof("ISO-10646-UCS-2")];
++    char stringpool_str35[sizeof("UTF-32LE")];
++    char stringpool_str36[sizeof("UCS-2LE")];
++    char stringpool_str37[sizeof("UTF-7")];
++    char stringpool_str39[sizeof("ISO8859-2")];
++    char stringpool_str40[sizeof("ISO8859-1")];
++    char stringpool_str41[sizeof("UCS-2-INTERNAL")];
++    char stringpool_str42[sizeof("ISO8859-15")];
++    char stringpool_str44[sizeof("ISO_8859-2")];
++    char stringpool_str45[sizeof("UTF-16LE")];
++    char stringpool_str46[sizeof("ISO_8859-1")];
++    char stringpool_str47[sizeof("ISO_8859-15")];
++    char stringpool_str48[sizeof("ISO-10646-UCS-4")];
++    char stringpool_str49[sizeof("CP367")];
++    char stringpool_str50[sizeof("UCS-4LE")];
++    char stringpool_str51[sizeof("EUC-TW")];
++    char stringpool_str52[sizeof("ISO_8859-15:1998")];
++    char stringpool_str53[sizeof("IBM367")];
++    char stringpool_str55[sizeof("UCS-4-INTERNAL")];
++    char stringpool_str56[sizeof("CSUNICODE11")];
++    char stringpool_str57[sizeof("CSUNICODE")];
++    char stringpool_str59[sizeof("ANSI_X3.4-1968")];
++    char stringpool_str60[sizeof("CP819")];
++    char stringpool_str61[sizeof("CSASCII")];
++    char stringpool_str62[sizeof("IBM819")];
++    char stringpool_str63[sizeof("UTF-32BE")];
++    char stringpool_str64[sizeof("UCS-2BE")];
++    char stringpool_str65[sizeof("ISO_8859-2:1987")];
++    char stringpool_str66[sizeof("ISO_8859-1:1987")];
++    char stringpool_str67[sizeof("WCHAR_T")];
++    char stringpool_str68[sizeof("ISO646-US")];
++    char stringpool_str69[sizeof("UNICODE-1-1")];
++    char stringpool_str70[sizeof("ANSI_X3.4-1986")];
++    char stringpool_str71[sizeof("UCS-2-SWAPPED")];
++    char stringpool_str72[sizeof("US-ASCII")];
++    char stringpool_str73[sizeof("UTF-16BE")];
++    char stringpool_str75[sizeof("CSUNICODE11UTF7")];
++    char stringpool_str77[sizeof("LATIN-9")];
++    char stringpool_str78[sizeof("UCS-4BE")];
++    char stringpool_str79[sizeof("CSUCS4")];
++    char stringpool_str80[sizeof("CSISOLATIN2")];
++    char stringpool_str81[sizeof("CSISOLATIN1")];
++    char stringpool_str82[sizeof("UNICODELITTLE")];
++    char stringpool_str83[sizeof("UNICODEBIG")];
++    char stringpool_str85[sizeof("UCS-4-SWAPPED")];
++    char stringpool_str86[sizeof("WINDOWS-1250")];
++    char stringpool_str88[sizeof("ISO_646.IRV:1991")];
++    char stringpool_str90[sizeof("UNICODE-1-1-UTF-7")];
+   };
+ static const struct stringpool_t stringpool_contents =
+   {
+     "L2",
+     "L1",
+-    "MS-EE",
+-    "CP819",
++    "GBK",
+     "UCS-2",
+-    "IBM819",
++    "BIG5",
+     "UTF-8",
++    "CHAR",
+     "UTF-32",
++    "KOI8-R",
++    "ISO-8859-2",
++    "ASCII",
++    "ISO-8859-1",
++    "ISO-8859-15",
++    "ISO-IR-101",
++    "CSKOI8R",
++    "CP1250",
++    "MS-EE",
++    "ISO-IR-203",
++    "LATIN2",
++    "US",
++    "LATIN1",
++    "ISO-IR-6",
++    "GB_2312-80",
++    "ISO-IR-100",
++    "GB18030",
+     "UTF-16",
+-    "CP367",
++    "CP936",
++    "UCS-4",
++    "ISO-10646-UCS-2",
++    "UTF-32LE",
++    "UCS-2LE",
++    "UTF-7",
+     "ISO8859-2",
+     "ISO8859-1",
+-    "IBM367",
+-    "UTF-7",
+-    "CHAR",
++    "UCS-2-INTERNAL",
+     "ISO8859-15",
+-    "US",
+-    "ISO-8859-2",
+-    "ISO-8859-1",
+-    "ISO-8859-15",
+     "ISO_8859-2",
++    "UTF-16LE",
+     "ISO_8859-1",
+     "ISO_8859-15",
+-    "KOI8-R",
+-    "UCS-2LE",
+-    "UTF-32LE",
+-    "UTF-16LE",
++    "ISO-10646-UCS-4",
++    "CP367",
++    "UCS-4LE",
++    "EUC-TW",
+     "ISO_8859-15:1998",
++    "IBM367",
++    "UCS-4-INTERNAL",
++    "CSUNICODE11",
++    "CSUNICODE",
++    "ANSI_X3.4-1968",
++    "CP819",
++    "CSASCII",
++    "IBM819",
++    "UTF-32BE",
++    "UCS-2BE",
+     "ISO_8859-2:1987",
+     "ISO_8859-1:1987",
+-    "UCS-4",
+-    "UNICODE-1-1",
+-    "ISO-IR-6",
+-    "CSKOI8R",
+-    "ASCII",
+-    "UNICODEBIG",
+-    "ISO-IR-203",
+-    "UCS-4LE",
+-    "ISO-IR-101",
+-    "CP1250",
+-    "ISO-10646-UCS-2",
+-    "UNICODE-1-1-UTF-7",
+-    "LATIN2",
+-    "UNICODELITTLE",
+-    "LATIN1",
+-    "ISO_646.IRV:1991",
+-    "ISO646-US",
+-    "CSUNICODE",
+-    "UCS-2-INTERNAL",
+-    "LATIN-9",
+     "WCHAR_T",
+-    "CSUCS4",
+-    "CSUNICODE11",
++    "ISO646-US",
++    "UNICODE-1-1",
++    "ANSI_X3.4-1986",
++    "UCS-2-SWAPPED",
+     "US-ASCII",
+-    "ISO-10646-UCS-4",
+-    "UCS-2BE",
+-    "UTF-32BE",
+     "UTF-16BE",
+-    "ANSI_X3.4-1986",
+-    "ANSI_X3.4-1968",
+     "CSUNICODE11UTF7",
+-    "UCS-2-SWAPPED",
+-    "UCS-4-INTERNAL",
+-    "CSASCII",
++    "LATIN-9",
+     "UCS-4BE",
+-    "WINDOWS-1250",
+-    "ISO-IR-100",
+-    "UCS-4-SWAPPED",
++    "CSUCS4",
+     "CSISOLATIN2",
+-    "CSISOLATIN1"
++    "CSISOLATIN1",
++    "UNICODELITTLE",
++    "UNICODEBIG",
++    "UCS-4-SWAPPED",
++    "WINDOWS-1250",
++    "ISO_646.IRV:1991",
++    "UNICODE-1-1-UTF-7"
+   };
+ #define stringpool ((const char *) &stringpool_contents)
+ 
+ static const struct alias aliases[] =
+   {
+-    {-1}, {-1}, {-1}, {-1},
++    {-1}, {-1},
+ #line 66 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str4, ei_iso8859_2},
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str2, ei_iso8859_2},
+ #line 58 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str5, ei_iso8859_1},
+-    {-1}, {-1}, {-1}, {-1}, {-1},
+-#line 79 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str11, ei_cp1250},
+-#line 55 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str12, ei_iso8859_1},
+-    {-1}, {-1},
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str3, ei_iso8859_1},
++#line 83 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str4, ei_ces_gbk},
+ #line 24 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str15, ei_ucs2},
+-#line 56 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str16, ei_iso8859_1},
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str5, ei_ucs2},
++#line 86 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str6, ei_ces_big5},
+ #line 23 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str17, ei_utf8},
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str7, ei_utf8},
++#line 80 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str8, ei_local_char},
+ #line 41 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str18, ei_utf32},
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str9, ei_utf32},
++    {-1},
++#line 75 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str11, ei_koi8_r},
++    {-1},
++#line 61 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str13, ei_iso8859_2},
++#line 13 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str14, ei_ascii},
++#line 51 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str15, ei_iso8859_1},
++#line 69 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str16, ei_iso8859_15},
++#line 64 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str17, ei_iso8859_2},
++#line 76 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str18, ei_koi8_r},
++#line 77 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str19, ei_cp1250},
++#line 79 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str20, ei_cp1250},
++#line 72 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str21, ei_iso8859_15},
++#line 65 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str22, ei_iso8859_2},
++#line 21 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str23, ei_ascii},
++#line 57 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str24, ei_iso8859_1},
++#line 16 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str25, ei_ascii},
++#line 82 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str26, ei_gb2312},
++#line 54 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str27, ei_iso8859_1},
++    {-1},
++#line 85 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str29, ei_gb18030},
++    {-1},
+ #line 38 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str19, ei_utf16},
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str31, ei_utf16},
++#line 84 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str32, ei_cp936},
++#line 33 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str33, ei_ucs4},
++#line 25 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str34, ei_ucs2},
++#line 43 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str35, ei_utf32le},
++#line 31 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str36, ei_ucs2le},
++#line 44 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str37, ei_utf7},
+     {-1},
+-#line 19 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str21, ei_ascii},
+ #line 68 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str22, ei_iso8859_2},
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str39, ei_iso8859_2},
+ #line 60 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str23, ei_iso8859_1},
+-#line 20 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str24, ei_ascii},
+-#line 44 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str25, ei_utf7},
+-#line 80 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str26, ei_local_char},
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str40, ei_iso8859_1},
++#line 47 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str41, ei_ucs2internal},
+ #line 74 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str27, ei_iso8859_15},
+-#line 21 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str28, ei_ascii},
+-#line 61 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str29, ei_iso8859_2},
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str42, ei_iso8859_15},
+     {-1},
+-#line 51 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str31, ei_iso8859_1},
+-#line 69 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str32, ei_iso8859_15},
+ #line 62 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str33, ei_iso8859_2},
+-    {-1},
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str44, ei_iso8859_2},
++#line 40 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str45, ei_utf16le},
+ #line 52 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str35, ei_iso8859_1},
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str46, ei_iso8859_1},
+ #line 70 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str36, ei_iso8859_15},
+-#line 75 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str37, ei_koi8_r},
+-#line 31 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str38, ei_ucs2le},
+-#line 43 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str39, ei_utf32le},
+-#line 40 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str40, ei_utf16le},
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str47, ei_iso8859_15},
++#line 34 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str48, ei_ucs4},
++#line 19 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str49, ei_ascii},
++#line 37 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str50, ei_ucs4le},
++#line 87 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str51, ei_euc_tw},
+ #line 71 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str41, ei_iso8859_15},
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str52, ei_iso8859_15},
++#line 20 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str53, ei_ascii},
+     {-1},
+-#line 63 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str43, ei_iso8859_2},
+-#line 53 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str44, ei_iso8859_1},
+-#line 33 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str45, ei_ucs4},
++#line 49 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str55, ei_ucs4internal},
++#line 30 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str56, ei_ucs2be},
++#line 26 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str57, ei_ucs2},
+     {-1},
+-#line 29 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str47, ei_ucs2be},
+-#line 16 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str48, ei_ascii},
+-#line 76 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str49, ei_koi8_r},
+-#line 13 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str50, ei_ascii},
+-#line 28 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str51, ei_ucs2be},
+-#line 72 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str52, ei_iso8859_15},
+-#line 37 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str53, ei_ucs4le},
+-#line 64 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str54, ei_iso8859_2},
+-#line 77 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str55, ei_cp1250},
+-#line 25 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str56, ei_ucs2},
+-#line 45 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str57, ei_utf7},
+-#line 65 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str58, ei_iso8859_2},
+-#line 32 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str59, ei_ucs2le},
+-#line 57 "lib/aliases.gperf"
++#line 17 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str59, ei_ascii},
++#line 55 "lib/aliases.gperf"
+     {(int)(long)&((struct stringpool_t *)0)->stringpool_str60, ei_iso8859_1},
+-#line 15 "lib/aliases.gperf"
++#line 22 "lib/aliases.gperf"
+     {(int)(long)&((struct stringpool_t *)0)->stringpool_str61, ei_ascii},
+-#line 14 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str62, ei_ascii},
+-#line 26 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str63, ei_ucs2},
+-#line 47 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str64, ei_ucs2internal},
+-#line 73 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str65, ei_iso8859_15},
++#line 56 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str62, ei_iso8859_1},
++#line 42 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str63, ei_utf32be},
++#line 27 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str64, ei_ucs2be},
++#line 63 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str65, ei_iso8859_2},
++#line 53 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str66, ei_iso8859_1},
+ #line 81 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str66, ei_local_wchar_t},
+-    {-1},
+-#line 35 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str68, ei_ucs4},
+-#line 30 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str67, ei_local_wchar_t},
++#line 14 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str68, ei_ascii},
++#line 29 "lib/aliases.gperf"
+     {(int)(long)&((struct stringpool_t *)0)->stringpool_str69, ei_ucs2be},
+-#line 12 "lib/aliases.gperf"
++#line 18 "lib/aliases.gperf"
+     {(int)(long)&((struct stringpool_t *)0)->stringpool_str70, ei_ascii},
+-#line 34 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str71, ei_ucs4},
+-#line 27 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str72, ei_ucs2be},
+-#line 42 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str73, ei_utf32be},
++#line 48 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str71, ei_ucs2swapped},
++#line 12 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str72, ei_ascii},
+ #line 39 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str74, ei_utf16be},
+-#line 18 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str75, ei_ascii},
+-#line 17 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str76, ei_ascii},
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str73, ei_utf16be},
++    {-1},
+ #line 46 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str77, ei_utf7},
+-#line 48 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str78, ei_ucs2swapped},
+-#line 49 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str79, ei_ucs4internal},
+-#line 22 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str80, ei_ascii},
+-    {-1}, {-1}, {-1}, {-1}, {-1}, {-1},
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str75, ei_utf7},
++    {-1},
++#line 73 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str77, ei_iso8859_15},
+ #line 36 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str87, ei_ucs4be},
+-#line 78 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str88, ei_cp1250},
+-    {-1}, {-1}, {-1},
+-#line 54 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str92, ei_iso8859_1},
+-#line 50 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str93, ei_ucs4swapped},
+-    {-1}, {-1}, {-1},
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str78, ei_ucs4be},
++#line 35 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str79, ei_ucs4},
+ #line 67 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str97, ei_iso8859_2},
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str80, ei_iso8859_2},
+ #line 59 "lib/aliases.gperf"
+-    {(int)(long)&((struct stringpool_t *)0)->stringpool_str98, ei_iso8859_1}
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str81, ei_iso8859_1},
++#line 32 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str82, ei_ucs2le},
++#line 28 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str83, ei_ucs2be},
++    {-1},
++#line 50 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str85, ei_ucs4swapped},
++#line 78 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str86, ei_cp1250},
++    {-1},
++#line 15 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str88, ei_ascii},
++    {-1},
++#line 45 "lib/aliases.gperf"
++    {(int)(long)&((struct stringpool_t *)0)->stringpool_str90, ei_utf7}
+   };
+ 
+ #ifdef __GNUC__
+ __inline
++#if defined __GNUC_STDC_INLINE__ || defined __GNUC_GNU_INLINE__
++__attribute__ ((__gnu_inline__))
++#endif
+ #endif
+ const struct alias *
+ aliases_lookup (register const char *str, register unsigned int len)
+diff -Nur libiconv-1.11/lib/converters.h libiconv-1.11.ok/lib/converters.h
+--- libiconv-1.11/lib/converters.h	2012-02-15 03:14:02.616696910 -0500
++++ libiconv-1.11.ok/lib/converters.h	2012-02-14 15:39:37.846704177 -0500
+@@ -141,3 +141,22 @@
+ #ifdef USE_DOS
+ #include "cp437.h"
+ #endif
++
++typedef struct {
++  unsigned short indx; /* index into big table */
++  unsigned short used; /* bitmask of used entries */
++} Summary16;
++#include "gb2312.h"
++
++#include "gbk.h"
++#include "ces_gbk.h"
++#include "cp936.h"
++#include "gb18030.h"
++#include "cns11643.h"
++#include "euc_tw.h"
++#include "big5.h"
++#include "ces_big5.h"
++
++/*
++#include "gbkext_inv.h"
++*/
+diff -Nur libiconv-1.11/lib/encodings.def libiconv-1.11.ok/lib/encodings.def
+--- libiconv-1.11/lib/encodings.def	2012-02-15 03:14:02.616696910 -0500
++++ libiconv-1.11.ok/lib/encodings.def	2012-02-14 15:39:33.116701883 -0500
+@@ -230,3 +230,47 @@
+             cp850,
+             { cp850_mbtowc, NULL },       { cp850_wctomb, NULL })
+ 
++
++
++/* zh_CN encodings */
++DEFENCODING(( "GBK",                    /* IANA, JDK 1.1 */
++            ),
++            ces_gbk,
++            { ces_gbk_mbtowc, NULL },     { ces_gbk_wctomb, NULL })
++
++DEFENCODING(( "GB_2312-80",             /* IANA */
++              "ISO-IR-58",              /* IANA */
++              "csISO58GB231280",        /* IANA */
++              "CHINESE",                /* IANA */
++            /*"GB2312.1980-0",             X11R6.4 */
++            ),
++            gb2312,
++            { gb2312_mbtowc, NULL },      { gb2312_wctomb, NULL })
++
++DEFENCODING(( "CP936",                  /* IANA */
++              "MS936",                  /* IANA */
++              "WINDOWS-936",            /* IANA */
++            ),
++            cp936,
++            { cp936_mbtowc, NULL },       { cp936_wctomb, NULL })
++
++DEFENCODING(( "GB18030",                /* IANA, glibc */
++            /*"CP54936",                   Windows */
++            ),
++            gb18030,
++            { gb18030_mbtowc, NULL },     { gb18030_wctomb, NULL })
++
++DEFENCODING(( "EUC-TW",                 /* glibc */
++            ),
++            euc_tw,
++            { euc_tw_mbtowc, NULL },      { euc_tw_wctomb, NULL })
++
++DEFENCODING(( "BIG5",                   /* IANA, JDK 1.1 */
++              "BIG-5",                  /* glibc */
++              "BIG-FIVE",               /* glibc */
++              "BIGFIVE",                /* glibc */
++              "CN-BIG5",                /* RFC 1922 */
++              "csBig5",                 /* IANA */
++            ),
++            ces_big5,
++            { ces_big5_mbtowc, NULL },    { ces_big5_wctomb, NULL })

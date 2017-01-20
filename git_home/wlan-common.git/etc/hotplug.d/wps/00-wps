@@ -1,0 +1,620 @@
+# Recieve the singal from hostapd (WPS) and handle the $ACTION :
+# 1. SET_CONFIG to read from the WPS config file "$FILE" and set the values to system.
+# 2. SET_STATE to set the state of WPS session to system. (M1, M2, M3,......, DONE,..)
+# 3. SET_CLIENT_INFO to set the client's MAC and name for GUI
+# 4. LOCK and UNLOCK to tell GUI whether WPS is temporally locking down or not
+
+command=/bin/config
+
+set_config(){
+    if [ "x$PROG_SRC" = "xrealtek" ]; then
+        set_config_for_realtek
+    elif [ "x$PROG_SRC" = "xathr-hostapd" ]; then
+        if [ "x$SUPPLICANT_MODE" != "x1" ]; then
+            set_config_for_athr_hostapd
+        else
+            set_config_for_athr_supplicant
+        fi
+    else
+        set_config_for_atheros
+    fi
+}
+
+set_config_for_atheros() {
+
+	# Security
+	case "$tmp_wpa" in
+		0)
+			if [ "x$tmp_wep_default_key" = "x" ]; then
+				# None security
+				$command set ${wl_prefix}sectype=1
+			else
+				# WEP
+				tmp_wep_key="$(eval echo \$wep_key$tmp_wep_default_key)"
+				tmp_wep_default_key=$(( $tmp_wep_default_key +1 ))
+				$command set ${wl_prefix}sectype=2
+				$command set ${wl_prefix}auth=2      #Auto
+				$command set ${wl_prefix}key=$tmp_wep_default_key
+				$command set ${wl_prefix}key${tmp_wep_default_key}="$tmp_wep_key"
+				# key length, 10/2= 5 for 64-bit, 26/2= 13 for 128-bit
+				$command set ${wl_prefix}key_length="$(( ($(echo -n $tmp_wep_key|wc -c))/2 ))"
+				$command set ${wl_prefix}simple_mode=1
+				if [ "$wl_prefix" = "wl_" ]; then
+					iwpriv ath0 htweptkip 0
+				elif [ "$wl_prefix" = "wla_" ]; then
+					iwpriv ath1 htweptkip 0
+				fi
+			fi
+			;;
+		1)
+			if [ "$tmp_wpa_pairwise" = "TKIP" -o "$tmp_wpa_pairwise" = "TKIP CCMP" ]; then
+				# WPA-PSK [TKIP]
+				$command set ${wl_prefix}sectype=3
+				$command set ${wl_prefix}wpa1_psk="$tmp_wpa_passphrase"
+				$command set ${wl_prefix}sec_wpaphrase_len="$(echo -n $tmp_wpa_passphrase|wc -c)"
+				$command set ${wl_prefix}simple_mode=1
+				if [ "$wl_prefix" = "wl_" ]; then
+					iwpriv ath0 htweptkip 0
+				elif [ "$wl_prefix" = "wla_" ]; then
+					iwpriv ath1 htweptkip 0
+				fi
+			else
+				# WPA-PSK [TKIP] + WPA2-PSK [AES]
+				$command set ${wl_prefix}sectype=5
+				$command set ${wl_prefix}wpas_psk="$tmp_wpa_passphrase"
+				$command set ${wl_prefix}sec_wpaphrase_len="$(echo -n $tmp_wpa_passphrase|wc -c)"
+			fi
+			;;
+		2)
+			if [ "$tmp_wpa_pairwise" = "CCMP" -o "$tmp_wpa_pairwise" = "CCMP TKIP" ]; then
+				# WPA2-PSK [AES]
+				$command set ${wl_prefix}sectype=4
+				$command set ${wl_prefix}wpa2_psk="$tmp_wpa_passphrase"
+				$command set ${wl_prefix}sec_wpaphrase_len="$(echo -n $tmp_wpa_passphrase|wc -c)"
+			else
+				# WPA-PSK [TKIP] + WPA2-PSK [AES]
+				$command set ${wl_prefix}sectype=5
+				$command set ${wl_prefix}wpas_psk="$tmp_wpa_passphrase"
+				$command set ${wl_prefix}sec_wpaphrase_len="$(echo -n $tmp_wpa_passphrase|wc -c)"
+			fi
+			;;
+		3)
+			# WPA-PSK [TKIP] + WPA2-PSK [AES]
+			$command set ${wl_prefix}sectype=5
+			$command set ${wl_prefix}wpas_psk="$tmp_wpa_passphrase"
+			$command set ${wl_prefix}sec_wpaphrase_len="$(echo -n $tmp_wpa_passphrase|wc -c)"
+			;;
+	esac
+
+	# Hanld the special chars in SSID, "\" -> "\\\", "`" -> "\\\`", """ -> "\""
+	# Note that the method to handle "`" differs from the one of passphrase below.
+	# This is weird but exactly done by Wireless Settings web page in WNDR3700.
+	if [ "x$tmp_ssid" != "x" ]; then
+		$command set ${wl_prefix}ssid="$(echo "$tmp_ssid"|sed -e 's/\\/\\\\\\\\/g' -e 's/`/\\\\\\`/g' -e 's/"/\\\"/g')"
+	fi
+
+	# WPS is in configured state now
+	if [ "$wl_prefix" = "wl_" ]; then
+		$command set wps_status=5
+	else
+		$command set wla_wps_status=5
+	fi
+}
+
+set_config_for_athr_hostapd(){
+    case "$tmp_wpa" in
+        0)
+            # None security
+            $command set ${wl_prefix}sectype=1
+            ;;
+        2)
+            # WPA2-PSK [AES]
+            $command set ${wl_prefix}sectype=4
+            $command set ${wl_prefix}wpa2_psk="$tmp_wpa_passphrase"
+            $command set ${wl_prefix}sec_wpaphrase_len="$(echo -n $tmp_wpa_passphrase|wc -c)"
+            ;;
+        3)
+            # WPA-PSK [TKIP] + WPA2-PSK [AES]
+            $command set ${wl_prefix}sectype=5
+            $command set ${wl_prefix}wpas_psk="$tmp_wpa_passphrase"
+            $command set ${wl_prefix}sec_wpaphrase_len="$(echo -n $tmp_wpa_passphrase|wc -c)"
+            ;;
+    esac
+
+    # Hanld the special chars in SSID, "\" -> "\\\", "`" -> "\\\`", """ -> "\""
+    # Note that the method to handle "`" differs from the one of passphrase below.
+    # This is weird but exactly done by Wireless Settings web page in WNDR3700.
+    if [ "x$tmp_ssid" != "x" ]; then
+        $command set ${wl_prefix}ssid="$(echo "$tmp_ssid"|sed -e 's/\\/\\\\\\\\/g' -e 's/`/\\\\\\`/g' -e 's/"/\\\"/g')"
+    fi
+
+    # WPS is in configured state now
+    if [ "$wl_prefix" = "wl_" ]; then
+        $command set wps_status=5
+    else
+        $command set wla_wps_status=5
+    fi
+}
+
+set_config_for_athr_supplicant(){
+    wl_prefix="wl_cb_"
+    case "$tmp_wpa" in
+        0)
+            # None security
+            $command set ${wl_prefix}sectype=1
+            ;;
+        2)
+            # WPA2-PSK [AES]
+            $command set ${wl_prefix}sectype=4
+            $command set ${wl_prefix}wpa2_psk="$tmp_wpa_passphrase"
+            $command set ${wl_prefix}sec_wpaphrase_len="$(echo -n $tmp_wpa_passphrase|wc -c)"
+            ;;
+        3)
+            # WPA-PSK [TKIP] + WPA2-PSK [AES]
+            $command set ${wl_prefix}sectype=5
+            $command set ${wl_prefix}wpas_psk="$tmp_wpa_passphrase"
+            $command set ${wl_prefix}sec_wpaphrase_len="$(echo -n $tmp_wpa_passphrase|wc -c)"
+            ;;
+    esac
+
+    # Hanld the special chars in SSID, "\" -> "\\\", "`" -> "\\\`", """ -> "\""
+    # Note that the method to handle "`" differs from the one of passphrase below.
+    # This is weird but exactly done by Wireless Settings web page in WNDR3700.
+    if [ "x$tmp_ssid" != "x" ]; then
+        $command set ${wl_prefix}ssid="$(echo "$tmp_ssid"|sed -e 's/\\/\\\\\\\\/g' -e 's/`/\\\\\\`/g' -e 's/"/\\\"/g')"
+    fi
+
+}
+
+set_config_for_realtek() {
+    # Security
+    case "$tmp_encrypt" in
+        0)
+            # None security
+            $command set ${wl_prefix}sectype=1
+            ;;
+        1)
+            # WEP
+            tmp_wep_default_key=$(( $tmp_wep_default_key +1 ))
+            $command set ${wl_prefix}sectype=2
+            $command set ${wl_prefix}auth=2      #Auto
+            $command set ${wl_prefix}key=$tmp_wep_default_key
+            $command set ${wl_prefix}key1=$wep_key1
+            $command set ${wl_prefix}key2=$wep_key2
+            $command set ${wl_prefix}key3=$wep_key3
+            $command set ${wl_prefix}key4=$wep_key4
+            # key length, 5 for 64-bit, 13 for 128-bit
+            $command set ${wl_prefix}key_length=$tmp_wep_key_length
+            ;;
+        2)
+            if [ "$tmp_wpa_pairwise" = "TKIP" -o "$tmp_wpa_pairwise" = "TKIP CCMP" ]; then
+                # WPA-PSK [TKIP]
+                $command set ${wl_prefix}sectype=3
+                $command set ${wl_prefix}wpa1_psk="$tmp_wpa_passphrase"
+                $command set ${wl_prefix}sec_wpaphrase_len="$(echo -n $tmp_wpa_passphrase|wc -c)"
+            else
+                # WPA-PSK [TKIP] + WPA2-PSK [AES]
+                $command set ${wl_prefix}sectype=5
+                $command set ${wl_prefix}wpas_psk="$tmp_wpa_passphrase"
+                $command set ${wl_prefix}sec_wpaphrase_len="$(echo -n $tmp_wpa_passphrase|wc -c)"
+            fi
+            ;;
+        4)
+            if [ "$tmp_wpa_pairwise" = "CCMP" -o "$tmp_wpa_pairwise" = "CCMP TKIP" ]; then
+                # WPA2-PSK [AES]
+                $command set ${wl_prefix}sectype=4
+                $command set ${wl_prefix}wpa2_psk="$tmp_wpa_passphrase"
+                $command set ${wl_prefix}sec_wpaphrase_len="$(echo -n $tmp_wpa_passphrase|wc -c)"
+            else
+                # WPA-PSK [TKIP] + WPA2-PSK [AES]
+                $command set ${wl_prefix}sectype=5
+                $command set ${wl_prefix}wpas_psk="$tmp_wpa_passphrase"
+                $command set ${wl_prefix}sec_wpaphrase_len="$(echo -n $tmp_wpa_passphrase|wc -c)"
+            fi
+            ;;
+        6)
+            # WPA-PSK [TKIP] + WPA2-PSK [AES]
+            $command set ${wl_prefix}sectype=5
+            $command set ${wl_prefix}wpas_psk="$tmp_wpa_passphrase"
+            $command set ${wl_prefix}sec_wpaphrase_len="$(echo -n $tmp_wpa_passphrase|wc -c)"
+            ;;
+    esac
+
+    # Hanld the special chars in SSID, "\" -> "\\\", "`" -> "\\\`", """ -> "\""
+    # Note that the method to handle "`" differs from the one of passphrase below.
+    # This is weird but exactly done by Wireless Settings web page in WNDR3700.
+    if [ "x$tmp_ssid" != "x" ]; then
+        $command set ${wl_prefix}ssid=$tmp_ssid
+        # $command set ${wl_prefix}ssid="$(echo $tmp_ssid|sed -e 's/\\/\\\\\\\\/g' -e 's/`/\\\\\\`/g' -e 's/"/\\\"/g')"
+    fi
+    $command set ${wl_prefix}wsc_enc=$tmp_wsc_enc
+    $command set ${wl_prefix}wsc_configbyextreg=$tmp_configbyextreg
+
+    # WPS is in configured state now
+    if [ "$wl_prefix" = "wl_" ]; then
+        $command set wps_status=5
+    else
+        $command set wla_wps_status=5
+    fi
+}
+
+read_conf_file() {
+    if [ "x$PROG_SRC" = "xrealtek" ]; then
+        read_conf_file_for_realtek
+    elif [ "x$PROG_SRC" = "xathr-hostapd" ]; then
+        if [ "x$SUPPLICANT_MODE" != "x1" ]; then
+            read_conf_file_for_athr_hostapd
+        else
+            read_conf_file_for_athr_supplicant
+        fi
+    else
+        read_conf_file_for_atheros
+    fi
+}
+
+read_conf_file_for_atheros() {
+	sed -e 's/=/ /' $FILE > ${FILE}.$$
+	while read -r arg val; do
+		case "$arg" in
+			ssid)
+				tmp_ssid="$val"
+				;;
+			wpa)
+				tmp_wpa=$val
+				;;
+			wpa_key_mgmt)
+				tmp_wpa_key_mgmt="$val"
+				;;
+			wpa_pairwise)
+				tmp_wpa_pairwise="$val"
+				;;
+			wpa_passphrase)
+				# Handle special chars, "\" -> "\\\", "`" -> "\`", """ -> "\""
+				# Note that the method to handle "`" differs from the one of SSID above.
+				# This is weird but exactly done by Wireless Settings web page in WNDR3700.
+				tmp_wpa_passphrase="$(echo "$val"|sed -e 's/\\/\\\\\\\\/g' -e 's/`/\\`/g' -e 's/"/\\\"/g')"
+				;;
+			wpa_psk)
+				tmp_wpa_psk="$(echo $val|sed -e 's/\\/\\\\\\\\/g' -e 's/`/\\`/g' -e 's/"/\\\"/g')"
+				;;
+			wep_default_key)
+				tmp_wep_default_key=$val
+				;;
+			wep_key0)
+				wep_key0="$val"
+				;;
+			wep_key1)
+				wep_key1="$val"
+				;;
+			wep_key2)
+				wep_key2="$val"
+				;;
+			wep_key3)
+				wep_key3="$val"
+				;;
+		esac
+	done < ${FILE}.$$
+	rm -f ${FILE}.$$
+}
+
+read_conf_file_for_realtek(){
+    sed -e 's/=/ /' $FILE > ${FILE}.$$
+    while read -r arg val; do
+        case "$arg" in
+            SSID)
+                # remove enclosed double quotes.
+                tmp_ssid=`echo $val | sed "s/^\([\"']\)\(.*\)\1\$/\2/g"`
+                ;;
+            ENCRYPT)
+                tmp_encrypt=$val
+                ;;
+            WPA_PSK)
+                tmp_wpa_psk="$val"
+                ;;
+            WSC_ENC)
+                # WSC_ENCRYPT_NONE=1, WSC_ENCRYPT_WEP=2, WSC_ENCRYPT_TKIP=4
+                # WSC_ENCRYPT_AES=8, WSC_ENCRYPT_TKIPAES=12
+                # This is not used yet, but record it just in case
+                tmp_wsc_enc=$val
+                ;;
+            PSK_FORMAT)
+                tmp_psk_format=$val
+                ;;
+            WSC_CONFIGBYEXTREG)
+                tmp_configbyextreg=$val
+                ;;
+            WSC_CONFIGURED)
+                tmp_configured=$val
+                ;;
+            WEP)
+                # WEP64=1; WEP128=2
+                case "$val" in
+                    1)
+                        tmp_wep_key_length=5
+                        ;;
+                    2)
+                        tmp_wep_key_length=13
+                        ;;
+                esac
+                ;;
+            WEP_DEFAULT_KEY)
+                tmp_wep_default_key=$val
+                ;;
+            WEP64_KEY1 | WEP128_KEY1)
+                wep_key1=$val
+                ;;
+            WEP64_KEY2 | WEP128_KEY2)
+                wep_key2=$val
+                ;;
+            WEP64_KEY3 | WEP128_KEY3)
+                wep_key3=$val
+                ;;
+            WEP64_KEY4 | WEP128_KEY4)
+                wep_key4=$val
+                ;;
+            WEP_KEY_TYPE)
+                # ASCII=0, HEX=1
+                tmp_key_type=$val
+                ;;
+        esac
+    done < ${FILE}.$$
+    rm -f ${FILE}.$$
+}
+
+read_conf_file_for_athr_hostapd() {
+    sed -e 's/=/ /' -e '/^\#/d' -e '/^$/d' $FILE > ${FILE}.$$
+    while read -r arg val; do
+	case "$arg" in
+	    ssid)
+		/* here the origin code will lead to bug 35280,[WPS]The SSID shows wrong when i set ssid contain spaces 
+		 * by Wired external registrar in Win7 ,so i repeace the ssid vaule as follows */
+		#tmp_ssid="$val"
+		tmp_ssid="`cat $FILE |grep -nr '^ssid' |cut -d = -f 2-`"
+		;;
+	    wpa|wpa_key_mgmt|wpa_pairwise|wps_state)
+                eval tmp_$arg="$val"
+                ;;
+	    wpa_passphrase)
+                # Handle special chars, "\" -> "\\\", "`" -> "\`", """ -> "\""
+                # Note that the method to handle "`" differs from the one of SSID above.
+                # This is weird but exactly done by Wireless Settings web page in WNDR3700.
+		tmp_wpa_passphrase="$(echo "$val"|sed -e 's/\\/\\\\\\\\/g' -e 's/`/\\`/g' -e 's/"/\\\"/g')"
+		;;
+	    wpa_psk)
+		tmp_wpa_psk="$(echo $val|sed -e 's/\\/\\\\\\\\/g' -e 's/`/\\`/g' -e 's/"/\\\"/g')"
+		;;
+	esac
+    done < ${FILE}.$$
+    rm -f ${FILE}.$$
+    if [ "x$tmp_wpa_passphrase" = "x" ]; then
+       tmp_wpa_passphrase="$tmp_wpa_psk"
+    fi
+}
+
+read_conf_file_for_athr_supplicant() {
+    sed -e 's/=/ /' -e '/^\#/d' -e '/^$/d' $FILE > ${FILE}.$$
+    while read -r arg val; do
+        case "$arg" in
+            ssid)
+                tmp_ssid=$(echo $val | sed -e 's/^"//g' -e 's/"$//g')
+                ;;
+            proto)
+                if [ "$val" = "RSN" ]; then
+                   tmp_wpa=2
+                elif [ "$val" = "WPA" ]; then
+                   tmp_wpa=1
+                elif [ "$val" = "WPA RSN" ] || [ "$val" = "RSN WPA" ]; then
+                   tmp_wpa=3
+                else
+                   tmp_wpa=0
+                fi
+                ;;
+            pairwise)
+                tmp_wpa_pairwise="$val"
+                ;;
+            key_mgmt)
+                if [ "$val" = "NONE" ]; then
+                   tmp_wpa=0
+                fi
+                ;;
+            wpa_passphrase)
+                # Handle special chars, "\" -> "\\\", "`" -> "\`", """ -> "\""
+                # Note that the method to handle "`" differs from the one of SSID above.
+                # This is weird but exactly done by Wireless Settings web page in WNDR3700.
+                tmp_wpa_passphrase="$(echo "$val"|sed -e 's/\\/\\\\\\\\/g' -e 's/`/\\`/g' -e 's/"/\\\"/g')"
+                ;;
+            psk)
+                tmp_val=$(echo $val | sed -e 's/^"//g' -e 's/"$//g')
+                tmp_wpa_psk="$(echo $tmp_val|sed -e 's/\\/\\\\\\\\/g' -e 's/`/\\`/g' -e 's/"/\\\"/g')"
+                ;;
+        esac
+    done < ${FILE}.$$
+    rm -f ${FILE}.$$
+    if [ "x$tmp_wpa_passphrase" = "x" ]; then
+       tmp_wpa_passphrase="$tmp_wpa_psk"
+    fi
+}
+
+case "$ACTION" in
+	SET_CONFIG)
+		[ "x$FILE" != "x" ] && test -f $FILE || {
+			echo "Error. The file \"$FILE\" is not found!"
+			exit 1
+		}
+
+		read_conf_file
+		
+		if [ "x$PROG_SRC" = "xathr-hostapd" ]; then
+			if [ "$BAND_MODE" = "g" ]; then
+				wl_prefix=wl_
+			else
+				wl_prefix=wla_
+			fi
+			if [ -n "$SSID_SUFFIX" ]; then
+			    new_ssid=${tmp_ssid}${SSID_SUFFIX}
+			    tmp_ssid=$new_ssid
+			fi
+			set_config
+			$command commit
+			exit
+		fi
+
+		# Fix Bug that more than two wep keys exist in conf will cause hostapd crash
+		# Make all existing wep keys being NULL if security is not WEP
+		if [ "$tmp_wpa" != "0" -o "x$tmp_wep_default_key" = "x" ] && [ "x$PROG_SRC" != "xrealtek" ]; then
+			for index in 0 1 2 3 ; do
+				if [ "$(eval echo x\$wep_key$index)" != "x" ]; then
+					echo "wep_key$index=" >> $FILE
+				fi
+			done
+		fi
+
+		# Check WPS is configured or not
+		if [ "$(config get wps_status)" = "5" ];then
+			WPS_configured=yes;
+		fi
+		if [ "$(config get wla_wps_status)" = "5" ];then
+			Another_WPS_configured=yes;
+		fi
+
+		# Check if random SSID
+		echo $tmp_ssid | sed -e 's/_/ /g' > /tmp/tmp_ssid
+		read -r prefix_string random_string < /tmp/tmp_ssid
+		if [ "$WPS_configured" != "yes" -a "$prefix_string" = "NTGR-2.4G" -o "$prefix_string" = "NTGR-5G" ];then
+			if [ "$IS_AP_PIN" != "YES" ]; then
+				# Set to WPA/WPA2-PSK mixed mode
+				tmp_wpa=3
+				echo "wpa=3" >> $FILE
+				if [ "$prefix_string" = "NTGR-2.4G" ]; then
+					Another_SSID="NTGR-5G_${random_string}"
+				else
+					Another_SSID="NTGR-2.4G_${random_string}"
+				fi
+			fi
+		fi
+		rm -f /tmp/tmp_ssid
+
+		# Check wpa_passphrase
+		if [ "x$tmp_wpa_passphrase" = "x" ]; then
+			tmp_wpa_passphrase="$tmp_wpa_psk"
+		fi
+
+		if [ "x$PROG_SRC" = "xrealtek" ]; then
+			# Under realtek solution, we don't need to do so much checking
+			# as below for Atheros solution.
+			if [ "$INTERFACE" = "wlan1" -a "$(config get endis_wl_radio)" = "1" ]; then
+				wl_prefix=wl_
+			else
+				wl_prefix=wla_
+			fi
+			if [ -n "$SSID_SUFFIX" ]; then
+			    new_ssid=${tmp_ssid}${SSID_SUFFIX}
+			    tmp_ssid=$new_ssid
+			fi
+			if [ -n "$SWAP_SSID_FROM" ] && [ -n "$SWAP_SSID_TO" ]; then
+			    new_ssid=`echo $tmp_ssid | sed -e "s/$SWAP_SSID_FROM/$SWAP_SSID_TO/"`
+			    tmp_ssid=$new_ssid
+			fi
+			set_config
+			$command commit
+			exit
+		fi
+
+		# Check that ath0 is 11g or 11a
+		if [ "$INTERFACE" != "ath0" -a "$INTERFACE" != "ath1" ]; then
+			echo "Not support interface $INTERFACE !"
+			exit 1
+		fi
+		if [ "$INTERFACE" = "ath0" -a "$(config get endis_wl_radio)" = "1" ]; then
+			wl_prefix=wl_
+			Another_FILE="$(echo $FILE | sed -e 's/ath0/ath1/')"
+			if [ "x$Another_SSID" = "x" ]; then
+				Another_SSID="$(echo "$tmp_ssid" |head -c 29)""-5G"
+			fi
+		else
+			wl_prefix=wla_
+			Another_FILE="$(echo $FILE | sed -e 's/ath1/ath0/')"
+			if [ "x$Another_SSID" = "x" ]; then
+				Another_SSID="$(echo "$tmp_ssid" |head -c 27)""-2.4G"
+			fi
+		fi
+
+		# Sync. the configurations of two radios if both are in unconfigured state
+		# and changes are from wireless
+		if [ "$IS_FROM_WIRELESS" = "YES" -a "$WPS_configured" != "yes" -a "$Another_WPS_configured" != "yes" ]; then
+			if [ "$(config get endis_wl_radio)" = "1" -a "$(config get endis_wla_radio)" = "1" ]; then
+				if [ "x$Another_FILE" != "x" -a "$Another_FILE" != "$FILE" ]; then
+					cp -f $FILE $Another_FILE
+				else
+					echo "Fail to save WPS configuration! Null file name or two equal file names: $FILE and $Another_FILE"
+					exit 1
+				fi
+				
+				echo "ssid=$Another_SSID" >> $Another_FILE
+			fi
+
+			set_config
+
+			if [ "$wl_prefix" = "wl_" ]; then
+				wl_prefix=wla_
+			else
+				wl_prefix=wl_
+			fi
+			
+			tmp_ssid="$Another_SSID"
+		fi
+
+		set_config
+
+		$command commit
+		;;
+
+	SET_STATE)
+		# WPS_STATE=2 is only able to be set when /tmp/wps_process_state is "start".
+		if [ "$WPS_STATE" != "2" -o "$(/bin/cat /tmp/wps_process_state)" = "start" ]; then
+                    set_wps_state=1
+                    wps_process_success_file=/tmp/.wps_process_ok
+                    case "$WPS_STATE" in
+                        2)      # AUTH. WPS start
+                            rm -f $wps_process_success_file
+                            ;;
+                        1)      # SUCCESS
+                            touch $wps_process_success_file
+                            ;;
+                        3)      # SEND_CONFIG
+                            # State sending config (3) should be set before success (2)
+                            # if state is already set to success, then do not set it to
+                            # sending config again.
+                            [ -f $wps_process_success_file ] && set_wps_state=0
+                            ;;
+                    esac
+                    [ "$set_wps_state" = "1" ] && echo "$WPS_STATE" > /tmp/wps_process_state
+		fi
+		;;
+
+	SET_CLIENT_INFO)
+		[ -n "$MAC" ] && $command set macAddr="$MAC"
+		[ -n "$NAME" ] && $command set client_name="$NAME"
+		;;
+	RECORD_STA_MAC)
+		/usr/sbin/stamac set $STAMAC
+		;;
+	LOCK)
+		$command set wps_lock_down=1
+		$command set wps_pin_history_failures=0
+		;;
+	UNLOCK)
+		$command set wps_lock_down=0
+		;;
+	WIFI_RESTART)
+                if [ "x$PROG_SRC" = "xrealtek" ]; then
+                   # Restarting wifi here via command wlan down/up directly would cause
+                   # wscd unable to restart. I have no idea why this happened, so use
+                   # another script to restart Wifi
+                   echo "wps" > /tmp/restart_wifi
+                fi
+		;;
+        SET_AP_PIN_FAILURES)
+                $command set wps_pin_history_failures=$AP_PIN_FAILURES
+                ;;
+esac

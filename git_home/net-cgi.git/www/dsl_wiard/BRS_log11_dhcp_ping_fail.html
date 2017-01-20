@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="/script/brs_hijack.js"></script>
+<% hijack_language() %>
+</head>
+<% wizlog_checkPing_ck11("1") %>
+<body onLoad="loadvalue()">
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+		<h1><script language="javascript" type="text/javascript">document.write(bh_apply_connection);</script></h1>
+			
+		<p><script language="javascript" type="text/javascript">document.write(bh_plz_waite_apply_connection);</script></p>
+		
+		<div id="applySettings_wait" class="waiting_img_div" align="center">
+			<img src="image/wait30.gif" />
+		</div>
+		
+	</div>
+		
+</div>
+</body>
+<script>
+showFirmVersion("none");
+var apmode_flag = top.apmode_flag;
+var ap_mode = "<% cfg_get("ap_mode") %>";
+function loadvalue()
+{
+	this.location.href = "BRS_06_networkIssue.html";
+}
+</script>
+</html>

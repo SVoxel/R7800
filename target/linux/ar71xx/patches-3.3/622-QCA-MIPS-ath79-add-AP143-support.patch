@@ -1,0 +1,80 @@
+--- a/arch/mips/ath79/Kconfig
++++ b/arch/mips/ath79/Kconfig
+@@ -95,6 +95,18 @@ config ATH79_MACH_AP136
+ 	  Say 'Y' here if you want your kernel to support the
+ 	  Atheros AP136 reference board.
+ 
++config ATH79_MACH_AP143
++	bool "Atheros AP143 reference board"
++	select SOC_QCA953X
++	select ATH79_DEV_GPIO_BUTTONS
++	select ATH79_DEV_LEDS_GPIO
++	select ATH79_DEV_SPI
++	select ATH79_DEV_USB
++	select ATH79_DEV_WMAC
++	help
++	  Say 'Y' here if you want your kernel to support the
++	  Atheros AP143 reference board.
++
+ config ATH79_MACH_AP81
+ 	bool "Atheros AP81 reference board"
+ 	select SOC_AR913X
+--- a/arch/mips/ath79/Makefile
++++ b/arch/mips/ath79/Makefile
+@@ -49,6 +49,7 @@ obj-$(CONFIG_ATH79_MACH_AP113)		+= mach-
+ obj-$(CONFIG_ATH79_MACH_AP121)		+= mach-ap121.o
+ obj-$(CONFIG_ATH79_MACH_AP135)		+= mach-ap135.o
+ obj-$(CONFIG_ATH79_MACH_AP136)		+= mach-ap136.o
++obj-$(CONFIG_ATH79_MACH_AP143)		+= mach-ap143.o
+ obj-$(CONFIG_ATH79_MACH_AP81)		+= mach-ap81.o
+ obj-$(CONFIG_ATH79_MACH_AP83)		+= mach-ap83.o
+ obj-$(CONFIG_ATH79_MACH_AP96)		+= mach-ap96.o
+--- /dev/null
++++ b/arch/mips/ath79/mach-ap143.c
+@@ -0,0 +1,36 @@
++/*
++ * Atheros AP143 reference board support
++ *
++ * Copyright (c) 2013 The Linux Foundation. All rights reserved.
++ * Copyright (c) 2012 Gabor Juhos <juhosg@openwrt.org>
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
++ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
++ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
++ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
++ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
++ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
++ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
++ *
++ */
++
++#include <linux/platform_device.h>
++#include <linux/ar8216_platform.h>
++
++#include <asm/mach-ath79/ar71xx_regs.h>
++
++#include "common.h"
++#include "dev-m25p80.h"
++#include "machtypes.h"
++
++static void __init ap143_setup(void)
++{
++	ath79_register_m25p80(NULL);
++}
++
++MIPS_MACHINE(ATH79_MACH_AP143, "AP143", "Atheros AP143 reference board",
++	     ap143_setup);
+--- a/arch/mips/ath79/machtypes.h
++++ b/arch/mips/ath79/machtypes.h
+@@ -27,6 +27,7 @@ enum ath79_mach_type {
+ 	ATH79_MACH_AP121_MINI,		/* Atheros AP121-MINI reference board */
+ 	ATH79_MACH_AP135,		/* Atheros AP135 reference board */
+ 	ATH79_MACH_AP136,		/* Atheros AP136 reference board */
++	ATH79_MACH_AP143,		/* Atheros AP143 reference board */
+ 	ATH79_MACH_AP81,		/* Atheros AP81 reference board */
+ 	ATH79_MACH_AP83,		/* Atheros AP83 */
+ 	ATH79_MACH_AP96,		/* Atheros AP96 */

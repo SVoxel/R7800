@@ -1,0 +1,70 @@
+This project is custom firmware build for NETGEAR R7800 router.
+It is based on GPL sources of stock NETGEAR firmware.
+
+To save a space I removed "dl" directory and "toolchain" directory.
+Most of packages from "dl" directory could be restored from GPL sources of stock NETGEAR firmware.
+
+List of packages I use additionally (in "dl" directory, as a new or replacement for older packages):
+
+alsa-lib-1.1.0.tar.bz2
+autoconf-2.69.tar.xz
+automake-1.15.tar.xz
+binutils-2.26.1.tar.bz2
+confuse-2.7.tar.gz
+dnscrypt-proxy-1.7.0.tar.gz
+e2fsprogs-1.43.3.tar.gz
+ethtool-4.8.tar.xz
+expat-2.1.0.tar.gz
+flac-1.3.1.tar.xz
+flex-2.6.1.tar.xz
+gcc-4.8.5.tar.bz2
+gdb-7.11.tar.xz
+gettext-0.19.6.tar.xz
+jpegsrc.v9a.tar.gz
+"libcrypto++_5.6.3.orig.tar.xz"
+libevent-2.0.22-stable.tar.gz
+libevent-release-1.4.15-stable.tar.gz
+libexif-0.6.21.tar.bz2
+libiconv-1.11.1.tar.gz
+libnfnetlink-1.0.1.tar.bz2
+libogg-1.3.2.tar.xz
+libsodium-1.0.11.tar.gz
+libusb-1.0.20.tar.bz2
+libusb-compat-0.1.4.tar.bz2
+libvorbis-1.3.5.tar.xz
+libxml2-2.9.4.tar.gz
+lua-5.1.5.tar.gz
+lzo-2.09.tar.gz
+m4-1.4.17.tar.xz
+mklibs_0.1.35.tar.gz
+mpc-1.0.3.tar.gz
+mpfr-3.1.3.tar.bz2
+mtd-utils-1.5.2-aea36417067dade75192bafa03af70b6eb2677b1.tar.gz
+mxml-2.9.tar.gz
+ncurses-5.9.tar.gz
+openssl-1.0.2j.tar.gz
+openvpn-2.3.14.tar.xz
+popt-1.16.tar.gz
+sed-4.2.2.tar.bz2
+sqlite-autoconf-3130000.tar.gz
+tar-1.29.tar.bz2
+transmission-2.92V.tar.gz
+u-boot-2014.10.tar.bz2
+unzip60.tar.gz
+util-linux-2.28.tar.xz
+wget-1.18.tar.xz
+xz-5.2.2.tar.bz2
+zip30.tar.gz
+zlib-1.2.8.tar.gz
+
+You can find and download them from Internet.
+
+I use GCC 4.8.5 compiler, you can use the same or to use your own. For example NETGEAR developers use 4.6-linaro.
+
+How to build:
+
+1. Add missing "dl" and selected by you "toolchain"
+2. cp configs/defconfig-r7800 .config
+3. Run ./compile.sh
+
+Voxel.

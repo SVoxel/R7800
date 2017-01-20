@@ -1,0 +1,1874 @@
+<% http_header("style/form.css", "/funcs.js", "/bas_pppoe_dsl.js") %>
+<% body_header("_BAS_pppoe", "BAS_update.htm", "pppoe_dsl") %>
+
+<div class="page_title">$int_setup</div>
+<script>
+<% set_lin_flag() %>
+<% save_timestamp("pppoe_dsl", "Change_pvc_num","csonly","lin_pppoe") %>
+var wan1_flag = "<% cfg_get("wan1_flag") %>";
+var wan2_flag = "<% cfg_get("wan2_flag") %>";
+<% pppoe_get_value() %>
+var ts = "<% cfg_get("pppoe_dsl") %>";
+var run_test="<% cfg_get("run_test") %>";
+var in_hijack=( "<% cfg_get("dns_hijack") %>" == "1" && "<% cfg_get("hijack_process") %>" != "3" );
+<% cfg_set("run_test", "no") %>
+<% commit() %>
+var dsl_wan_preference="<% cfg_get("dsl_wan_preference") %>";
+var ipv6_type = "<% cfg_get("ipv6_type") %>";
+var connection_type = "<% cat_file("/tmp/ipv6_auto_output") %>";
+var lan_ip="<% cfg_get("lan_ipaddr") %>";
+var lan_subnet="<% cfg_get("lan_netmask") %>";
+var pppoe_get_ip="<% bas_pppoe_ip() %>";
+var old_wan_ip=pppoe_get_ip;
+var old_pppoe_wan_assign=pppoe_get_wan_assign;
+var vpn_enable = "<% cfg_get("vpn_enable") %>";
+var russian_pppoe_flag=parent.parent.russian_pppoe_flag;
+var gui_region="<% cfg_get("GUI_Region") %>";
+var netgear_region=top.netgear_region;
+if ( bas_conn_time_num == "" ) // to fix bug 23294
+	bas_conn_time_num="0";
+var auto_conn_flag=parent.parent.auto_conn_flag;
+var autoconn_flag=(auto_conn_flag == 1 && ((gui_region == "German" &&  (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "GR")) ? 1 : 0;
+
+var pppoe_myip_flag=( top.pppoe_intranet_flag == 1 && ( (gui_region == "Russian" && (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "RU")) ? 1 : 0;
+
+var is_jp_version = ((netgear_region == "" || netgear_region.toUpperCase() == "WW") && gui_region == "Japanese") || netgear_region.toUpperCase() == "JP";
+var wanproto_type="pppoe";
+var wan_mtu_now='<% wan_mtu() %>';
+if (pppoe_get_this_mac == "")
+        pppoe_get_this_mac="<% wan_mac() %>";
+
+var pppoe_mac_router_flag=parent.parent.pppoe_mac_router_flag;
+<% password_empty("pppoe") %>
+var wan_pvc_num = "<% cfg_get("wan_pvc_num") %>";
+var true_country = "<% cfg_get("dsl_wan_country") %>";
+var true_isp = "<% cfg_get("dsl_wan_isp") %>";
+var fermode = "<% cfg_get("dsl_wan_type") %>";
+
+var ISP_ALL = 
+    new Array (
+	new Array ("Adam","Adam","Clubtelco","Clubtelco","Dodo","Dodo","Exetel","Exetel","iiNet","iiNet","Internode","Internode","Optus","Optus","People Telcom","People Telcom","Primus","Primus","Soul","Soul","Telstra","Telstra","Telstra Bigpond","Telstra Bigpond","TPG","TPG","TransACT","TransACT","Westnet","Westnet","Internode","Internode","Engin","Engin","Other","$dsl_other"),
+	new Array ("A1 Telekom","A1 Telekom","UPC Austria","UPC Austria","UTA2","UTA2","Comteam.at","Comteam.at","Other","$dsl_other"),
+	new Array ("Proximus(Belgacom)","Proximus(Belgacom)","Other","$dsl_other"),
+	new Array ("Gvt-Global Village Telecom","Gvt-Global Village Telecom","Oi","Oi","Telemar Oi Velox","Telemar Oi Velox","Other","$dsl_other"),
+	new Array ("Bell Canada(Western)","Bell Canada(Western)","SaskTel","SaskTel","TekSavvy","TekSavvy","Other","$dsl_other"),
+	new Array ("China Telecom","China Telecom","Other","$dsl_other"),
+	new Array ("O2","O2","Tiscali","Tiscali","T-Mobile","T-Mobile","Other","$dsl_other"),
+	new Array ("Telenor","Telenor","TDC","TDC","Other","$dsl_other"),
+	new Array ("Teliasonera","Teliasonera","Elisa Oyj","Elisa Oyj","DNA Welho","DNA Welho","Other","$dsl_other"),
+	new Array ("Free","Free","OVH","OVH","Orange","Orange","SFR","SFR","Nordnet","Nordnet","Other","$dsl_other"),
+	new Array ("1&1","1&1","Deutsche Telekom","Deutsche Telekom","m-net","m-net","Netcologne","Netcologne","Telefonica O2","Telefonica O2","Vodafone","Vodafone","Other","$dsl_other"),
+	new Array ("PCCW","PCCW","Other","$dsl_other"),
+	new Array ("Actel","Actel","GTS Datanet","GTS Datanet","Invitel","Invitel","T-Home","T-Home","Other","$dsl_other"),
+	new Array ("AIRTEL","AIRTEL","BSNL","BSNL","Inedit","Inedit","MTNL","MTNL","TataIndicom","TataIndicom","Other","$dsl_other"),
+	new Array ("Speedy","Speedy","Telkom Speedy","Telkom Speedy","Other","$dsl_other"),
+	new Array ("Eircom","Eircom","Other","$dsl_other"),
+	new Array ("Acantho","Acantho","Telecom Italia","Telecom Italia","Aruba","Aruba","Fastweb","Fastweb","KPN Qwest Italia","KPN Qwest Italia","Infostrada","Infostrada","TELE2","TELE2","Tiscali","Tiscali","Twt","Twt","Wind(Infostrada)","Wind(Infostrada)","Intred","Intred","MC-link","MC-link","Other","$dsl_other"),
+	new Array ("Streamyx","Streamyx","Other","$dsl_other"),
+	new Array ("Online-nl","Online-nl","Vodafonevast","Vodafonevast","Telfort","Telfort","Other","$dsl_other"),
+	new Array ("IHug","IHug","Kiwi Online(KOL)","Kiwi Online(KOL)","Orcon","Orcon","Paradise","Paradise","Slingshot","Slingshot","Telstra Clear","Telstra Clear","Xnet(World Exchange)","Xnet(World Exchange)","Spark","Spark","Bigpipe","Bigpipe","Snap","Snap","Vodafone","Vodafone","Trust power","Trust power","Other","$dsl_other"),
+	new Array ("PLDT","PLDT","TelPlus","TelPlus","Other","$dsl_other"),
+	new Array ("Multimo","Multimo","Netia","Netia","Orange","Orange","Tele2","Tele2","Other","$dsl_other"),
+	new Array ("PT","PT","Vodafone","Vodafone","Zon","Zon","Other","$dsl_other"),
+	new Array ("Avangard-DSL","Avangard-DSL","Beltelecom","Beltelecom","Combellga","Combellga","Domolink CentrTelekom","Domolink CentrTelekom","Jdsl Volgatelekom","Jdsl Volgatelekom","MGTS","MGTS","MTS Stream","MTS Stream","Rostelecom","Rostelecom","Other","$dsl_other"),
+	new Array ("STC","STC"),
+	new Array ("PacificNet","PacificNet","Singnet","Singnet","SingTel","SingTel","Other","$dsl_other"),
+	new Array ("Jazztel","Jazztel","Orange","Orange","Pepephone","Pepephone","Telefonica Movistar(dynamic IP)","Telefonica Movistar(dynamic IP)","Telefonica Movistar(fixed IP)","Telefonica Movistar(fixed IP)","Movistar","Movistar","Vodafone","Vodafone","Other","$dsl_other"),
+	new Array ("Bahnhof AB","Bahnhof AB","Bredbandsbolaget","Bredbandsbolaget","Ljusnet","Ljusnet","Telia","Telia","Other","$dsl_other"),
+	new Array ("Monzoon Networks","Monzoon Networks","Sunrise","Sunrise","Swisscom","Swisscom","Telfort","Telfort","Swisscom All IP(with phone)","Swisscom All IP(with phone)","Other","$dsl_other"),
+	new Array ("3BB","3BB","CAT-Telecom","CAT-Telecom","CS-Loxinfo","CS-Loxinfo","Samart","Samart","TOT","TOT","TRUE Internet","TRUE Internet","TT&T","TT&T","Other","$dsl_other"),
+	new Array ("Other","$dsl_other"),
+	new Array ("BT","BT","Media","Media","EE(Orange)","EE(Orange)","PlusNet","PlusNet","Sky","Sky","TalkTalk","TalkTalk","Virgin","Virgin","Other","$dsl_other"),
+	new Array ("AT&T","AT&T","Bigriver.net DSL","Bigriver.net DSL","CenturyLink","CenturyLink","Earthlink","Earthlink","Frontier Communications","Frontier Communications","Qwest","Qwest","Rivercity Internet Group","Rivercity Internet Group","Verizon","Verizon","Windstream","Windstream","BEVCOMM","BEVCOMM","cox communications","cox communications","Other","$dsl_other"),
+	new Array ("FPT","FPT","NATNAM","NATNAM","SPT","SPT","VNN(in Hanoi)","VNN(in Hanoi)","VNN(in HAM)","VNN(in HAM)","Viettel","Viettel","Other","$dsl_other"),
+	new Array ("Other","$dsl_other")
+        );
+if(csflag == "1"){ //linshi
+	var curr_country = "<% cfg_get("lin_country") %>";
+	var curr_isp = "<% cfg_get("lin_isp") %>";
+	var dsl_wan_transfermode = "<% cfg_get("lin_transfermode") %>";
+	var dsl_wan_dslmode = "<% cfg_get("lin_dslmode") %>";
+}else{
+	var curr_country = "<% cfg_get("dsl_wan_country") %>";
+	var curr_isp = "<% cfg_get("dsl_wan_isp") %>";
+	var dsl_wan_transfermode = "<% cfg_get("dsl_wan_type") %>";
+	var dsl_wan_dslmode = "<% cfg_get("dsl_wan_dslmode") %>";
+}
+function set_ip_dns_mac()
+{
+	var form=document.forms[0];
+	if(csflag == "1")  //linshi 
+	{
+		if(dsl_wan_preference == "2"){ //eth
+			if(true_country == curr_country && true_isp == curr_isp ){
+				if (pppoe_get_wan_assign == '0')
+					form.WANAssign[0].checked = true;
+				else
+					form.WANAssign[1].checked = true;
+				if (pppoe_get_dns_assign == "0"){
+					form.DNSAssign[0].checked = true;
+				}
+				else{
+					form.DNSAssign[1].checked = true;
+				}
+				if (pppoe_get_mac_assign == '0')
+				{
+					form.MACAssign[0].checked = true;
+					setMAC(form,wan_factory_mac);
+				}
+				else if (pppoe_get_mac_assign == '1')
+				{
+					form.MACAssign[1].checked = true;
+					setMAC(form,wan_remote_mac);
+				}
+				else
+				{
+					form.MACAssign[2].checked = true;
+					setMAC(form,pppoe_get_this_mac);
+				}
+			}else{
+				form.WANAssign[0].checked = true;
+				form.DNSAssign[0].checked = true;
+				form.MACAssign[0].checked = true;
+				setMAC(form,wan_factory_mac);
+			}
+		} 
+		else if(form.transfermode.value == "adsl" && dsl_wan_preference == "1"){ //adsl
+			if((form.country.value == "France" && form.isp.value == "SFR") || (form.country.value == "Australia" && form.isp.value == "TPG") || (form.country.value == "Germany" && form.isp.value == "Deutsche Telekom")|| (form.country.value == "UK" && form.isp.value == "BT"))
+			{
+				if(true_country == curr_country && true_isp == curr_isp ){
+					if((wan_pvc_num == "0" && wan1_flag == "1") || (wan_pvc_num == "1" && wan2_flag == "1")) // say wan1 haeve configed should use config value or wan2 configed should config value
+					{
+						if (pppoe_get_wan_assign == '0')
+							form.WANAssign[0].checked = true;
+						else
+							form.WANAssign[1].checked = true;
+						if (pppoe_get_dns_assign == "0"){
+							form.DNSAssign[0].checked = true;
+						}
+						else{
+							form.DNSAssign[1].checked = true;
+						}
+						if (pppoe_get_mac_assign == '0')
+						{
+							form.MACAssign[0].checked = true;
+							setMAC(form,wan_factory_mac);
+						}
+						else if (pppoe_get_mac_assign == '1')
+						{
+							form.MACAssign[1].checked = true;
+							setMAC(form,wan_remote_mac);
+						}
+						else
+						{
+							form.MACAssign[2].checked = true;
+							setMAC(form,pppoe_get_this_mac);
+						}
+					}
+					else {
+						form.WANAssign[0].checked = true;
+						form.DNSAssign[0].checked = true;
+						form.MACAssign[0].checked = true;
+						setMAC(form,wan_factory_mac);
+					}
+				}else {
+						form.WANAssign[0].checked = true;
+						form.DNSAssign[0].checked = true;
+						form.MACAssign[0].checked = true;
+						setMAC(form,wan_factory_mac);
+					}
+			}else{
+				if(true_country == curr_country && true_isp == curr_isp ){
+					if (pppoe_get_wan_assign == '0')
+						form.WANAssign[0].checked = true;
+					else
+						form.WANAssign[1].checked = true;
+					if (pppoe_get_dns_assign == "0"){
+						form.DNSAssign[0].checked = true;
+					}
+					else{
+						form.DNSAssign[1].checked = true;
+					}
+					if (pppoe_get_mac_assign == '0')
+					{
+						form.MACAssign[0].checked = true;
+						setMAC(form,wan_factory_mac);
+					}
+					else if (pppoe_get_mac_assign == '1')
+					{
+						form.MACAssign[1].checked = true;
+						setMAC(form,wan_remote_mac);
+					}
+					else
+					{
+						form.MACAssign[2].checked = true;
+						setMAC(form,pppoe_get_this_mac);
+					}
+				}else{
+					form.WANAssign[0].checked = true;
+					form.DNSAssign[0].checked = true;
+					form.MACAssign[0].checked = true;
+					setMAC(form,wan_factory_mac);
+				}
+			}
+		}else if(form.transfermode.value == "vdsl" && dsl_wan_preference == "1"){ //vdsl
+			if(c=vdsl_list[form.country.value]){
+			if(s=c[form.isp.value]){
+				if(num = s["num"]){
+					if(num == "2"){  //have vlanid1 and vlanid2
+						if(true_country == curr_country && true_isp == curr_isp ){
+							if((wan_pvc_num == "0" && wan1_flag == "1") || (wan_pvc_num == "1" && wan2_flag == "1")){ // say wan1 haeve configed should use config value  //say wan2 haeve configed should use 
+								if (pppoe_get_wan_assign == '0')
+									form.WANAssign[0].checked = true;
+								else
+									form.WANAssign[1].checked = true;
+								if (pppoe_get_dns_assign == "0"){
+									form.DNSAssign[0].checked = true;
+								}
+								else{
+									form.DNSAssign[1].checked = true;
+								}
+								if (pppoe_get_mac_assign == '0')
+								{
+									form.MACAssign[0].checked = true;
+									setMAC(form,wan_factory_mac);
+								}
+								else if (pppoe_get_mac_assign == '1')
+								{
+									form.MACAssign[1].checked = true;
+									setMAC(form,wan_remote_mac);
+								}
+								else
+								{
+									form.MACAssign[2].checked = true;
+									setMAC(form,pppoe_get_this_mac);
+								}
+							}else{
+								form.WANAssign[0].checked = true;
+								form.DNSAssign[0].checked = true;
+								form.MACAssign[0].checked = true;
+								setMAC(form,wan_factory_mac);
+							}
+						}else{
+								form.WANAssign[0].checked = true;
+								form.DNSAssign[0].checked = true;
+								form.MACAssign[0].checked = true;
+								setMAC(form,wan_factory_mac);
+							}
+					}
+					else if(num == "1"){  //only one valnid1
+						form.adslChoice.value = "0";
+						form.adslChoice.disabled = true;
+					   if(true_country == curr_country && true_isp == curr_isp )
+						{
+							if (pppoe_get_wan_assign == '0')
+								form.WANAssign[0].checked = true;
+							else
+								form.WANAssign[1].checked = true;
+							if (pppoe_get_dns_assign == "0"){
+								form.DNSAssign[0].checked = true;
+							}
+							else{
+								form.DNSAssign[1].checked = true;
+							}
+							if (pppoe_get_mac_assign == '0')
+							{
+								form.MACAssign[0].checked = true;
+								setMAC(form,wan_factory_mac);
+							}
+							else if (pppoe_get_mac_assign == '1')
+							{
+								form.MACAssign[1].checked = true;
+								setMAC(form,wan_remote_mac);
+							}
+							else
+							{
+								form.MACAssign[2].checked = true;
+								setMAC(form,pppoe_get_this_mac);
+							}
+						}
+						else{	
+							form.MACAssign[0].checked = true;
+							setMAC(form,wan_factory_mac);
+							form.WANAssign[0].checked = true;
+							form.DNSAssign[0].checked = true;
+						}
+					}
+					//cf.dsl_vpi.value = vpi;
+				}
+			}else  //isp unexit
+			{
+				form.adslChoice.value = "0";
+				form.adslChoice.disabled = true;
+				if(true_country == curr_country && true_isp == curr_isp )
+				{
+					if (pppoe_get_wan_assign == '0')
+						form.WANAssign[0].checked = true;
+					else
+						form.WANAssign[1].checked = true;
+					if (pppoe_get_dns_assign == "0"){
+						form.DNSAssign[0].checked = true;
+					}
+					else{
+						form.DNSAssign[1].checked = true;
+					}
+					if (pppoe_get_mac_assign == '0')
+					{
+						form.MACAssign[0].checked = true;
+						setMAC(form,wan_factory_mac);
+					}
+					else if (pppoe_get_mac_assign == '1')
+					{
+						form.MACAssign[1].checked = true;
+						setMAC(form,wan_remote_mac);
+					}
+					else
+					{
+						form.MACAssign[2].checked = true;
+						setMAC(form,pppoe_get_this_mac);
+					}
+				}
+				else{	
+					form.WANAssign[0].checked = true;
+					form.DNSAssign[0].checked = true;
+					form.MACAssign[0].checked = true;
+					setMAC(form,wan_factory_mac);
+				}
+			}
+		  }else{  // country no exit
+			form.adslChoice.value = "0";
+			form.adslChoice.disabled = true;
+			if(true_country == curr_country && true_isp == curr_isp )
+			{
+				if (pppoe_get_wan_assign == '0')
+					form.WANAssign[0].checked = true;
+				else
+					form.WANAssign[1].checked = true;
+				if (pppoe_get_dns_assign == "0"){
+					form.DNSAssign[0].checked = true;
+				}
+				else{
+					form.DNSAssign[1].checked = true;
+				}
+				if (pppoe_get_mac_assign == '0')
+				{
+					form.MACAssign[0].checked = true;
+					setMAC(form,wan_factory_mac);
+				}
+				else if (pppoe_get_mac_assign == '1')
+				{
+					form.MACAssign[1].checked = true;
+					setMAC(form,wan_remote_mac);
+				}
+				else
+				{
+					form.MACAssign[2].checked = true;
+					setMAC(form,pppoe_get_this_mac);
+				}
+			}
+			else{	
+				form.WANAssign[0].checked = true;
+				form.DNSAssign[0].checked = true;
+				form.MACAssign[0].checked = true;
+				setMAC(form,wan_factory_mac);
+			}
+		  }
+		
+		}
+	}
+	else if(csflag == "0")  // dai biao apply return 
+	{
+	  if(dsl_wan_transfermode == "vdsl"){
+	  if((wan_pvc_num == "0" && wan1_flag == "1") || (wan_pvc_num == "1" && wan2_flag == "1")){
+		if (pppoe_get_wan_assign == '0')
+			form.WANAssign[0].checked = true;
+		else
+			form.WANAssign[1].checked = true;
+		if (pppoe_get_dns_assign == "0"){
+			form.DNSAssign[0].checked = true;
+		}
+		else{
+			form.DNSAssign[1].checked = true;
+		}
+		if (pppoe_get_mac_assign == '0')
+		{
+			form.MACAssign[0].checked = true;
+			setMAC(form,wan_factory_mac);
+		}
+		else if (pppoe_get_mac_assign == '1')
+		{
+			form.MACAssign[1].checked = true;
+			setMAC(form,wan_remote_mac);
+		}
+		else
+		{
+			form.MACAssign[2].checked = true;
+			setMAC(form,pppoe_get_this_mac);
+		}
+	  }else
+	  {
+		form.WANAssign[0].checked = true;
+		form.DNSAssign[0].checked = true;
+		form.MACAssign[0].checked = true;
+		setMAC(form,wan_factory_mac);
+	  }
+	 }else{//adsl
+		if((form.country.value == "France" && form.isp.value == "SFR") || (form.country.value == "Australia" && form.isp.value == "TPG") || (form.country.value == "Germany" && form.isp.value == "Deutsche Telekom")|| (form.country.value == "UK" && form.isp.value == "BT"))
+		{
+			if((wan_pvc_num == "0" && wan1_flag == "1") || (wan_pvc_num == "1" && wan2_flag == "1")){
+			if (pppoe_get_wan_assign == '0')
+				form.WANAssign[0].checked = true;
+			else
+				form.WANAssign[1].checked = true;
+			if (pppoe_get_dns_assign == "0"){
+				form.DNSAssign[0].checked = true;
+			}
+			else{
+				form.DNSAssign[1].checked = true;
+			}
+			if (pppoe_get_mac_assign == '0')
+			{
+				form.MACAssign[0].checked = true;
+				setMAC(form,wan_factory_mac);
+			}
+			else if (pppoe_get_mac_assign == '1')
+			{
+				form.MACAssign[1].checked = true;
+				setMAC(form,wan_remote_mac);
+			}
+			else
+			{
+				form.MACAssign[2].checked = true;
+				setMAC(form,pppoe_get_this_mac);
+			}
+		  }else
+		  {
+			form.WANAssign[0].checked = true;
+			form.DNSAssign[0].checked = true;
+			form.MACAssign[0].checked = true;
+			setMAC(form,wan_factory_mac);
+		  }
+		}
+		else{
+			if (pppoe_get_wan_assign == '0')
+				form.WANAssign[0].checked = true;
+			else
+				form.WANAssign[1].checked = true;
+			if (pppoe_get_dns_assign == "0"){
+				form.DNSAssign[0].checked = true;
+			}
+			else{
+				form.DNSAssign[1].checked = true;
+			}
+			if (pppoe_get_mac_assign == '0')
+			{
+				form.MACAssign[0].checked = true;
+				setMAC(form,wan_factory_mac);
+			}
+			else if (pppoe_get_mac_assign == '1')
+			{
+				form.MACAssign[1].checked = true;
+				setMAC(form,wan_remote_mac);
+			}
+			else
+			{
+				form.MACAssign[2].checked = true;
+				setMAC(form,pppoe_get_this_mac);
+			}
+		}
+	 }
+	}
+}
+function setisp()
+{
+    var cf = document.forms[0];
+    var isp_list = cf.isp;
+    var index = cf.country.selectedIndex;
+    var len=0, i=0;
+
+    isp_list.options.length = 100;
+    if (ISP_ALL[index].length > 0)
+    {
+        for (i=0; i<ISP_ALL[index].length; i+=2)
+        {
+            isp_list.options[len].text = ISP_ALL[index][i+1];
+            isp_list.options[len].value = ISP_ALL[index][i];
+            len++;
+        }
+        if (curr_country != cf.country.value)
+            curr_isp = ISP_ALL[index][0];
+    }
+
+    isp_list.options.length = len;
+
+    for (i=0; i<isp_list.options.length; i++)
+    {
+        if (isp_list.options[i].value == curr_isp)
+        {
+            isp_list[i].selected = true;
+            break;
+        }
+    }
+	if(index == 10 && cf.isp.value == "Deutsche Telekom")
+	{
+		document.getElementById("germany_isp1").style.display="";
+        document.getElementById("germany_isp2").style.display="";
+        document.getElementById("germany_isp3").style.display="";
+		if(csflag == "1")
+		{
+			if(true_country == curr_country && true_isp == curr_isp ){
+				if(wan_pvc_num == "0" && wan1_flag == "1") // say wan1 haeve configed should use config value
+					germany_pppoe();
+				else if(wan_pvc_num == "1" && wan2_flag == "1") //say wan2 haeve configed should use config value
+					germany_pppoe();
+				else //if(wan_pvc_num == "0")
+				{
+					document.getElementById("many_login").style.display="none";
+					document.getElementById("gonly_login").style.display="none";
+					document.getElementById("gidentifier").style.display="";
+					document.getElementById("gtonline").style.display="";
+					document.getElementById("gcouser").style.display="";
+				}
+			}else
+			{
+				document.getElementById("many_login").style.display="none";
+				document.getElementById("gonly_login").style.display="none";
+				document.getElementById("gidentifier").style.display="";
+				document.getElementById("gtonline").style.display="";
+				document.getElementById("gcouser").style.display="";
+			}
+		}
+		else{
+			germany_pppoe();
+		}
+	}else if(index == 10 && cf.isp.value == "1&1")
+	{
+		document.getElementById("gonly_login").style.display="";
+		document.getElementById("many_login").style.display="none";
+		document.getElementById("gidentifier").style.display="none";
+		document.getElementById("gtonline").style.display="none";
+		document.getElementById("gcouser").style.display="none";
+		document.getElementById("germany_isp1").style.display="none";
+        document.getElementById("germany_isp2").style.display="none";
+        document.getElementById("germany_isp3").style.display="none";
+		if(csflag == "1")
+		{
+			if(true_country == curr_country && true_isp == curr_isp ){
+				if(wan_pvc_num == "0" && wan1_flag == "1"){
+					germany1();
+				}
+			}
+		}else
+		{
+			germany1();
+		}
+	}
+}
+
+function germany1()
+{
+	var cf = document.forms[0];
+	if(name_select == "0")
+		{
+			cf.g1login[0].checked =true;
+			cf.pppoe_gusername1.disabled = false;
+			cf.pppoe_gusername2.disabled = true;
+			cf.pppoe_gusername3.disabled = true;
+		}
+		else if (name_select == "1")
+			{
+				cf.pppoe_gusername1.disabled = true;
+				cf.pppoe_gusername2.disabled = false;
+				cf.pppoe_gusername3.disabled = true;
+				cf.g1login[1].checked =true;
+			}
+			else
+			{
+				cf.pppoe_gusername1.disabled = true;
+				cf.pppoe_gusername2.disabled = true;
+				cf.pppoe_gusername3.disabled = false;
+				cf.g1login[2].checked =true;
+			}
+}
+
+function germany_pppoe()
+{
+	var cf = document.forms[0];
+	if(germany_isp == "0")
+				cf.gisp_type[0].checked = true;
+			else if(germany_isp == "1"){
+				cf.gisp_type[1].checked = true;
+				germany1();
+			}
+			else if(germany_isp == "2")
+				cf.gisp_type[2].checked = true;
+			if(cf.gisp_type[0].checked == true)
+			{
+				document.getElementById("many_login").style.display="none";
+				document.getElementById("gonly_login").style.display="none";
+				document.getElementById("gidentifier").style.display="";
+				document.getElementById("gtonline").style.display="";
+				document.getElementById("gcouser").style.display="";
+			}
+			else if(cf.gisp_type[1].checked == true)
+			{
+				document.getElementById("many_login").style.display="none";
+				document.getElementById("gonly_login").style.display="";
+			}
+}
+
+function ChangeModeChoice()
+{
+	var cf = document.forms[0];
+	var mode = cf.transfermode.selectedIndex;
+
+    if (mode > 0)
+    {	        
+        cf.dsl_multiplex.disabled = true;
+        cf.dsl_vpi.disabled = true;
+        cf.dsl_vci.disabled = true;
+        cf.vlanidActive.disabled = false;
+        cf.vlan_id.disabled = false;
+        
+        cf.dslmode.options.length = 1;
+    	cf.dslmode.options[0].text = "$dsl_vdsl2";
+    	cf.dslmode.options[0].value = "0"; 
+    }
+	else{ //ATM
+		
+        cf.dsl_multiplex.disabled = false;
+        cf.dsl_vpi.disabled = false;
+        cf.dsl_vci.disabled = false;
+        cf.vlanidActive.disabled = false;
+        cf.vlan_id.disabled = false;
+        
+        cf.dslmode.options.length = 4;
+    	cf.dslmode.options[0].text = "$dsl_auto";
+    	cf.dslmode.options[1].text = "$dsl_adsl1";
+    	cf.dslmode.options[2].text = "$dsl_adsl2";
+    	cf.dslmode.options[3].text = "$dsl_adsl22";
+    	cf.dslmode.options[0].value = "0";
+    	cf.dslmode.options[1].value = "1";
+    	cf.dslmode.options[2].value = "2";
+    	cf.dslmode.options[3].value = "3";
+
+	}
+}
+
+
+function change_web_format()
+{
+        if( pppoe_mac_router_flag == 1 ){
+                document.getElementById("mac_head").style.display="";
+		document.getElementById("mac_default").style.display="";
+		document.getElementById("mac_comp").style.display="";
+		document.getElementById("mac_this").style.display="";
+		document.getElementById("bluebar").style.display="";
+	}
+        else{
+                document.getElementById("mac_head").style.display="none";
+		document.getElementById("mac_default").style.display="none";
+		document.getElementById("mac_comp").style.display="none";
+		document.getElementById("mac_this").style.display="none";
+		document.getElementById("bluebar").style.display="none";
+		
+	}
+	
+	if( pppoe_myip_flag == 1 )
+	{
+                document.getElementById("intranet_myip").style.display="";
+                document.getElementById("intranet_mask").style.display="";
+                document.getElementById("intranet_bluebar").style.display="";
+	} 
+	else{
+		document.getElementById("intranet_myip").style.display="none";
+		document.getElementById("intranet_mask").style.display="none";
+		document.getElementById("intranet_bluebar").style.display="none";
+	}
+}
+
+function init_passwd()
+{
+	var form=document.forms[0];
+	if(pppoe_empty == "0")
+		form.pppoe_passwd.value = "";
+	else
+		form.pppoe_passwd.value = "*********";
+}
+
+function loadvalue()
+{
+	change_web_format();
+
+	var form=document.forms[0];
+
+	if(bas_auto_conn_flag == "1")
+		form.auto_conn_24hr.checked = true;
+	else
+		form.auto_conn_24hr.checked = false;
+
+	if(autoconn_flag == 1)
+		document.getElementById("auto_conn_play").style.display="";
+	else
+		document.getElementById("auto_conn_play").style.display="none";
+	form.auto_conn_time.options[eval(bas_conn_time_num)].selected =true;
+	form.country.value = curr_country;
+	 setisp();
+	 
+	 if(dsl_wan_transfermode == "vdsl")
+	{
+		form.transfermode.value = dsl_wan_transfermode;
+		//form.transfermode.disabled = true;
+		form.dsl_multiplex.disabled = true;
+		form.dsl_vpi.disabled = true;
+		form.dsl_vci.disabled = true;
+		form.vlanidActive.disabled = false;
+		form.vlan_id.disabled = false;
+			
+		form.dslmode.options.length = 1;
+		form.dslmode.options[0].text = "$dsl_vdsl2";
+		form.dslmode.options[0].value = "0";
+		if(dsl_wan_dslmode == "")
+			dsl_wan_dslmode = "0";
+		form.dslmode.value= dsl_wan_dslmode;		
+	}	
+	else if(dsl_wan_transfermode == "adsl")
+	{ //ATM
+		form.transfermode.value = dsl_wan_transfermode;
+		form.dsl_multiplex.disabled = false;
+        form.dsl_vpi.disabled = false;
+        form.dsl_vci.disabled = false;
+        form.vlanidActive.disabled = false;
+        form.vlan_id.disabled = false;
+        if(dsl_wan_dslmode == "")
+			dsl_wan_dslmode = "0";
+        form.dslmode.options.length = 4;
+    	form.dslmode.options[0].text = "$dsl_auto";
+    	form.dslmode.options[1].text = "$dsl_adsl1";
+    	form.dslmode.options[2].text = "$dsl_adsl2";
+    	form.dslmode.options[3].text = "$dsl_adsl22";
+    	form.dslmode.options[0].value = "0";
+    	form.dslmode.options[1].value = "1";
+    	form.dslmode.options[2].value = "2";
+    	form.dslmode.options[3].value = "3";
+		
+		form.dslmode.value= dsl_wan_dslmode;
+	}
+	form.adslChoice.value = "0";
+	form.dsl_multiplex.value = dsl_wan_multiplex;
+	if(dsl_wan_enable_vlanidActive == 1)
+	{
+		form.vlanidActive.checked =true;
+		form.vlan_id.disabled = false;
+	}
+	else{	
+		form.vlanidActive.checked =false;
+		form.vlan_id.disabled = true;
+	}
+	form.dsl_vpi.value = dsl_wan_vpi;
+	form.dsl_vci.value = dsl_wan_vci;
+	if( dsl_wan_vlan_id == "-1")
+		form.vlan_id.value = "";
+	else
+		form.vlan_id.value = dsl_wan_vlan_id;
+	form.priority_value.value = priority;
+			
+	if( pppoe_empty == "0" )
+	{
+		if( get_browser() == "Firefox" )
+		{
+			form.pppoe_passwd.type = "text";
+		}
+		else
+		{
+			form.pppoe_passwd.outerHTML='<input type="text" name="pppoe_passwd" maxlength="64" size="16" onFocus="this.select();change_pppoe_password(this);" onKeyPress="return getkey(\'ssid\', event)">';
+		}
+	}
+	else if( get_browser() == "IE" )
+	{
+		form.pppoe_passwd.outerHTML='<input type="password" name="pppoe_passwd" maxlength="64" size="16" style="width: 126px" onFocus="change_pppoe_password(this);" onKeyPress="return getkey(\'ssid\', event)">';
+	}
+	init_passwd();
+	//form.pppoe_dod.value = '<% cfg_get("wan_pppoe_demand") %>';
+	form.pppoe_dod.value = wan_pppoe_demand;
+	show_idleout(form,form.pppoe_dod.value);
+	if(ipv6_type=="6to4" || (ipv6_type=="autoDetect"&&connection_type=="6to4 Tunnel"))
+	{
+		form.pppoe_dod.value = '0';	//bug 31125
+		form.pppoe_dod.disabled = true;
+	}
+	else
+	{
+		form.pppoe_dod.disabled = false;
+	}
+
+	if( pppoe_myip_flag == 1)
+	{
+		var pppoe_intranet_myip="<% bas_pppoe_intranet_ip() %>";
+		if( dsl_wan_preference== "2" || (wan_pvc_num == "0" && dsl_wan_preference=="1")){
+		  var pppoe_intranet_wan_assign="<% cfg_get("wan_pppoe_intranet_wan_assign") %>";
+		  var pppoe_internet_mask="<% cfg_get("wan_pppoe_intranet_mask") %>";
+		}else{//dsl and wan2
+		  var pppoe_intranet_wan_assign="<% cfg_get("wan2_pppoe_intranet_wan_assign") %>";
+		  var pppoe_internet_mask="<% cfg_get("wan2_pppoe_intranet_mask") %>";
+		}
+		if( pppoe_intranet_wan_assign == 0 )
+		{
+			form.myip_1.value=form.myip_2.value=form.myip_3.value=form.myip_4.value="";
+			setDisabled(true, form.mymask_1, form.mymask_2, form.mymask_3, form.mymask_4);
+		}
+		else
+		{
+			if(pppoe_intranet_myip != "")
+			{
+		                var ip_array=pppoe_intranet_myip.split('.');
+                		form.myip_1.value=ip_array[0];
+                		form.myip_2.value=ip_array[1];
+                		form.myip_3.value=ip_array[2];
+                		form.myip_4.value=ip_array[3];
+			}
+			if(pppoe_internet_mask!="")
+			{
+                                var mask_array=pppoe_internet_mask.split('.');
+                                form.mymask_1.value=mask_array[0];
+                                form.mymask_2.value=mask_array[1];
+                                form.mymask_3.value=mask_array[2];
+                                form.mymask_4.value=mask_array[3];
+			}
+		
+		}
+
+	}
+
+	/*if(pppoe_get_wan_assign == '0')
+		form.WANAssign[0].checked = true;
+	else
+		form.WANAssign[1].checked = true;*/
+	set_ip_dns_mac();
+	setIP(form,'bas');		
+	if(pppoe_get_ip!="")
+	{
+		var ip_array=pppoe_get_ip.split('.');
+		form.WPethr1.value=ip_array[0];
+		form.WPethr2.value=ip_array[1];
+		form.WPethr3.value=ip_array[2];
+		form.WPethr4.value=ip_array[3];
+	}
+
+	/*if(pppoe_get_dns_assign == '0')
+		form.DNSAssign[0].checked = true;
+	else
+		form.DNSAssign[1].checked = true;*/
+	var pppoe_get_dns1="<% bas_pppoe_dns("0") %>";
+	if(pppoe_get_dns1!="")
+	{
+		var dns1_array=pppoe_get_dns1.split('.');
+
+		if(dns1_array.length == 4)
+		{
+			form.DAddr1.value=dns1_array[0];
+			form.DAddr2.value=dns1_array[1];
+			form.DAddr3.value=dns1_array[2];
+			form.DAddr4.value=dns1_array[3];
+		}
+	}
+	var pppoe_get_dns2="<% bas_pppoe_dns("1") %>";
+	if(pppoe_get_dns2!="")
+	{
+		var dns2_array=pppoe_get_dns2.split('.');
+
+		if(dns2_array.length == 4)
+		{
+			form.PDAddr1.value=dns2_array[0];
+			form.PDAddr2.value=dns2_array[1];
+			form.PDAddr3.value=dns2_array[2];
+			form.PDAddr4.value=dns2_array[3];
+		}
+	}
+	setDNS(form);
+	if(dsl_wan_enablewan == "1")
+		form.enable_wan.checked =true;
+	else if(dsl_wan_enablewan == "0")
+		form.enable_wan.checked =false;
+	if(dsl_wan_preference == "2") //eth
+	{
+		document.getElementById("only_eth").style.display="none";
+		document.getElementById("only_eth3").style.display="none";
+		form.adslChoice.value = "0";
+		form.adslChoice.disabled = true;
+	}
+	if(csflag == "1") //linshi
+	{
+		change_value();
+	}
+	else if(csflag == "0")
+		change_true_value();
+	goTestApply();	
+}
+function show_idleout(form,time)
+{
+	if( time == 1 )
+	{
+		form.pppoe_idletime.disabled = false;
+		form.auto_conn_24hr.disabled = true;
+		form.auto_conn_time.disabled = true;
+	}
+	else
+	{
+		form.pppoe_idletime.disabled = true;
+		form.auto_conn_24hr.disabled = false;
+		form.auto_conn_time.disabled = false;
+	}		
+}
+
+function ChangeLoginChoice()
+{
+	cf=document.forms[0];
+	if(csflag == "1") //linshi
+		cf.hid_lin_shi.value = "1";
+	else if(csflag == "0")  //apply
+		cf.hid_lin_shi.value = "0";
+	cf.submit_flag.value="lin_pppoe";
+	cf.action="/apply.cgi?/BAS_ether_dsl.htm timestamp=" + ts;
+	cf.submit();
+}
+
+function Select_pvc_num(F)  //zhi xing zhege function must select wan2
+{
+	cf=document.forms[0];
+	var www = csflag;
+	if(www == "1") //linshi
+	{
+		if(true_country == curr_country && true_isp == curr_isp )
+			cf.hid_lin_configed.value = "1";
+		else
+			cf.hid_lin_configed.value = "0";
+		cf.hid_lin_shi.value = "1";
+		cf.submit_flag.value="Change_pvc_num";
+		cf.action="/apply.cgi?/BAS_ether_dsl.htm timestamp=" + ts;
+		
+	}
+	else if(www == "0")  //apply
+	{
+		cf.hid_lin_shi.value = "0";
+		cf.submit_flag.value="Change_pvc_num";
+		cf.action="/apply.cgi?/BAS_ether_dsl.htm timestamp=" + ts;
+	}
+	cf.submit();
+}
+
+function sub_cisp()
+{
+	var cf=document.forms[0];
+	cf.hid_dsl_country.value = cf.country.value;
+	cf.hid_dsl_isp.value = cf.isp.value;
+	if(dsl_wan_preference == "2")
+		cf.hid_wan_number.value = "1";
+	else if(cf.transfermode.value == "adsl" && dsl_wan_preference == "1"){
+		if((cf.country.value == "France" && cf.isp.value == "SFR") || (cf.country.value == "Australia" && cf.isp.value == "TPG") || (cf.country.value == "Germany" && cf.isp.value == "Deutsche Telekom") ||(cf.country.value == "UK" && cf.isp.value == "BT"))
+		{
+			cf.hid_wan_number.value = "2";
+		}else
+			cf.hid_wan_number.value = "1";
+	}
+	else if(cf.transfermode.value == "vdsl" && dsl_wan_preference == "1"){
+		if(c=vdsl_list[cf.country.value]){
+			if(s=c[cf.isp.value]){
+				if(num = s["num"]){
+					if(num == "2"){  //have vlanid1 and vlanid2
+						cf.hid_wan_number.value = "2";
+					}
+					else if(num == "1"){  //only one valnid1
+					cf.hid_wan_number.value = "1";
+					}
+					//cf.dsl_vpi.value = vpi;
+				}
+			}else  //isp unexit
+			{
+				cf.hid_wan_number.value = "1";
+			}
+		}else{  // country no exit
+			cf.hid_wan_number.value = "1";
+		}
+				
+	}
+	cf.hid_transfermode.value = cf.transfermode.value;
+	cf.hid_dslmode.value = cf.dslmode.value;
+	cf.submit_flag.value="csonly";
+	cf.hid_lin_configed.value = "0";
+	cf.action="/apply.cgi?/BAS_pppoe_dsl.htm timestamp=" + ts;
+	cf.submit();
+}
+function change_true_value()
+{
+	var cf=document.forms[0];
+	if(cf.transfermode.value == "adsl")
+	{
+		if((cf.country.value == "France" && cf.isp.value == "SFR") || (cf.country.value == "Australia" && cf.isp.value == "TPG") || (cf.country.value == "Germany" && cf.isp.value == "Deutsche Telekom")|| (cf.country.value == "UK" && cf.isp.value == "BT"))
+		{
+			 cf.hid_wan_num.value = "2";
+		}else
+		{
+			cf.adslChoice.value = "0";
+			cf.adslChoice.disabled = true;
+			
+		}
+		if(c=adsl_list[cf.country.value])
+			if(s=c[cf.isp.value]){ //isp exist vpi,vci must exit
+				if((cf.country.value == "France" && cf.isp.value == "SFR") || (cf.country.value == "Australia" && cf.isp.value == "TPG") || (cf.country.value == "Germany" && cf.isp.value == "Deutsche Telekom")|| (cf.country.value == "UK" && cf.isp.value == "BT"))
+				{
+					if(true_country == curr_country && true_isp == curr_isp )
+					{
+						if((wan_pvc_num == "0" && wan1_flag == "1") || (wan_pvc_num == "1" && wan2_flag == "1")) // say wan1 haeve configed should use config value
+						{
+							cf.dsl_vpi.value = dsl_wan_vpi;
+							cf.dsl_vci.value = dsl_wan_vci;
+							cf.dsl_multiplex.value = dsl_wan_multiplex;
+						}else
+						{
+							cf.dsl_vpi.value = s["vpi"];
+							cf.dsl_vci.value = s["vci"];
+							cf.dsl_multiplex.value = s["multi"]; 
+						}
+							
+					}else{
+						cf.dsl_vpi.value = s["vpi"];
+						cf.dsl_vci.value = s["vci"];
+						cf.dsl_multiplex.value = s["multi"]; 
+					}
+					
+				}
+				if(true_country != curr_country || true_isp != curr_isp){
+					cf.dsl_vpi.value = s["vpi"];
+					cf.dsl_vci.value = s["vci"];
+					cf.dsl_multiplex.value = s["multi"]; 
+				}
+			}
+	}
+	if(cf.transfermode.value == "vdsl"){ 
+	
+		if(c=vdsl_list[cf.country.value]){
+			if(s=c[cf.isp.value]){
+				if(num = s["num"]){
+					if(num == "2"){  //have vlanid1 and vlanid2
+						cf.hid_wan_num.value = "2";
+					}else
+					{
+						cf.adslChoice.value = "0";
+						cf.adslChoice.disabled = true;						
+					}
+				}
+				else{
+						cf.adslChoice.value = "0";
+						cf.adslChoice.disabled = true;					
+				}
+			}
+			else{
+						cf.adslChoice.value = "0";
+						cf.adslChoice.disabled = true;					
+			}
+		}else{
+						cf.adslChoice.value = "0";
+						cf.adslChoice.disabled = true;						
+			}			
+	}
+}
+
+function change_value()
+{
+	var cf=document.forms[0];
+	
+	if(dsl_wan_preference == "2"){
+		if(c=vdsl_list[cf.country.value]){
+			if(s=c[cf.isp.value]){
+				if(num = s["num"]){
+					if(num == "2"){  //have vlanid1 and vlanid2
+					   if(true_country == curr_country && true_isp == curr_isp ){
+							if(wan1_flag == "1") // say wan1 haeve configed should use config value
+								cf.vlan_id.value = dsl_wan_vlan_id;
+						}else
+						{
+								cf.vlan_id.value = s["vlanid1"];
+						}
+						cf.hid_wan_num.value = "2";
+					}
+					else if(num == "1"){  //only one valnid1
+					   cf.adslChoice.value = "0";
+						cf.adslChoice.disabled = true;
+						cf.hid_adslChoice.value = "0";
+						if(true_country == curr_country && true_isp == curr_isp )
+							cf.vlan_id.value = dsl_wan_vlan_id;
+						else	
+							cf.vlan_id.value = s["vlanid1"];
+					}
+					//cf.dsl_vpi.value = vpi;
+				}
+			}else  //isp unexit
+			{
+				cf.adslChoice.value = "0";
+				cf.adslChoice.disabled = true;
+				cf.hid_adslChoice.value = "0"
+			}
+		}else{  // country no exit
+				cf.adslChoice.value = "0";
+				cf.adslChoice.disabled = true;
+				cf.hid_adslChoice.value = "0"
+		}
+				
+	}
+  else if(cf.transfermode.value == "adsl" && dsl_wan_preference == "1"){
+		if(c=adsl_list[cf.country.value])
+			if(s=c[cf.isp.value]){ //isp exist vpi,vci must exit
+				if((cf.country.value == "France" && cf.isp.value == "SFR") || (cf.country.value == "Australia" && cf.isp.value == "TPG") || (cf.country.value == "Germany" && cf.isp.value == "Deutsche Telekom")|| (cf.country.value == "UK" && cf.isp.value == "BT"))
+				{
+					if(true_country == curr_country && true_isp == curr_isp )
+					{
+						if((wan_pvc_num == "0" && wan1_flag == "1") || (wan_pvc_num == "1" && wan2_flag == "1")) // say wan1 haeve configed should use config value
+						{
+							cf.dsl_vpi.value = dsl_wan_vpi;
+							cf.dsl_vci.value = dsl_wan_vci;
+							cf.dsl_multiplex.value = dsl_wan_multiplex;
+						}else
+						{
+							cf.dsl_vpi.value = s["vpi"];
+							cf.dsl_vci.value = s["vci"];
+							cf.dsl_multiplex.value = s["multi"]; 
+						}
+							
+					}else{
+						cf.dsl_vpi.value = s["vpi"];
+						cf.dsl_vci.value = s["vci"];
+						cf.dsl_multiplex.value = s["multi"]; 
+					}
+					cf.hid_wan_num.value = "2";
+				}
+				else if(true_country != curr_country || true_isp != curr_isp){
+					cf.dsl_vpi.value = s["vpi"];
+					cf.dsl_vci.value = s["vci"];
+					cf.dsl_multiplex.value = s["multi"]; 
+				}else
+				{
+					cf.dsl_vpi.value = s["vpi"];
+					cf.dsl_vci.value = s["vci"];
+					cf.dsl_multiplex.value = s["multi"]; 
+				}
+			}
+		if((cf.country.value == "France" && cf.isp.value == "SFR") || (cf.country.value == "Australia" && cf.isp.value == "TPG")|| (cf.country.value == "UK" && cf.isp.value == "BT"))
+		{
+			if(true_country == curr_country && true_isp == curr_isp ){
+				if(wan1_flag == "1")
+					cf.vlan_id.value = dsl_wan_vlan_id;
+			}
+			else 
+			{
+				cf.vlan_id.value = "";
+			}
+			cf.hid_wan_num.value = "2";
+		}else if(cf.country.value == "Germany" && cf.isp.value == "Deutsche Telekom")
+		{
+			if(true_country == curr_country && true_isp == curr_isp ){
+				if(wan1_flag == "1")
+					cf.vlan_id.value = dsl_wan_vlan_id;
+			}
+			else 
+			{
+				cf.vlan_id.value = "7";
+			}
+			cf.hid_wan_num.value = "2";
+		}
+		else{
+			cf.adslChoice.value = "0";
+			cf.adslChoice.disabled = true;
+		}
+	}
+	else if(cf.transfermode.value == "vdsl" && dsl_wan_preference == "1"){ 
+		if(c=vdsl_list[cf.country.value]){
+			if(s=c[cf.isp.value]){
+				if(num = s["num"]){
+					if(num == "2"){  //have vlanid1 and vlanid2
+					   if(fermode == "vdsl" || fermode == ""){
+						   if(true_country == curr_country && true_isp == curr_isp ){
+								if(wan1_flag == "1") // say wan1 haeve configed should use config value
+									cf.vlan_id.value = dsl_wan_vlan_id;
+							}else{
+								cf.vlan_id.value = s["vlanid1"];
+							}
+						}else if(fermode == "adsl")
+						{
+							if(wan_pvc_num == "0")
+								cf.vlan_id.value = s["vlanid1"];
+							else
+								cf.vlan_id.value = s["vlanid2"];
+						}
+							cf.hid_wan_num.value = "2";
+						
+					}
+					else if(num == "1"){  //only one valnid1
+					   cf.adslChoice.value = "0";
+						cf.adslChoice.disabled = true;
+					    cf.hid_adslChoice.value = "0";
+					   if(true_country == curr_country && true_isp == curr_isp )
+							cf.vlan_id.value = dsl_wan_vlan_id;
+						else	
+							cf.vlan_id.value = s["vlanid1"];
+					}
+					//cf.dsl_vpi.value = vpi;
+				}
+			}else  //isp unexit
+			{
+				cf.adslChoice.value = "0";
+				cf.adslChoice.disabled = true;
+				 cf.hid_adslChoice.value = "0";
+			}
+		}else{  // country no exit
+			cf.adslChoice.value = "0";
+			cf.adslChoice.disabled = true;
+			 cf.hid_adslChoice.value = "0";
+		}
+				
+	}
+}
+
+function click_gisp()
+{
+	var cf=document.forms[0];
+	if(cf.gisp_type[0].checked == true)
+		{
+			document.getElementById("many_login").style.display="none";
+			document.getElementById("gonly_login").style.display="none";
+			document.getElementById("gidentifier").style.display="";
+			document.getElementById("gtonline").style.display="";
+			document.getElementById("gcouser").style.display="";
+		}
+		else if(cf.gisp_type[1].checked == true)
+		{
+			document.getElementById("many_login").style.display="none";
+			document.getElementById("gonly_login").style.display="";
+			document.getElementById("gidentifier").style.display="none";
+			document.getElementById("gtonline").style.display="none";
+			document.getElementById("gcouser").style.display="none";
+		}else
+		{
+			document.getElementById("many_login").style.display="";
+			document.getElementById("gonly_login").style.display="none";
+			document.getElementById("gidentifier").style.display="none";
+			document.getElementById("gtonline").style.display="none";
+			document.getElementById("gcouser").style.display="none";
+		}
+}
+
+function change_serv(cf)
+{
+	if( cf.login_type.value == "PPTP" )
+		location.href="BAS_pptp.htm";
+	else if( cf.login_type.value == "L2TP" )
+		location.href="BAS_l2tp.htm";
+	else if( cf.login_type.value == "Telstra Bigpond" )
+		location.href="BAS_bpa.htm";
+	else if( cf.login_type.value == "Other" )
+		location.href="BAS_pppoe_dsl.htm";
+	else if(cf.login_type.value == "multiPPPoE" )
+	{
+		if(top.netgear_region != "JP")
+			location.href="BAS_mulpppoe.htm";
+		else
+			location.href="BAS_mulpppoe_ww.htm";
+	}else if( cf.login_type.value == "PPPoA" )
+	{
+		if(csflag == "1") //linshi
+			cf.hid_lin_shi.value = "1";
+		else if(csflag == "0")  //apply
+			cf.hid_lin_shi.value = "0";
+		cf.submit_flag.value="lin_pppoe";
+		cf.action="/apply.cgi?/BAS_pppoa_dsl.htm timestamp=" + ts;
+		cf.submit();
+	}else if( cf.login_type.value == "IPoA" )
+	{
+		if(csflag == "1") //linshi
+			cf.hid_lin_shi.value = "1";
+		else if(csflag == "0")  //apply
+			cf.hid_lin_shi.value = "0";
+		cf.submit_flag.value="lin_pppoe";
+		cf.action="/apply.cgi?/BAS_ipoa_dsl.htm timestamp=" + ts;
+		cf.submit();
+	}
+}
+
+function checkvid()
+{
+	var cf = document.forms[0];
+	if(!cf.vlanidActive.checked)
+		cf.vlan_id.disabled = true;
+	else
+		cf.vlan_id.disabled = false;
+}
+
+function click_login()
+{
+	var cf = document.forms[0];
+	if(cf.g1login[0].checked == true)
+	{
+		cf.pppoe_gusername1.disabled = false;
+		cf.pppoe_gusername2.disabled = true;
+		cf.pppoe_gusername3.disabled = true;
+	}else if(cf.g1login[1].checked == true)
+	{
+		cf.pppoe_gusername1.disabled = true;
+		cf.pppoe_gusername2.disabled = false;
+		cf.pppoe_gusername3.disabled = true;
+	}else
+	{
+		cf.pppoe_gusername1.disabled = true;
+		cf.pppoe_gusername2.disabled = true;
+		cf.pppoe_gusername3.disabled = false;
+	}
+}
+</script>
+
+<input type="hidden" name="conflict_wanlan">
+<input type="hidden" name="change_wan_type">
+<input type="hidden" name="run_test" value="">
+<input type="hidden" name="pppoe_ipaddr">
+<input type="hidden" name="pppoe_subnet">
+<input type="hidden" name="pppoe_dnsaddr1">
+<input type="hidden" name="pppoe_dnsaddr2">
+<input type="hidden" name="hidden_pppoe_idle_time">
+<input type="hidden" name="intranet_wan_assign">
+<input type="hidden" name="pppoe_myip">
+<input type="hidden" name="pppoe_mask">
+<input type="hidden" name="hid_mtu_value">
+<input type="hidden" name="hid_pppoe_dod"><!--bug 22322:when connection mode gray out,need a hidden-value to transfer -->
+<input type="hidden" name="hidden_conn_time_num">
+<input type="hidden" name="hidden_auto_conn_flag">
+<input type="hidden" name="hid_enable_vpn">
+<input type="hidden" name="hidden_pwd_change" value="0">
+<input type="hidden" name="hid_dsl_country">
+<input type="hidden" name="hid_dsl_isp">
+<input type="hidden" name="hid_transfermode">
+<input type="hidden" name="hid_dslmode">
+<input type="hidden" name="hid_adslChoice">
+<input type="hidden" name="hid_enable_wan">
+<input type="hidden" name="hid_enable_vlanidActive">
+<input type="hidden" name="hid_dsl_vpi">
+<input type="hidden" name="hid_dsl_vci">
+<input type="hidden" name="hid_dsl_multiplex">
+<input type="hidden" name="hid_vlan_id">
+<input type="hidden" name="hid_port_mode">
+<input type="hidden" name="hid_lin_shi">
+<input type="hidden" name="hid_wan1_config">
+<input type="hidden" name="hid_wan2_config">
+<input type="hidden" name="hid_wan_num"  value="1">
+<input type="hidden" name="hid_wan_number">
+<input type="hidden" name="hid_priority_value">
+<input type="hidden" name="hid_gisp_type">
+<input type="hidden" name="hid_pppoe_username">
+<input type="hidden" name="hid_lin_configed">
+<input type="hidden" name="hid_radio_11">
+<input type="hidden" name="hid_pppoe_usernamep">
+<input type="hidden" name="hid_double_vpi" value="0">
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+
+if( master =="admin" )
+	document.write('<TD nowrap colspan=2 align=center><input class="common_bt" type="submit" name="Test" value="$test_mark" onClick="return check_pppoe(document.forms[0],1)">&nbsp;&nbsp;<input class="cancel_bt" type="button" name="Cancel" value="$cancel_mark" onClick="location.href=\'BAS_pppoe_dsl.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="submit" name="Apply" value="$apply_mark" onClick="return check_pppoe(document.forms[0],0)">&nbsp;&nbsp;</TD>');
+else
+	document.write('<TD nowrap colspan=2 align=center><input class="common1_bt" type="button" name="Test" value="$test_mark" disabled>&nbsp;&nbsp;<input class="cancel1_bt" type="button" name="Cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="button" name="Apply" value="$apply_mark" disabled>&nbsp;&nbsp;</TD>');
+</script>        
+</TR>
+</TABLE>
+</div> <!--button -->
+<div id="main" class="main_bas_dsl">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<tr><td nowrap width="50%"><b>$dsl_select_country</b></td>
+<td width="50%" align="right"><select name="country" size="1" onchange="setisp();change_value(); sub_cisp();">
+<option  value="Australia">$dsl_austalia</option>
+<option  value="Austria">$dsl_austria</option>
+<option  value="Belgium">$dsl_begium</option>
+<option  value="Brazil">$dsl_brazil</option>
+<option  value="Canada">$dsl_canada</option>
+<option  value="China">$dsl_china</option>
+<option  value="Czech Republic">$dsl_czech</option>
+<option  value="Denmark">$dsl_demark</option>
+<option  value="Finland">$dsl_finland</option>
+<option  value="France">$dsl_france</option>
+<option  value="Germany">$dsl_germany</option>
+<option  value="HongKong">$dsl_hongkong</option>
+<option  value="Hungary">$dsl_hungary</option>
+<option  value="India">$dsl_india</option>
+<option  value="Indonesia">$dsl_indonesia</option>
+<option  value="Ireland">Ireland</option>
+<option  value="Italy">$dsl_italy</option>
+<option  value="Malaysia">$dsl_malaysia</option>
+<option  value="Netherlands">$dsl_netherlands</option>
+<option  value="New Zealand">$dsl_new_zealand</option>
+<option  value="Philippine">$dsl_philip</option>
+<option  value="Poland">$dsl_poland</option>
+<option  value="Portugal">$dsl_portugal</option>
+<option  value="Russia">$dsl_russia</option>
+<option  value="Saudi Arabia">$dsl_saudi_arabia</option>
+<option  value="Singapore">$dsl_singpore</option>
+<option  value="Spain">$dsl_spain</option>
+<option  value="Sweden">$dsl_sweden</option>
+<option  value="Switzerland">$dsl_switzer</option>
+<option  value="Thailand">$dsl_thailand</option>
+<option  value="Turkey">$dsl_turkey</option>
+<option  value="UK">$dsl_uk</option>
+<option  value="USA">$dsl_usa</option>
+<option  value="Vietnam">$dsl_vietnam</option>
+<option  value="Other">$dsl_other</option>
+</select>  
+</td>
+</tr>
+
+<tr><td nowrap width="50%"><b>$dsl_select_isp</b></td>
+<td width="50%" align="right"><select name="isp" size=1 onchange="change_value(); sub_cisp();">
+<option selected  value="Adam">Adam</option>
+<option value="Clubtelco">Clubtelco</option>
+<option value="Dodo">Dodo</option>
+<option value="Exetel">Exetel</option>
+<option value="Other">$dsl_other</option>
+</select></td>
+</tr>
+$bluebar
+</table>
+<TABLE id="only_eth" cellspacing=5 cellPadding=0 width=100% border=0>
+<tr> 
+ <td nowrap width="50%">$dsl_transmode</TD>
+ <td width="50%" align="right"><select name="transfermode" onChange="ChangeModeChoice();sub_cisp();" size="1">
+   <option value="adsl"  selected>$dsl_adsl</option>
+   <option value="vdsl">$dsl_vdsl</option>
+ </select></TD>
+</TR>
+
+<tr><td nowrap width="50%">$dsl_mode</TD>
+ <td width="50%" align="right">
+ <SELECT name="dslmode" size="1" onChange="sub_cisp();">
+	 <option value="0" selected>$dsl_auto</option>
+	 <option value="1">$dsl_adsl1</option>
+	 <option value="2">$dsl_adsl2</option>
+	 <option value="3">$dsl_adsl22</option>
+	 <option value="4">$dsl_vdsl2</option>
+ </SELECT></TD>
+</TR>
+$bluebar
+</table>
+<TABLE id="only_eth2" cellspacing=5 cellPadding=0 width=100% border=0>
+<tr id="wan_style">
+  <td nowrap width="50%"><select name="adslChoice" size="1" onChange="Select_pvc_num(document.forms[0])">
+    <option value="0">$dsl_internet</option>
+    <option value="1">$dsl_iptv</option>    
+    </script>
+  </select></td>
+  <td nowrap width="50%" align="right">&nbsp;</td>
+</tr>
+<tr id="enablewan_style"><td>&nbsp;<input type="checkbox" name="enable_wan" value="enable_wan"><b>$dsl_enable_interface</b></td></tr>
+$bluebar
+</table>
+<TABLE id="only_eth3" cellspacing=5 cellPadding=0 width=100% border=0>
+<tr>
+ <td nowrap width="50%" >$dsl_multi_method</TD>
+ <td width="50%" align="right"><select name="dsl_multiplex" size="1">
+   <option value="llc" selected>$dsl_llc_based</option>
+   <option value="vc">$dsl_vc_based</option>
+ </select></TD>
+</TR>
+<TR>
+  <td nowrap width="50%">$dsl_vpi</td>
+  <td nowrap width="50%" align="right" ><input type="text" name="dsl_vpi" class="num" value="" size="3" maxlength="3"></td>
+</tr>
+<TR>
+  <td nowrap width="50%">$dsl_vci</td>
+  <td nowrap width="50%" align="right"><input type="text" name="dsl_vci" class="num" value="" size="5" maxlength="5"></td>
+</tr>
+$bluebar
+</table>
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR>
+  <td nowrap width="50%">
+	<input type="checkbox" name="vlanidActive" value="vlanidEnable"  onclick="checkvid();">$dsl_usevid</td>
+  <td nowrap width="50%" align="right"><input type="text" class="num" name="vlan_id" size="5" maxlength="5" onKeyPress="return getkey('num', event)"></td>
+</tr>
+<TR>
+  <td nowrap width="50%">$dsl_priority</td>
+  <td nowrap width="50%" align="right"><input type="text" class="num" name="priority_value" size="3" maxlength="5" onKeyPress="return getkey('num-', event)"></td>
+</tr>
+$bluebar
+<TR><TD nowrap>
+<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','question')"><B>$basic_top_info</B></A>
+</TD></TR>
+<TR>
+        <TD nowrap>
+        <input type="radio" name="loginreq" value="pppoe" checked="true">$yes_mark
+        </TD>
+</TR>
+<TR>
+        <TD nowrap>
+        <input onClick="ChangeLoginChoice()" type="radio" name="loginreq" value="dhcp">$no_mark
+        </TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','isp')"><B>$basic_intserv_provider</B></A>
+	</TD>
+	<TD nowrap align=right>
+	<select name="login_type" onChange="change_serv(document.forms[0])">
+<script>
+	if(dsl_wan_preference == "1" && dsl_wan_transfermode=="vdsl")
+		document.write('<option value="Other" selected>$basic_intserv_pppoe</option>');
+	else if(dsl_wan_preference == "1" && dsl_wan_transfermode=="adsl")
+	{
+		document.write('<option value="Other" selected>$basic_intserv_pppoe</option>');
+		document.write('<option value="PPPoA">$dsl_pppoa</option>');
+	}else{
+		document.write('<option value="Other" selected>$basic_intserv_pppoe</option>');
+		if( !is_jp_version && dsl_wan_preference == "2")
+			document.write('<option value="PPTP">$basic_intserv_pptp</option>');
+		if(parent.parent.l2tp_flag == 1 && !is_jp_version && dsl_wan_preference == "2")
+					document.write('<option value="L2TP">$basic_intserv_l2tp</option>');
+
+		if(parent.parent.bigpond_flag == 1 && !is_jp_version)
+			document.write('<option value="Telstra Bigpond">$basic_intserv_bpa</option>');
+		if( ((parent.jp_multiPPPoE == 1 || gui_region == "Japanese") && (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "JP")
+			document.write('<option value=\"multiPPPoE\">$basic_intserv_mulpppoe</OPTION>');
+	}
+</script>
+	</select>
+	</TD>
+</TR>
+$bluebar
+<TR id="germany_isp1" style="display:none">
+        <TD nowrap>
+        <input onClick="click_gisp()" type="radio" name="gisp_type" value="pppoe" checked="true">$dsl_germany_telekom
+        </TD>
+</TR>
+<TR id="germany_isp2" style="display:none"> 
+        <TD nowrap>
+        <input onClick="click_gisp()" type="radio" name="gisp_type" value="dhcp">$dsl_germany_isp11
+        </TD>
+</TR>
+<TR id="germany_isp3" style="display:none">
+        <TD nowrap>
+        <input onClick="click_gisp()" type="radio" name="gisp_type" value="dhcp">$dsl_other
+        </TD>
+</TR>
+
+<TR id="many_login">
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','login')"><B>$basic_pppoe_login</B></A>
+	</TD>
+	<TD nowrap align=right>
+	<script>
+	if(dsl_wan_preference == "2" || (wan_pvc_num == "0" && dsl_wan_preference == "1"))
+	   document.write('<input type="text" name="pppoe_username" maxLength="64" size="16" onKeyPress="return getkey(\'ssid\', event)" value="<% cfg_sed_xss("wan_pppoe_username") %>">');
+	else
+		document.write('<input type="text" name="pppoe_username" maxLength="64" size="16" onKeyPress="return getkey(\'ssid\', event)" value="<% cfg_sed_xss("wan2_pppoe_username") %>">');
+    </script>
+	</TD>
+</TR>
+</table>
+<TABLE id="gonly_login" cellspacing=5 cellPadding=0 width=100% border=0  style="display:none">
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','login')"><B>$basic_pppoe_login</B></A>
+	</TD>
+	<td nowrap width="73%"></td>
+	<TD nowrap align=right>
+	<input onClick="click_login()" type="radio" name="g1login" value="" checked></TD>
+	<TD nowrap align=right>&nbsp&nbsp 1und1/
+	<script>
+	if(name_select == "0")
+	   document.write('<input type="text" name="pppoe_gusername1" maxLength="64" size="16" onKeyPress="return getkey(\'ssid\', event)" value="<% cfg_sed_xss("wan_pppoe_username_true") %>">');
+	else
+		document.write('<input type="text" name="pppoe_gusername1" maxLength="64" size="16" onKeyPress="return getkey(\'ssid\', event)">');
+    </script>@online.de
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','login')"><B></B></A>
+	</TD>
+	<td nowrap width="73%"></td>
+	<TD nowrap align=right>
+	<input onClick="click_login()" type="radio" name="g1login" value=""></td>
+	<td nowrap align=right>H1und1/
+	<script>
+	if(name_select == "1")
+	   document.write('<input type="text" name="pppoe_gusername2" maxLength="64" size="16" onKeyPress="return getkey(\'ssid\', event)" value="<% cfg_sed_xss("wan_pppoe_username_true") %>"  disabled>');
+	else
+		document.write('<input type="text" name="pppoe_gusername2" maxLength="64" size="16" onKeyPress="return getkey(\'ssid\', event)" disabled>');
+    </script>@online.de
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','login')"><B></B></A>
+	</TD>
+	<td nowrap width="73%"></td>
+	<TD nowrap align=right>
+	<input onClick="click_login()" type="radio" name="g1login" value=""></td>
+	<td nowrap align=right> 
+	<script>
+	if(name_select == "2")
+	   document.write('<input type="text" name="pppoe_gusername3" maxLength="64" size="16" onKeyPress="return getkey(\'ssid\', event)" value="<% cfg_sed_xss("wan_pppoe_username_true") %>"  disabled>');
+	else
+		document.write('<input type="text" name="pppoe_gusername3" maxLength="64" size="16" onKeyPress="return getkey(\'ssid\', event)" disabled>');
+	if(get_browser() == "IE")
+		document.write('&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp&nbsp ');
+	else
+		document.write('&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp');
+	 </script>
+	</TD>
+</TR>
+</table>
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR id="gidentifier" style="display:none">
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','password')"><B>$dsl_gemany_id</B></A>
+	</TD>
+	<TD nowrap align=right>
+	<script>
+	   document.write('<input type="text" name="connection_name" maxLength="64" size="16" onKeyPress="return getkey(\'ssid\', event)" value="<% cfg_sed_xss("wan_pppoe_connection_name") %>">');
+    </script>
+	</TD>
+</TR>
+<TR id="gtonline" style="display:none">
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','password')"><B>$dsl_tonline</B></A>
+	</TD>
+	<TD nowrap align=right>
+	<script>
+	   document.write('<input type="text" name="pppoe_onlnum" maxLength="64" size="16" onKeyPress="return getkey(\'ssid\', event)" value="<% cfg_sed_xss("wan_pppoe_onlnum") %>">');
+    </script>
+	</TD>
+</TR>
+<TR id="gcouser" style="display:none">
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','password')"><B>$dsl_couser</B></A>
+	</TD>
+	<TD nowrap align=right>
+	<script>
+	if( get_browser() == "Firefox" )
+	   document.write('<input type="text" name="pppoe_suffix" maxLength="64" size="6" onKeyPress="return getkey(\'ssid\', event)" value="<% cfg_sed_xss("wan_pppoe_suffix") %>">');
+	 else
+		 document.write('<input type="text" name="pppoe_suffix" maxLength="64" size="4" onKeyPress="return getkey(\'ssid\', event)" value="<% cfg_sed_xss("wan_pppoe_suffix") %>">');
+    </script>@t-online.de
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','password')"><B>$basic_pppoe_passwd</B></A>
+	</TD>
+	<TD nowrap align=right>
+	<input type="password" name="pppoe_passwd" maxlength="64" size="16" onFocus="change_pppoe_password(this);" onKeyPress="return getkey('ssid', event)">
+	</TD>
+</TR>
+<TR>
+	<TD>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','serv_name')">$basic_pppoe_serv_name</A>
+	</TD>
+	<TD nowrap align=right>
+	<script>
+	if(dsl_wan_preference == "2" || (wan_pvc_num == "0" && dsl_wan_preference == "1"))
+	   document.write('<input type="text" name="pppoe_servername" maxLength="50" size="16" onKeyPress="return getkey(\'ssid\', event)" value="<% cfg_sed_xss("wan_pppoe_service") %>">');
+	else
+		document.write('<input type="text" name="pppoe_servername" maxLength="50" size="16" onKeyPress="return getkey(\'ssid\', event)" value="<% cfg_sed_xss("wan_pppoe_service") %>">');
+	</script>
+	</TD>
+</TR>
+<TR> 
+	<TD>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','conn_mode')"><B>$basic_int_connection_mode</B></A></TD> 
+	<TD align=right> 
+	<select name="pppoe_dod" onchange="show_idleout(document.forms[0],this.value)"> 
+		<option value="0">$basic_mode_always</option>
+		<option value="1">$basic_mode_dial</option>
+		<option value="2">$basic_mode_manual</option> 
+	</select>
+	</TD>
+</TR> 
+<TR>
+	<TD>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','pppoe_idletime')">$basic_pppoe_idle</A>
+	</TD>
+	<TD align=right>
+	<script>
+	if(dsl_wan_preference == "2" || (wan_pvc_num == "0" && dsl_wan_preference == "1"))
+	    document.write('<input type="text" name="pppoe_idletime" maxLength="5" size="16" value="<% idle_time("wan_pppoe_idletime") %>" onKeyPress="return getkey(\'num\', event)">');
+	else
+		document.write('<input type="text" name="pppoe_idletime" maxLength="5" size="16" value="<% idle_time("wan2_pppoe_idletime") %>" onKeyPress="return getkey(\'num\', event)">');
+	</script>
+	</TD>
+</TR>
+<TR id=auto_conn_play style="display:none">
+	<td colspan="2"><!--fix bug 28258:use weblist-->
+	<input type="checkbox" name="auto_conn_24hr" value="">$bsaic_settings_auto_internet_conn
+	<select class="divselect" name="auto_conn_time">
+		<option value="1" selected>00:00</option>
+		<option value="2">00:30</option>
+		<option value="3">01:00</option>
+		<option value="4">01:30</option>
+		<option value="5">02:00</option>
+		<option value="6">02:30</option>
+		<option value="7">03:00</option>
+		<option value="8">03:30</option>
+		<option value="9">04:00</option>
+		<option value="10">04:30</option>
+		<option value="11">05:00</option>
+		<option value="12">05:30</option>
+		<option value="13">06:00</option>
+		<option value="14">06:30</option>
+		<option value="15">07:00</option>
+		<option value="16">07:30</option>
+		<option value="17">08:00</option>
+		<option value="18">08:30</option>
+		<option value="19">09:00</option>
+		<option value="20">09:30</option>
+		<option value="21">10:00</option>
+		<option value="22">10:30</option>
+		<option value="23">11:00</option>
+		<option value="24">11:30</option>
+		<option value="25">12:00</option>
+		<option value="26">12:30</option>
+		<option value="27">13:00</option>
+		<option value="28">13:30</option>
+		<option value="29">14:00</option>
+		<option value="30">14:30</option>
+		<option value="31">15:00</option>
+		<option value="32">15:30</option>
+		<option value="33">16:00</option>
+		<option value="34">16:30</option>
+		<option value="35">17:00</option>
+		<option value="36">17:30</option>
+		<option value="37">18:00</option>
+		<option value="38">18:30</option>
+		<option value="39">19:00</option>
+		<option value="40">19:30</option>
+		<option value="41">20:00</option>
+		<option value="42">20:30</option>
+		<option value="43">21:00</option>
+		<option value="44">21:30</option>
+		<option value="45">22:00</option>
+		<option value="46">22:30</option>
+		<option value="47">23:00</option>
+		<option value="48">23:30</option>
+	</select>
+	</td>
+</TR>
+$bluebar
+<TR id=intranet_myip style="display:none">
+        <TD nowrap>
+        <A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','myip')"><B>$basic_pptp_myip</B></A>
+        </TD>
+        <TD nowrap align=right><!--bug 22411:when manually input IP,don't click the mouse,the subnet mask can be used -->
+        <input type="text" name="myip_1"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onChange="myip_update();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);myip_update();" >.
+        <input type="text" name="myip_2"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onChange="myip_update();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);myip_update();">.
+        <input type="text" name="myip_3"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onChange="myip_update();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);myip_update();">.
+        <input type="text" name="myip_4"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onChange="myip_update();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);myip_update();">
+        </TD>
+</TR>
+<TR id=intranet_mask style="display:none">
+	<TD nowrap>
+        <A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','myip')"><B>$lan_mark_subnet</B></A>
+	</td>
+        <TD nowrap align=right>
+        <input type="text" name="mymask_1"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+        <input type="text" name="mymask_2"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+        <input type="text" name="mymask_3"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+        <input type="text" name="mymask_4"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+        </TD>
+</TR>
+<TR id=intranet_bluebar style="display:none"><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+
+<TR>
+       <TD nowrap colspan=2>
+       <A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','InternetIP')"><B>$basic_int_intip</B></A>
+       </TD>
+</TR>
+<TR>
+       <TD nowrap colspan=2>
+       <input type="radio" name="WANAssign" value="Dynamic" onClick="setIP(document.forms[0],'bas')">$basic_int_autoip
+       </TD>
+</TR>
+<TR>
+       <TD nowrap colspan=2>
+       <input type="radio" name="WANAssign" value="Fixed" onClick="setIP(document.forms[0],'bas')">$basic_int_static_ip
+       </TD>
+</TR>
+<TR>
+        <TD nowrap><img src=/spacer.gif width=20 height=12 border=0>$lan_mark_ip</TD>
+        <TD nowrap align=right>
+        <input type="text" name="WPethr1"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+        <input type="text" name="WPethr2"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+        <input type="text" name="WPethr3"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+        <input type="text" name="WPethr4"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+        </TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','DNSaddress')"><B>$basic_int_dns</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="DNSAssign" value="0" onClick="setDNS(document.forms[0])">$basic_int_autodns
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="DNSAssign" value="1" onClick="setDNS(document.forms[0])">$basic_int_these
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=20 height=12 border=0>$basic_int_primary_dns</TD>
+	<TD nowrap align=right>
+	<input type="text" name="DAddr1"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="DAddr2"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="DAddr3"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="DAddr4"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=20 height=12 border=0>$basic_int_second_dns</TD>
+	<TD nowrap align=right>
+	<input type="text" name="PDAddr1"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="PDAddr2"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="PDAddr3"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="PDAddr4"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+$bluebar
+<TR id=mac_head style="display:none">
+        <TD nowrap colspan=2>
+        <A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','localaddress')"><B>$basic_int_mac</B></A>
+        </TD>
+</TR>
+<TR id=mac_default style="display:none">
+        <TD nowrap colspan=2>
+        <input type="radio" name="MACAssign" value="0" onClick="setMAC(document.forms[0], wan_factory_mac)">$basic_int_default_mac
+        </TD>
+</TR>
+<TR id=mac_comp style="display:none">
+        <TD nowrap colspan=2>
+        <input type="radio" name="MACAssign" value="1" onClick="setMAC(document.forms[0], wan_remote_mac)">$basic_int_computer_mac
+        </TD>
+</TR>
+<TR id=mac_this style="display:none">
+        <TD nowrap>
+        <input type="radio" name="MACAssign" value="2" onClick="setMAC(document.forms[0], pppoe_get_this_mac)">$basic_int_this_mac
+        </TD>
+        <TD nowrap align=right>
+        <input type="text" value="" name="Spoofmac" maxlength="17" size="20" onKeyPress="return getkey('mac',event)">
+        </TD>
+</TR>
+<TR id=bluebar style="display:none"><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+</TABLE>
+</div> <!-- main -->
+<% help_box("0","_BAS_pppoe") %>
+</FORM>
+</BODY>
+</HTML>

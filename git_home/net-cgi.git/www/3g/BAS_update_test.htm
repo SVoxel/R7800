@@ -1,0 +1,51 @@
+<% http_header("style/form.css") %>
+<BODY bgcolor="#ffffff" onLoad="updateProgress()">
+<div class="page_title">$update_head</div>
+<div id="main" class="main">
+
+<script type="text/javascript">
+var pchar = "||"; // progress char
+var maxchars = 33; 
+var delay_time = 2000; // msecs
+var charcount = 0; 
+var percent = parseFloat(100/maxchars);
+<% cfg_set("dango_det_wan_type", "multiDetc")%>
+top.broadband_mode = "<% cfg_get("dango_det_wan_type") %>";
+top.enabledItemsClass_basic();
+
+function makeStr(strsize)
+{
+	var currentPer = strsize * percent ;
+	document.getElementById("bar").style.width = currentPer + "%";
+}
+
+function updateProgress()
+{
+	var cf = document.forms[0];
+	if (charcount < maxchars)
+	{
+		charcount ++;
+		makeStr(charcount);
+		setTimeout("updateProgress()",delay_time);
+	}
+	else
+		location.href="Broadband_testResult.htm";
+}
+</script>
+
+<FORM>
+<TABLE border="0" cellpadding="0" cellspacing="3" width="100%">
+<TR>
+	<!--TD align="left"><H1>$update_head</H1></TD-->
+	<!--TD></TD-->
+ 	<TD nowrap align=center>
+	<!--<input type="text" name="progress" class="prgbar" value="">-->
+	<div class="prgbar1"><div id="bar" class="bar"></div></div>
+	</TD>
+</TR>
+$bluebar
+</table>
+</form>
+</div>
+</BODY>
+</HTML>

@@ -1,0 +1,18 @@
+<% http_header("upgrade.js") %>
+<body onLoad="loadvalue();" bgcolor="#ffffff">
+<form method="post" action="/func.cgi?/AUTO_search.htm" target="formframe">
+<input type="hidden" name="submit_flag">
+<script>
+<% refresh_timestamp("select_language", "download_confile") %>
+var ts="<% cfg_get("download_confile") %>"
+function loadvalue()
+{
+	var cf = document.forms[0];
+	cf.submit_flag.value="download_confile"
+	cf.action="/func.cgi?/AUTO_search.htm timestamp=" +ts;
+	cf.submit();
+}
+</script>
+</form>
+</body>
+</html>

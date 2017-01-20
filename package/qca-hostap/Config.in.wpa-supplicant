@@ -1,0 +1,10 @@
+menu "Configuration"
+	depends on PACKAGE_qca-wpa-supplicant
+
+config QCA_ATHR_HOSTAP_SUPPLICANT_CONFIG
+	string "config profile for qca atheros wap supplicant"
+
+config QCA_ATHR_HOSTAP_SUPPLICANT_wpa-supplicant-default
+	boolean "use wpa-supplicant-default profile"
+
+endmenu

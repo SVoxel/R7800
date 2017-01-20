@@ -1,0 +1,17 @@
+#!/bin/sh /etc/rc.common
+
+start()
+{
+	/usr/sbin/net-scan
+}
+
+stop()
+{
+	killall net-scan
+}
+
+boot()
+{
+	mkdir -p /tmp/netscan
+	start
+}

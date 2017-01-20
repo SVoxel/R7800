@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if [ -n "$1" ]; then
+	LOGLEVEL=$1
+else
+	LOGLEVEL=1
+fi
+
+echo "$LOGLEVEL" > /proc/sys/kernel/printk
+

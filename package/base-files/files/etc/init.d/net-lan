@@ -1,0 +1,167 @@
+#!/bin/sh /etc/rc.common
+#START=20
+
+setup_hostname()
+{
+	local hostname="$($CONFIG get netbiosname)"
+	[ -z "$hostname" ] && hostname="$($CONFIG get Device_name)"
+	echo "$hostname" > /proc/sys/kernel/hostname
+}
+
+print_dhcpd_conf()
+{
+	local n=1
+	local static_lease
+	local leases_file=/tmp/udhcpd.leases
+
+	[ ! -f $leases_file ] && touch $leases_file
+
+	cat <<EOF
+pidfile /var/run/udhcpd.pid
+start $($CONFIG get dhcp_start)
+end $($CONFIG get dhcp_end)
+interface br0
+remaining yes
+auto_time 5
+lease_file $leases_file
+option subnet $($CONFIG get lan_netmask)
+option router $($CONFIG get lan_ipaddr)
+option dns $($CONFIG get lan_ipaddr)
+option lease $($CONFIG get lan_lease)
+EOF
+
+	while : ; do
+		static_lease="$($CONFIG get reservation$n)"
+		[ "x$static_lease" = "x" ] && break || echo "static_lease $static_lease"
+		n=$(( $n + 1))
+	done
+}
+ 
+start_dhcpd()
+{
+	[ "$($CONFIG get lan_dhcp)" = "0" ] && return
+	print_dhcpd_conf > /tmp/udhcpd.conf
+	udhcpd /tmp/udhcpd.conf
+}
+
+restart_interface()
+{
+	local wan6_type=`$CONFIG get ipv6_type`
+	local logo_test=`$CONFIG get endis_ipv6_logo_test`
+	local lan6_ip=`ifconfig $BR_IF |grep "inet6 addr" |grep -v "Link" |awk '{print $3}'`
+
+	ifconfig $LAN_IF up
+	ifconfig $BR_IF down
+	# Enable DAD, and randomly generate anoter link-local address if
+	# MAC-based duplicate link-local address has been found.
+	if [ "x$logo_test" = "x1" -a "x$wan6_type" = "xfixed" ]; then
+		echo 2 > /proc/sys/net/ipv6/conf/default/accept_dad
+		echo 2 > /proc/sys/net/ipv6/conf/${BR_IF}/accept_dad
+		echo 1 > /proc/sys/net/ipv6/neigh/${BR_IF}/not_send_neighbor_solicitation
+		echo 1 > /proc/sys/net/ipv6/neigh/${LAN_IF}/not_send_neighbor_solicitation
+	else
+		echo 3 > /proc/sys/net/ipv6/conf/default/accept_dad
+		echo 3 > /proc/sys/net/ipv6/conf/${BR_IF}/accept_dad
+	fi
+
+	[ ! -f /tmp/boot_status ] && sleep 2
+	ifconfig $BR_IF up
+
+	if [ "x$logo_test" = "x1" -a "x$wan6_type" = "xfixed" ]; then
+		echo "1" > /proc/sys/net/ipv6/neigh/${LAN_IF}/not_send_neighbor_solicitation
+		echo "1" > /proc/sys/net/ipv6/neigh/${BR_IF}/not_send_neighbor_solicitation
+	fi
+
+        # reset lan ipv6 adddress
+	[ "x$lan6_ip" != "x" ] && ip -6 addr add $lan6_ip dev $BR_IF
+}
+
+#At boot time, we wireless background here. 
+#So we can make full use of the next sleep 10 for switch down.
+check_wlanboot()
+{
+	[ "$changing_mode" != "1" ] && return
+	/etc/init.d/madwifi boot
+	/etc/init.d/wlan-common boot &
+}
+
+start_stage0() # $1: boot/start
+{
+	local lan_ip=$($CONFIG get lan_ipaddr)
+	local lan_mask=$($CONFIG get lan_netmask)
+
+	setup_hostname
+
+	ifconfig $LAN_IF up
+	ifconfig $BR_IF ${lan_ip:-192.168.1.1} netmask ${lan_mask:-255.255.255.0}
+	restart_interface	
+
+	/sbin/cmdroute start        # Apply static route
+	/sbin/cmddlna ip_restart &
+	/sbin/ip_mac start          # Apply lan static arp.
+
+	# Set Hairpin mode on br0:ethlan
+	brctl hairpin $BR_IF $LAN_IF on
+
+	start_dhcpd   
+	check_wlanboot
+
+	# PHY link will be pulled low some seconds to force transition to reboot state 
+	# and generating DHCP request and Discovery protocol and address refresh in the 
+	# devices connected to the NETGEAR Local Area Network ports.
+	#
+	# After echo 9 into /proc/switch_phy, LAN physical signal will bring down 9 seconds,
+	# should wait for LAN physical signal bring up, and then execute subsequence actions
+	# as below.
+	echo -n 9 > /proc/switch_phy && sleep 10
+
+	/etc/init.d/net-scan $1      # daemon for getting attached devices
+	/etc/init.d/lltd $1          # Link Layer Topology Discovery Daemon
+	/etc/init.d/telnet $1        # telnet daemon for Router Debugging Mode ...
+}
+
+start()
+{
+	[ "$1" = "mode" ] && changing_mode=1
+	start_stage0 start
+	/sbin/cmdupnp start          # in booting, upnpd is started by net-wan
+	/usr/sbin/update_smb
+
+	# when the user changes "Device Name" in LAN Setup page, make sure the new name shows up on ReadyCLOUD.
+	if [ "$($CONFIG get readycloud_enable)" = "1" ]; then
+		local name=$($CONFIG get netbiosname)
+		[ "x$name" = "x" ] && name=$($CONFIG get Device_name)
+		/opt/rcagent/script/alish.sh $name
+	fi
+}
+
+stop()
+{
+	# Bug 35743 [PnP-X]When change DUT IP from the GUI. The device icon change to gray and IP of the device don't change.
+	# Reason:stop miniupnpd to send bye-bye packets to inform client it would be down.
+	/sbin/cmdupnp stop
+
+	#/etc/init.d/samba stop
+	/usr/bin/killall smbd 2> /dev/null
+	/etc/init.d/telnet stop
+	/etc/init.d/lltd stop
+	/etc/init.d/net-scan stop
+
+	killall udhcpd
+
+	/sbin/cmdroute stop
+	#ifconfig $BR_IF down
+	ifconfig $LAN_IF down
+}
+
+restart()
+{
+	stop
+	start
+}
+
+boot()
+{
+	[ "$1" = "mode" ] && changing_mode=1
+	start_stage0 boot
+}

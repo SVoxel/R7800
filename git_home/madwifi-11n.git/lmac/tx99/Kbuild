@@ -1,0 +1,44 @@
+ifeq ($(obj),)
+obj := .
+endif
+
+DEPTH := ../..
+
+ifeq ($(strip ${QCA_PARTNER_MAKE_F_SUPPORT}),1)
+export QCA_PARTNER_MAKE_F_INC=1
+endif
+include $(obj)/$(DEPTH)/os/linux/Makefile-linux.common
+
+INCS += -I$(HAL) -I$(HAL)/$(OS) -I$(obj)/inc -I$(ATH) -I$(ATH_RATE) -I$(ATH_DFS) -I$(WLAN) -I$(IF_WLAN) -I${ADF_ADF_INC} -I${ADF_LNX_OS_INC} -I${ADF_LNX_NBUF_INC} -I${ADF_LNX_INC} -I${ADF_LNX_NET_INC} -I$(obj)/$(DEPTH)/adf/net/$(OS) -I${TX99}
+
+obj-m += hst_tx99.o
+
+EXTRA_CFLAGS+= $(INCS) $(COPTS)
+
+ifeq ($(strip ${QCA_PARTNER_MAKE_F_SUPPORT}),1)
+MOD_CFLAGS = -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(hst_tx99.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(hst_tx99)" 
+endif
+
+hst_tx99-objs := ath_tx99.o
+
+ifneq ($(strip ${ATH_SUPPORT_HTC}),1)
+hst_tx99-objs += ath_tx99_tgt.o
+endif
+
+ifeq ($(strip ${QCA_PARTNER_MAKE_F_SUPPORT}),1)
+all: hst_tx99.ko
+
+hst_tx99.mod.o: hst_tx99.mod.c
+	${CC} -c -o $@ ${EXTRA_CFLAGS} ${MOD_CFLAGS} $<
+
+hst_tx99.o: ${hst_tx99-objs}
+	$(LD) -m elf32btsmip -r -o hst_tx99.o $(hst_tx99-objs)
+	$(KERNELPATH)/scripts/mod/modpost hst_tx99.o
+
+hst_tx99.ko: hst_tx99.o hst_tx99.mod.o
+	$(LD) $(LDOPTS) -o hst_tx99.ko hst_tx99.o hst_tx99.mod.o
+
+%.o: %.c 
+	${CC} -c -o $@ ${EXTRA_CFLAGS} $<
+endif
+

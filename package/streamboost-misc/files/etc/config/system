@@ -1,0 +1,15 @@
+# We've added the 'config' name here because that's what ozker groks
+# and OpenWRT unstands either equally well.
+# http://wiki.openwrt.org/doc/uci#file.syntax
+# config system
+config system config
+	option hostname	krouter
+	option timezone	UTC
+	option 'remotable' 'false'
+
+config timeserver ntp
+	list server	0.openwrt.pool.ntp.org
+	list server	1.openwrt.pool.ntp.org
+	list server	2.openwrt.pool.ntp.org
+	list server	3.openwrt.pool.ntp.org
+	option enable_server 1

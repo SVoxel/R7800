@@ -1,0 +1,38 @@
+#! /bin/sh
+
+# Netgear Software API
+
+NOTIFY=/etc/scripts/ntgr_sw_api/app_register.sh
+
+NAME=${0##*/}
+usage()
+{
+	printf "%s\n" \
+		"Usage:	$NAME usb connectd|disconnected" \
+		"	$NAME dlna starting|stopping" \
+		"	$NAME system devname <new devname>"
+	exit 1
+}
+
+case $1 in
+	"usb")
+		if [ $# -ne 2 ] || [ "$2" != "connected" -a "$2" != "disconnected" ]; then
+			usage
+		else
+			$NOTIFY event_notify usb-storage $2
+		fi ;;
+	"dlna")
+		if [ $# -ne 2 ] || [ "$2" != "starting" -a "$2" != "stopping" ]; then
+			usage
+		else
+			$NOTIFY event_notify dlna $2
+		fi ;;
+	"system")
+		if [ $# -ne 2 ] || [ "$2" != "devname" ]; then
+			usage
+		else
+			$NOTIFY event_notify system devname $(/bin/config get Device_name)
+		fi ;;
+	*)
+		usage ;;
+esac

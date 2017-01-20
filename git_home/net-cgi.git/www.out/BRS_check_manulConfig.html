@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_check_manulConfig.js"></script>
+<% hijack_language() %>
+<script language="javascript" type="text/javascript">
+var checking_result = "<% hijack_apply_result("/tmp/ping_result") %>";
+var toBasic="<% cfg_get("after_welcome") %>";
+</script>
+</head>
+
+<body>
+<% form_submit("apply", "BRS_netgear_success.html", "hijack_success")  %>
+<!--bug 22037-->
+<% save_timestamp("hijack_success", "hijack_toStatus")%>
+<script language="javascript" type="text/javascript">var ts="<% cfg_get("hijack_toStatus") %>";</script>
+</form>
+</body>
+
+</html>
+

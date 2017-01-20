@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_02_genieHelp.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/detect_not.js"></script>
+<% hijack_language() %>
+</head>
+
+<body>
+<% form_submit("apply", "config_3g_wait_page.htm", "wizard_3g_detwan") %>
+<% save_timestamp("wizard_3g_detwan", "wizard_lte_detwan", "hijack_toBasic")%>
+<script language="javascript" type="text/javascript">var ts="<% cfg_get("hijack_toBasic") %>";</script>
+
+<div class="wizard_content_div">
+	<div id="choices_div" class="wizard_words_div">
+		<h1><!--bh_unable_detect_msg--></h1>
+		<p><!--bh_unable_detect_msg2--></p>
+
+
+		<div id="choices_div" class="helpChoice_divs">
+			<p><!--bh_unable_detect_msg3--></p>
+			<div class="radio_div">
+				<input type="radio" name="help_choice" value="0" checked="checked" /><!--yes_mark-->
+			</div>
+			<div class="radio_div">
+				<input type="radio" name="help_choice" value="1" /><!--no_genie_help-->
+			</div>
+		</div>
+	</div>
+
+	<div id="buttons_div_02" class="wizard_buttons_div" align="center">
+		<div id="btnsContainer_div" class="buttons_img_div"  align="center">
+			<img src="image/ca-little-purple-button.gif" />
+			<div id="btn_div" class="buttons_words_div"><!--next_mark--></div>
+		</div>
+	</div>
+
+</div>
+
+</form>
+</body>
+
+</html>

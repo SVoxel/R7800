@@ -1,0 +1,97 @@
+#! /bin/sh
+#For some disk,the first partition is sda4,and there is no sda1 in mnt.
+#This script is used to accquire the default partition of greendownload.
+local upper_dir=/mnt
+local GL_PATH=`config get green_download_path`
+local current_path=""
+local TMP_DEVICE_NAME=/tmp/tmp_device_name
+local green_volume_uuid=`config get green_volume_uuid`
+
+is_dafake(){
+	local curr_uuid
+	cat /proc/partitions | awk '{print $4}' | grep ^sd > $TMP_DEVICE_NAME
+	while read LINE
+	do
+		if [ "$1" = "volume_id" ];then
+			curr_uuid=`vol_id -u /dev/$2`
+			if [ "$3" = "$curr_uuid" ];then
+				return 0
+			fi
+		else
+			divnam=`echo "$2" | awk -F/ '{print $NF}'`
+			if [ "$LINE" = "$divnam" ];then
+				return 0
+				break
+			fi
+		fi
+	done<$TMP_DEVICE_NAME
+	rm -fr $TMP_DEVICE_NAME
+	return 1
+}
+set_gl_path()
+{
+	#when we change the path,we should set the green_volume_uuid
+	if [ "$1" = "change_path" ];then
+		local change_path=`echo "$GL_PATH" | cut -f3 -d'/'`
+		config set green_volume_uuid=`vol_id -u /dev/$change_path`
+		return
+	fi
+	cd $upper_dir
+	if [ $? -ne 0 ]; then
+		return
+	fi
+	for i in * ; do
+		if [ "$i" = "*" ];then
+			# if there are no sub folders in the cur folder,"i" var would be '*',
+			# and ignore it and jump over
+			continue
+		elif is_dafake "volume_id" $i $green_volume_uuid  ;then
+			local value=`echo "$GL_PATH" | cut -f3 -d'/'`
+			local set_path=`echo "$GL_PATH" | cut -c 10-`
+			if [ "$value" != "$i" ];then
+				#eg:The orginal path is /mnt/sda1/glpath/123/sda2/sda1
+				test $upper_dir/$i/$set_path 
+				if [ $? -ne 0 ];then
+					config set green_download_path="$upper_dir/$i/$set_path"
+				else 
+					config set green_download_path="$upper_dir/$i"
+				fi
+			else
+				test $GL_PATH
+				if [ $? -ne 0 ];then
+					config set green_download_path="$upper_dir/$i"
+				fi
+			fi
+
+			current_path="is_set"
+			break
+		fi
+	done
+	cd $upper_dir
+	if [ "x$current_path" = "x" ];then
+		for i in * ; do
+			if [ "$i" = "*" ];then
+				continue
+			else
+				if is_dafake "gl_path" $i ;then
+					config set green_volume_uuid=`vol_id -u /dev/$i`
+					config set green_download_path="$upper_dir/$i"
+					break
+				fi
+			fi
+		done
+	fi
+}
+
+case "$1"  in
+	change_path)
+		set_gl_path "change_path"
+	;;
+	*)
+		set_gl_path
+	;;
+esac
+
+
+
+

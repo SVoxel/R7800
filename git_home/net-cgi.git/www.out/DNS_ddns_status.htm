@@ -1,0 +1,98 @@
+<% http_header("style/form.css", "/funcs.js") %>
+
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR>
+	<TD align=center>
+	<font size=4><B>
+<script>
+<% ddns_time() %>
+
+var status="<% cat_file("/tmp/ez-ipupd.status") %>";
+var hostname="<% cfg_sed_xss("sysDNSHost") %>";
+var ipaddr="<% wan_ip() %>";
+
+if (show_time == "1")
+{
+	if(ipupd_hour.charAt(0)!='0')
+		var hour=parseInt(ipupd_hour);
+	else
+		var hour=parseInt(ipupd_hour.charAt(1));
+	var ampm="$am_mark";
+	var hour_24=hour;
+	if (hour > 12)
+	{
+		hour=hour-12;
+		ampm="$pm_mark"
+	}
+	hour=hour.toString();
+	hour_24=hour_24.toString();
+        if(hour_24.length==1)
+                hour_24='0'+hour_24;
+	if(hour.length==1)
+		hour='0'+hour;
+	if(ipupd_min.length==1)
+		ipupd_min='0'+ipupd_min;
+	if(ipupd_month=="Jan")
+		ipupd_month="01";
+	else if(ipupd_month == "Feb")
+		ipupd_month="02";
+	else if(ipupd_month == "Mar")
+		ipupd_month="03";
+	else if(ipupd_month == "Apr")
+		ipupd_month="04";
+	else if(ipupd_month == "May")
+		ipupd_month="05";
+	else if(ipupd_month == "Jun")
+		ipupd_month="06";
+	else if(ipupd_month == "Jul")
+		ipupd_month="07";
+	else if(ipupd_month == "Agu")
+		ipupd_month="08";
+	else if(ipupd_month == "Sep")
+		ipupd_month="09";
+	else if(ipupd_month == "Oct")
+		ipupd_month="10";
+	else if(ipupd_month == "Nov")
+		ipupd_month="11";
+	else if(ipupd_month == "Dec")
+		ipupd_month="12";
+	if(ipupd_day.length==1)
+		ipupd_day='0'+ipupd_day;
+	var year=parseInt(ipupd_year);	
+}
+if((status== "0") || (status== ""))
+	document.write("$status0");
+else if(status== "1" )
+{
+	if( "<% cfg_sed_xss("GUI_Region") %>" == "German" )
+		document.write(hostname+ ' ' +' $status1 '+hour_24+':'+ipupd_min+', '+ipupd_day+'.'+ipupd_month+'.'+year);	
+	else
+		document.write(hostname+ ' ' +' $status1 '+hour+':'+ipupd_min+' '+ampm+', '+ipupd_month+'/'+ipupd_day+'/'+year);
+}
+else if(status == "2")
+	document.write("$status2");
+else if(status == "3")
+	document.write("$status3");
+else if(status == "4")
+	document.write("$status4");
+else if(status == "6")
+	document.write("$status6");
+else if(status == "7")
+	document.write("$status7");
+else if(status == "8")
+	document.write("$status8");
+else if(status == "9")
+	document.write("$status9");
+else
+{
+	if( "<% cfg_sed_xss("GUI_Region") %>" == "German" )
+		document.write('$status5_1 '+ hour_24+':'+ipupd_min+', '+ipupd_day+'.'+ipupd_month+'.'+year+'.<BR>$status5_2');
+	else
+		document.write('$status5_1 '+ hour+':'+ipupd_min+' '+ampm+', '+ipupd_month+'/'+ipupd_day+'/'+year+'.<BR>$status5_2');
+}
+</script>
+	</B></font>
+	</TD>
+</TR>
+</TABLE>
+</HTML>

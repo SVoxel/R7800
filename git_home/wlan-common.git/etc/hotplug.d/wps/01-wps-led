@@ -1,0 +1,185 @@
+# Blink WPS LED according to LED_STATE
+LOCK_file=/tmp/wps_led_lock
+
+[ "$ACTION" != "BLINK_LED" ] && exit 0
+
+if [ -f $LOCK_file ]; then
+   [ "$LED_STATE" = "LED_OFF" ] && exit 0
+fi
+
+INPROGRESS_INTERVAL=500000      # 0.5s
+ERROR_INTERVAL=100000           # 0.1s
+ERROR_TIMEOUT=50                # 50 * 0.1s = 5s
+OVERLAP_PAUSE_INTERVAL=500000   # 0.5s
+OVERLAP_BLINK_TIMEOUT=10        # 10 * 0.1s = 1s
+SUCCESS_INTERVAL=30000000       # 30s
+
+if [ "x$DURATION" = "x0" ]; then
+	DURATION=240
+fi
+
+if [ -e /proc/simple_config/tricolor_led ]; then
+    LED_off='[ -f /proc/simple_config/tricolor_led ] && echo 0 > /proc/simple_config/tricolor_led'
+    LED_color1_on='[ -f /proc/simple_config/tricolor_led ] && echo 1 > /proc/simple_config/tricolor_led'
+    LED_color2_on='[ -f /proc/simple_config/tricolor_led ] && echo 2 > /proc/simple_config/tricolor_led'
+elif eval "type ledcontrol" 2>/dev/null >/dev/null; then
+    LED_off='/sbin/ledcontrol -n wps -c green -s off'
+    LED_color1_on='/sbin/ledcontrol -n wps -c green -s on'
+    LED_color2_on=''
+elif [ -e /proc/simple_config/simple_config_led ]; then
+    LED_off='echo 1 > /proc/simple_config/simple_config_led'
+    LED_color1_on='echo 2 > /proc/simple_config/simple_config_led'
+    LED_color2_on=''
+else
+    LED_off=''
+    LED_color1_on=''
+    LED_color2_on=''
+fi
+
+if [ "x$PROG_SRC" = "xathr-hostapd" ]; then
+    wps_stop_command='wlan wps --wps_stop'
+else
+    wps_stop_command='echo stop > /proc/simple_config/wps'
+fi
+
+PID_file=/var/run/wps_led.pid
+
+test -f $PID_file && {
+kill $(cat $PID_file)
+eval $LED_off
+}
+echo "$$" > $PID_file
+
+if eval "type uname" 2>/dev/null >/dev/null; then
+    kernel_version=`uname -r | awk -F. '{print $1$2$3}'`
+fi
+
+for pid in `ps | grep -e 'hotplug-call wps' | awk '{print $1}'`; do
+    if [ -d /proc/$pid ]; then
+        # kill previous BLINK_LED process if above kill can not find them.
+        is_blink_led=`cat /proc/$pid/environ | grep -e 'ACTION=BLINK_LED'`
+        if [ -n "$is_blink_led" -a "$pid" -lt "$$" ]; then
+            kill -9 $pid
+        fi
+    fi
+done
+
+i=0
+LED_busy=no
+LED_on=$LED_color1_on
+if [ "x$PROG_SRC" = "xrealtek" ]; then
+   # overwrite LED commands for realtek solution.
+   LED_on='echo 1 > /proc/led_ctl/wps_led'
+   LED_off='echo 0 > /proc/led_ctl/wps_led'
+   LED_color2_on=""
+fi
+
+if [ "x$PROG_SRC" != "xrealtek" -a "x$PROG_SRC" != "xathr-hostapd" ]; then
+case "$INTERFACE" in
+	ath0)
+		Other_INTERFACE=ath1
+		;;
+	ath1 | ath2)
+		Other_INTERFACE=ath0
+		;;
+	*)
+		echo "WPS led does not support $INTERFACE"
+		exit 1
+esac
+fi
+
+case "$LED_STATE" in
+	LED_INPROGRESS)
+		TIMEOUT_=$(($DURATION * 1000000 / $INPROGRESS_INTERVAL))
+		INTERVAL=$INPROGRESS_INTERVAL
+		#to solve bug 35175 - [Wireless][led]the wps led shows abnormal when i push firmware button.
+		#here let it run first,otherwise will lead to wps led first time blink show abnormal. 
+		wpsled wps_lock_down off
+		;;
+	LED_ERROR | LED_OVERLAP)
+		TIMEOUT_=$ERROR_TIMEOUT
+		if [ "x$LED_color2_on" != "x" ]; then
+			LED_on=$LED_color2_on
+		fi
+		INTERVAL=$ERROR_INTERVAL
+		if [ "$(config get endis_wl_radio)" = "1" -a "$(config get endis_wla_radio)" = "1" ]; then
+			touch $LOCK_file
+			eval $wps_stop_command
+		fi
+		;;
+	LED_SUCCESS)
+#		TIMEOUT_=1
+# No SUCCESS LED behavior in NETGEAR router spec. 1.6
+		TIMEOUT_=0
+		INTERVAL=$SUCCESS_INTERVAL
+		if [ "$(config get endis_wl_radio)" = "1" -a "$(config get endis_wla_radio)" = "1" ]; then
+			touch $LOCK_file
+			eval $wps_stop_command
+		fi
+		;;
+	LED_AP_LOCK)
+		wpsled wps_lock_down on &
+		exit
+		;;
+	LED_AP_LOCK_OFF)
+		wpsled wps_lock_down stop &
+		exit
+		;;
+	LED_PIN_INTRUSION)
+		if [ "x$LED_color2_on" != "x" ]; then
+			LED_on=$LED_color2_on
+		fi
+		TIMEOUT_=50
+		INTERVAL=$ERROR_INTERVAL
+		touch $LOCK_file
+		;;
+	LED_INVALID_CL_PIN)
+		if [ "x$LED_color2_on" != "x" ]; then
+			LED_on=$LED_color2_on
+		fi
+		TIMEOUT_=50
+		INTERVAL=$ERROR_INTERVAL
+		if [ "$(config get endis_wl_radio)" = "1" -a "$(config get endis_wla_radio)" = "1" ]; then
+			touch $LOCK_file
+			eval $wps_stop_command
+		fi
+                ;;
+
+	*)
+		TIMEOUT_=0
+		;;
+esac
+
+while [ $i -lt $TIMEOUT_ ]
+do
+	if [ $LED_busy = "no" ]; then
+		eval $LED_on
+		LED_busy=yes
+	else
+		eval $LED_off
+		LED_busy=no
+	fi
+	usleep $INTERVAL
+	i=$(($i+1))
+# No PBC OVERLAPING LED behavior in NETGEAR spec.
+#	if [ "$LED_STATE" = "LED_OVERLAP" -a "$(( $i % $OVERLAP_BLINK_TIMEOUT ))" = "0" ]; then
+#		usleep $OVERLAP_PAUSE_INTERVAL
+#	fi
+done
+
+#for bug 24207/24152 since we will set security type when wps finish, when we read
+#wl_sectype, this value still do not set successfully, we will wait 0.5s to read this
+#value
+
+usleep 500000
+
+wpsled wps_lock_down on &
+
+ENABLE_11G=`/bin/config get endis_wl_radio`
+ENABLE_11A=`/bin/config get endis_wla_radio`
+SECURITY_TYPE_11G=`/bin/config get wl_sectype`
+SECURITY_TYPE_11A=`/bin/config get wla_sectype`
+[ "${SECURITY_TYPE_11G}" -gt "1" -a "${ENABLE_11G}" -eq "1" -o "${SECURITY_TYPE_11A}" -gt "1" -a "${ENABLE_11A}" -eq "1" ] && eval ${LED_color1_on} || eval ${LED_off}
+
+rm -f $PID_file $LOCK_file
+

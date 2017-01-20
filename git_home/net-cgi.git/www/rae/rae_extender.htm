@@ -1,0 +1,875 @@
+<% http_header("style/form2.css", "/funcs.js","/jquery-1.7.2.min.js") %>
+<% body_header("_edit_device", "rae_waiting.htm", "extender_step2") %>
+<% get_ssid_list() %>
+<style type="text/css">
+<% rae_css() %>
+.purple_tab, .gray_tab {-moz-border-radius-topright:11px;-webkit-border-top-right-radius:11px;-khtml-border-top-right-radius:11px;border-top-right-radius:11px; color: #f2f2f2; font-family: Arial; font-weight: Bold; font-size: 14px;  border: none; cursor: pointer; height:26px; width:100px;}
+.gray_tab{background-color: #6D6E72}
+.purple_tab{background-color: #702b86}
+H2 {
+	FONT-WEIGHT: bold; FONT-SIZE: 16px; COLOR: #000000; FONT-FAMILY: Arial, Helvetica, Geneva, Swiss, SunSans-Regular, sans-serif
+}
+.pop_auth_box{z-index: 99999; height:40%; width:77%; position:relative; top:30px;}
+
+ #choose_wireless{background-image: url(/image/v_middleline.gif); background-repeat: repeat-y; background-position: 0% 0%;}
+.signel0{ width:25px; height:25px; background: url(image/sig.jpg) no-repeat 0 0; float:left; }
+.signel1{ width:25px; height:25px; background: url(image/sig.jpg) no-repeat -30px 0; float:left; }
+.signel2{ width:25px; height:25px; background: url(image/sig.jpg) no-repeat -60px 0; float:left; }
+.signel3{ width:25px; height:25px; background: url(image/sig.jpg) no-repeat 0 -30px; float:left; }
+.signel4{ width:25px; height:25px; background: url(image/sig.jpg) no-repeat -30px -30px; float:left; }
+.signel5{ width:25px; height:25px; background: url(image/sig.jpg) no-repeat -60px -30px; float:left; }
+
+.waiting_img_div{ padding-top:30px}
+.ipbox{width: 450px; height: 230px; position:absolute; left:20px; top:300px; }
+.ssid_line{height:20px; width:200px; padding-top:10px; word-break;break-all; word-wrap:break-all; float:left;}
+.ssid_sel{height:20px; width:200px; padding-top:10px; float:left; background-image: url(image/ssid_back.gif);background-repeat: repeat-y;}
+</style>
+<div class="page_title">
+<script>
+                if(parent.rae_flag == "3")
+                        document.write('$rae_header');
+                else if(parent.rae_flag == "2")
+                        document.write('$qos_device10 / AP $wlan_mark_mode');
+                else if(parent.rae_flag == "1")
+                        document.write('$qos_device10 / $rae_em');
+</script>
+</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+	<TD nowrap align=center>
+	<script>
+		var master="<% cfg_get("http_loginname") %>";
+		if( master=="admin" )
+			document.write('<input class="new_cancel_bt ui-corner-all" type="reset" name="Cancel" value="$cancel_mark" onClick="location.href=\'rae_main.htm\';"><input class="new_apply_bt ui-corner-all" type="submit" name="Apply" value="$apply_mark" onClick="return click_apply();">');
+		else
+			document.write('<input class="new_cancel_bt ui-corner-all" type="reset" name="Cancel" value="$cancel_mark" disabled><input class="new_apply_bt ui-corner-all" type="submiti" name="Apply" value="$apply_mark" disabled>');
+	</script>
+	</TD>
+</TR>
+</TABLE>
+</div>
+<script language="javascript" type="text/javascript">
+<% save_timestamp("extender_step2", "extender_step1","edit_devname")%>
+var ts='<% cfg_get("extender_step2") %>';
+var ed_action= "/apply.cgi?/rae_extender.htm timestamp="+ts;
+var have_select_ssid=0;
+var have_select_ssid_an=1;
+var dyn_get_extender_ip_flag="<% cfg_get("extender_ether_ip_assign") %>";
+var ssid_input_flag;
+var notShow=0;
+var wl_sectype = "<% cfg_get("wl_sectype") %>";
+var key1 = "<% cfg_get("wl_key1") %>";
+var key2 = "<% cfg_get("wl_key2") %>";
+var key3 = "<% cfg_get("wl_key3") %>";
+var key4 = "<% cfg_get("wl_key4") %>";
+var key_no = "<% cfg_get("wl_key") %>";
+var password1= "<% cfg_sed_passphrase("wl_wpa2_psk") %>";
+var password2= "<% cfg_sed_passphrase("wl_wpas_psk") %>";
+
+var wla_sectype = "<% cfg_get("wla_sectype") %>";
+var wla_password1= "<% cfg_sed_passphrase("wla_wpa2_psk") %>";
+var wla_password2= "<% cfg_sed_passphrase("wla_wpas_psk") %>";
+var wl_wpaemode ="<% cfg_get("wl_wpae_mode") %>";
+var wl_radiusSerIp ="<% cfg_get("wl_radiusSerIp") %>";
+var wl_radiusPort="<% cfg_get("wl_radiusPort") %>";
+var wl_radiusSecret="<% cfg_get("wl_radiusSecret") %>";
+var wifi_band_value="<% cfg_get("extender_upstream_band") %>";
+var connected_band=<% ext_connected() %>;
+var connected_ssid="<% cfg_get("wlg_ext_ssid") %>";
+var wla_connected_ssid="<% cfg_get("wla_ext_ssid") %>";
+function loadvalue()
+{
+	var form = document.forms[0];
+
+	if(wifi_band_value == "5g")
+		form.wifi_band[1].checked = true;
+	else
+		form.wifi_band[0].checked = true;
+
+	if(dyn_get_extender_ip_flag == '0')
+	{
+		form.dyn_extender_get_ip[1].checked = true;
+		ap_show();
+	}
+	else
+	{
+		form.dyn_extender_get_ip[0].checked = true;
+	}
+	var extendermode_get_ip="<% cfg_get("extender_ipaddr") %>";
+
+	if (extendermode_get_ip!="")
+	{
+		if(extendermode_get_ip=="0.0.0.0")
+			form.EXTENDERaddr.value="";
+		else
+		{
+			form.EXTENDERaddr.value=extendermode_get_ip;
+		}
+	}
+	var extendermode_get_subnet="<% cfg_get("extender_netmask") %>";
+	if (extendermode_get_subnet!="")
+	{
+		if(extendermode_get_subnet=="0.0.0.0")
+			form.EXTENDERmask.value="";
+		else
+		{
+			form.EXTENDERmask.value=extendermode_get_subnet;
+		}
+	}
+	var extendermode_get_gateway="<% cfg_get("extender_gateway") %>";
+	if (extendermode_get_gateway!="")
+	{
+		if(extendermode_get_gateway=="0.0.0.0")
+		{
+			form.EXTENDERgateway.value="";
+		}
+		else
+		{
+			form.EXTENDERgateway.value=extendermode_get_gateway;
+		}
+	}
+	//setDNS(form);
+	var extendermode_get_dns1="<% cfg_get("extender_ether_dns1") %>";
+	if(notShow == "1")
+		extendermode_get_dns1="0.0.0.0";
+	if (extendermode_get_dns1!="" && extendermode_get_dns1.indexOf(":")==-1)
+	{
+		if(extendermode_get_dns1=="0.0.0.0")
+			form.EXTENDERDAddr.value="";
+		else
+		{
+			form.EXTENDERDAddr.value=extendermode_get_dns1;
+		}
+	}
+	var extendermode_get_dns2="<% cfg_get("extender_ether_dns2") %>";
+	if(notShow == "1")
+		var extendermode_get_dns1="0.0.0.0";
+	if (extendermode_get_dns2!="" && extendermode_get_dns2.indexOf(":")==-1)
+	{
+		if(extendermode_get_dns2=="0.0.0.0")
+			form.EXTENDERPDAddr.value="";
+		else
+		{
+			form.EXTENDERPDAddr.value=extendermode_get_dns2;
+		}
+	}
+	setTimeout("get_ssid()", 10000);
+}
+
+function click_apply( )
+{
+	var form = document.forms[0];
+
+	if( have_select_ssid == 0 && have_select_ssid_an == 0 && connected_ssid == "" && wla_connected_ssid == "")
+	{
+		sAlert("$rae_sel_wifi");
+		return false;
+	}
+	if(current_list == "2")
+		form.wireless_type.value = "2";
+	else
+		form.wireless_type.value = "5";
+
+	if(form.dyn_extender_get_ip[1].checked == true)
+	{
+		if(check_static_ip_mask_gtw()==false)
+			return false;
+		if(check_static_dns(!(form.dyn_extender_get_ip.checked)) == false)
+			return false;
+		form.hid_dyn_extender_get_ip.value="0";//for static
+	}
+	else
+	{
+		form.hid_dyn_extender_get_ip.value="1"; //for dynamic
+	}
+	return true;
+
+}
+function check_static_ip_mask_gtw()
+{
+	var form=document.forms[0];
+	form.hid_extender_ipaddr.value=form.EXTENDERaddr.value;
+	form.hid_extender_subnet.value=form.EXTENDERmask.value;//+'.'+form.EXTENDERmask2.value+'.'+form.EXTENDERmask3.value+'.'+form.EXTENDERmask4.value;
+	form.hid_extender_gateway.value=form.EXTENDERgateway.value;//+'.'+form.EXTENDERgateway2.value+'.'+form.EXTENDERgateway3.value+'.'+form.EXTENDERgateway4.value;
+
+	if(checkipaddr(form.hid_extender_ipaddr.value)==false || is_sub_or_broad(form.hid_extender_ipaddr.value, form.hid_extender_ipaddr.value, form.hid_extender_subnet.value) == false)
+	{
+		sAlert("$invalid_ip");
+		return false;
+	}
+	if(checksubnet(form.hid_extender_subnet.value, 0)==false)
+	{
+		sAlert("$invalid_mask");
+		return false;
+	}
+	if(checkgateway(form.hid_extender_gateway.value)==false)
+	{
+		sAlert("$invalid_gateway");
+		return false;
+	}
+	if(isGateway(form.hid_extender_ipaddr.value,form.hid_extender_subnet.value,form.hid_extender_gateway.value)==false)
+	{
+		sAlert("$invalid_gateway");
+		return false;
+	}
+	if( isSameIp(form.hid_extender_ipaddr.value, form.hid_extender_gateway.value) == true )
+	{
+		sAlert("$invalid_gateway");
+		return false;
+	}
+	if(isSameSubNet(form.hid_extender_ipaddr.value,form.hid_extender_subnet.value,form.hid_extender_gateway.value,form.hid_extender_subnet.value) == false)
+	{
+		sAlert("$same_subnet_ip_gtw");
+		return false;
+	}
+	return true;
+}
+
+function check_static_dns( wan_assign )
+{
+	var form=document.forms[0];
+	form.extender_dnsaddr1.value=form.EXTENDERDAddr.value;//+'.'+form.EXTENDERDAddr2.value+'.'+form.EXTENDERDAddr3.value+'.'+form.EXTENDERDAddr4.value;
+	form.extender_dnsaddr2.value=form.EXTENDERPDAddr.value;//+'.'+form.EXTENDERPDAddr2.value+'.'+form.EXTENDERPDAddr3.value+'.'+form.EXTENDERPDAddr4.value;
+	form.hid_extender_ipaddr.value=form.EXTENDERaddr.value;//+'.'+form.EXTENDERaddr2.value+'.'+form.EXTENDERaddr3.value+'.'+form.EXTENDERaddr4.value;
+
+	if(form.extender_dnsaddr1.value=="...")
+		form.extender_dnsaddr1.value="";
+
+	if(form.extender_dnsaddr2.value=="...")
+		form.extender_dnsaddr2.value="";
+	if( check_DNS(form.extender_dnsaddr1.value,form.extender_dnsaddr2.value,wan_assign,form.hid_extender_ipaddr.value))
+		return true;
+	else
+		return false;
+}
+function ap_show()
+{
+	document.getElementById("iptab").style.display="";
+	document.getElementById("ap_addr").style.display="";
+	document.getElementById("ap_mask").style.display="";
+	document.getElementById("ap_daddr").style.display="";
+	document.getElementById("ap_pdaddr").style.display="";
+	document.getElementById("ap_gateway").style.display="";
+}
+function ap_notshow()
+{
+	document.getElementById("iptab").style.display="none";
+}
+
+</script>
+<input type="hidden" name="wl_ssid">
+<input type="hidden" name="wla_ssid">
+<input type="hidden" name="wl_channel" value="">
+<input type="hidden" name="wla_channel" value="">
+<input type="hidden" name="wl_sec_wpaphrase_len">
+<input type="hidden" name="wla_sec_wpaphrase_len">
+<input type="hidden" name="wl_hidden_wpa_psk">
+<input type="hidden" name="wla_hidden_wpa_psk">
+<input type="hidden" name="hidden_sec_type">
+<input type="hidden" name="old_length">
+<input type="hidden" name="wep_press_flag">
+<input type="hidden" name="wpa1_press_flag" value=0>
+<input type="hidden" name="wpa2_press_flag" value=0>
+<input type="hidden" name="wla_wpa2_press_flag" value=0>
+
+<input type="hidden" name="hid_enable_extender">
+<input type="hidden" name="hid_dyn_extender_get_ip">
+<!--input type="hidden" name="hid_dyn_get_dns"-->
+<input type="hidden" name="hid_extender_ipaddr">
+<input type="hidden" name="hid_extender_subnet">
+<input type="hidden" name="hid_extender_gateway">
+<input type="hidden" name="extender_dnsaddr1">
+<input type="hidden" name="extender_dnsaddr2">
+
+<input type="hidden" name="wl_hidden_sec_type">
+<input type="hidden" name="wla_hidden_sec_type">
+<input type="hidden" name="tmp_name">
+<input type="hidden" name="tmp_channel">
+<input type="hidden" name="wireless_type">
+
+<div id="main" class="main_top_button">
+<div id="mode_intro" style="width:65%; color:#545454; font-size:14px; float:left; position: relative; left: 5%; ">
+<% rae_radios("extender") %>
+
+<table border=0 cellpadding=2 cellspacing=0 width=80%>
+<tr>
+<td colspan=3><a tabindex=-1 href="javascript:loadhelp('_rae_extender','ext_mode')"><b>$rae_em:</b></a> $rae_ext_info </td>
+</tr>
+<tr><td colspan=3><h1 style="FONT-SIZE: 16px"></h1></td></tr>
+<tr><td colspan=3>$ap_IP</td></tr>
+<tr><td colspan=1 width="20px"><input type="radio" name="dyn_extender_get_ip" value="dynamic" checked = "true" onclick="ap_notshow()"></td>
+<td colspan=2><a tabindex=-1 href="javascript:loadhelp('_rae_extender','dyn')">$dyn_get_dns</a></td></tr>
+<tr><td colspan=1><input type="radio" name="dyn_extender_get_ip" value="fixed" onClick="ap_show()"></td>
+<td colspan=2><a tabindex=-1 href="javascript:loadhelp('_rae_extender','fix')">$ap_able_fixed_ip</a></td></tr>
+<tr><td colspan=3><h1 style="FONT-SIZE: 16px"></h1></td></tr>
+<TR><TD nowrap colspan=3>&nbsp; $lan_mark_name: <% cfg_get("Device_name") %> &nbsp;&nbsp;&nbsp; <input class="new_edit_bt ui-corner-all" type="button" name="Apply" value="$edit_mark" onClick="edit_devicename('<% cfg_get("Device_name") %>')"></TD><TD></td></TR>
+<TR><TD height="10px"></TD></TR>
+<tr><td colspan=3><input class="new_apply_bt2 ui-corner-all" type="button" name="learn_router" value="$learn_more" onclick="window.open('rae_learn.htm','newwindow','resizable=no,scrollbars=yes,toolbar=no,menubar=no,status=no,location=no,alwaysRaised=yes,z-look=yes,width=800,height=600,left=200,top=100').focus();" ></td></tr>
+</table>
+
+<div class="ipbox pop_box" id="iptab" style="display:none">
+<table width=420px height=210px cellpadding=0 cellspacing=2  border=0 >
+<tr height="15px"></tr>
+<TR id=ap_addr style="display:none">
+	<TD>&nbsp;</TD>
+	<TD nowrap>$info_mark_ip</TD>
+	<TD nowrap align=left>
+		<input type="text" name="EXTENDERaddr"  size="20" autocomplete="off" maxlength="15" onFocus="this.select();">
+	</TD>
+</TR>
+<TR id=ap_mask style="display:none">
+	<TD>&nbsp;</TD>
+	<TD nowrap>$router_status_ip_sub</TD>		
+	<TD nowrap align=left>
+		<input type="text" name="EXTENDERmask"  size="20" autocomplete="off" maxlength="15" onFocus="this.select();">
+	</TD> 
+</TR>
+<TR id=ap_gateway style="display:none">
+	<TD>&nbsp;</TD>
+	<TD nowrap>$basic_int_gateway</TD>		
+	<TD nowrap align=left>
+		<input type="text" name="EXTENDERgateway"  size="20" autocomplete="off" maxlength="15" onFocus="this.select();">
+	</TD>
+</TR>
+<TR id=ap_daddr style="display:none">
+	<TD>&nbsp;</TD>
+	<TD nowrap>$basic_int_primary_dns</TD>
+	<TD nowrap align=left>
+	<input type="text" name="EXTENDERDAddr"  size="20" autocomplete="off" maxlength="15" onFocus="this.select();">
+	</TD>
+</TR>
+<TR id=ap_pdaddr style="display:none">
+	<TD>&nbsp;</TD>
+	<TD nowrap>$basic_int_second_dns</TD>
+	<TD nowrap align=left>
+	<input type="text" name="EXTENDERPDAddr"  size="20" autocomplete="off" maxlength="15" onFocus="this.select();" >
+	</TD>
+</TR>
+
+<TR><td colspan=3>&nbsp;&nbsp;</td></TR>
+<TR id=ap_text_id5 style="display:none">
+	<TD>&nbsp;</TD><TD  colspan=2><b>$note:</b>$ap_confirm </TD>
+</TR>
+<tr height="15px"></tr>
+</table>
+</div>
+
+<img src="/image/extender_map.gif" style="display:block; width:90%">
+</div>
+<div id="choose_wireless" style="float:left; width:30%; height:100%;font-size:14px; ">
+<div style="margin-left:25px; width:250px;"><a tabindex=-1 href="javascript:loadhelp('_rae_extender','uplink')"><h2>$rae_uplink</h2></a>
+<p>$rae_up_info</p>
+</div>
+<div class="wireless_signal_head" style="position:relative;margin-left:25px; width:250px; border-bottom:5px solid #702b86">
+    <input class="purple_tab" id="2bt" type="button" onClick="show_ssid(2)" value="2.4G">
+	<input class="gray_tab" id="5bt" type="button" onClick="show_ssid(5)" value="5G">
+	<!--img src="../image/checked.png" style="position:relative; left:-192px; top:2px"; z-index:999-->
+</div>
+<div style="position:relative;margin-left:30px; width:250px;"> <H2 style="font-size:13px">$rae_wl_net_con</H2></div>
+<div id="ssidContainer" class="wireless_signal_list" style="position:relative; height:30%; width:250px;margin-left:30px; overflow:auto; ">
+	<div class="waiting_img_div" align="center"><img src="image/wait30.gif"></div>
+</div>
+<div id="5GssidContainer" class="wireless_signal_list" style="position:relative; height:30%; width:250px;margin-left:30px; overflow:auto; display:none;">
+	<div class="waiting_img_div" align="center"><img src="image/wait30.gif"></div>
+</div>
+<script>
+var bgnlist={ssid_num:0};
+var anlist={ssid_num:0};
+var current_list=2;
+function show_ssid(band)
+{
+	if(current_list == band)
+		return;
+	
+	current_list = band;
+
+	if(band == 2)
+	{
+		$$('#2bt').removeClass("gray_tab").addClass("purple_tab");
+		$$('#5bt').removeClass("purple_tab").addClass("gray_tab");	
+		$$('#5GssidContainer').hide();
+		$$('#ssidContainer').show();
+	}
+	else
+	{	
+		$$('#2bt').removeClass("purple_tab").addClass("gray_tab");
+		$$('#5bt').removeClass("gray_tab").addClass("purple_tab");	
+		$$('#ssidContainer').hide();
+		$$('#5GssidContainer').show();
+	
+	}
+}
+
+function show_an_list()
+{
+	$$('#5GssidContainer').empty();
+	var showstr="";
+
+	if(anlist.ssid_num > 0)
+	{
+		for(var i=0;i<anlist.ssid_num;i++)
+		{
+			var str = eval ( 'anlist.an_ssid_list' + i );
+			var con_status="";
+
+			if(str.charAt(0) != '"')
+				continue;
+			if(str.charAt(1) == '"')
+				continue;
+
+			var each_info = str.split('"');
+			var each_info2 = each_info[2].split(' ');
+			var name=each_info[1];
+			var channel=each_info2[1];
+			var signal=each_info2[2];
+
+
+			if(name == '""')
+				continue;
+
+			if(name == wla_connected_ssid && connected_band == current_list)
+				con_status="<div style='float:right'><b style='color:black'>$connected_mark &nbsp;</b></div>";
+
+			showstr = showstr + '<div style="width:100%; cursor:pointer;">';
+			showstr = showstr + '<div id="an'+i+'" class="ssid_line" onClick=\'show_ssid_popup('+i+',"'+name+'","'+channel+'" );\'>'+name+con_status+'</div>';
+			showstr = showstr + '<div  class='+signal_intensity(signal)+'></div></div>';
+		}	
+	}
+	showstr = showstr + '<div style="cursor:pointer;">';
+	showstr = showstr + '<div style="height:20px; width:200px; padding-top:10px; word-break;break-all; word-wrap:break-all; float:left;" id="other" onCLick="show_other_bgn_popup()">other</div></div>';
+	$$('#5GssidContainer').append(showstr);
+}
+
+function get_ssid()
+{
+        xmlHttp = createXMLHttpRequest();
+
+        xmlHttp.onreadystatechange = function()
+        {
+                if(xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                {
+                        var jobj = eval('('+xmlHttp.responseText+')');
+			bgnlist = jobj.bgnlist;
+			if(jobj.anlist)
+				anlist = jobj.anlist;
+			show_bgn_list();
+			show_an_list();
+                }
+        }
+
+        var url = "rae_extender_ssid.htm?ts=" + new Date().getTime();
+        xmlHttp.open("GET",url,true);
+        xmlHttp.send(null);
+}
+
+function show_bgn_list()
+{
+	$$('#ssidContainer').empty();
+	var showstr="";
+
+	if(bgnlist.ssid_num > 0)
+	{
+		for(var i=0;i<bgnlist.ssid_num;i++)
+		{
+			var str = eval ( 'bgnlist.bgn_ssid_list' + i );
+			var con_status="";
+			if(str.charAt(0) != '"')
+				continue;
+			if(str.charAt(1) == '"')
+				continue;
+			//alert(str);
+			var each_info = str.split('"');
+			if(i<2)
+				alert(each_info[0]+"+"+each_info[1]+"+"+each_info[2]);
+			if(each_info[0] == "")
+				var each_info2 = each_info[2].split(' ');
+			else if(each_info[0] != "")
+				var each_info2 = each_info[1].split(' ');
+			var name=each_info[1];
+			var channel=each_info2[1];
+			var signal=each_info2[2];
+
+
+			if(name == '""')
+				continue;
+
+			if(name == connected_ssid && connected_band == current_list)
+				con_status="<div style='float:right'><b style='color:black'>$connected_mark &nbsp;</b></div>";
+
+			showstr = showstr + '<div style="width:100%; cursor:pointer;">';
+			showstr = showstr + '<div id="bgn'+i+'" class="ssid_line" onClick=\'show_ssid_popup('+i+',"'+name+'","'+channel+'" );\'>'+name+con_status+'</div>';
+			showstr = showstr + '<div  class='+signal_intensity(signal)+'></div></div>';
+		}	
+	}
+	showstr = showstr + '<div style="cursor:pointer;">';
+	showstr = showstr + '<div style="height:20px; width:200px; padding-top:10px; word-break;break-all; word-wrap:break-all; float:left;" id="other" onCLick="show_other_bgn_popup()">other</div></div>';
+	$$('#ssidContainer').append(showstr);
+
+}
+function signal_intensity(intensity)
+{
+
+	var type;
+	if(intensity <= -80)
+		type="signel1";
+	else if( intensity <= -70 )
+		type="signel2";
+	else if( intensity <= -55 )
+		type="signel3";
+	else if( intensity <= -35 )
+		type="signel4";
+	else
+		type="signel5";
+	return type;
+}
+
+function escape_code(ssid)
+{
+	return ssid;
+}
+function show_ssid_popup(n, ssid_name, channel)
+{
+	var cf = document.forms[0];
+	var band = "bgn";
+	if( current_list == 5 )
+		band="an";
+	else
+		band="bgn";
+	var list = eval(band+"list");
+	for(var i=0;i<list.ssid_num;i++)
+	{
+		var l = document.getElementById(band+i);
+		if(l)
+		{
+			if(i == n)
+				l.className="ssid_sel";
+			else
+				l.className="ssid_line";
+		}
+	}
+	
+	cf.tmp_name.value = ssid_name;
+	cf.tmp_channel.value = channel;
+	document.getElementById("choosed_ssid_value").innerHTML = ssid_name+"";
+	document.getElementById("other_ssid").style.display = "none";
+	document.getElementById("router_wireless_setting").style.display = "none";
+	document.getElementById("pop_auth_box").style.display = "";
+	show_security();
+	ssid_input_flag = 0;
+
+}
+
+function show_other_bgn_popup(ssid_name, td_id)
+{
+	document.getElementById("choosed_ssid").style.display = "none";
+	document.getElementById("other_ssid").style.display = "";
+	document.getElementById("router_wireless_setting").style.display = "none";
+	document.getElementById("pop_auth_box").style.display = "";
+	show_security();
+	ssid_input_flag = 1;
+
+}
+
+function show_security()
+{
+	var cf = document.forms[0];
+	if(current_list == "2"){
+		cf.security_type.options.length = 4;
+		cf.security_type.options[0].text = "$sec_off";
+        	cf.security_type.options[0].value = "Disable";
+		cf.security_type.options[1].text = "$sec_wep";
+                cf.security_type.options[1].value = "WEP";
+		cf.security_type.options[2].text = "$sec_wpa";
+                cf.security_type.options[2].value = "WPA-PSK";
+		cf.security_type.options[3].text = "$sec_wpa2";
+                cf.security_type.options[3].value = "WPA2-PSK";
+		
+	}else{
+		cf.security_type.options.length = 2;
+		cf.security_type.options[0].text = "$sec_off";
+                cf.security_type.options[0].value = "Disable";
+		cf.security_type.options[1].text = "$sec_wpa2";
+                cf.security_type.options[1].value = "WPA2-PSK";
+	}
+	var index = cf.security_type.selectedIndex;
+	var selectedSecurity = cf.security_type.options[index].value;	
+	if(selectedSecurity == "Disable"){
+		document.getElementById("wpa1_password_input_box").style.display="none";
+		document.getElementById("wep").style.display="none";
+	}else if(selectedSecurity == "WEP"){
+		document.getElementById("wpa1_password_input_box").style.display="none";
+		document.getElementById("wep").style.display="";
+
+	}else if(selectedSecurity == "WPA-PSK"){
+		document.getElementById("wpa1_password_input_box").style.display="";
+		document.getElementById("wep").style.display="none";
+
+	}else {
+		document.getElementById("wpa1_password_input_box").style.display="";
+		document.getElementById("wep").style.display="none";
+	}
+
+}
+</script>
+
+<div class="router_wireless_setting" style="font-size:14px; margin-left:30px; position:relative; top:30px; width:250px;" id="router_wireless_setting">
+<table border=0 cellpadding=2 cellspacing=0 width=100%>
+<TR><TD colspan="2" style="FONT-WEIGHT: bold; FONT-SIZE: 16px; COLOR: #000000;">$ap_downlink</TD></TR>
+<TR><TD colspan="2">$rae_sub_des</TD></TR>
+<tr><td colspan="2"><h1 style="FONT-SIZE: 16px"></h1></td></tr>
+<TR>
+	<TD nowrap  >2.4G $wlan_guest_ssid</TD>	
+	<TD nowrap  >5G $wlan_guest_ssid</TD>	
+</TR>
+<TR style="color: black" >
+	<TD nowrap =><% cfg_get_ssid_html("wl_ssid") %></TD>
+	<TD nowrap =><% cfg_get_ssid_html("wla_ssid") %></TD>	
+</TR>
+<tr style="color: black">
+<script>
+if (wl_sectype == 1)
+	document.write('<TD nowrap>$sec_off</TD></TR>');
+else if (wl_sectype == 2) 
+{  //wep
+	if(key_no == 1)
+		document.write('<TD nowrap >key1:'+key1+'</TD>');
+	else if(key_no == 2)
+		document.write('<TD nowrap>key2:'+key2+'</TD>');
+	else if(key_no == 3)
+		document.write('<TD nowrap >key3:'+key3+'</TD>');
+	else if(key_no == 4)
+		document.write('<TD nowrap >key4:'+key4+'</TD>');
+}
+else if (wl_sectype == 4)
+	document.write('<TD nowrap>'+password1+'</TD>');
+else if (wl_sectype == 5)
+	document.write('<TD nowrap >'+password2+'</TD>');
+else if (wl_sectype == 6)
+	document.write('<TD nowrap >'+wl_radiusSecret+'</TD>');
+	/* 5G */	
+if (wla_sectype == 1)
+	document.write('<TD nowrap>None</TD></TR>');
+else if (wla_sectype == 4)
+	document.write('<TD nowrap>'+wla_password1+'</TD>');
+else if (wla_sectype == 5)
+	document.write('<TD nowrap >'+wla_password2+'</TD>');
+</script>
+</tr>
+<TR><TD height="15px"></TD></TR>
+<TR>
+	<td nowrap colspan="2">$ap_tochange: <input class="wireless_bt2 ui-corner-all" type="button" name="Apply" value="$wls_setup" onClick="gotto_link('setup', 'wireless');"></td>
+</TR>
+<tr><td  height="10px" nowrap colspan="2"></td></tr>
+<tr  style="color: black"><td nowrap colspan="2"><b><a tabindex=-1 href="javascript:loadhelp('_rae_extender','ethport')">$rae_ext_ports</a></b></td></tr>
+<tr  style="color: black"><td nowrap>
+	<input type=radio NAME="wifi_band" checked value="2.4g"> <b>2.4G</b>
+	</td>
+	<td nowrap>
+	<input type=radio NAME="wifi_band" value="5g"> <b>5G</b>
+	</td>
+</tr>
+<tr><td  height="20px" nowrap colspan="2"></td></tr>
+</table>    
+</div>
+<div  id="pop_auth_box" class="pop_auth_box pop_box" style="display:none">
+<table border=0 cellpadding=2 cellspacing=0 width=80% align="center">
+<tr><td>$wlan_guest_ssid</td></tr>
+<tr id="other_ssid"><td><input type="text" id="ESSID" name="ssid" value="" size="30" maxlength="32"></td></tr>
+<tr id="choosed_ssid"><td><div id="choosed_ssid_value" style="color: black; font-weight: bold;"></div></td></tr>
+<tr><td>$wlan_guest_security</td></tr>
+<tr><td>
+<select name="security_type" size="1" style="width:225px" onchange="show_security()">
+	/*<option value="Disable" selected>$sec_off</option>
+	<option value="WEP">$sec_wep</option>
+	<option value="WPA-PSK">$sec_wpa</option>
+	<option value="WPA-PSK">$sec_wpa2</option>*/
+</select>
+</td></tr>
+<tr><td>&nbsp;</td></tr>
+<tr id="wpa1_password_input_box" style="display:none"><td><input type="text" id="textWpaPwdPhrase" autocomplete="off" maxlength="64" size="30"  name="passphrase" value="password" ></td></tr>
+</table>
+<div align="center" ID="wep" width=96% style="font-size:12px; padding-left:14px; display:none">
+	<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+	<TR>
+		<TD nowrap colspan=2>
+		<A tabindex=-1 href="javascript:loadhelp('_wlan','wep')"><b>$sec_enc_head</b></A>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>$sec_auth</TD>
+		<TD nowrap>
+			<select NAME="authAlgm" size="1">
+				<option value=1 >$sec_share</option>
+				<option value=2 >$sec_auto</option>
+			</select>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>$sec_enc</TD>
+		<TD nowrap> 
+			<select NAME="wepenc" size="1" onChange="changekeylen(document.forms[0]);">
+				<option value=5 >$sec_64</option>
+				<option value=13 >$sec_128</option>
+			</select>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap colspan=2>
+		<A tabindex=-1 href="javascript:loadhelp('_wlan','wepkey')"><b>$sec_key</b></A>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap colspan=2>
+		<TABLE>
+		<TR>
+			<TD nowrap>$sec_key1
+			<input type=radio NAME="wep_key_no" checked value="1">
+			</TD>
+			<TD nowrap>
+			<input TYPE="TEXT" SIZE="document.forms[0].wepenc.value*2+2" autocomplete="off"  MAXLENGTH="32" NAME="KEY1" VALUE="" OnFocus="this.maxLength=document.forms[0].wepenc.value*2;this.size=document.forms[0].wepenc.value*2+2;">
+			</TD>
+		</TR>
+		<TR>
+			<TD nowrap>$sec_key2
+			<input type=radio NAME="wep_key_no" value="2">
+			</TD>
+			<TD nowrap>
+			<input TYPE="TEXT" SIZE="document.forms[0].wepenc.value*2+2" autocomplete="off" MAXLENGTH="32" NAME="KEY2" VALUE="" OnFocus="this.maxLength=document.forms[0].wepenc.value*2;this.size=document.forms[0].wepenc.value*2+2;">
+			</TD>
+		</TR>
+		<TR>
+			<TD nowrap>$sec_key3
+			<input type=radio NAME="wep_key_no" value="3">
+			</TD>
+			<TD nowrap><input TYPE="TEXT" SIZE="document.forms[0].wepenc.value*2+2" autocomplete="off" MAXLENGTH="32" NAME="KEY3" VALUE="" OnFocus="this.maxLength=document.forms[0].wepenc.value*2;this.size=document.forms[0].wepenc.value*2+2;">
+			</TD>
+		</TR>
+		<TR>
+			<TD nowrap>$sec_key4
+			<input type=radio NAME="wep_key_no" value="4">
+			</TD>
+			<TD nowrap>
+			<input TYPE="TEXT" SIZE="document.forms[0].wepenc.value*2+2" autocomplete="off" MAXLENGTH="32" NAME="KEY4" VALUE=""  OnFocus="this.maxLength=document.forms[0].wepenc.value*2;this.size=document.forms[0].wepenc.value*2+2;">
+			</TD>
+		</TR>
+		</TABLE>
+		</TD>
+	</TR>
+	</TABLE>
+
+</div>
+<table width=100% border=0 cellpadding=0 cellspacing=2 >
+<tr><td>&nbsp;</td></tr>
+<tr><td align="center"><input class="new_apply_bt ui-corner-all" type="button" name="Apply" value="$ok_mark" onClick="return apply_wireless_auth();">&nbsp;&nbsp;<input class="new_cancel_bt ui-corner-all" type="reset" name="Cancel" value="$cancel_mark" onClick="hide_ssid_popup()"></td></tr></table>
+</div>
+<script>
+function hide_ssid_popup()
+{
+	document.getElementById("router_wireless_setting").style.display = "";
+	document.getElementById("pop_auth_box").style.display = "none";
+}
+
+function apply_wireless_auth()
+{
+	var cf = document.forms[0];
+	var selectedIndex = cf.security_type.selectedIndex;
+	var selectedSecurity = cf.security_type.options[selectedIndex].value;
+	if(current_list == "2"){
+		if(ssid_input_flag == 0){
+			cf.wl_ssid.value = cf.tmp_name.value;
+			cf.wl_channel.value = cf.tmp_channel.value;
+
+		}else{
+			var ssid_bgn = document.forms[0].ssid.value;
+			if(ssid_bgn == "")
+			{
+				sAlert("$ssid_null");
+				return false;
+			}
+			for(var i=0;i<ssid_bgn.length;i++)
+			{
+				if(isValidChar_space(ssid_bgn.charCodeAt(i))==false)
+				{
+					sAlert("$ssid_not_allowed");
+					return false;
+				}
+			}
+			cf.wl_ssid.value = ssid_bgn;
+
+		}
+
+		if(selectedSecurity == "WEP")
+		{
+			if( checkwep(cf)== false)
+				return false;
+			cf.wl_hidden_sec_type.value=2;
+		}
+		else if(selectedSecurity == "WPA-PSK")
+		{
+			if( checkpsk(cf.passphrase, cf.wl_sec_wpaphrase_len)== false)
+				return false;
+			cf.wl_hidden_sec_type.value=3;
+			//bug 41791cf.wl_hidden_wpa_psk.value = cf.passphrase.value.replace(/\\/g,"\\\\").replace(/`/g,"\\`").replace(/"/g,"\\\"");
+			cf.wl_hidden_wpa_psk.value = cf.passphrase.value;
+			cf.wpa1_press_flag.value=1
+		}
+		else if(selectedSecurity == "WPA2-PSK")
+		{
+			if( checkpsk(cf.passphrase, cf.wl_sec_wpaphrase_len)== false)
+				return false;
+			cf.wl_hidden_sec_type.value=4;
+			//bug 41791cf.wl_hidden_wpa_psk.value = cf.passphrase.value.replace(/\\/g,"\\\\").replace(/`/g,"\\`").replace(/"/g,"\\\"");
+			cf.wl_hidden_wpa_psk.value = cf.passphrase.value;
+			cf.wpa2_press_flag.value=1;
+		}else
+			cf.wl_hidden_sec_type.value=1;
+
+		have_select_ssid=1;
+	}else{
+		if(ssid_input_flag == 0){
+                        cf.wla_ssid.value = cf.tmp_name.value;
+                        cf.wla_channel.value = cf.tmp_channel.value;
+
+                }else{
+                        var ssid_an = document.forms[0].ssid.value;
+                        if(ssid_an == "")
+                        {
+                                sAlert("$ssid_null");
+                                return false;
+                        }
+                        for(var i=0;i<ssid_an.length;i++)
+                        {
+                                if(isValidChar_space(ssid_an.charCodeAt(i))==false)
+                                {
+                                        sAlert("$ssid_not_allowed");
+                                        return false;
+                                }
+                        }
+                        cf.wla_ssid.value = ssid_an;
+
+                }
+
+                if(selectedSecurity == "WPA2-PSK")
+                {
+                        if( checkpsk(cf.passphrase, cf.wla_sec_wpaphrase_len)== false)
+                                return false;
+                        cf.wla_hidden_sec_type.value=4;
+                        //bug 41791cf.wl_hidden_wpa_psk.value = cf.passphrase.value.replace(/\\/g,"\\\\").replace(/`/g,"\\`").replace(/"/g,"\\\"");
+                        cf.wla_hidden_wpa_psk.value = cf.passphrase.value;
+                        cf.wla_wpa2_press_flag.value=1;
+                }else
+                        cf.wla_hidden_sec_type.value=1;
+
+                have_select_ssid_an=1;
+		
+	}
+	hide_ssid_popup();
+}
+</script>
+</div>
+</div>
+<% help_box("0","_rae_extender") %>
+</form>
+</body>
+</html>

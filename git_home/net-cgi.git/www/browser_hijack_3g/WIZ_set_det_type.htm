@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+<% form_submit("func", "BRS_03A_detcInetType.html", "wizard_detwan") %>
+<% save_timestamp("wizard_detwan", "wizard_3g_detwan", "wizard_lte_detwan") %>
+<input type="hidden" name="hidden_wan_type" value="MyDetc">
+<script>
+var ts="<% cfg_get("wizard_detwan") %>";
+var det_wan_type="<% cfg_get("dango_det_wan_type") %>";
+var cf= document.forms[0];
+if(det_wan_type == "AutoDetc")
+{
+	if( top.is_ru_version == 1)
+		this.location.href="RU_check_wan_port.html";
+	else
+		cf.submit();
+}
+else if (det_wan_type == "failover")
+{
+	top.multi_wan_mode="multi";
+	this.location.href="WIZ_failover_01.htm";
+}
+else
+{
+	cf.action="/apply.cgi?/config_3g_wait_page.htm timestamp="+ts;
+	if(top.have_lte_flag=="1")
+		cf.submit_flag.value="wizard_lte_detwan";
+	else
+		cf.submit_flag.value="wizard_3g_detwan";
+	cf.submit();
+}
+
+</script>
+</form>
+</body>
+
+</html>

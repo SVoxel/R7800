@@ -1,0 +1,64 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% body_header("", "LED_control_setting.htm", "LED_setting") %>
+<div class="page_title">$led_head</div>
+<script>
+var led_option = <% cfg_get("led_blinking_setting")%>;
+function loadvalue()
+{
+	var cf = document.forms[0];
+	if(led_option == '0')
+		cf.led_settings[0].checked = true;
+	else if(led_option == '1')
+		cf.led_settings[1].checked = true;
+	else
+		cf.led_settings[2].checked = true;
+}
+
+function checkLED(cf)
+{
+	if(cf.led_settings[0].checked == true)
+		cf.hid_led_settings.value = "0";
+	else if(cf.led_settings[1].checked == true)
+		cf.hid_led_settings.value = "1";
+	else
+		cf.hid_led_settings.value = "2";
+	return true;
+}
+</script>
+<div class="fix_button">
+<input type="hidden" name="hid_led_settings" />
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'LED_control_setting.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="submit" name="Apply" id="apply" value="$apply_mark" onClick="return checkLED(document.forms[0]);"></TD></TR>');
+else
+	document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit" name="Apply" id="apply" value="$apply_mark" disabled></TD></TR>');
+</script>
+</TABLE>
+
+</div>
+<div id="main" class="main_top_button">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR>
+        <TD nowrap>
+        <input onclick='' type="radio" id="led_enable" name="led_settings" value="en_blink">$led_en_blinking
+        </TD>
+</TR>
+<TR>
+        <TD nowrap>
+        <input onclick='' type="radio" id="led_disable" name="led_settings" value="dis_blink" >$led_dis_blinking
+        </TD>
+</TR>
+<TR>
+        <TD nowrap>
+        <input onclick='' type="radio" id="led_turn_off" name="led_settings" value="turn_off" >$led_turn_off
+        </TD>
+</TR>
+</table>
+</div>
+<% help_box("0","_led") %>
+</FORM>
+</BODY>
+</HTML>
+

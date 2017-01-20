@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_02_genieHelp.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_00_02_ap_select.js"></script>
+<% hijack_language() %>
+</head>
+
+<body>
+<form>
+
+<div class="wizard_content_div">
+
+	<div id="choices_div" class="wizard_words_div1">
+		<h1><!-- An existing router or gateway is detected in your network --></h1>
+		<p><!--connection_further_action--></p>
+		
+		<div id="choices_div" class="helpChoice_divs">
+			<div class="apradio_div">
+				<input type="radio" name="help_choice" value="0" checked="checked" /><!--yes_mark-->
+				<b><script>document.write(bh_router_mode);</script></b>
+				<div class="apradio_doc"><script>document.write(bh_router_doc);</script></div>
+			</div>
+			
+			<div class="apradio_div">
+				<input type="radio" name="help_choice" value="1" /><!--no_genie_help-->
+				<b><script>document.write(bh_ap_mode);</script></b>
+				<div class="apradio_doc"><script>document.write(bh_ap_doc);</script></div>
+			</div>
+			<div class="apradio_lean">
+				<div class="apradio_doc"></script><a href=# target="_blank" onclick="goto_url(); return false;"><font color=blue><u><script>document.write(bh_ap_learn);</script></u></font></a></div>
+			</div>
+			
+		</div>
+	</div>
+
+	<div id="buttons_div_02" class="wizard_buttons_div" align="center">
+	<script>
+			
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" ){
+							document.write('<div id="btnsContainer_div" class="buttons_img_div"  align="center">');
+							document.write('<img src="image/ca-little-purple-button.gif" /><div id="btn_div" class="buttons_words_div"></div>');
+						}
+						else{
+							document.write('<div id="btnsContainer1_div" class="buttons_img_div"  align="center">');
+							document.write('<img src="image/ca-little-grey-button.png" /><div id="btn_div1" class="buttons_words_div">Next</div>');
+							
+						}
+			
+		document.write('</div>');
+	</script>
+	</div>
+	
+</div>
+
+</form>
+</body>
+
+</html>

@@ -1,0 +1,100 @@
+<% http_header("style/form.css", "/funcs.js", "/hdd.js") %>
+<% body_header("_XXXX", "hdd_usr_setup.htm", "shname_edit") %>
+<div class="page_title">$edit_user</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR id="edit_button">
+        <TD nowrap align=center>
+        <input class="cancel_bt" type='reset' name='Cancel' value='$cancel_mark' onClick='location.href="hdd_usr_setup.htm";'>
+	<input class="apply_bt" type="submit" name="Apply" value="$apply_mark" onClick="return hdd_user_add(document.forms[0],'edit');">
+        </TD>
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+<% refresh_timestamp("shname_editnum") %>
+<script>
+<% userhdd_items_xss() %>
+var sel_editnum="<% cfg_get("sh_editnum") %>";
+
+function loadvalue()
+{
+	var cf=document.forms[0];
+	
+	document.getElementById("dup_edit_text").style.display="none";
+	document.getElementById("dup_edit_button").style.display="none";
+	
+	var str = eval ( 'userhddArray' + sel_editnum );
+	var each_info=str.split(' ');
+	cf.sh_name.value=each_info[0].replace(/&#92;/g, "\\").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+	cf.hddNewPasswd.value=each_info[1].replace(/&#92;/g, "\\").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+	cf.hddNewPasswd.value = cf.hddNewPasswd.value.replace(/&nbsp;/g, " ");
+}
+
+ function show_edit_dup_warn()
+ {
+	document.getElementById("edit_button").style.display="none";
+	document.getElementById("edit_name").style.display="none";
+	document.getElementById("edit_pas").style.display="none";
+ 
+	document.getElementById("dup_edit_text").style.display="";
+	document.getElementById("dup_edit_button").style.display="";
+ }
+ function show_edit()
+ {
+	document.getElementById("edit_button").style.display="";
+	document.getElementById("edit_name").style.display="";
+	document.getElementById("edit_pas").style.display="";
+ 
+	document.getElementById("dup_edit_text").style.display="none";
+	document.getElementById("dup_edit_button").style.display="none";
+ }
+</script>
+
+<input type="hidden" name="duplicated_num" value=0>
+<input type="hidden" name="duplicated_shname">
+
+<TR id="edit_name">
+	<TD nowrap>$ddns_username:</TD>
+	<TD nowrap>
+<!--	<input type="password" size="20" maxlength="32" name="sysOldPasswd" value="" onKeyPress="return getkey('ssid', event)"> -->
+	<input type="text" size="16" maxlength="60" name="sh_name" onKeyPress="return getkey('ssid', event)" value="" >
+	</TD>
+</TR>
+<TR id="edit_pas">
+	<TD nowrap>$ddns_passwd:</TD>
+	<TD nowrap>
+<!--	<input type="password" maxLength="32" size="20" name="sysNewPasswd" onFocus="this.select();" onKeyPress="return getkey('ssid', event)"> -->
+	<input type="password" maxLength="32" size="20" name="hddNewPasswd" onFocus="this.select();" >
+	</TD>
+</TR>
+<TR id="dup_edit_text">
+	<TD nowrap colspan=2 style="font-family:Arial; font-size:18px;" align=center>$user_name_dup</TD>
+</TR>
+$bluebar
+<TR id="dup_edit_button">
+		 <TD nowrap colspan=2 align=center>
+		<!--INPUT  class="short_common_bt" type='button'  name="ok" value='OK' onClick='rewtit_edit_ok(document.forms[0])' -->&nbsp;&nbsp;&nbsp;&nbsp;
+		<INPUT  class="short_common_bt" type='button'  name="ok" value='$cancel_mark' onClick='rewrit_edit_cancel()' ></TD>
+</TR> 
+<script>
+function rewtit_edit_ok(cf) 
+{
+	//show_edit();
+	//return true;
+	cf.submit();
+}
+
+function rewrit_edit_cancel()
+{
+	show_edit();
+	return false;
+}
+</script>
+</TABLE>
+</div>
+<% help_box("0","_XXX") %>
+</FORM>
+</BODY>
+</HTML>

@@ -1,0 +1,62 @@
+--- a/drivers/spi/spi-ath79.c	2013-06-21 16:53:13.000000000 +0800
++++ b/drivers/spi/spi-ath79.c	2013-06-26 10:22:29.643942633 +0800
+@@ -27,6 +27,9 @@
+ #include <linux/gpio.h>
+ #include <linux/clk.h>
+ #include <linux/err.h>
++#ifdef CONFIG_OF
++#include <linux/of.h>
++#endif
+ 
+ #include <asm/mach-ath79/ar71xx_regs.h>
+ #include <asm/mach-ath79/ath79_spi_platform.h>
+@@ -183,11 +186,39 @@
+ 	}
+ }
+ 
++#ifdef CONFIG_OF
++static struct ath79_spi_controller_data ath79_spi_of_cdata;
++static int ath79_spi_of_cdata_setup(struct spi_device *spi)
++{
++	u32 cdata[3];
++
++	if (!spi->dev.of_node)
++		return -EINVAL;
++
++	if (!of_property_read_u32_array(spi->dev.of_node,
++				"spi-controller-data", cdata, 3)) {
++		ath79_spi_of_cdata.is_flash = cdata[0];
++		ath79_spi_of_cdata.cs_type = cdata[1];
++		ath79_spi_of_cdata.cs_line = cdata[2];
++		spi->controller_data = &ath79_spi_of_cdata;
++		return 0;
++	}
++
++	return -EINVAL;
++}
++#else
++static int ath79_spi_of_cdata_setup(struct spi_device *spi)
++{
++    return -EINVAL;
++}
++#endif
++
+ static int ath79_spi_setup(struct spi_device *spi)
+ {
+ 	int status = 0;
+ 
+-	if (spi->controller_data == NULL)
++	if (spi->controller_data == NULL &&
++			ath79_spi_of_cdata_setup(spi))
+ 		return -EINVAL;
+ 
+ 	if (spi->bits_per_word > 32)
+@@ -465,6 +496,8 @@
+ 	master->cleanup = ath79_spi_cleanup;
+ 	master->bus_num = pdata->bus_num;
+ 	master->num_chipselect = pdata->num_chipselect;
++	master->dev.parent = &pdev->dev;
++	master->dev.of_node = pdev->dev.of_node;
+ 
+ 	sp->miso_line = pdata->miso_line;
+ 

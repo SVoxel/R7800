@@ -1,0 +1,10 @@
+#!/bin/sh
+
+uci -q get ucitrack.@network[-1] || uci -q add ucitrack network
+uci -q batch <<-EOF >/dev/null
+	set ucitrack.@network[-1].exec=/usr/local/bin/jiggle_firewall
+	commit ucitrack
+EOF
+
+rm -f /tmp/luci-indexcache
+exit 0

@@ -1,0 +1,47 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+START=50
+
+CRONTABS=/tmp/etc/crontabs
+CRON_SPOOL=/var/spool/cron
+CRON_ROOT_FILE=${CRONTABS}/root
+
+start () {
+	/usr/sbin/dsyslog start
+
+	mkdir -p $CRON_SPOOL
+	[ -d $CRONTABS ] && rm -fr $CRONTABS
+	mkdir -p $CRONTABS
+	[ -L ${CRON_SPOOL}/crontabs ] || ln -s $CRONTABS ${CRON_SPOOL}/crontabs
+
+	# Generate `Block Sites` && `Block Services` && `E-mail Notification`
+	# for scheduling.
+	# This `firewall_function.sh` script will call `/sbin/cmdsched`, then
+	# re-start firewall setting.
+	/www/cgi-bin/firewall_function.sh blk_sched restart
+
+	# Start NTP when `time_zone` is reset.
+	/* check if booting or not.if not booting, run ntpclient */
+	if [ ! -f /tmp/boot_status ]; then
+		killall ntpclient
+		sleep 1
+		if [ "$($CONFIG get endis_ntp)" = "1" ]; then
+			/usr/sbin/ntpclient
+		fi
+	fi
+
+	# sleep 1 second wait for ntpclient to get time
+	sleep 1
+	crond -c $CRONTABS -T "$($CONFIG get time_zone)"
+}
+
+stop() {
+	killall -9 crond
+	killall ntpclient
+	killall syslogd
+}
+
+restart() {
+	stop
+	start
+}

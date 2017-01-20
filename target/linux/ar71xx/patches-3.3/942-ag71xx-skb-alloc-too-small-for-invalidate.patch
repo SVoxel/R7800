@@ -1,0 +1,22 @@
+Index: linux-3.3.8/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+===================================================================
+--- linux-3.3.8.orig/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c	2013-07-25 09:21:57.022194378 -0500
++++ linux-3.3.8/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c	2013-07-25 09:23:26.862196065 -0500
+@@ -288,7 +288,7 @@
+ 		desc->next = (u32)(ring->descs_dma +
+ 				   ring->desc_size * ((i + 1) & mask));
+ 
+-		skb = dev_alloc_skb(rx_buf_size);
++		skb = dev_alloc_skb(rx_buf_size + rx_buf_offset);
+ 		if (unlikely(!skb)) {
+ 			return -ENOMEM;
+ 		}
+@@ -1013,7 +1013,7 @@
+ 		 * for some reason we can't allocate the buffer then we're not
+ 		 * going to try to process the received buffer yet either.
+ 		 */
+-		new_skb = dev_alloc_skb(rx_buf_size);
++		new_skb = dev_alloc_skb(rx_buf_size + rx_buf_offset);
+ 		if (unlikely(!new_skb)) {
+ 			break;
+ 		}

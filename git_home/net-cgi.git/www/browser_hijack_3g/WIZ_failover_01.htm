@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+</head>
+
+<body onLoad="loadvalue();" bgcolor=#ffffff>
+<% form_submit("func", "BRS_03A_detcInetType.html", "wizard_detwan") %>
+<% save_timestamp("wizard_detwan", "wizard_3g_detwan", "wizard_lte_detwan") %>
+<input type="hidden" name="hidden_wan_type" value="multiDetc">
+<script>
+var ts="<% cfg_get("wizard_detwan") %>";
+
+
+function loadvalue()
+{
+	if(top.multi_wan_mode_ether == "0"){
+		//alert("Ether need a configuration! ...>");
+		if( top.is_ru_version == 1 )
+			location.href="RU_check_wan_port.html";
+		else
+			document.forms[0].submit();
+	}else if(top.multi_wan_mode_ether == "1" && top.multi_wan_mode_mobile == "0"){
+		//alert("Only mobile need a configuration!");
+		document.forms[0].action="/apply.cgi?/config_3g_wait_page.htm timestamp="+ts;
+		if(top.have_lte_flag == "1")
+		{
+			document.forms[0].hidden_wan_type.value="failover";
+			document.forms[0].submit_flag.value="wizard_lte_detwan";
+		}
+		else
+			document.forms[0].submit_flag.value="wizard_3g_detwan";
+		document.forms[0].submit();		
+	}
+	else if(top.multi_wan_mode_ether == "1" && top.multi_wan_mode_mobile == "1"){
+		//alert("Both ether & mobile are configured!");
+		location.href="WIZ_failover.htm";
+	}
+}
+</script>
+
+</form>
+</body>
+
+</html>

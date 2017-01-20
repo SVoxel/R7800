@@ -1,0 +1,14 @@
+menu "Configuration"
+	depends on PACKAGE_qca-hostap
+
+config QCA_ATHR_HOSTAP_USE_DNI_GIT
+	bool "Fetch source from DNI git repository for package $(1)"
+	default n
+
+config QCA_ATHR_HOSTAP_HOSTAPD_CONFIG
+	string "config profile for qca atheros hostapd"
+
+config QCA_ATHR_HOSTAP_HOSTAPD_hostap-default
+	boolean "use hostap-default profile"
+
+endmenu

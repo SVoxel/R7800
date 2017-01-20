@@ -1,0 +1,17 @@
+config MACH_LGE
+	bool
+
+menu "LGE Board Selection"
+source "arch/arm/mach-msm/lge/Kconfig.board"
+endmenu
+
+
+menu "LGE Specific Patches"
+
+config EARJACK_DEBUGGER
+	bool "Earjack UART debugger support"
+	depends on MACH_APQ8064_MAKO
+	default n
+	help
+	  Saying Y here will support earjack type UART debugger cable
+endmenu

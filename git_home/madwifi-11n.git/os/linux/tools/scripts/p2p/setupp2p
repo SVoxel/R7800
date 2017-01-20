@@ -1,0 +1,12 @@
+#!/bin/sh
+
+#
+# Copyright (c) 2013 Qualcomm Atheros, Inc.
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary.
+#
+
+WLANDEV=`wlanconfig wlan create wlandev wifi0 wlanmode sta`
+echo $WLANDEV
+WLANDEV=`wlanconfig wlan create wlandev wifi0 wlanmode p2pdev`
+echo $WLANDEV

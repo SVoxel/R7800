@@ -1,0 +1,220 @@
+--- a/arch/mips/ath79/dev-usb.c
++++ b/arch/mips/ath79/dev-usb.c
+@@ -44,8 +44,6 @@
+ 	},
+ };
+ 
+-static struct resource ath79_ehci_resources[2];
+-
+ static u64 ath79_ehci_dmamask = DMA_BIT_MASK(32);
+ 
+ static struct usb_ehci_pdata ath79_ehci_pdata_v1 = {
+@@ -53,17 +51,34 @@
+ 	.port_power_off		= 1,
+ };
+ 
+-static struct usb_ehci_pdata ath79_ehci_pdata_v2 = {
++static struct resource ath79_ehci0_resources[2];
++struct usb_ehci_pdata ath79_ehci0_pdata_v2 = {
+ 	.caps_offset		= 0x100,
+ 	.has_tt			= 1,
+ 	.port_power_off		= 1,
+ };
++static struct platform_device ath79_ehci0_device = {
++	.name		= "ehci-platform",
++	.id		= 0,
++	.resource	= ath79_ehci0_resources,
++	.num_resources	= ARRAY_SIZE(ath79_ehci0_resources),
++	.dev = {
++		.dma_mask		= &ath79_ehci_dmamask,
++		.coherent_dma_mask	= DMA_BIT_MASK(32),
++	},
++};
+ 
+-static struct platform_device ath79_ehci_device = {
++static struct resource ath79_ehci1_resources[2];
++struct usb_ehci_pdata ath79_ehci1_pdata_v2 = {
++	.caps_offset		= 0x100,
++	.has_tt			= 1,
++	.port_power_off		= 1,
++};
++static struct platform_device ath79_ehci1_device = {
+ 	.name		= "ehci-platform",
+-	.id		= -1,
+-	.resource	= ath79_ehci_resources,
+-	.num_resources	= ARRAY_SIZE(ath79_ehci_resources),
++	.id		= 1,
++	.resource	= ath79_ehci1_resources,
++	.num_resources	= ARRAY_SIZE(ath79_ehci1_resources),
+ 	.dev = {
+ 		.dma_mask		= &ath79_ehci_dmamask,
+ 		.coherent_dma_mask	= DMA_BIT_MASK(32),
+@@ -114,10 +129,10 @@
+ 				AR71XX_OHCI_SIZE, ATH79_MISC_IRQ_OHCI);
+ 	platform_device_register(&ath79_ohci_device);
+ 
+-	ath79_usb_init_resource(ath79_ehci_resources, AR71XX_EHCI_BASE,
++	ath79_usb_init_resource(ath79_ehci0_resources, AR71XX_EHCI_BASE,
+ 				AR71XX_EHCI_SIZE, ATH79_CPU_IRQ_USB);
+-	ath79_ehci_device.dev.platform_data = &ath79_ehci_pdata_v1;
+-	platform_device_register(&ath79_ehci_device);
++	ath79_ehci0_device.dev.platform_data = &ath79_ehci_pdata_v1;
++	platform_device_register(&ath79_ehci0_device);
+ }
+ 
+ static void __init ar7240_usb_setup(void)
+@@ -155,10 +170,9 @@
+ 	ath79_device_reset_clear(AR724X_RESET_USB_PHY);
+ 	mdelay(10);
+ 
+-	ath79_usb_init_resource(ath79_ehci_resources, AR724X_EHCI_BASE,
++	ath79_usb_init_resource(ath79_ehci0_resources, AR724X_EHCI_BASE,
+ 				AR724X_EHCI_SIZE, ATH79_CPU_IRQ_USB);
+-	ath79_ehci_device.dev.platform_data = &ath79_ehci_pdata_v2;
+-	platform_device_register(&ath79_ehci_device);
++	ath79_ehci0_device.dev.platform_data = &ath79_ehci0_pdata_v2;
+ }
+ 
+ static void __init ar913x_usb_setup(void)
+@@ -172,10 +186,9 @@
+ 	ath79_device_reset_clear(AR913X_RESET_USB_PHY);
+ 	mdelay(10);
+ 
+-	ath79_usb_init_resource(ath79_ehci_resources, AR913X_EHCI_BASE,
++	ath79_usb_init_resource(ath79_ehci0_resources, AR913X_EHCI_BASE,
+ 				AR913X_EHCI_SIZE, ATH79_CPU_IRQ_USB);
+-	ath79_ehci_device.dev.platform_data = &ath79_ehci_pdata_v2;
+-	platform_device_register(&ath79_ehci_device);
++	ath79_ehci0_device.dev.platform_data = &ath79_ehci0_pdata_v2;
+ }
+ 
+ static void __init ar933x_usb_setup(void)
+@@ -189,10 +202,9 @@
+ 	ath79_device_reset_clear(AR933X_RESET_USB_PHY);
+ 	mdelay(10);
+ 
+-	ath79_usb_init_resource(ath79_ehci_resources, AR933X_EHCI_BASE,
++	ath79_usb_init_resource(ath79_ehci0_resources, AR933X_EHCI_BASE,
+ 				AR933X_EHCI_SIZE, ATH79_CPU_IRQ_USB);
+-	ath79_ehci_device.dev.platform_data = &ath79_ehci_pdata_v2;
+-	platform_device_register(&ath79_ehci_device);
++	ath79_ehci0_device.dev.platform_data = &ath79_ehci0_pdata_v2;
+ }
+ 
+ static void __init ar934x_usb_setup(void)
+@@ -215,61 +227,29 @@
+ 	ath79_device_reset_clear(AR934X_RESET_USB_HOST);
+ 	udelay(1000);
+ 
+-	ath79_usb_init_resource(ath79_ehci_resources, AR934X_EHCI_BASE,
++	ath79_usb_init_resource(ath79_ehci0_resources, AR934X_EHCI_BASE,
+ 				AR934X_EHCI_SIZE, ATH79_CPU_IRQ_USB);
+-	ath79_ehci_device.dev.platform_data = &ath79_ehci_pdata_v2;
+-	platform_device_register(&ath79_ehci_device);
++	ath79_ehci0_device.dev.platform_data = &ath79_ehci0_pdata_v2;
+ }
+ 
+-static void __init qca955x_usb_setup(void)
++static void __init qca955x_usb_setup(u32 id)
+ {
+-	struct platform_device *pdev;
+-
+-	ath79_usb_init_resource(ath79_ehci_resources,
++	if (!id) {
++		ath79_usb_init_resource(ath79_ehci0_resources,
+ 				QCA955X_EHCI0_BASE, QCA955X_EHCI_SIZE,
+ 				ATH79_IP3_IRQ(0));
+-
+-	pdev = platform_device_register_resndata(NULL, "ehci-platform", 0,
+-						 ath79_ehci_resources,
+-						 ARRAY_SIZE(ath79_ehci_resources),
+-						 &ath79_ehci_pdata_v2,
+-						 sizeof(ath79_ehci_pdata_v2));
+-	if (IS_ERR(pdev)) {
+-		pr_err("Unable to register USB %d device, err=%d\n", 0,
+-			(int) PTR_ERR(pdev));
+-		return;
+-	}
+-
+-	pdev->dev.dma_mask = &ath79_ehci_dmamask;
+-	pdev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
+-
+-	ath79_usb_init_resource(ath79_ehci_resources,
++		ath79_ehci0_device.dev.platform_data = &ath79_ehci0_pdata_v2;
++	} else {
++		ath79_usb_init_resource(ath79_ehci1_resources,
+ 				QCA955X_EHCI1_BASE, QCA955X_EHCI_SIZE,
+ 				ATH79_IP3_IRQ(1));
+-
+-	pdev = platform_device_register_resndata(NULL, "ehci-platform", 1,
+-						 ath79_ehci_resources,
+-						 ARRAY_SIZE(ath79_ehci_resources),
+-						 &ath79_ehci_pdata_v2,
+-						 sizeof(ath79_ehci_pdata_v2));
+-
+-	if (IS_ERR(pdev)) {
+-		pr_err("Unable to register USB %d device, err=%d\n", 1,
+-			(int) PTR_ERR(pdev));
+-		return;
++		ath79_ehci1_device.dev.platform_data = &ath79_ehci1_pdata_v2;
+ 	}
+-
+-	pdev->dev.dma_mask = &ath79_ehci_dmamask;
+-	pdev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
+ }
+ 
+-void __init ath79_register_usb(void)
++void ath79_init_usb_pdata(void)
+ {
+-	if (soc_is_ar71xx())
+-		ath79_usb_setup();
+-	else if (soc_is_ar7240())
+-		ar7240_usb_setup();
+-	else if (soc_is_ar7241() || soc_is_ar7242())
++	if (soc_is_ar7241() || soc_is_ar7242())
+ 		ar724x_usb_setup();
+ 	else if (soc_is_ar913x())
+ 		ar913x_usb_setup();
+@@ -277,8 +257,24 @@
+ 		ar933x_usb_setup();
+ 	else if (soc_is_ar934x())
+ 		ar934x_usb_setup();
+-	else if (soc_is_qca955x())
+-		qca955x_usb_setup();
+-	else
++	else if (soc_is_qca955x()) {
++		qca955x_usb_setup(0);
++		qca955x_usb_setup(1);
++	} else
+ 		BUG();
+ }
++
++void __init ath79_register_usb(void)
++{
++	if (soc_is_ar71xx())
++		ath79_usb_setup();
++	else if (soc_is_ar7240())
++		ar7240_usb_setup();
++	else {
++		ath79_init_usb_pdata();
++		platform_device_register(&ath79_ehci0_device);
++
++		if (soc_is_qca955x())
++			platform_device_register(&ath79_ehci1_device);
++	}
++}
+--- a/arch/mips/ath79/dev-usb.h
++++ b/arch/mips/ath79/dev-usb.h
+@@ -12,6 +12,12 @@
+ #ifndef _ATH79_DEV_USB_H
+ #define _ATH79_DEV_USB_H
+ 
++#include <linux/usb/ehci_pdriver.h>
++
++extern struct usb_ehci_pdata ath79_ehci0_pdata_v2;
++extern struct usb_ehci_pdata ath79_ehci1_pdata_v2;
++
+ void ath79_register_usb(void);
++void ath79_init_usb_pdata(void);
+ 
+ #endif /* _ATH79_DEV_USB_H */

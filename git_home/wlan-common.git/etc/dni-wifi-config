@@ -1,0 +1,641 @@
+#!/bin/sh
+
+FORCE_CREATE_wlg_VAP=${FORCE_CREATE_wlg_VAP:="on"}
+FORCE_CREATE_wla_VAP=${FORCE_CREATE_wla_VAP:="on"}
+FORCE_CREATE_wlg_guest_VAP=${FORCE_CREATE_wlg_guest_VAP:="on"}
+FORCE_CREATE_wla_guest_VAP=${FORCE_CREATE_wla_guest_VAP:="on"}
+
+export DNI_CONFIG=1
+
+onoff_0="off"
+onoff_1="on"
+onoff_="off"
+
+onoff_inv_0="on"
+onoff_inv_1="off"
+onoff_inv_="off"
+
+sectype_1="off"
+sectype_2="wep"
+sectype_3="psk"
+sectype_4="psk2"
+sectype_5="psk_mixed"
+sectype_6="wpa"
+
+wep_auth_type_0="open"
+wep_auth_type_1="shared"
+wep_auth_type_2="auto"
+
+preamble_0="auto"
+preamble_1="short"
+preamble_2="long"
+
+[ -f /etc/ath/wifi.conf ] && . /etc/ath/wifi.conf
+if [ "$wla_exist" = "on" ]; then
+    country_code_0=710              # Africa
+    country_code_1=764              # Asia Thailand
+    country_code_2=5000             # Australi
+    country_code_3=5001             # Canada
+    country_code_4=276              # Europe Germany
+    country_code_5=376              # Israel
+    country_code_6=4015             # Japan
+    country_code_7=412              # Korea
+    country_code_8=484              # Mexica
+    country_code_9=76               # South America Brazil
+    country_code_10=843             # United States
+    country_code_11=156             # China
+    country_code_12=356             # India
+    country_code_13=458             # Malaysia
+    country_code_14=12              # Middle East (Algeria/Syria/Yemen), use Algeria
+    country_code_15=364             # Middle East (Iran/Lebanon/Qatar), use Iran
+    country_code_16=792             # Middle East (Turkey/Egypt/Tunisia/Kuwait), use Turkey
+    country_code_17=682             # Middle East (Saudi Arabia)
+    country_code_18=784             # Middle East (United Arab Emirates)
+    country_code_19=643             # Russia
+    country_code_20=702             # Singapore
+    country_code_21=158             # Taiwan
+else
+    country_code_0=710              # Africa
+    country_code_1=764              # Asia Thailand
+    country_code_2=5000             # Australi
+    country_code_4=276              # Europe Germany
+    country_code_5=376              # Israel
+    country_code_6=4015             # Japan
+    country_code_7=412              # Korea
+    country_code_8=484              # Mexica
+    country_code_9=76               # South America Brazil
+    country_code_10=843             # North America
+    country_code_19=643             # Russia
+    country_code_22=376             # Middle East, use Israel instead
+fi
+
+wps_status_5="configured"
+wps_status_1="unconfigured"
+
+wds_role_0="repeater"
+wds_role_1="rootap"
+
+tpscale_100=0
+tpscale_75=2
+tpscale_63=3
+tpscale_50=4
+tpscale_33=5
+tpscale_25=7
+tpscale_12=10
+
+dniconfig()
+{
+    /bin/config $@
+}
+
+if [ -n "$DNI_CONFIG" ]; then
+    eval wlg_if_onoff=\$onoff_`dniconfig get endis_wl_radio`
+    eval wla_if_onoff=\$onoff_`dniconfig get endis_wla_radio`
+    eval wlg_guest_if_onoff=\$onoff_`dniconfig get wlg1_endis_guestNet`
+    eval wla_guest_if_onoff=\$onoff_`dniconfig get wla1_endis_guestNet`
+    FORCE_CREATE_wlg_guest_VAP=$wlg_guest_if_onoff
+    FORCE_CREATE_wla_guest_VAP=$wla_guest_if_onoff
+    if [ "$wlg_if_onoff" = "off" ]; then
+        wlg_guest_if_onoff="off"
+    fi
+    if [ "$wla_if_onoff" = "off" ]; then
+        wla_guest_if_onoff="off"
+    fi
+    eval wl_hw_btn_state=`dniconfig get wl_hw_btn_state`
+    [ -z "$wl_hw_btn_state" ] && {
+        wl_hw_btn_state=on
+        dniconfig set wl_hw_btn_state="on"
+    }
+    if [ "$wl_hw_btn_state" = "off" ]; then
+        wlg_if_onoff="off"
+        wla_if_onoff="off"
+    fi
+    eval wl_cb_if_onoff=\$onoff_`dniconfig get bridge_mode`
+    wl_cb_mode=`dniconfig get bridge_band_choose`
+    if [ "$wl_cb_if_onoff" = "on" -a "$wl_cb_mode" = "2.4g" ]; then
+        wla_if_onoff="off"
+        wlg_guest_if_onoff="off"
+        FORCE_CREATE_wla_VAP="off"
+        FORCE_CREATE_wlg_guest_VAP="off"
+        FORCE_CREATE_wla_guest_VAP="off"
+    elif [ "$wl_cb_if_onoff" = "on" -a "$wl_cb_mode" = "5g" ]; then
+        wlg_if_onoff="off"
+        wla_guest_if_onoff="off"
+        FORCE_CREATE_wlg_VAP="off"
+        FORCE_CREATE_wlg_guest_VAP="off"
+        FORCE_CREATE_wla_guest_VAP="off"
+    fi
+
+    lan_ipaddr=`dniconfig get lan_ipaddr`
+    lan_ifname=`dniconfig get lan_ifname`
+
+    mac_2g=`dniconfig get mac_addr_2g`
+    mac_5g=`dniconfig get mac_addr_5g`
+
+    wl_super_wifi=`dniconfig get wl_super_wifi`
+    wla_super_wifi=`dniconfig get wla_super_wifi`
+
+    [ -f "/tmp/ap_pin_failure_num_file" ] || {
+        dniconfig set wps_lock_down=0
+    }
+    wsc_lock_down=`dniconfig get wps_lock_down`
+    wsc_pin_attack_check=`dniconfig get wps_pin_attack_check`
+    wsc_pin_attack_num=`dniconfig get wps_pin_attack_num`
+    failure_num=`cat /tmp/ap_pin_failure_num_file 2>/dev/null`
+    if [ "$wsc_pin_attack_check" = "1" -a  "$failure_num" -ge "$wsc_pin_attack_num" ]; then
+        echo 0 > /tmp/ap_pin_failure_num_file
+    fi
+
+    wps_config_method=`dniconfig get wps_config_method`
+
+    atf_enable=0
+
+    if [ "$wlg_if_onoff" = "on" -o "$FORCE_CREATE_wlg_VAP" = "on" ]; then
+        wlg_channel=`dniconfig get wl_hidden_channel`
+        if [ "$wlg_channel" = "0" ]; then wlg_channel="auto"; fi
+        wlg_chmode=`dniconfig get wl_simple_mode`
+        case "${wlg_chmode}" in
+            1)
+                wlg_hwmode=11bg;
+                ;;
+            2)
+                wlg_hwmode=11ng;
+                wlg_htmode=HT20;
+                ;;
+            3)
+                wlg_hwmode=11ng;
+                wlg_htmode=HT40+;
+                ;;
+            4)
+                wlg_hwmode=11b;
+                ;;
+            5)
+                wlg_hwmode=11ng;
+                wlg_htmode=HT40-;
+                ;;
+            6)
+                wlg_hwmode=11ng;
+                wlg_htmode=HT40;
+                ;;
+            *)
+                wlg_hwmode=11ng;
+                wlg_htmode=HT20;
+                ;;
+        esac
+        eval wlg_wps_onoff=\$onoff_`dniconfig get endis_wl_wps`
+        eval wlg_wps_configured=\$wps_status_`dniconfig get wps_status`
+        wlg_ssid=`dniconfig get wl_ssid`
+        eval wlg_hide_ssid_onoff=\$onoff_inv_`dniconfig get endis_ssid_broadcast`
+        eval wlg_puren_onoff=\$onoff_`dniconfig get wl_puren`
+        wlg_disablecoext=`dniconfig get wl_disablecoext`
+        eval wlg_sectype=\$sectype_`dniconfig get wl_sectype`
+        eval wlg_auth=`dniconfig get wl_auth`
+        wlg_rts=`dniconfig get wl_rts`
+        wlg_frag=`dniconfig get wl_frag`
+        eval wlg_wmm_onoff=\$onoff_`dniconfig get endis_wl_wmm`
+        eval wlg_country_ie_onoff=\$onoff_`dniconfig get wl_endis_country_ie`
+        eval wlg_preamble=\$preamble_`dniconfig get wl_plcphdr`
+        eval wlg_acl_onoff=\$onoff_`dniconfig get wl_access_ctrl_on`
+        eval wlg_wds_onoff=\$onoff_`dniconfig get wds_endis_fun`
+        eval wlg_wds_role=\$wds_role_`dniconfig get wds_repeater_basic`
+        eval wlg_wds_repeater_assoc_onoff=\$onoff_inv_`dniconfig get wds_endis_ip_client`
+        eval wlg_tpscale=\$tpscale_`dniconfig get wl_tpscale`
+        wlg_wps_ap_setup_locked=`dniconfig get endis_pin`
+        eval wlg_bf_onoff=\$onoff_`dniconfig get wla_bf`
+        wlg_bridge=`dniconfig get i_wlg_br`
+        wlg_priority=`dniconfig get i_wlg_pri`
+        [ -z "$wlg_bridge" ] && wlg_bridge=$lan_ifname
+    fi
+
+    if [ "$wla_if_onoff" = "on" -o "$FORCE_CREATE_wla_VAP" = "on" ]; then
+        wla_channel=`dniconfig get wla_hidden_channel`
+        if [ "$wla_channel" = "0" ]; then wla_channel="auto"; fi
+        wla_chmode=`dniconfig get wla_simple_mode`
+
+        # wireless region is NA and mode is 1733M, when enable HT160, change mode to HT80_80
+        # wireless region is EU and mode is 1733M, when enable HT160, change mode to HT160
+        wla_country=`dniconfig get wl_country`
+        wl_ht160=`dniconfig get wla_ht160`
+        if [ "$wl_ht160" = "1" -a "$wla_country" = "4" -a "$wla_chmode" = "9" ]; then 
+            wla_chmode="11"
+        elif [ "$wl_ht160" = "1" -a "$wla_country" = "10" -a "$wla_chmode" = "9" ]; then
+            wla_chmode="10"
+        fi
+
+        case "${wla_chmode}" in
+            1)
+                wla_hwmode=11a;
+                ;;
+            2)
+                wla_hwmode=11na;
+                wla_htmode=11HT20;
+                ;;
+            3)
+                wla_hwmode=11na;
+                case "$wla_channel" in
+                    36|44|52|60|100|108|116|124|132|149|157)
+                        wla_htmode=HT40+;
+                        ;;
+                    40|48|56|64|104|112|120|128|136|153|161)
+                        wla_htmode=HT40-;
+                        ;;
+                    149|165)
+                        wla_htmode=HT20;
+                        ;;
+                    *)
+                        wla_htmode=HT40;
+                        ;;
+                esac
+                ;;
+            7)
+                wla_hwmode=11ac;
+                wla_htmode=HT20;
+                ;;
+            8)
+                wla_hwmode=11ac;
+                case "$wla_channel" in
+                    36|44|52|60|100|108|116|124|132|149|157)
+                        wla_htmode=HT40+;
+                        ;;
+                    40|48|56|64|104|112|120|128|136|153|161)
+                        wla_htmode=HT40-;
+                        ;;
+                    149|165)
+                        wla_htmode=HT20;
+                        ;;
+                    *)
+                        wla_htmode=HT40;
+                        ;;
+                esac
+                ;;
+            9)
+                wla_hwmode=11ac;
+                wla_htmode=HT80;
+                ;;
+            10)
+                wla_hwmode=11ac;
+                wla_htmode=HT160;
+                case "$wla_channel" in
+                    132|136|140|144)
+			wla_htmode=HT80_80
+                        wla_cfreq2=5775;
+                        ;;
+                    149|153|157|161)
+			wla_htmode=HT80_80
+                        wla_cfreq2=5690;
+                        ;;
+                esac
+                ;;
+            11)
+                wla_hwmode=11ac;
+                wla_htmode=HT160;
+                ;;
+            *)
+                wla_hwmode=11na;
+                wla_htmode=HT40-;
+                ;;
+        esac
+        eval wla_wps_onoff=\$onoff_`dniconfig get endis_wla_wps`
+        eval wla_wps_configured=\$wps_status_`dniconfig get wla_wps_status`
+        wla_ssid=`dniconfig get wla_ssid`
+        eval wla_hide_ssid_onoff=\$onoff_inv_`dniconfig get wla_endis_ssid_broadcast`
+        wla_disablecoext=1
+        eval wla_sectype=\$sectype_`dniconfig get wla_sectype`
+        eval wla_auth=`dniconfig get wla_auth`
+        wla_rts=`dniconfig get wla_rts`
+        wla_frag=`dniconfig get wla_frag`
+        eval wla_wmm_onoff=\$onoff_`dniconfig get endis_wla_wmm`
+        eval wla_country_ie_onoff=\$onoff_`dniconfig get wla_endis_country_ie`
+        eval wla_preamble=\$preamble_`dniconfig get wla_plcphdr`
+        eval wla_acl_onoff=\$onoff_`dniconfig get wla_access_ctrl_on`
+        eval wla_wds_onoff=\$onoff_`dniconfig get wla_wds_endis_fun`
+        eval wla_wds_role=\$wds_role_`dniconfig get wds_repeater_basic_a`
+        eval wla_wds_repeater_assoc_onoff=\$onoff_inv_`dniconfig get wds_endis_ip_client_a`
+        eval wla_tpscale=\$tpscale_`dniconfig get wla_tpscale`
+        wla_wps_ap_setup_locked=`dniconfig get wla_endis_pin`
+        eval wla_bf_onoff=\$onoff_`dniconfig get wla_bf`
+        eval wla_implicit_bf_onoff=\$onoff_`dniconfig get wla_implicit_bf`
+        eval wla_mu_mimo_onoff=\$onoff_`dniconfig get wla_mu_mimo`
+        wla_bridge=`dniconfig get i_wla_br`
+        wla_priority=`dniconfig get i_wla_pri`
+        [ -z "$wla_bridge" ] && wla_bridge=$lan_ifname
+        [ "$wla_country_ie_onoff" != "on" ] && wla_country_ie_onoff="on"
+    fi
+
+    if [ "$wl_cb_if_onoff" = "on" ]; then
+            # Override setting for cb.
+        if [ "$wl_cb_mode" = "2.4g" ]; then
+            wlg_ssid=`dniconfig get bridge_wl_ssid`
+            eval wlg_sectype=\$sectype_`dniconfig get wl_bridge_sectype`
+            eval wlg_auth=`dniconfig get wl_bridge_auth`
+            if [ "$wlg_sectype" = "psk" ]; then
+                wlg_hwmode=11g
+            else
+                wlg_hwmode=11ng
+                wlg_htmode=HT40-
+            fi
+            wlg_channel="auto"
+            wlg_wps_onoff="off"
+            # fix r7500v2 2.4G bridge disconnection issue
+            wlg_disablecoext=1
+        else
+            wla_ssid=`dniconfig get bridge_wla_ssid`
+            eval wla_sectype=\$sectype_`dniconfig get wla_bridge_sectype`
+            eval wla_auth=`dniconfig get wla_bridge_auth`
+            wla_hwmode=11ac
+            if [ "$wla_country" = "10" ]; then
+                wla_htmode=HT80_80
+                wla_cfreq2=5775
+            else
+                wla_htmode=HT160
+            fi
+            wla_channel=36
+            wla_wps_onoff="off"
+        fi
+    fi
+
+    if [ "$wlg_guest_if_onoff" = "on" -o "$FORCE_CREATE_wlg_guest_VAP" = "on" ]; then
+        wlg_guest_ssid=`dniconfig get wlg1_ssid`
+        eval wlg_guest_sectype=\$sectype_`dniconfig get wlg1_sectype`
+        eval wlg_guest_auth=`dniconfig get wlg1_auth`
+        eval wlg_guest_hide_ssid_onoff=\$onoff_inv_`dniconfig get wlg1_endis_guestSSIDbro`
+        eval wlg_guest_wps_onoff="off"
+        tmp_allow_see_and_access=`dniconfig get wlg1_endis_allow_see_and_access`
+        if [ "$tmp_allow_see_and_access" = "" ]; then
+            wlg_guest_lan_restricted_access_onoff="on"
+        else
+            eval wlg_guest_lan_restricted_access_onoff=\$onoff_inv_`dniconfig get wlg1_endis_allow_see_and_access`
+        fi
+        eval wlg_guest_wireless_isolation_onoff=\$onoff_inv_`dniconfig get wlg1_endis_allow_see_and_access`
+        wlg_guest_disablecoext=`dniconfig get wl_disablecoext`
+        wlg_guest_bridge=`dniconfig get i_wlg_guest_br`
+        wlg_guest_priority=`dniconfig get i_wlg_guest_pri`
+        [ -z "$wlg_guest_bridge" ] && wlg_guest_bridge=$lan_ifname
+    fi
+
+    if [ "$wla_guest_if_onoff" = "on" -o "$FORCE_CREATE_wla_guest_VAP" = "on" ]; then
+        wla_guest_ssid=`dniconfig get wla1_ssid`
+        eval wla_guest_sectype=\$sectype_`dniconfig get wla1_sectype`
+        eval wla_guest_auth=`dniconfig get wla1_auth`
+        eval wla_guest_hide_ssid_onoff=\$onoff_inv_`dniconfig get wla1_endis_guestSSIDbro`
+        eval wla_guest_wps_onoff="off"
+        tmp_allow_see_and_access=`dniconfig get wla1_endis_allow_see_and_access`
+        if [ "$tmp_allow_see_and_access" = "" ]; then
+            wla_guest_lan_restricted_access_onoff="on"
+        else
+            eval wla_guest_lan_restricted_access_onoff=\$onoff_inv_`dniconfig get wla1_endis_allow_see_and_access`
+        fi
+        eval wla_guest_wireless_isolation_onoff=\$onoff_inv_`dniconfig get wla1_endis_allow_see_and_access`
+        wla_guest_bridge=`dniconfig get i_wla_guest_br`
+        wla_guest_priority=`dniconfig get i_wla_guest_pri`
+        [ -z "$wla_guest_bridge" ] && wla_guest_bridge=$lan_ifname
+    fi
+
+    eval country_code=\$country_code_`dniconfig get wl_country`
+
+    if [ "$country_code" = "156" ]; then
+        specified_BDF=PR
+    fi
+    wps_device_name=`dniconfig get netbiosname`
+    wl_dtim_wo_guest=`dniconfig get wl_dtim_wo_guest`
+    wl_dtim_w_guest=`dniconfig get wl_dtim_w_guest`
+    wl_guest_dtim=`dniconfig get wl_guest_dtim`
+    wl_dtim_wo_guest=${wl_dtim_wo_guest:-2}
+    wl_dtim_w_guest=${wl_dtim_w_guest:-2}
+    wl_guest_dtim=${wl_guest_dtim:-2}
+
+
+    eval wig_if_onoff=\$onoff_`dniconfig get endis_wig_radio`
+    if [ "$wig_exist" = "on" ]; then
+        [ -z "$wig_device" ] && wig_device="radio0"
+        wig_hwmode=11ad
+        wig_ssid=`dniconfig get wig_ssid`
+        wig_channel=`dniconfig get wig_channel`
+        eval wig_sectype=\$sectype_`dniconfig get wig_sectype`
+    fi
+fi
+
+load_wep_config()
+{
+    if [ -n "$DNI_CONFIG" ]; then
+        local _wl=$1
+        local _trans=$2
+
+        if [ "$wl_cb_if_onoff" = "on" -a "$wl_cb_mode" = "2.4g" ]; then
+            _wl=wl_bridge
+        fi
+
+        config show | grep ${_wl}_key > /tmp/wepkey-$$
+
+        if [ -n $_trans ]; then
+            sed -i -e "s/$_wl/$_trans/g" /tmp/wepkey-$$
+        fi
+
+        sed -i -e "s/=/='/g" /tmp/wepkey-$$
+        sed -i -e "s/$/'/g" /tmp/wepkey-$$
+
+        . /tmp/wepkey-$$
+        rm /tmp/wepkey-$$
+    fi
+}
+
+dni_config_get_psk_phrase()
+{
+    local _wl=$2
+    local _sectype=$3
+    local _tmp_psk
+
+    if [ "$wl_cb_if_onoff" = "on" -a "$wl_cb_mode" = "2.4g" ]; then
+        _wl=wl_bridge
+    elif [ "$wl_cb_if_onoff" = "on" -a "$wl_cb_mode" = "5g" ]; then
+        _wl=wla_bridge
+    fi
+
+    case "$_sectype" in
+        wpa2*|WPA2*|*PSK2*|*psk2*)
+            _tmp_psk=`dniconfig get ${_wl}_wpa2_psk`
+            ;;
+        *mixed*)
+            _tmp_psk=`dniconfig get ${_wl}_wpas_psk`
+            ;;
+        *)
+            _tmp_psk=`dniconfig get ${_wl}_wpa1_psk`
+            ;;
+    esac
+    eval export -- "${1}=\$_tmp_psk"
+}
+
+dni_config_get()
+{
+    if [ -n "$DNI_CONFIG" ]; then
+        if [ "x$1" != "x" -a "x$2" != "x" ]; then
+            case "$2" in
+                hw_btn_state)
+                    local _qans
+                    if [ "$wlg_exist" = "on" -a "$wla_exist" = "on" ]; then
+                        _qans=$wl_hw_btn_state
+                    elif [ "$wlg_exist" = "on" ]; then
+                        _qans=$wlg_if_onoff
+                    else
+                        _qans=$wla_if_onoff
+                    fi
+                    eval export -- "${1}=\${_qans}"
+                    ;;
+                wds_endis_mac_client*)
+                    local _qans
+                    eval _qans=\$onoff_inv_`dniconfig get $2`
+                    eval export -- "${1}=\${_qans}"
+                    ;;
+                radio_num)
+                    local _qans
+                    if [ `dniconfig get wl_hw_btn_state` = "off" ]; then
+                        _qans=0
+                    else
+                        _qans=$((`dniconfig get endis_wl_radio`+`dniconfig get endis_wla_radio`))
+                    fi
+                    eval export -- "${1}=\${_qans}"
+                    ;;
+                security_type)
+                    local _qans
+                    if [ `dniconfig get wl_hw_btn_state` = "off" ]; then
+                        g_radio=0
+                        a_radio=0
+                    else
+                        g_radio=`dniconfig get endis_wl_radio`
+                        a_radio=`dniconfig get endis_wla_radio`
+                    fi
+                    g_type=`dniconfig get wl_sectype`
+                    a_type=`dniconfig get wla_sectype`
+                    if [ "$g_radio" = "1" -a "$a_radio" = "1" ]; then
+                        if [ "$g_type" -gt "1" ]; then
+                            _qans=$g_type
+                        else
+                            _qans=$a_type
+                        fi
+                    elif [ "$g_radio" = "1" -a "$a_radio" = "0" ]; then
+                        _qans=$g_type
+                    else
+                        _qans=$a_type
+                    fi
+                    eval export -- "${1}=\${_qans}"
+                    ;;
+                radio_type)
+                    local _qans
+                    if [ `dniconfig get wl_hw_btn_state` = "off" ]; then
+                        g_radio=0
+                        a_radio=0
+                    else
+                        g_radio=`dniconfig get endis_wl_radio`
+                        a_radio=`dniconfig get endis_wla_radio`
+                    fi
+                    if [ "$g_radio" = "1" -a "$a_radio" = "1" ]; then
+                        _qans="dual"
+                    elif [ "$g_radio" = "1" -a "$a_radio" = "0" ]; then
+                        _qans="11g"
+                    elif [ "$g_radio" = "0" -a "$a_radio" = "1" ]; then
+                        _qans="11a"
+                    else
+                        _qans="none"
+                    fi
+                    eval export -- "${1}=\${_qans}"
+                    ;;
+                gui_radio_state)
+                    local _qans
+                    if [ "$wlg_exist" = "on" -a "$wla_exist" = "on" ]; then
+                        if [ $((`dniconfig get endis_wl_radio`+`dniconfig get endis_wla_radio`)) == "2" ]; then
+                            _qans="on"
+                        elif [ `dniconfig get endis_wl_radio` = "1" ]; then
+			    _qans="g_on"
+                        elif [ `dniconfig get endis_wla_radio` = "1" ]; then
+			    _qans="a_on"
+                        else
+                            _qans="off"
+                        fi
+                    elif [ "$wlg_exist" = "on" ]; then
+                        _qans=\$onoff_`dniconfig get endis_wl_radio`
+                    else
+                        _qans=\$onoff_`dniconfig get endis_wla_radio`
+                    fi
+                    eval export -- "${1}=\${_qans}"
+                    ;;
+
+                *)
+                    local _qans=`dniconfig get $2`
+                    eval export -- "${1}=\${_qans}"
+                    ;;
+            esac
+        fi
+    fi
+}
+
+dni_config_set()
+{
+    if [ -n "$DNI_CONFIG" ]; then
+        if [ "x$1" != "x" -a "x$2" != "x" ]; then
+            case "$1" in
+                hw_btn_state)
+                    if [ "$wlg_exist" = "on" -a "$wla_exist" = "on" ]; then
+                        eval `dniconfig set wl_hw_btn_state=$2`
+                    elif [ "$wlg_exist" = "on" ]; then
+                        if [ "$2" = "on" ]; then
+                            dniconfig set endis_wl_radio=1
+                        else
+                            dniconfig set endis_wl_radio=0
+                            fi
+                    else
+                        if [ "$2" = "on" ]; then
+                            dniconfig set endis_wla_radio=1
+                        else
+                            dniconfig set endis_wla_radio=0
+                        fi
+                    fi
+                    ;;
+                sched_status)
+                    if [ "$2" = "11g" ]; then
+                        eval `dniconfig set wlg_onoff_sched=$3`
+                    else
+                        eval `dniconfig set wla_onoff_sched=$3`
+                    fi
+                    ;;
+                wl_onoff)
+                    if [ "$2" = "11g" ]; then
+                        eval `dniconfig set endis_wl_radio=$3`
+                    else
+                        eval `dniconfig set endis_wla_radio=$3`
+                    fi
+                    ;;
+                *)
+                    eval `dniconfig set $1=$2`
+                    ;;
+            esac
+        fi
+    fi
+}
+
+load_wpa_config()
+{
+    if [ -n "$DNI_CONFIG" ]; then
+        local _wl=$1
+
+        wl_sectype=`dniconfig get ${_wl}_wpae_mode`
+        wl_auth_sv_ip=`dniconfig get ${_wl}_radiusSerIp`
+        wl_auth_sv_port=`dniconfig get ${_wl}_radiusPort`
+        wl_auth_sv_secret=`dniconfig get ${_wl}_radiusSecret`
+        case "$wl_sectype" in
+            *TKIPAES)
+                _tmp_wpa="wpa_mixed"
+                ;;
+            *AES)
+                _tmp_wpa="wpa2"
+                ;;
+            *)
+                _tmp_wpa="wpa"
+                        ;;
+        esac
+    fi
+}
+
+dni_config_commit()
+{
+    dniconfig commit
+}

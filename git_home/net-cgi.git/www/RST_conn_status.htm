@@ -1,0 +1,415 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<META http-equiv="refresh" content="10; url=RST_conn_status.htm">
+<% nobody_header("RST_conn_status.htm", "connect_status") %>
+<div class="page_title">$constatus_head</div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+
+<input type="hidden" name="endis_connect">
+<script>
+var info_get_wanproto="<% cfg_get("wan_proto") %>";
+
+function AddDays(newdate,DaysToAdd,sec_time) 
+{
+	var newdate=new Date(newdate);
+	DaysToAdd=DaysToAdd/24;
+	var newtimems=newdate.getTime()+(sec_time*1000);
+	newdate.setTime(newtimems);
+	newday=newdate.toString();
+	day_array=newday.split(' ');
+	if(isIE())	
+		newday=day_array[0]+' '+day_array[1]+' '+day_array[2]+' '+day_array[3]+' '+day_array[5];
+	else
+		newday=day_array[0]+' '+day_array[1]+' '+day_array[2]+' '+day_array[4]+' '+day_array[3];
+	return newday;
+}
+
+function connect_stop(check)
+{
+	cf=document.forms[0];
+	if (info_get_wanproto != "dhcp")
+	{
+		if(confirm("$establish_connection"))
+			cf.endis_connect.value=check;
+		else
+			return false;
+	}
+	else
+		cf.endis_connect.value=check;		
+	cf.submit();
+}
+
+function connect_start(check)
+{
+	cf=document.forms[0];
+	cf.endis_connect.value=check;
+	cf.submit();
+}
+
+function change_time_type(time)
+{
+        var sec = time;
+        var sec = parseInt(sec);
+		
+	var minute_sec = sec%3600;
+	if(minute_sec != sec)
+		var day_hour = (sec - minute_sec)/3600;
+	else
+		var day_hour = 0;
+
+	var hour = day_hour%24;
+	if(hour != day_hour)
+		var day = (day_hour - hour)/24;
+	else
+		var day = 0;
+
+	var sec_sec = minute_sec%60;
+	if(sec_sec != minute_sec)
+		var minute = (minute_sec - sec_sec)/60;
+	else
+		var minute = 0;
+	
+
+	day = day.toString();
+	hour = hour.toString();
+	minute = minute.toString();
+
+        var new_time=day+" $days_mark, "+hour+" $hours_mark, "+minute+" $minute_mark ";
+        return new_time;
+	
+}
+</script>
+</TABLE>
+<script>
+	if(info_get_wanproto == "dhcp")
+		document.write('<TABLE border=1 name="dhcp_statusTable" id="dhcp_connect" cellpadding=2 cellspacing=0 width=100%>');
+	else if(info_get_wanproto == "pppoe" || info_get_wanproto == "pppoa")
+		document.write('<TABLE border=1 name="pppoe_statusTable" id="ppp_connect" cellpadding=2 cellspacing=0 width=100%>');
+	else if(info_get_wanproto == "pptp" || info_get_wanproto == "l2tp")
+		document.write('<TABLE border=1 name="pptp_statusTable" id="pptp_connect" cellpadding=2 cellspacing=0 width=100%>');
+	else
+		document.write('<TABLE border=1 cellpadding=2 cellspacing=0 width=100%>');
+
+</script>
+<script>
+var info_get_wanip="<% wan_ip() %>";
+var info_get_wanmask="<% wan_netmask() %>";
+var info_get_gateway="<% bas_ether_gateway() %>";
+var info_get_dns1="<% wan_primary_dns() %>";
+var info_get_dns2="<% wan_second_dns() %>";
+var ppp_uptime="<% ppp_uptime() %>";
+var bpa_uptime="<% bpa_uptime() %>";
+var monthly_limit_reached="<% cfg_get("trafficmeter_monthly_limit_reached") %>";
+
+var internet_type="<% cfg_get("internet_type") %>";
+var netgear_region="<% get_firmware_region() %>";
+var gui_region="<% cfg_get("GUI_Region") %>";
+//var dns_third_flag=(top.dns_third_flag == 1 && gui_region == "Russian" && (netgear_region == "WW" || netgear_region == "RU")) ? 1 : 0 ;
+<% web_flag() %>//fix bug 25223
+var info_get_dns3="<% wan_third_dns() %>";
+var ap_mode_on = "<% cfg_get("ap_mode") %>"; // for bug 31815.i add the var.and changed the below run condition. now it is when in router mode. the internet pot info is the same with RST_conn_status.htm.when in ap mode. the RST_conn_status.htm show no info all the time. i change it to when ap moge .RST_conn_status.htm is the same with lan port info.
+var ap_ip_mode = "<% cfg_get("ap_ether_ip_assign") %>";
+var wan_dhcp_server="<% cfg_sed_xss("wan_dhcp_server") %>";  //bug 31815,when it is ap mode, can use it. so move it here.
+
+/*from here to the line if(ap_mode_on == 1) was in dhcp loop, but we need this var in ap_mode_on == 1 loop too, so move thenm here*/
+var dhcpc_lease_obtain="<% cfg_get("dhcpc_lease_obtain") %>";
+var dhcpc_lease_time="<% cfg_get("dhcpc_lease_time") %>";
+var extender_mode_on="<% cfg_get("extender_mode") %>"; 
+var extender_ether_ip_assign="<% cfg_get("extender_ether_ip_assign") %>"; 
+var mb_conn_type = "<% cfg_get("mobile_conn_type") %>"
+var dsl_wan_preference="<% cfg_get("dsl_wan_preference") %>";
+
+	if( dhcpc_lease_time == "" || dhcpc_lease_time == "infinity lease" )
+		dhcpc_lease_time = "infinity lease" ;
+	else
+		dhcpc_lease_time = parseInt(dhcpc_lease_time);
+	
+	if( dhcpc_lease_obtain == "" )
+		dhcpc_lease_obtain = "0";
+
+	dhcpc_lease_obtain = parseInt(dhcpc_lease_obtain);
+	
+	if( dhcpc_lease_time == "infinity lease" ){
+		var obtian_time="infinity lease";
+		var lease_time="infinity lease";
+	}
+	else{
+		var obtian_time=change_time_type(dhcpc_lease_time);
+	
+		var now_time=<% show_uptime() %>;
+		if( (now_time - dhcpc_lease_obtain) > dhcpc_lease_time )
+			var lease_sec = 0;
+		else
+			var lease_sec=dhcpc_lease_time - now_time + dhcpc_lease_obtain;
+		var lease_time=change_time_type(lease_sec);
+	}
+if(extender_mode_on == 1)	
+{
+	if(extender_ether_ip_assign==1)
+	{
+		var info_extender_ip = "<% cfg_sed_xss("ap_dhcp_ipaddr") %>";
+		var info_extender_mask = "<% cfg_sed_xss("ap_dhcp_netmask") %>";
+		var info_extender_gateway = "<% cfg_sed_xss("ap_dhcp_gateway") %>";
+		var info_extender_server = "<% cfg_sed_xss("ap_dhcp_server") %>";
+		if(info_extender_ip.indexOf("169") != -1 )  // 33572 Auto ip 
+			info_extender_gateway = "0.0.0.0";
+	}
+	else
+	{
+		var info_extender_ip = "<% cfg_sed_xss("extender_ipaddr") %>";
+		var info_extender_mask = "<% cfg_sed_xss("extender_netmask") %>";
+		var info_extender_gateway = "<% cfg_sed_xss("extender_gateway") %>";
+	}
+	document.write("<TR><TD nowrap><B>$info_mark_ip</B></TD><TD nowrap> "+info_extender_ip+"</TD></TR>");
+	document.write("<TR><TD nowrap><B>$info_mark_mask</B></TD><TD nowrap> "+info_extender_mask+"</TD></TR>");
+	document.write("<TR><TD nowrap><B>$constatus_defgtw</B></TD><TD nowrap> "+info_extender_gateway+"</TD></TR>");
+	if(extender_ether_ip_assign==1)
+		document.write("<TR><TD nowrap><B>$constatus_dhcpser</B></TD><TD nowrap> "+info_extender_server+"</TD></TR>");
+	else
+		document.write("<TR><TD nowrap><B>$constatus_dhcpser</B></TD><TD nowrap> "+wan_dhcp_server+"</TD></TR>");
+	document.write("<TR><TD nowrap><B>$constatus_dnsser</B></TD><TD nowrap> "+info_get_dns1+info_get_dns2);
+	document.write("</TD></TR>");
+
+	if(dhcpc_lease_obtain != "0") //when obtain time is 0,show doted line
+	{
+		document.write("<TR><TD nowrap><B>$constatus_obt</B></TD><TD nowrap>"+obtian_time+"</TD></TR>");
+		document.write("<TR><TD nowrap><B>$constatus_exp</B></TD><TD nowrap> "+lease_time+"</TD></TR>");
+	}
+	else
+	{
+		document.write("<TR><TD nowrap><B>$constatus_obt</B></TD><TD nowrap>----</TD></TR>");
+		document.write("<TR><TD nowrap><B>$constatus_exp</B></TD><TD nowrap>----</TD></TR>");
+	}	
+}	
+else if(ap_mode_on == 1)// bug 31815.add this ap case to deal with ap mode. fetch ap info to fill the table.
+{
+     
+               if (ap_ip_mode == 1)
+               {
+                       var info_get_apip = "<% cfg_sed_xss("ap_dhcp_ipaddr") %>";
+                       var info_get_apmask = "<% cfg_sed_xss("ap_dhcp_netmask") %>";
+                       var info_get_apgateway = "<% cfg_sed_xss("ap_dhcp_gateway") %>";
+					   if(info_get_apip.indexOf("169") != -1 )  // 33572 Auto ip 
+							info_get_apgateway = "0.0.0.0";
+               }
+               else
+               {
+                       var info_get_apip = "<% cfg_sed_xss("ap_ipaddr") %>";
+                       var info_get_apmask = "<% cfg_sed_xss("ap_netmask") %>";
+                       var info_get_apgateway = "<% cfg_sed_xss("ap_gateway") %>";
+               }
+			   
+               document.write("<TR><TD nowrap><B>$info_mark_ip</B></TD><TD nowrap> "+info_get_apip+"</TD></TR>");
+               document.write("<TR><TD nowrap><B>$info_mark_mask</B></TD><TD nowrap> "+info_get_apmask+"</TD></TR>");
+               document.write("<TR><TD nowrap><B>$constatus_defgtw</B></TD><TD nowrap> "+info_get_apgateway+"</TD></TR>");
+               document.write("<TR><TD nowrap><B>$constatus_dhcpser</B></TD><TD nowrap> "+wan_dhcp_server+"</TD></TR>");
+              document.write("<TR><TD nowrap><B>$constatus_dnsser</B></TD><TD nowrap> "+info_get_dns1+info_get_dns2);
+		document.write("</TD></TR>");
+		
+		if(dhcpc_lease_obtain != "0") //when obtain time is 0,show doted line
+		{
+			document.write("<TR><TD nowrap><B>$constatus_obt</B></TD><TD nowrap>"+obtian_time+"</TD></TR>");
+			document.write("<TR><TD nowrap><B>$constatus_exp</B></TD><TD nowrap> "+lease_time+"</TD></TR>");
+		}
+		else
+		{
+			document.write("<TR><TD nowrap><B>$constatus_obt</B></TD><TD nowrap>----</TD></TR>");
+			document.write("<TR><TD nowrap><B>$constatus_exp</B></TD><TD nowrap>----</TD></TR>");
+		}
+}
+else if (info_get_wanproto == "dhcp")
+{
+	if(dsl_enable_flag == 0)
+	{
+		var dhcpc_wan_status="<% cat_file("/tmp/WAN_status") %>";
+
+		if ( dhcpc_wan_status == "Link down" || dhcpc_wan_status == "" )
+			info_get_wanip="0.0.0.0";
+	}else if(dsl_enable_flag == 1) //d7800
+	{ 
+	   if(dsl_wan_preference == "1")//dsl
+	   {
+		var dhcpc_wan_status="<% cat_file("/tmp/dsl_port_status") %>";
+		if ( dhcpc_wan_status == "0")
+		info_get_wanip="0.0.0.0";
+	   }
+	   else if(dsl_wan_preference == "1")//eth
+	   {
+		var dhcpc_wan_status="<% cat_file("/tmp/WAN_status") %>";
+
+		if ( dhcpc_wan_status == "Link down" || dhcpc_wan_status == "" )
+				info_get_wanip="0.0.0.0";
+	   }
+	}
+	if (info_get_wanip != "0.0.0.0")
+	{
+		document.write("<TR><TD nowrap><B>$info_mark_ip</B></TD><TD nowrap> "+info_get_wanip+"</TD></TR>");
+		document.write("<TR><TD nowrap><B>$info_mark_mask</B></TD><TD nowrap> "+info_get_wanmask+"</TD></TR>");
+		document.write("<TR><TD nowrap><B>$constatus_defgtw</B></TD><TD nowrap> "+info_get_gateway+"</TD></TR>");
+		document.write("<TR><TD nowrap><B>$constatus_dhcpser</B></TD><TD nowrap> "+wan_dhcp_server+"</TD></TR>");
+		document.write("<TR><TD nowrap><B>$constatus_dnsser</B></TD><TD nowrap> "+info_get_dns1+info_get_dns2);
+		if(dns_third_flag == 1 && internet_type == "1" )
+			document.write(info_get_dns3);
+		document.write("</TD></TR>");
+		document.write("<TR><TD nowrap><B>$constatus_obt</B></TD><TD nowrap>"+obtian_time+"</TD></TR>");
+		document.write("<TR><TD nowrap><B>$constatus_exp</B></TD><TD nowrap> "+lease_time+"</TD></TR>");
+	}
+	else
+	{
+		document.write("<TR><TD nowrap><B>$info_mark_ip</B></TD><TD nowrap> 0.0.0.0</TD></TR><TR><TD nowrap><B>$info_mark_mask</B></TD><TD nowrap> 0.0.0.0</TD></TR><TR><TD nowrap><B>$constatus_defgtw</B></TD><TD nowrap> 0.0.0.0</TD></TR><TR><TD nowrap><B>$constatus_dhcpser</B></TD><TD nowrap> 0.0.0.0</TD></TR><TR><TD nowrap><B>$constatus_dnsser</B></TD><TD nowrap> 0.0.0.0</TD></TR><TR><TD nowrap><B>$constatus_obt</B></TD><TD nowrap>----</TD></TR><TR><TD nowrap><B>$constatus_exp</B></TD><TD nowrap>----</TD></TR>");
+	}
+}
+else if (info_get_wanproto == "pppoe" || info_get_wanproto == "pppoa")
+{
+	if (info_get_wanip !="0.0.0.0")
+	{
+		var new_time=change_sec_to_time(ppp_uptime);
+		document.write("<TR><TD nowrap><B>$traffic_connect_time</B></TD><TD nowrap>  "+new_time+"</TD></TR>");
+		document.write("<TR><TD nowrap><B>$constatus_head</B></TD><TD nowrap>  $connected_mark </TD></TR>");
+		document.write("<TR><TD nowrap><B>$constatus_neg</B></TD><TD nowrap>  $wps_add_success</TD></TR><TR><TD nowrap><B>$constatus_auth</B></TD><TD nowrap>  $wps_add_success</TD></TR>");
+		document.write("<TR><TD nowrap><B>$info_mark_ip</B></TD><TD nowrap>  "+info_get_wanip+"</TD></TR>");
+		document.write("<TR><TD nowrap><B>$info_mark_mask</B></TD><TD nowrap>  "+info_get_wanmask+"</TD></TR>");
+	}
+	else
+		document.write("<TR><TD nowrap><B>$traffic_connect_time</B></TD><TD nowrap>  00:00:00</TD></TR><TR><TD nowrap><B>$constatus_head</B></TD><TD nowrap> $disconnected_mark </TD></TR><TR><TD nowrap><B>$constatus_neg</B></TD><TD nowrap>  ----</TD></TR><TR><TD nowrap><B>$constatus_auth</B></TD><TD nowrap>  ----</TD></TR><TR><TD nowrap><B>$info_mark_ip</B></TD><TD nowrap>  0.0.0.0</TD></TR><TR><TD nowrap><B>$info_mark_mask</B></TD><TD nowrap>  0.0.0.0</TD></TR>");
+}
+else if(info_get_wanproto=="pptp" || info_get_wanproto=="l2tp")
+{
+	if (info_get_wanip !="0.0.0.0" )
+	{
+		var new_time=change_sec_to_time(ppp_uptime);
+		var tunnel_ip="<% bas_pptp_tunnelip() %>";
+//		document.write("<TR><TD nowrap><B>$traffic_connect_time</B></TD><TD nowrap> "+new_time+"</TD></TR>")
+		document.write("<TR><TD nowrap><B>$constatus_head</B></TD><TD nowrap> $connected_mark </TD></TR>");
+		document.write("<TR><TD nowrap><B>$info_mark_ip</B></TD><TD nowrap> "+info_get_wanip+"</TD></TR>");
+		document.write("<TR><TD nowrap><B>$info_mark_mask</B></TD><TD nowrap> "+info_get_wanmask+"</TD></TR>");
+//		document.write("<TR><TD nowrap><B>$constatus_tunnel</B></TD><TD nowrap> "+tunnel_ip+"</TD></TR>");
+	}
+	else
+//		document.write("<TR><TD nowrap><B>$traffic_connect_time</B></TD><TD nowrap> 00:00:00</TD></TR>");
+		document.write("<TR><TD nowrap><B>$constatus_head</B></TD><TD nowrap> $disconnected_mark </TD></TR><TR><TD nowrap><B>$info_mark_ip</B></TD><TD nowrap> 0.0.0.0</TD></TR><TR><TD nowrap><B>$info_mark_mask</B></TD><TD nowrap> 0.0.0.0</TD></TR>");
+//		document.write("<TR><TD nowrap><B>$constatus_tunnel</B></TD><TD nowrap> 0.0.0.0</TD></TR>");
+}
+else if (info_get_wanproto == "bigpond")
+{
+	if (info_get_wanip !="0.0.0.0")
+	{
+		var new_time=change_sec_to_time(bpa_uptime);
+//		document.write("<TR><TD nowrap><B>$traffic_connect_time</B></TD><TD nowrap> "+new_time+" </TD></TR>")
+		document.write("<TR><TD nowrap><B>$constatus_head</B></TD><TD nowrap> $login_mark </TD></TR>");
+		document.write("<TR><TD nowrap><B>$info_mark_ip</B></TD><TD nowrap> "+info_get_wanip+"</TD></TR>");
+		document.write("<TR><TD nowrap><B>$info_mark_mask</B></TD><TD nowrap> "+info_get_wanmask+"</TD></TR>");
+	}
+	else
+	{
+//		document.write("<TR><TD nowrap><B>$traffic_connect_time</B></TD><TD nowrap> 00:00:00</TD></TR>");
+		document.write("<TR><TD nowrap><B>$constatus_head</B></TD><TD nowrap> $logout_mark </TD></TR><TR><TD nowrap><B>$info_mark_ip</B></TD><TD nowrap> 0.0.0.0</TD></TR><TR><TD nowrap><B>$info_mark_mask</B></TD><TD nowrap> 0.0.0.0</TD></TR>");
+	}
+}
+else if (info_get_wanproto == "lte")
+{
+	if (info_get_wanip != "0.0.0.0")
+	{
+		document.write("<TR><TD nowrap><B>$info_mark_ip</B></TD><TD nowrap> "+info_get_wanip+"</TD></TR>");
+		document.write("<TR><TD nowrap><B>$info_mark_mask</B></TD><TD nowrap> "+info_get_wanmask+"</TD></TR>");
+		var lte_gateway="<% cfg_sed_xss("lte_gateway") %>";
+		if(lte_gateway=="")
+			lte_gateway="0.0.0.0";
+		document.write("<TR><TD nowrap><B>$constatus_defgtw</B></TD><TD nowrap> "+lte_gateway+"</TD></TR>");
+		document.write("<TR><TD nowrap><B>$constatus_dnsser</B></TD><TD nowrap> "+info_get_dns1+info_get_dns2+"</TD></TR>");
+	}
+	else
+	{
+		document.write("<TR><TD nowrap><B>$info_mark_ip</B></TD><TD nowrap> 0.0.0.0</TD></TR><TR><TD nowrap><B>$info_mark_mask</B></TD><TD nowrap> 0.0.0.0</TD></TR><TR><TD nowrap><B>$constatus_defgtw</B></TD><TD nowrap> 0.0.0.0</TD></TR><TR><TD nowrap><B>$constatus_dnsser</B></TD><TD nowrap> 0.0.0.0</TD></TR>");
+	}
+}
+else if (info_get_wanproto == "3g")
+{
+	var wan_ip_4g ="<% cfg_get("wan_dhcp_ipaddr") %>";
+	
+	if(mb_conn_type.indexOf("4G") > -1 && wan_ip_4g != "0.0.0.0" && wan_ip_4g != ""){
+		var new_time ="<% cfg_get("mobile_conn_made") %>";
+		document.write("<TR><TD nowrap><B>$traffic_connect_time</B></TD><TD nowrap>  "+new_time+"</TD></TR>");
+        document.write("<TR><TD nowrap><B>$constatus_head</B></TD><TD nowrap>  $connected_mark </TD></TR>");
+        document.write("<TR><TD nowrap><B>$info_mark_ip</B></TD><TD nowrap> "+"<% cfg_get("wan_dhcp_ipaddr") %>"+"</TD></TR>");
+        document.write("<TR><TD nowrap><B>$info_mark_mask</B></TD><TD nowrap> "+"<% cfg_get("wan_dhcp_netmask") %>"+"</TD></TR>");
+        document.write("<TR><TD nowrap><B>$constatus_dnsser</B></TD><TD nowrap> "+info_get_dns1+info_get_dns2+"</TD></TR>");
+		
+	}	
+	else if (info_get_wanip != "0.0.0.0")
+	{
+		var new_time=change_sec_to_time(ppp_uptime);
+		document.write("<TR><TD nowrap><B>$traffic_connect_time</B></TD><TD nowrap>  "+new_time+"</TD></TR>");
+		document.write("<TR><TD nowrap><B>$constatus_head</B></TD><TD nowrap>  $connected_mark </TD></TR>");
+		document.write("<TR><TD nowrap><B>$info_mark_ip</B></TD><TD nowrap> "+info_get_wanip+"</TD></TR>");
+		document.write("<TR><TD nowrap><B>$info_mark_mask</B></TD><TD nowrap> "+info_get_wanmask+"</TD></TR>");
+		document.write("<TR><TD nowrap><B>$constatus_dnsser</B></TD><TD nowrap> "+info_get_dns1+info_get_dns2+"</TD></TR>");
+		
+	}
+	else
+	{
+		document.write("<TR><TD nowrap><B>$traffic_connect_time</B></TD><TD nowrap>  00:00:00</TD></TR><TR><TD nowrap><B>$constatus_head</B></TD><TD nowrap> $disconnected_mark </TD></TR><TR><TD nowrap><B>$info_mark_ip</B></TD><TD nowrap> 0.0.0.0</TD></TR><TR><TD nowrap><B>$info_mark_mask</B></TD><TD nowrap> 0.0.0.0</TD></TR><TR><TD nowrap><B>$constatus_dnsser</B></TD><TD nowrap> 0.0.0.0</TD></TR>");
+	}
+}
+</script> 
+</TABLE>
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR>
+	<TD nowrap align=center>
+	<BR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if (master=="admin")
+{
+	if ( ap_mode_on == 1 && ap_ip_mode == 1 )
+		document.write('<input class="common1_bt" type="button" name="Release" id="disconnect" value=$release_mark disabled>&nbsp;&nbsp;<input class="common1_bt" type="button" name="Renew" id="connect" value=$renew_mark disabled>');
+	else if ( info_get_wanproto == "static" )
+        {}
+	else if( info_get_wanproto == "dhcp" )
+		document.write('<input class="common_bt" type="button" name="Release" id="disconnect" value=$release_mark onclick="connect_stop(0);" >&nbsp;&nbsp;<input class="common_bt"  type="button" name="Renew" id="connect" value=$renew_mark onclick="connect_start(3);" >');
+	else{
+		if (monthly_limit_reached == "1" && (info_get_wanproto == "pptp" || info_get_wanproto == "pppoe" || info_get_wanproto == "pppoa" || info_get_wanproto == "lte" || info_get_wanproto == "l2tp" || info_get_wanproto == "3g"))
+			document.write('<input class="common_gray_bt" type="button" name="Connect" id="connect" disabled value=$connect_mark onclick="connect_start(3);" >&nbsp;&nbsp;<input class="common_bt"  type="button" name="Disconnect" id="disconnect" value=$disconnect_mark onclick="connect_stop(0);" >');
+		
+		else
+			document.write('<input class="common_bt" type="button" name="Connect" id="connect" value=$connect_mark onclick="connect_start(3);" >&nbsp;&nbsp;<input class="common_bt"  type="button" name="Disconnect" id="disconnect" value=$disconnect_mark onclick="connect_stop(0);" >');
+		}
+}else
+{
+	if ( ap_mode_on == 1 && ap_ip_mode == 1 )
+		document.write('<input class="common1_bt" type="button" name="Release" id="disconnect" value=$release_mark disabled >&nbsp;&nbsp;<input class="common1_bt"  type="button" name="Renew" id="connect" value=$renew_mark disabled >');
+	else if ( info_get_wanproto == "static" )
+        {}
+	else if( info_get_wanproto == "dhcp" )
+		document.write('<input class="common1_bt" type="button" name="Release" id="disconnect" value=$release_mark disabled >&nbsp;&nbsp;<input class="common1_bt"  type="button" name="Renew" id="connect" value=$renew_mark disabled >');
+	else{
+		if (monthly_limit_reached == "1" && (info_get_wanproto == "pptp" || info_get_wanproto == "pppoe" || info_get_wanproto == "lte" || info_get_wanproto == "l2tp" || info_get_wanproto == "3g"))
+			document.write('<input class="common_gray_bt" type="button" name="Connect" id="connect" disabled value=$connect_mark onclick="connect_start(3);" >&nbsp;&nbsp;<input class="common_bt"  type="button" name="Disconnect" id="disconnect" value=$disconnect_mark onclick="connect_stop(0);" >');
+		}
+}
+</script>
+	</TD>
+</TR>
+$bluebar
+</table>
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR>
+	<TD nowrap align=center>
+	<script>
+	if(info_get_wanproto == "dhcp" || info_get_wanproto == "pppoe" || info_get_wanproto == "pppoa")
+		document.write('<input  class="delete_bt" type=button name="close_window" id="close" value="$close_win_mark" onclick="self.close();">');
+	else if(info_get_wanproto == "pptp" || info_get_wanproto == "l2tp")
+		document.write('<input  class="delete_bt" type=button name="Close_Window" id="close" value="$close_win_mark" onclick="self.close();">');
+	else
+		document.write('<input  class="delete_bt" type=button name="Close Window" id="close" value="$close_win_mark" onclick="self.close();">');
+	</script>
+	</TD>
+</TR>
+</TABLE>
+
+</div>
+
+</FORM>
+</BODY>
+</HTML>

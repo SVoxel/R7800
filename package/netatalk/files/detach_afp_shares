@@ -1,0 +1,209 @@
+#!/bin/sh
+
+# Usage:
+#
+# In case of 'Safely Remove' -
+# 1. /usr/sbin/detach_afp_shares
+# 2. /usr/sbin/detach_afp_shares <mount_point>
+#
+# In case of 'Forcefully Remove' -
+# 3. /usr/sbin/detach_afp_shares "hotplug2"
+# 4. /usr/sbin/detach_afp_shares <mount_point> "hotplug2"
+
+if [ $# -eq 0 ]; then
+	echo "No Arg"
+elif [ $# -eq 1 ]; then
+	echo "Arg 1 : $1"
+elif [ $# -eq 2 ]; then
+	echo "Arg 1 : $1"
+	echo "Arg 2 : $2"
+fi
+
+TMP_AFP_SHARE_LOCK="/tmp/tmp_afp_share_lock"
+
+# Functions
+check_afp_share_locked()
+{
+	if [ -f ${TMP_AFP_SHARE_LOCK} ]; then
+		return 1
+	else
+		return 0
+	fi
+}
+
+hold_lock()
+{
+	# Check lock file
+	currenttime=`date +%s`
+	check_afp_share_locked
+	while [ $? -ne 0 ]; do
+		newtime=`date +%s`
+		# The longest waiting time is 30s, avoid endless waiting
+		if [ `expr ${newtime} - ${currenttime}` -gt 30 ]; then
+			exit 1
+		fi
+		sleep 1
+		check_afp_share_locked
+	done
+
+	# Create lock file
+	touch ${TMP_AFP_SHARE_LOCK}
+}
+
+release_lock()
+{
+	rm -f ${TMP_AFP_SHARE_LOCK}
+}
+
+# Either Safely remove all devices from Web UI or unplug all devices forcefully
+if [ $# -eq 0 ] || [ $# -eq 1 -a "$1" = "hotplug2" ]; then
+	echo "===> Removing all"
+
+	# Reload master afpd and all smbd processes, as volumes are changed
+	hold_lock
+	# Clear all mount entry from AppleVolumes.default
+	echo > /etc/netatalk/AppleVolumes.default
+
+	# Send HUP signal to master afpd processes, as volumes are changed
+	/bin/kill -HUP `cat /var/run/afpd.pid`
+	sleep 1
+	release_lock
+
+	# Kill all the afpd processes
+	echo "====> Killing all afpd."
+
+	# In case of 'Safely Remove'
+	if [ $# -eq 0 ]; then
+		# Kill all the afpd processes
+		killall afpd
+
+		# Wait until all afpd processes are died
+		while [ 1 ]
+		do
+			status=`ps | grep afpd | grep -v grep`
+			if [ $? -ne 0 ]; then
+				echo "======> no afpd running"
+				break
+			else
+				echo "======> afpd running"
+				sleep 1
+			fi
+		done
+
+	# In case of 'Forcefully Remove'
+	else
+		# Kill all the afpd processes
+		killall -KILL afpd
+	fi
+
+	# Kill all the cnid_dbd processes
+	echo "====> Killing all cnid_dbd."
+
+	# In case of 'Safely Remove'
+	if [ $# -eq 0 ]; then
+		# Kill all the cnid_dbd processes
+		killall cnid_dbd
+
+		# Wait until all cnid_dbd processes are died
+		while [ 1 ]
+		do
+			status=`ps | grep cnid_dbd | grep -v grep`
+			if [ $? -ne 0 ]; then
+				echo "======> no cnid_dbd running"
+				break
+			else
+				echo "======> cnid_dbd running"
+				sleep 1
+			fi
+		done
+
+	# In case of 'Forcefully Remove'
+	else
+		# Kill all the cnid_dbd processes
+		killall -KILL cnid_dbd
+	fi
+
+# Either Safely remove one of the devices from Web UI or unplug one of the devices forcefully
+elif [ $# -eq 1 -a "$1" != "hotplug2" ] || [ $# -eq 2 -a "$2" = "hotplug2" ]; then
+	echo "===> Removing $1"
+	mount_point=$1
+
+	# Reload master afpd and all smbd processes, as volumes are changed
+	hold_lock
+	# Clear specific mount entry from AppleVolumes.default
+	sed '/^\/mnt\/'${mount_point}'\/.*$/d' /etc/netatalk/AppleVolumes.default > /tmp/AppleVolumes.default.tmp
+	cat /tmp/AppleVolumes.default.tmp > /etc/netatalk/AppleVolumes.default
+	rm -f /tmp/AppleVolumes.default.tmp
+
+	# Send HUP signal to master afpd, as volumes are changed
+	/bin/kill -HUP `cat /var/run/afpd.pid`
+	sleep 1
+	release_lock
+
+	# Kill all the specific afpd processes
+	afppids=`ps | grep afpd | grep -v grep | awk '{print $1}'`
+	for afppid in $afppids
+	do
+		status=`ls -l /proc/$afppid/cwd | awk '{print $11}' | grep -o "$mount_point[ ]*$\|$mount_point/"`
+		if [ $? -eq 0 ]; then
+			echo "======> Killing afpd with pid: $afppid"
+
+			# In case of 'Safely Remove'
+			if [ $# -eq 1 ]; then
+				# Send 'TERM' signal, as the afpd is not required
+				/bin/kill -TERM $afppid
+
+				# Wait until the specific afpd process is died
+				while [ 1 ]
+				do
+					status=`ls -l /proc/$afppid/cwd | awk '{print $11}' | grep -o "$mount_point[ ]*$\|$mount_point/"`
+					if [ $? -ne 0 ]; then
+						echo "======> no afpd running"
+						break
+					else
+						echo "======> afpd running with pid: $afppid"
+						sleep 1
+					fi
+				done
+
+			# In case of 'Forcefully Remove'
+			else
+				# Send 'KILL' signal, as the afpd is not required
+				/bin/kill -KILL $afppid
+			fi
+		fi
+	done
+
+	# Kill all the specific cnid_dbd processes
+	cnidpids=`ps | grep cnid_dbd | grep "$mount_point/" | grep -v grep | awk '{print $1}'`
+	for cnidpid in $cnidpids
+	do
+		echo "=====> Killing cnid_dbd with pid: $cnidpid"
+
+		# In case of 'Safely Remove'
+		if [ $# -eq 1 ]; then
+			# Send 'TERM' signal, as the cnid_dbd is not required
+			/bin/kill -TERM $cnidpid
+
+			# Wait until the specific cnid_dbd process is died
+			while [ 1 ]
+			do
+				status=`ps | grep cnid_dbd | grep "$mount_point/" | grep -v grep`
+				if [ $? -ne 0 ]; then
+					echo "======> no cnid_dbd running"
+					break
+				else
+					echo "======> cnid_dbd running with pid: $cnidpid"
+					sleep 1
+				fi
+			done
+
+		# In case of 'Forcefully Remove'
+		else
+			# Send 'KILL' signal, as the cnid_dbd is not required
+			/bin/kill -KILL $cnidpid
+		fi
+	done
+else
+	echo "======> nothing to be done"
+fi

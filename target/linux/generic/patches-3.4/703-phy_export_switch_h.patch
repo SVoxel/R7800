@@ -1,0 +1,11 @@
+--- a/include/Kbuild
++++ b/include/Kbuild
+@@ -11,3 +11,4 @@ header-y += drm/
+ header-y += xen/
+ header-y += scsi/
+ header-y += media/
++header-y += net/
+--- /dev/null
++++ b/include/net/Kbuild
+@@ -0,0 +1 @@
++header-y += switch.h

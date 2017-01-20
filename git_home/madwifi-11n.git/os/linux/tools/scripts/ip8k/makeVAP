@@ -1,0 +1,481 @@
+#!/bin/sh
+####################################################################
+## makeVAP
+##
+## This script is used to create AP or Station instances (VAPs).  It
+## will NOT actually join the bridge or do any RF configuration.
+##
+## The form of the command is
+##
+## makeVAP <Mode> <ESSID> <Channel_String> <beaconint>
+##
+## Where
+##     Mode:    Either ap, ap-wds, sta, or sta-wds
+##              (access point or station)
+##     ESSID:   ESSID String
+##     Channel: String indicating the channel configuration.  This is in
+##     String   the form inst:RF:channel:mode where
+##              Inst = Interface instance (which radio, 0 or 1)
+##              RF   = RF indicates radio should be configured with the specified parameters
+##              channel = channel to put the AP on, use 11A or 11G to scan
+##              mode = operating mode, one of
+##              11AST         : 11 A Static Turbo (Legacy)
+##              AUTO          : Legacy Scan Mode
+##              11A           : Legacy 11A mode
+##              11B
+##              11G
+##              FH
+##              TA
+##              TG
+##              11NAHT20
+##              11NGHT20
+##              11NAHT40PLUS
+##              11NAHT40MINUS
+##              11NGHT40PLUS  
+##              11NGHT40MINUS
+##              11NAHT40 (valid only when channel=11na)
+##              11NGHT40 (valid only when channel=11ng)
+##
+##
+## beaconint:   This is the beacon interval desired for this VAP.  Note
+##              that this is system wide, and will override the current
+##              beacon interval for ALL vaps.  You MUST also include the
+##              RF command for this option.
+##
+## Examples:
+##   Access Point with RF
+##      makeVAP ap OpenAP 0:RF:6:
+##   Access Point with RF, beacon interval of 400 ms
+##      makeVAP ap OpenAP RF 400
+##   Access Point w/o RF
+##      makeVAP ap NormAP
+##   WDS Root AP
+##      makeVAP ap-wds RootAP RF
+##   WDS Repeater (two commands)
+##      makeVAP sta-wds RPTR RF
+##      makeVAP ap-wds RPTR
+##
+###################################################################
+
+. /etc/ath/apcfg
+
+if [ "${1}" = "" ]; then
+    echo "makeVAP usage"
+    echo "makeVAP mode essid IFstr"
+    echo
+    echo "mode: [ap | ap-wds | sta | sta-wds | sta-fwd]"
+    echo "essid: up to 32 character ESSID string"
+    echo "RF: Include RF commands"
+    echo "beaconint: Beacon interval, milliseconds"
+    echo
+    exit
+fi
+
+MODE=`echo $1 | cut -f 1 -d '-'`
+SUB_MODE=`echo $1 | cut -f 2 -d '-'`
+IND_MODE=`echo $1 | cut -f 3 -d '-'`
+
+IFNUM=`echo $3 | cut -f 1 -d ':'`
+RF=`echo $3 | cut -f 2 -d ':'`
+PRI_CH=`echo $3 | cut -f 3 -d ':'`
+CH_MODE=`echo $3 | cut -f 4 -d ':'`
+
+if [ "${IFNUM}" != "0" -a "${IFNUM}" != "1" ]; then
+    IFNUM=0
+fi
+
+##
+## Need to select the proper radio parameters based on the interface
+## ID
+##
+
+if [ "${IFNUM}" = "1" ]; then
+    R_SHORTGI=$SHORTGI_2
+	R_CWMMODE=$CWMMODE_2
+    R_AMPDUENABLE=$AMPDUENABLE_2
+	R_AMPDUFRAMES=$AMPDUFRAMES_2
+	R_AMPDULIMIT=$AMPDULIMIT_2
+	R_TXCHAIN=$TX_CHAINMASK_2
+	R_RXCHAIN=$RX_CHAINMASK_2
+else
+    R_SHORTGI=$SHORTGI
+	R_CWMMODE=$CWMMODE
+    R_AMPDUENABLE=$AMPDUENABLE
+	R_AMPDUFRAMES=$AMPDUFRAMES
+	R_AMPDULIMIT=$AMPDULIMIT
+	R_TXCHAIN=$TX_CHAINMASK
+	R_RXCHAIN=$RX_CHAINMASK
+fi
+
+ESSID=$2
+BEACONINT=$4
+
+##
+## First, let's see if we have the modules loaded.  If not, call the
+## rc.wlan script to load them
+##
+
+MODLIST=`lsmod | grep ath_hal`
+
+if [ "${MODLIST}" = "" ]; then
+    /etc/rc.d/rc.wlan up
+
+    ##
+	## Check for bad return value.  If so, exit
+	##
+
+	if [ $? != 0 ]; then
+	    exit 255
+	fi
+else
+    echo "Modules already loaded"
+fi
+
+echo Creating ${MODE} for "${ESSID}" on ${BRIDGE}
+
+##
+## Create the instance
+##
+
+if [ "${MODE}" = "sta" ]; then
+    if [ "${IND_MODE}" = "ind" ]; then
+        APNAME=`wlanconfig ath create wlandev wifi$IFNUM wlanmode ${MODE}`
+    else
+        APNAME=`wlanconfig ath create wlandev wifi$IFNUM wlanmode ${MODE} nosbeacon`
+    fi
+    APMODE="mode managed"
+else
+    APNAME=`wlanconfig ath create wlandev wifi$IFNUM wlanmode ${MODE}`
+    if [ "${MODE}" = "adhoc" ]; then
+        APMODE="mode adhoc"
+    else
+        APMODE="mode master"
+    fi
+fi
+
+echo Added ${APNAME} ${APMODE}
+
+##
+## Enable WDS if selected
+##
+
+if [ "${SUB_MODE}" = "wds" ]; then
+    iwpriv ${APNAME} wds 1
+fi
+
+## AP_STARTMODE = extap
+## This will come for the station vap of repeater
+if [ "${SUB_MODE}" = "ext" ]; then
+	iwpriv ${APNAME} extap 1
+fi
+
+
+##
+## Enable VAP Independant mode - for repeater-ind conf
+##
+
+if [ "${IND_MODE}" = "ind" ]; then
+    if [ $PRI_CH = 11na -o $PRI_CH = 11ng ]; then
+        echo "Auto Channel selection is not allowed for VAP independant mode"
+        exit 255
+    else
+        iwpriv ${APNAME} vap_ind 1
+    fi
+fi
+
+## ACS is only for AP only or Ad-Hoc mode
+if [ "${MODE}" = "sta" ]; then
+    if [ $CH_MODE = 11NAHT40 -o $CH_MODE = 11NGHT40 ]; then
+        echo "Auto Channel selection is not for sta mode"
+        exit 255
+    fi
+fi
+
+##
+## Enable Station forwarding if selected
+##
+
+if [ "${SUB_MODE}" = "fwd" ]; then
+    iwpriv ${APNAME} stafwd 1
+fi
+
+##
+## Disable Background Scan
+##
+
+iwpriv ${APNAME} bgscan 0
+
+##
+# set various debug modes
+##
+
+if [ "${DEBUGMODE}" = "" ]; then
+    DEBUGMODE=0x100
+fi
+
+if [ "${HALDEBUG}" = "" ]; then
+    HALDEBUG=0x0
+fi
+
+if [ "${ATHDEBUG}" = "" ]; then
+    ATHDEBUG=0x0
+fi
+
+iwpriv wifi$IFNUM HALDbg $HALDEBUG
+iwpriv wifi$IFNUM ATHDebug $ATHDEBUG
+iwpriv ${APNAME} dbgLVL $DEBUGMODE
+
+##
+## Operating Mode passed in through call.  Determine the frequeny, or if a 
+## scan is required
+##
+
+if [ $PRI_CH = 11na -o $PRI_CH = 11ng ]; then
+    FREQ="freq 0"
+else
+    FREQ="freq $PRI_CH"
+fi
+
+if [ "${AP_CHANBW}" != "" ]; then
+    #
+    # Channel bandwidth was specified
+    #
+
+    iwpriv ${APNAME} chanbw ${AP_CHANBW}
+fi
+
+##
+#####################################################################
+## Check for RF command. If so, set the RF parameters, else do the
+## simple cofiguration.
+##
+
+if [ "${RF}" = "RF" ]; then
+
+    #
+    # 11n configuration section
+    # increase queue length
+    #
+
+    ifconfig ${APNAME} txqueuelen $TXQUEUELEN
+    ifconfig wifi$IFNUM txqueuelen $TXQUEUELEN
+
+    # turn on halfgi
+    iwpriv ${APNAME} shortgi $R_SHORTGI
+
+    iwpriv ${APNAME} noedgech $NO_EDGE_CH
+
+    iwpriv ${APNAME} mode $CH_MODE
+
+    #
+    # Check to see if we are in one of the 11NG bands that require
+    # ANI processing
+    #
+
+    BAND=`echo $CH_MODE | grep 11NG`
+
+    if [ "${BAND}" != "" ]; then
+        iwpriv wifi$IFNUM ForBiasAuto 1
+    fi
+
+    IS11G=`echo $CH_MODE | grep 11G`
+    IS11NG=`echo $CH_MODE | grep 11NG`
+	
+    if [ "${IS11G}" != "" -o "${IS11NG}" != "" ]; then
+        iwpriv ${APNAME} vap_doth 0
+    fi
+	
+####################
+####### TEMP WORKAROUND
+####################
+
+    PLUS=`echo $CH_MODE | grep PLUS`
+    MINUS=`echo $CH_MODE | grep MINUS`
+
+    if [ "${PLUS}" != "" ]; then
+        iwpriv ${APNAME} extoffset 1
+    fi
+    if [ "${MINUS}" != "" ]; then
+        iwpriv ${APNAME} extoffset -1
+    fi
+
+#######################
+
+    #
+    # Set Aggregation State
+    #
+
+    iwpriv wifi$IFNUM AMPDU $R_AMPDUENABLE
+
+    # set number of sub-frames in an ampdu
+
+    iwpriv wifi$IFNUM AMPDUFrames $R_AMPDUFRAMES
+
+    # set ampdu limit
+
+    iwpriv wifi$IFNUM AMPDULim $R_AMPDULIMIT
+    
+    # 'g'-only mode (no 'b' stations)
+    iwpriv ${APNAME} pureg $PUREG
+
+    # 'n'-only mode (no legacy b/g/a stations)
+    iwpriv ${APNAME} puren $PUREN
+    #
+    # set SSID and frequency
+    #
+
+    if [ "_${ESSID}" != "_any" ]; then
+    	iwconfig ${APNAME} essid "${ESSID}" ${APMODE} ${FREQ}
+    else
+        iwconfig ${APNAME} ${APMODE} ${FREQ}
+    fi
+
+    #
+    # IBSS setup channel
+    # IBSS aggregation    
+    #
+    if [ "${MODE}" = "adhoc" ]; then
+        iwconfig ${APNAME} channel ${AP_PRIMARY_CH}
+        iwpriv ${APNAME} ampdu $AMPDUENABLE  
+    fi
+
+    #
+    # If rate control is not auto, set the manual settings
+    #
+    
+    if [ "${RATECTL}" != "auto" ]; then
+        iwpriv ${APNAME} set11NRates $MANRATE
+        iwpriv ${APNAME} set11NRetries $MANRETRIES
+    fi
+
+    #
+    # Set the chain masks
+    #
+
+    if [ "${R_TXCHAIN}" != "" -a "${R_TXCHAIN}" != "0" ]; then
+        iwpriv wifi$IFNUM txchainmask $R_TXCHAIN
+	fi
+
+    if [ "${R_RXCHAIN}" != ""  -a "${R_RXCHAIN}" != "0" ]; then
+        iwpriv wifi$IFNUM rxchainmask $R_RXCHAIN
+    fi
+
+    #
+    # An extra IE is provided for Intel interop
+    #
+
+    echo 1 > /proc/sys/dev/ath/htdupieenable
+
+    #
+    # This is where extra commands are executed.
+    #
+
+    if [ "${AP_EXTRA}" != "" ]; then
+        echo $AP_EXTRA | grep ';'
+        #There is at least one command that ends with ';'
+        if [ "$?" -eq "0" ]; then
+            _more_cmds=1
+            while [ ${_more_cmds} -ne 0 ];
+            do
+                _cmd=`echo $AP_EXTRA | cut -f $_more_cmds -d ';'`
+                if [ "${_cmd}" != "" ];
+                then
+                    $_cmd
+                    _more_cmds=`expr $_more_cmds + 1`
+                else
+                    _more_cmds=0
+                fi
+                _cmd=""
+            done
+        else
+            #probably user setting did not have a ';', cut command fails if
+            #not set
+            ${AP_EXTRA}
+        fi
+    fi
+
+else
+    ####
+    # set SSID only
+    ###
+
+    iwpriv ${APNAME} mode ${CH_MODE}
+    iwconfig ${APNAME} essid "${ESSID}" ${APMODE} ${FREQ}
+
+fi
+
+##
+## Check for multiple VAPs.  If the VAP name is ath2 we assume we want the
+## beacon interval to be 400 ms
+##
+
+if [ "${BEACONINT}" != "" ]; then
+    #
+    # Beacon interval was specified
+    #
+
+    iwpriv ${APNAME} bintval ${BEACONINT}
+fi
+
+#VOW related configurations
+if [ "${IFNUM}" = "0" ]; then
+    if [ "${VOW_ENABLE}" = "1" ]; then
+    #apply all commands if video enabled
+    #All video options are enabled by default and no dynamic configuration
+        ifconfig ${APNAME} allmulti
+        iwpriv ${APNAME} mcastenhance 2
+        iwpriv ${APNAME} acparams 1 0 1 0
+        iwpriv wifi0 setKeySrchAlways 1
+        iwpriv wifi0 setPhyRestartWar 1
+    else
+        iwpriv wifi0 setVowExt 0
+        ifconfig ${APNAME} -allmulti
+        iwpriv wifi0 setKeySrchAlways 0
+        iwpriv ${APNAME} mcastenhance 0
+        iwpriv ${APNAME} acparams 1 0 0 0
+        iwpriv wifi0 set_vsp_enable 0
+        iwpriv wifi0 setPhyRestartWar 0
+    fi
+
+    if [ "${VOW_DEBUG}" = "1" ]; then
+        iwpriv wifi0 setVowExtStats 1
+    else
+        iwpriv wifi0 setVowExtStats 0
+    fi
+fi
+
+if [ "${IFNUM}" = "1" ]; then
+    if [ "${VOW_ENABLE_2}" = "1" ]; then
+    #apply all commands if video enabled
+    #All video options are enabled by default and no dynamic configuration
+        ifconfig ${APNAME} allmulti
+        iwpriv ${APNAME} mcastenhance 2
+        iwpriv ${APNAME} acparams 1 0 1 0
+        iwpriv wifi1 setKeySrchAlways 1
+        iwpriv wifi1 setPhyRestartWar 1
+    else
+        iwpriv wifi1 setVowExt 0
+        ifconfig ${APNAME} -allmulti
+        iwpriv wifi1 setKeySrchAlways 0
+        iwpriv ${APNAME} mcastenhance 0
+        iwpriv ${APNAME} acparams 1 0 0 0
+        iwpriv wifi1 set_vsp_enable 0
+        iwpriv wifi1 setPhyRestartWar 0
+    fi
+
+    if [ "${VOW_DEBUG_2}" = "1" ]; then
+        iwpriv wifi1 setVowExtStats 1
+    else
+        iwpriv wifi1 setVowExtStats 0
+    fi
+fi
+
+if [ "${AP_HIDESSID}" = "1" ]; then
+     iwpriv ${APNAME} hide_ssid 1
+fi
+
+##
+## Script Complete
+##
+
+echo Created ${APNAME} mode ${MODE} for "${ESSID}"

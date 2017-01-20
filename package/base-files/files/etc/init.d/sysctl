@@ -1,0 +1,11 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org 
+
+START=99
+start() {
+	[ -f /etc/sysctl.conf ] && sysctl -p >&-
+	[ -d /etc/sysctl.d ] && \
+		for i in /etc/sysctl.d/*.conf; do
+			sysctl -p $i >&-
+		done
+}

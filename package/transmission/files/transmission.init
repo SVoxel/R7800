@@ -1,0 +1,71 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+STOP=20
+
+CONFIG=/bin/config
+GREEN_DWNLDR_ENABLED=$($CONFIG get green_download_enable)
+DOWNLOAD_PATH=$($CONFIG get green_download_path)
+AP_MODE=$($CONFIG get ap_mode)
+BRIDGE_MODE=$($CONFIG get bridge_mode)
+EXTENDER_MODE=$($CONFIG get extender_mode)
+
+start() {
+	# Create /tmp/www directory
+	if [ ! -d /tmp/www ]; then
+		mkdir /tmp/www
+	fi
+
+	# Check if NETGEAR Downloader enabled or not router mode (disable/enable button)
+	if [ "$GREEN_DWNLDR_ENABLED" == "0" ] && [ "$AP_MODE" == "0" ] && [ "$BRIDGE_MODE" == "0" ] && [ "$EXTENDER_MODE" == "0" ]; then
+		cp -p -f /www/GREEN_bt_basic_blue.htm /tmp/www/GREEN_bt_basic.htm
+	else
+		cp -p -f /www/GREEN_bt_basic_grey.htm /tmp/www/GREEN_bt_basic.htm
+	fi
+
+	# Check if NETGEAR Downloader enabled
+	if [ "$GREEN_DWNLDR_ENABLED" == "1" ]; then
+		echo "Error: NETGEAR Downloader is enabled. Disable NETGEAR Downloader."
+		exit 1
+	fi
+
+	# Killall transmission-daemon
+	killall -9 transmission-daemon
+
+	# If settings.json does not exist in /etc or external disk then generate config
+	if [ -e /etc/transmission/settings.json ]; then
+		/usr/bin/transmission-daemon -g /etc/transmission
+	elif [ -e /mnt/sda1/transmission/settings.json ]; then
+		/usr/bin/transmission-daemon -g /mnt/sda1/transmission
+	elif [ -e /mnt/sdb1/transmission/settings.json ]; then
+		/usr/bin/transmission-daemon -g /mnt/sdb1/transmission
+	elif [ -e /mnt/sdc1/transmission/settings.json ]; then
+		/usr/bin/transmission-daemon -g /mnt/sdc1/transmission
+	else
+		# Generate config file
+		if [ -d /tmp/transmission-gui ]; then
+			rm -rf /tmp/transmission-gui
+		fi
+		cp -rp /etc/transmission /tmp/transmission-gui
+		mv /tmp/transmission-gui/settings-template.json /tmp/transmission-gui/settings.json
+		echo "    \"download-dir\": \"$DOWNLOAD_PATH\","		>> /tmp/transmission-gui/settings.json
+		echo "    \"incomplete-dir\": \"$DOWNLOAD_PATH/incomplete\""	>> /tmp/transmission-gui/settings.json
+		echo "}"							>> /tmp/transmission-gui/settings.json
+
+		# Start transmission-daemon
+		/usr/bin/transmission-daemon -g /tmp/transmission-gui
+	fi
+}
+
+stop() {
+	# Disable button
+	cp -p -f /www/GREEN_bt_basic_grey.htm /tmp/www/GREEN_bt_basic.htm
+
+	# Killall transmission-daemon
+	killall -9 transmission-daemon
+
+	# Remove config files
+	if [ -d /tmp/transmission-gui ]; then
+		rm -rf /tmp/transmission-gui
+	fi
+}

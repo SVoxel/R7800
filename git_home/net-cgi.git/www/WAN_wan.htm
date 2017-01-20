@@ -1,0 +1,397 @@
+<% http_header("style/form.css", "/funcs.js", "/wan.js") %>
+<% body_header("_WAN_wan", "WAN_wan.htm", "wan") %>
+<div class="page_title">$wan_setup_head</div>
+<div class="fix_button">
+<table width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+var dsl_wan_preference='<% cfg_get("dsl_wan_preference") %>';	
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<tr><td nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'WAN_wan.htm\';"> &nbsp;&nbsp;<input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onClick="return checkwan(document.forms[0]);"></td></tr>');
+else
+	document.write('<tr><td nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name=="Cancel" id="cancel" value="$cancel_mark" disabled> &nbsp;&nbsp;<input class="apply1_bt" type="button" name="Apply" id="apply" value="$apply_mark" disabled></td></tr>');
+</script>
+</table>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<script>
+var dmz_value='<% cfg_get("wan_endis_dmz") %>';
+var spiEnable='<% cfg_get("wan_endis_spi") %>';
+var rspToPing_value='<% cfg_get("wan_endis_rspToPing") %>';
+var nat_fitering='<% cfg_get("wan_nat_fitering") %>';
+var vpn_enable = '<% cfg_get("vpn_enable") %>';
+
+var gui_region="<% cfg_get("GUI_Region") %>";
+var netgear_region=top.netgear_region;
+var show_vpn = (parent.vpn_show_flag == 1 && ( parent.is_pr_version == 1 || parent.is_ru_version == 1 )) ? 1 : 0;
+
+var enable_ipsec = '<% cfg_get("wan_enable_ipsec") %>';
+var enable_pptp = '<% cfg_get("wan_enable_pptp") %>';
+var enable_l2tp = '<% cfg_get("wan_enable_l2tp") %>';
+
+var basic_type="<% cfg_get("internet_type") %>";
+var ppp_login_type="<% cfg_get("internet_ppp_type") %>";
+var lan_ip="<% cfg_get("lan_ipaddr") %>";
+var lan_mask="<% cfg_get("lan_netmask") %>";
+var endis_sipalg="<% cfg_get("wan_endis_sipalg") %>";
+var have_igmp= (top.igmp_flag == 1)?1:0;
+var endis_igmp="<% cfg_get("wan_endis_igmp") %>";
+var have_bt_igmp= (top.bt_igmp_flag == 1)?1:0;
+var endis_bt_igmp="<% cfg_get("enable_bt_igmp") %>";
+var bri_lan_tag1="<% cfg_get("wan_bri_lan1") %>";//bug 24622:add a new function "IPTV Port Support"
+var bri_lan_tag2="<% cfg_get("wan_bri_lan2") %>";
+var bri_lan_tag3="<% cfg_get("wan_bri_lan3") %>";
+var bri_lan_tag4="<% cfg_get("wan_bri_lan4") %>";
+var brig_ssid_tag1="<% cfg_get("wan_brig_ssid1") %>";
+var brig_ssid_tag2="<% cfg_get("wan_brig_ssid2") %>";
+var brig_guest_ssid_tag1="<% cfg_get("wan_brig_guest_ssid1") %>";
+var brig_guest_ssid_tag2="<% cfg_get("wan_brig_guest_ssid2") %>";
+var have_bridge_iptv=( top.bridge_iptv_flag == 1 &&((gui_region == "Russian") && (netgear_region == "" || netgear_region.toUpperCase() == "WW") || netgear_region.toUpperCase() == "RU")) ? 1 : 0;
+var old_endis_ssid_broadcast='<% cfg_get("endis_ssid_broadcast") %>';
+var old_wla_endis_ssid_broadcast='<% cfg_get("wla_endis_ssid_broadcast") %>';
+var an_router_flag = parent.an_router_flag;
+var ac_router_flag = parent.ac_router_flag;
+var get_endis_guestNet="<% cfg_get("wlg1_endis_guestNet") %>";
+var get_endis_guestNet_a="<% cfg_get("wla1_endis_guestNet") %>";
+var wps_alert="<% cfg_get("wps_alert") %>";
+<% cfg_set("wps_alert", "0") %>
+var have_ethernet_wan_flag = "<% get_ethernet_wan_flag() %>";
+
+function loadvalue()
+{
+	var cf = document.forms[0];
+	var dmzIpAddr="<% cfg_get("dmz_ipaddr") %>";
+	var lanIpAddr="<% cfg_get("lan_ipaddr") %>";
+	var lanIp = lanIpAddr.split(".");
+	var dmzIp = dmzIpAddr.split(".");
+
+	if(dmzIpAddr == "") //bug 29006:when dmz_ip is null.let dmz's first three address same as lan_ip address
+	{
+		dmzIp[0] = lanIp[0];
+		dmzIp[1] = lanIp[1];
+		dmzIp[2] = lanIp[2];
+		dmzIp[3] = "";
+	}
+
+	change_web_format();
+    
+	if(top.dsl_enable_flag == 1){
+	    if(have_ethernet_wan_flag != "0"){
+		document.getElementById("wan_select").style.display="";
+		document.getElementById("wan_line").style.display="";
+	    }
+		if (dsl_wan_preference == '')
+			dsl_wan_preference = '1';
+		cf.wan_preference.value = dsl_wan_preference;
+	}
+
+	if (bri_lan_tag1 == '1')
+		cf.bri_lan1.checked = true;
+	else
+		cf.bri_lan1.checked = false;
+	if (bri_lan_tag2 == '1')
+		cf.bri_lan2.checked = true;
+	else
+		cf.bri_lan2.checked = false;
+	if (bri_lan_tag3 == '1')
+		cf.bri_lan3.checked = true;
+	else
+		cf.bri_lan3.checked = false;
+	if (bri_lan_tag4 == '1')
+		cf.bri_lan4.checked = true;
+	else
+		cf.bri_lan4.checked = false;
+	if (brig_ssid_tag1 == '1')
+		cf.brig_ssid1.checked = true;
+	else
+	cf.brig_ssid1.checked = false;
+	if (brig_ssid_tag2 == '1')
+		cf.brig_ssid2.checked = true;
+	else
+		cf.brig_ssid2.checked = false;
+	if (brig_guest_ssid_tag1 == '1')
+		cf.brig_guest_ssid1.checked = true;
+	else
+		cf.brig_guest_ssid1.checked = false;
+	if (brig_guest_ssid_tag2 == '1')
+		cf.brig_guest_ssid2.checked = true;
+	else
+		cf.brig_guest_ssid2.checked = false;
+	
+	if (spiEnable == '1')
+		cf.disable_spi.checked = false;
+	else
+		cf.disable_spi.checked = true;
+	if (dmz_value == '1')
+	{
+		cf.dmz_enable.checked = true;
+		cf.dmzip1.disabled = false;
+		cf.dmzip2.disabled = false;
+		cf.dmzip3.disabled = false;
+		cf.dmzip4.disabled = false;
+	}
+	else
+	{
+		cf.dmz_enable.checked = false;
+		cf.dmzip1.disabled = true;
+		cf.dmzip2.disabled = true;
+		cf.dmzip3.disabled = true;
+		cf.dmzip4.disabled = true;
+	}
+	cf.dmzip1.value = dmzIp[0];   //bug 28664,DMZ Server can't be editabled after change DUT's LAN subnetmask.
+	cf.dmzip2.value = dmzIp[1];
+	cf.dmzip3.value = dmzIp[2];
+	cf.dmzip4.value = dmzIp[3];	
+	if (rspToPing_value == '1')
+		cf.rspToPing.checked = true;
+	else
+		cf.rspToPing.checked = false;
+	if(vpn_enable == '1'){
+		setDisabled(true, cf.rspToPing);
+		document.getElementById("rspToPingString").style.color="grey";
+		
+	}
+		
+		
+	cf.wan_mtu.value = '<% wan_mtu() %>';
+	if (nat_fitering == '0' )
+		cf.NatInboundFiltering[0].checked = true;
+	else
+		cf.NatInboundFiltering[1].checked = true;
+
+	if (endis_sipalg == '1' )
+		cf.disable_sipalg.checked = true;
+	else
+		cf.disable_sipalg.checked = false;
+
+	if( have_igmp == 1 )
+	{
+		if(endis_igmp == '0'){
+			cf.disable_igmp.checked = true;
+			cf.bt_igmp.disabled = true;
+		}
+		else{
+			cf.disable_igmp.checked = false;
+			cf.bt_igmp.disabled = false;
+		}
+		if(have_bt_igmp == 1)
+		{
+			if(endis_bt_igmp == '1')
+				cf.bt_igmp.checked = true;
+			else
+				cf.bt_igmp.checked = false;
+		}
+	}	
+	if( show_vpn == 1 )
+	{
+		if(enable_ipsec == '1')
+			cf.enable_ipsec_passthrough[0].checked = true;
+		else
+			cf.enable_ipsec_passthrough[1].checked = true;
+		if(enable_pptp == '1')
+			cf.enable_pptp_passthrough[0].checked = true;	
+		else
+			cf.enable_pptp_passthrough[1].checked = true;
+		if(enable_l2tp == '1')
+			cf.enable_l2tp_passthrough[0].checked = true;		
+		else
+			cf.enable_l2tp_passthrough[1].checked = true;
+	}
+
+	setTimeout("main_top_button_div_show_scroll();", 1000); // wait one seconds for load pages
+}
+function change_web_format()
+{
+	if( show_vpn == 1 )			//show the VPN Passthrough items or not
+	{
+		document.getElementById("bluebar").style.display="";
+		document.getElementById("vpn_name").style.display="";
+		document.getElementById("ipsec_passthrough").style.display="";
+		document.getElementById("pptp_passthrough").style.display="";
+		document.getElementById("l2tp_passthrough").style.display="";			 
+	}
+        if( have_igmp == 1 )
+        {
+                document.getElementById("show_igmp").style.display="";
+		document.getElementById("igmp_bluebar").style.display="";
+		if(gui_region == "English" && netgear_region.toUpperCase() == "WW" && have_bt_igmp == 1)
+		{ 	
+			document.getElementById("show_bt_igmp").style.display="";
+		}
+        }
+	if( have_bridge_iptv == 1 )
+	{
+		document.getElementById("bri_bluebar").style.display="";
+		document.getElementById("bri_string").style.display="";
+		document.getElementById("bri_lans").style.display="";
+		if( old_endis_ssid_broadcast == 1 )
+			document.getElementById("bri_ssid1").style.display="";
+		if( get_endis_guestNet == 1 )
+			document.getElementById("bri_guest_ssid1").style.display="";
+		if( get_endis_guestNet_a == 1 && an_router_flag == 1)
+			document.getElementById("bri_guest_ssid2").style.display="";
+		if( old_wla_endis_ssid_broadcast == 1 && an_router_flag == 1)
+			document.getElementById("bri_ssid2").style.display="";
+	}
+
+	showWps_alert();
+}
+</script>
+<input type="hidden" name="dod_value">
+<input type="hidden" name="spi_value">
+<input type="hidden" name="dmz_value">
+<input type="hidden" name="rspToPing_value">
+<input type="hidden" name="dmz_ip">
+<input type="hidden" name="sipalg_value">
+<input type="hidden" name="igmp_value" value="0">
+<input type="hidden" name="hid_bri_lan1">
+<input type="hidden" name="hid_bri_lan2">
+<input type="hidden" name="hid_bri_lan3">
+<input type="hidden" name="hid_bri_lan4">
+<input type="hidden" name="hid_brig_ssid1">
+<input type="hidden" name="hid_brig_ssid2">
+<input type="hidden" name="hid_iptv_mask"><!-- bug 24622:add a hidden value for the new config-value(iptv_mask) -->
+<input type="hidden" name="hid_iptv_show_tag">
+<input type="hidden" name="hid_brig_guest_ssid1">
+<input type="hidden" name="hid_brig_guest_ssid2">
+<input type="hidden" name="bt_igmp_value" value="0">
+<tr id="wan_select" style="display:none"><td nowrap width="50%">$dsl_wan_preference</TD>
+ <td width="50%">
+ <SELECT name="wan_preference" id="wan_preference" size="1">
+	 <option value="1">$dsl_wan_dsl</option>
+	 <option value="2">$dsl_wan_ther</option>
+ </SELECT></TD>
+</TR>
+<TR id="wan_line" style="display:none"><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+<tr>
+	<td nowrap colspan=2>
+	<input type="checkbox" name="disable_spi" id="disable_spi" value="disable_spi">
+	<a tabindex=-1 href="javascript:loadhelp('_WAN_wan','spi')"><b>$adva_wansetup_spi</b></a>
+	</td>
+</tr>
+$bluebar
+<tr>
+	<td nowrap>
+	<input type="checkbox" name="dmz_enable" id="dmz_enable" value="dmz_enable" onclick="checkdmzip();">
+	<a tabindex=-1 href="javascript:loadhelp('_WAN_wan','dmz')"><b>$adva_wansetup_dmz</b></a>
+	</td>
+	<td nowrap>
+	<input type="text" name="dmzip1" id="dmz_ipaddress1" size="4" maxlength="3" autocomplete="off" onFocus="this.select();" onKeyPress="return getkey('num',event)" onkeydown="keydown(event,this);" onkeyup="keyup(event,this);">.
+	<input type="text" name="dmzip2" id="dmz_ipaddress2" size="4" maxlength="3" autocomplete="off" onFocus="this.select();" onKeyPress="return getkey('num',event)" onkeydown="keydown(event,this);" onkeyup="keyup(event,this);">.
+	<input type="text" name="dmzip3" id="dmz_ipaddress3" size="4" maxlength="3" autocomplete="off" onFocus="this.select();" onKeyPress="return getkey('num',event)" onkeydown="keydown(event,this);" onkeyup="keyup(event,this);">.
+	<input type="text" name="dmzip4" id="dmz_ipaddress4" size="4" maxlength="3" autocomplete="off" onFocus="this.select();" onKeyPress="return getkey('num',event)" onkeydown="keydown(event,this);" onkeyup="keyup(event,this);">	
+	</td>
+</tr>
+$bluebar
+<tr>
+	<td nowrap colspan=2 id="rspToPingString">
+	<input type="checkbox" name="rspToPing" id="response_ping" value="rspToPing">
+	<a tabindex=-1 href="javascript:loadhelp('_WAN_wan','ping')"><b>$adva_wansetup_rspToPing</b></a>
+	</td>
+</tr>
+$bluebar
+<tr id=show_igmp style="display:none;">
+        <td nowrap colspan=2>
+<script>
+	if(have_bt_igmp == 1)
+		document.write('<input type="checkbox" name="disable_igmp" id="disable_igmp" onClick="change_bt_igmp_status();">');
+	else
+		document.write('<input type="checkbox" name="disable_igmp" id="disable_igmp">');
+</script>
+        <a tabindex=-1 href="javascript:loadhelp('_WAN_wan','igmp')"><b>$disable_igmp_proxying</b></a>
+        </td>
+</tr>
+<tr id="show_bt_igmp" style="display:none;">
+	<td nowrap colspan=2>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="bt_igmp">
+	<a tabindex=-1 href="javascript:loadhelp('_WAN_wan','igmp')"><b>$enable_bt_igmp_proxying</b></a>
+	</td>
+</tr>
+<tr id=igmp_bluebar style="display:none;"><td colspan=2><img src=/liteblue.gif width=100% height=12></td></tr>
+<tr>
+	<td nowrap>
+	<a tabindex=-1 href="javascript:loadhelp('_WAN_wan','mtu')"><b>$adva_wansetup_mtu</b></a>$adva_wansetup_byte
+	</td>
+	<td nowrap>
+	<input type="text" name="wan_mtu" id="wan_mtu" size="8" maxlength="4" onKeyPress="return getkey('num',event)">
+	</td>
+</tr>
+$bluebar
+<tr>
+	<td nowrap>
+	<a tabindex=-1 href="javascript:loadhelp('_WAN_wan','nat')"><b>$adva_wansetup_nat</b></a>
+	</td>
+	<td nowrap>
+	<input type="radio" name="NatInboundFiltering" id="nat_filtering_secured" value="Secured">$adva_wansetup_nat_secured&nbsp;
+	<input type="radio" name="NatInboundFiltering" id="nat_filtering_open" value="Open">$adva_wansetup_nat_open
+	</td>
+</tr>
+<tr>
+	<td nowrap>
+	<input type="checkbox" name="disable_sipalg" id="disable_sip" value="disable_sipalg">
+	<a tabindex=-1 href="javascript:loadhelp('_WAN_wan','alg')"><b>$adva_wansetup_sipalg</b></a>
+	</td>
+</tr>
+
+<tr id=bluebar style="display:none;"><td colspan=2><img src=/liteblue.gif width=100% height=12></td></tr>
+<tr id=vpn_name style="display:none;">
+        <td nowrap>
+	<a tabindex=-1 href="javascript:loadhelp('_WAN_wan','vpn')"><b>$vpn_passthrough</b></a>
+	</td>
+</tr>
+<tr id=ipsec_passthrough style="display:none;">
+        <td nowrap>
+	$ipsec_passthrough
+	</td>
+	
+	<td nowrap>
+        <input type="radio" name="enable_ipsec_passthrough" value="1" >$r_enable&nbsp;
+        <input type="radio" name="enable_ipsec_passthrough" value="0" >$r_disable
+	</td>
+</tr>
+<tr id=pptp_passthrough style="display:none;">
+	<td nowrap>
+	$pptp_passthrough
+	</td>
+        <td nowrap>
+        <input type="radio" name="enable_pptp_passthrough" value="1" >$r_enable&nbsp;
+        <input type="radio" name="enable_pptp_passthrough" value="0" >$r_disable
+	</td>
+</tr>
+<tr id=l2tp_passthrough style="display:none;">
+	<td nowrap>
+	$l2tp_passthrough
+	</td>
+        <td nowrap>
+        <input type="radio" name="enable_l2tp_passthrough" value="1" >$r_enable&nbsp;
+        <input type="radio" name="enable_l2tp_passthrough" value="0" >$r_disable
+	</td>
+</tr>
+<tr id=bri_bluebar style="display:none;"><td colspan=2><img src=/liteblue.gif width=100% height=12></td></tr>
+<tr id=bri_string style="display:none;"><td colspan=2><a tabindex=-1 href="javascript:loadhelp('_WAN_wan','iptv')"><b>$bridge_iptv</b></a></td></tr>
+<tr id=bri_lans style="display:none;"><td colspan=2>
+<input type="checkbox" name="bri_lan1">&nbsp;<b>$bridge_lan1</b>&nbsp; &nbsp; &nbsp; &nbsp;
+<input type="checkbox" name="bri_lan2">&nbsp;<b>$bridge_lan2</b>&nbsp; &nbsp; &nbsp; &nbsp;
+<input type="checkbox" name="bri_lan3">&nbsp;<b>$bridge_lan3</b>&nbsp; &nbsp; &nbsp; &nbsp;
+<input type="checkbox" name="bri_lan4">&nbsp;<b>$bridge_lan4</b>
+</td></tr>
+<tr id=bri_ssid1 style="display:none;"><td nowrap><input type="checkbox" name="brig_ssid1">&nbsp;<b>$wlan_network_mark<script> if( an_router_flag == 1) document.write("(2.4GHz b/g/n)")</script>&nbsp;<% cfg_get_ssid_html("wl_ssid") %></b></td></tr>
+<tr id=bri_guest_ssid1 style="display:none;"><td nowrap><input type="checkbox" name="brig_guest_ssid1">&nbsp;<b>$wlan_guest_head<script> if( an_router_flag == 1) document.write(" b/g/n")</script>&nbsp;<% cfg_get_ssid_html("wlg1_ssid") %></b></td></tr>
+<tr id=bri_ssid2 style="display:none;"><td nowrap><input type="checkbox" name="brig_ssid2">&nbsp;<b>
+        <script>
+                if( ac_router_flag == 1)
+                        document.write("$wlan_network_ac_mark")
+                else
+                        document.write("$wlan_network_mark (5GHz a/n)")
+        </script>
+&nbsp;<% cfg_get_ssid_html("wla_ssid") %></b></td></tr>
+<tr id=bri_guest_ssid2 style="display:none;"><td nowrap><input type="checkbox" name="brig_guest_ssid2">&nbsp;<b>$wlan_guest_head a/n&nbsp;<% cfg_get_ssid_html("wla1_ssid") %></b></td></tr>
+$bluebar
+</table>
+</div>
+<% help_box("0","_WAN_wan") %>
+</FORM>
+</BODY>
+</HTML>

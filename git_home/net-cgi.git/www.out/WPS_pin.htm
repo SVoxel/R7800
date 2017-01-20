@@ -1,0 +1,145 @@
+<% echo_set("","/tmp/wps_process_state") %>
+
+<% http_header("style/form.css", "/funcs.js") %>
+<% body_header("_wps", "WPS_status.htm", "wps_pin") %>
+<div class="page_title">$add_wps_client_header</div>
+<div id="main" class="main">
+<input type="hidden" name="hidden_PIN" />
+<TABLE width=100% border=0 cellpadding=0 cellspacing=3>
+<TR>
+	<TD colSpan=3></TD>
+</TR>
+<TR>
+	<TD colspan=3><img src=/liteblue.gif width=100% height=12></TD>
+</TR>
+<input TYPE="hidden" NAME="wps_in_progress" VALUE="0">
+<TR>
+	<TD nowrap><B>$wps_or_pin :</B></TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<input type=radio name="WPS_type" id="wps_type" value="Push Button" onClick="location.href='WPS.htm'">$wps_push_button
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<input type=radio name="WPS_type" id="pin_num" value="PIN Number" checked>$wps_pin
+	</TD>
+</TR>
+<TR>
+	<TD colspan="3"><P style='margin-left:15pt'>$wps_pin_text1</P></TD>
+</TR>
+<TR>
+	<TD><P style='margin-left:15pt'>$wps_enter_pin :</P></TD>
+	<TD nowrap>
+	<input type="text" name="PIN" size="9" id="wps_pin" maxlength="9" value="" align="left" onFocus="this.select();" onKeyPress="return getkey('wps_pin', event)">
+	</TD>
+	<TD>
+	<P align=center style='margin:0cm;margin-bottom:.0001pt;text-align:center'>
+	<span lang=EN-US style='font-size:9.0pt;font-family:Arial'>
+	<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if( master =="admin" )
+		document.write('<input class="short_common_bt" id="wps_next" type="button" value="$wps_next_mark" name="Next" onclick="check_pin()">&nbsp;&nbsp;');
+	else
+		document.write('<input class="short_common1_bt" id="wps_next" type="button" value="$wps_next_mark" name="Next" disabled>&nbsp;&nbsp;');
+	
+	
+	</script>
+	</span>
+	</P>
+	</TD>	
+</TR>
+<TR>
+	<TD colspan=3><img src=/liteblue.gif width=100% height=12></TD>
+</TR>
+</table>
+
+
+<script language="javascript">
+<!-- hide script from old browsers
+<!--
+top.wps_process=0;
+function loadvalue()
+{
+	var cf = document.forms[0];
+	if (cf.wps_in_progress.value == "1") {
+		cf.WPS_type[0].disabled = true;
+		cf.WPS_type[1].disabled = true;
+	} else {
+		cf.WPS_type[0].disabled = false;
+		cf.WPS_type[1].disabled = false;
+	}
+}
+
+function check_pin()
+{
+	var cf = document.forms[0];
+	var lpin = cf.PIN.value;
+	var accum = 0;
+	var tmp="";
+
+	/*if( lpin.charAt(4) == ' ' )
+	{
+		lpin = lpin.substring(0, 4) + lpin.substring(5, lpin.length);
+	}*/
+
+	/* to fix bug 33996,clear space('1234 5678' --> '12345678') */
+	for( i = 0; i < lpin.length; i++)
+	{
+		if( lpin.charAt(i) == ' ' || lpin.charAt(i) == '-' )//38293
+			continue;
+		else
+			tmp=tmp+lpin.charAt(i);
+	}
+	lpin =tmp;
+
+	cf.hidden_PIN.value = lpin;
+
+	if (lpin.length != 4 && lpin.length != 8) {
+		alert("$error_4or8");
+		return false;
+	}
+
+	if ( !_isNumeric(lpin) )
+	{
+		alert("$error_wps_pin");
+		return false;	
+	}
+	
+	if (lpin.length == 8) {
+		lpin = parseFloat(cf.hidden_PIN.value);
+		accum += 3 * parseInt(lpin / 10000000) % 10;
+		accum += 1 * parseInt(lpin / 1000000) % 10;
+		accum += 3 * parseInt(lpin / 100000) % 10;
+		accum += 1 * parseInt(lpin / 10000) % 10;
+		accum += 3 * parseInt(lpin / 1000) % 10;
+		accum += 1 * parseInt(lpin / 100) % 10;
+		accum += 3 * parseInt(lpin / 10) % 10;
+		accum += 1 * parseInt(lpin / 1) % 10;
+
+		if (0 != (accum % 10)) {
+			alert("$error_wps_pin");
+			return false;
+		}
+	}
+
+	cf.Next.disabled = true;
+	cf.WPS_type[0].disabled = true;
+	cf.WPS_type[1].disabled = true;
+	top.enable_action=0;
+	top.topframe.location.href="top_nochange.html";
+
+	parent.wps_choice=1;
+	parent.wps_pin_num=tmp;
+
+	cf.submit();
+
+}
+//-->
+</script>
+</div>
+<% help_box("1","_wps") %>
+</FORM>
+</BODY>
+</HTML>

@@ -1,0 +1,56 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% noload_header("_puk", "check_puk.htm", "puk_code") %>
+<div class="page_title">$sim_head</div>
+<div id="main" class="main">
+<script>
+
+function click_change_pin()
+{
+	var cf=document.forms[0];
+	if(cf.puk_code.value.length !=8)
+	{
+		alert("PUK Code should be 8 digits");
+		return false;
+	}
+	if(cf.new_pin1.value.length <4)
+	{
+		alert("PIN Code should be 4-8 digits!");
+		return false;
+	}
+	if(cf.new_pin1.value != cf.new_pin2.value)
+	{
+		alert("Please confirm new PIN Code again!");
+		return false;
+	}
+	cf.submit();
+	return true;
+}
+
+</script>
+
+<div id="main" class="main" >
+<% table_header() %>
+<tr><td colspan=3><img src=/liteblue.gif width=100% height=12></td></tr>
+<tr><td nowrap colspan=3><b>PIN Unlock</b></td></tr>
+<tr>
+	<td nowrap>Currnet PUK Code:</td>
+	<td nowrap><input type="text" name="puk_code" size="16" maxLength="8" onKeyPress="return getkey('num', event)"></td>
+</tr>
+<tr>
+	<td nowrap>$new_pin</td>
+	<td nowrap><input type="text" name="new_pin1" size="16" maxLength="8" onKeyPress="return getkey('num', event)"></td>
+	<td nowrap><input type="button" name="change_pin_bt" id="change_pin_bt" class="common_bt" value="$apply_mark" onClick="return click_change_pin();"></td>
+</tr>
+<tr>
+	<td nowrap>$confirm_pin</td>
+	<td nowrap><input type="text" name="new_pin2" size="16" maxLength="8" onKeyPress="return getkey('num', event)"></td>
+</tr>
+<tr>
+        <td nowrap colspan=2><b>PUK Remain count:<% cfg_get("lte_left_puk_times") %></b></td>
+</tr>
+</table>
+</form>
+</div>
+</div>
+</body>
+</html>

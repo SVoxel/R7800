@@ -1,0 +1,90 @@
+#!/bin/sh
+
+. /etc/net6conf/6data.conf
+
+start() {
+	if ! [ -x $IP ]; then
+		echo "$IP is required to setup the tunnel";
+		exit 1;
+	fi
+	local lan6_prelen=`$CONFIG get ipv6_fixed_lan_prefix_len`
+	local wan6_prelen=`$CONFIG get ipv6_fixed_wan_prefix_len`
+	local lan6_ip=`$CONFIG get ipv6_fixed_lan_ip`
+	local wan6_ip=`$CONFIG get ipv6_fixed_wan_ip`
+	local gw6_ip=`$CONFIG get ipv6_fixed_gw_ip`
+	local dns1=`$CONFIG get ipv6_fixed_dns1`
+	local dns2=`$CONFIG get ipv6_fixed_dns2`
+
+	$IP -6 addr add ${wan6_ip}/${wan6_prelen} dev $WAN
+	$IP -6 addr add ${lan6_ip}/${lan6_prelen} dev $bridge
+
+	local logo_test=`$CONFIG get endis_ipv6_logo_test`
+	local wan6_type=`$CONFIG get ipv6_type`
+
+	if [ "x$logo_test" != "x1" -o "x$wan6_type" != "xfixed" ]; then
+		$IP -6 route add default via $gw6_ip dev $WAN
+		# Add the IPv6 DNS
+		[ "x$dns1" != "x" ] && echo "nameserver $dns1" >> $IPV6_DNS
+		[ "x$dns2" != "x" ] && echo "nameserver $dns2" >> $IPV6_DNS
+		cat $IPV6_DNS >> /tmp/resolv.conf
+		# According to NTGR Router Spec:
+		# The domain-name-servers should be DUT's IPv6 LAN interface's link local address.
+		# The link local address could be added in net6conf/6service script, so comment below code.
+		#[ "x$dns1" != "x" -o "x$dns2" != "x" ] && echo "option domain-name-servers $dns1 $dns2;" >> $DHCP6S_DSN
+	fi
+}
+
+set_lan_ip()
+{
+	if ! [ -x $IP ]; then
+		echo "$IP is required to setup the tunnel";
+		exit 1;
+	fi
+
+	local lan6_prelen=`$CONFIG get ipv6_fixed_lan_prefix_len`
+	local lan6_ip=`$CONFIG get ipv6_fixed_lan_ip`
+
+	$IP -6 addr add ${lan6_ip}/${lan6_prelen} dev $bridge
+}
+
+set_wan_ip()
+{
+	if ! [ -x $IP ]; then
+		echo "$IP is required to setup the tunnel";
+		exit 1;
+	fi
+
+	local wan6_prelen=`$CONFIG get ipv6_fixed_wan_prefix_len`
+	local wan6_ip=`$CONFIG get ipv6_fixed_wan_ip`
+
+	$IP -6 addr add ${wan6_ip}/${wan6_prelen} dev $WAN
+}
+
+stop() {
+	# WAN & LAN IPv6 Address will be flushed by net6conf script
+	rm $DHCP6S_DSN >&- 2>&-
+	return 0
+}
+
+restart() {
+	stop
+	start
+}
+
+case "$1" in
+	start)
+	start
+	;;
+	lan)
+	set_lan_ip
+	;;
+	wan)
+	set_wan_ip
+	;;
+	stop)
+    stop
+    ;;
+    restart)
+	restart
+	;;
+esac

@@ -1,0 +1,79 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% func_header("_Wizard_setup", "BRS_03A_detcInetType.html", "wizard_detwan") %>
+<div class="page_title">$wizard_head</div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+<% cfg_set("view_wizard", "0") %>
+
+<script>
+function ckeck_gray()
+{
+	
+	if( master == "guest" )
+	{
+		document.getElementById("ma1").style.display="";
+		document.getElementById("ma").style.display="none";
+	}
+		
+}
+function ckeck_gray1()
+{
+	
+	if( master == "guest" )
+	{
+		document.getElementById("ma").style.display="";
+		document.getElementById("ma1").style.display="none";
+	}
+		
+}
+function click_next()
+{
+	if (document.forms[0].WANDetc[0].checked == true){
+		if((top.have_broadband == "1" && (top.is_ru_version == 1 || top.is_pr_version == 1)) || top.have_lte_flag == "1")
+			location.href = "WIZ_sel_3g_adsl.htm";
+		else
+			document.forms[0].submit();
+	}
+	else
+	{
+		if(top.dsl_enable_flag == 0)
+		   location.href='BAS_basic.htm';
+		else
+		   location.href='BAS_basic_dsl.htm';
+	}
+}
+</script>
+
+<TR><TD nowrap><B>$wizard_setup_info1</B></TD></TR>
+<TR><TD nowrap><B>$wizard_setup_info2</B></TD></TR>
+
+<TR><TD nowrap><INPUT type="radio"  checked name="WANDetc" id="wan_detect_type" value="AutoDetc" onclick='ckeck_gray()'>$yes_mark</TD></TR>
+<TR><TD nowrap><INPUT type="radio" name="WANDetc" id="wan_detect_type2" value="MyDetc" onclick='ckeck_gray1()'>$wizard_setup_no</TD></TR>
+$bluebar
+<TR id=ma><TD nowrap align=center>
+<INPUT class="short_common_bt" type='button' name="Next" id="next" value='$next_mark' onClick='click_next()'>
+</TD></TR>
+<TR id=ma1>
+<TD nowrap align=center>
+<INPUT class="short_common1_bt" type='button' name="Next" id="next" value='$next_mark' disabled>
+</TD></TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+	if( master == "guest" )
+	{
+		document.getElementById("ma1").style.display="";
+		document.getElementById("ma").style.display="none";
+	}else
+	{
+		document.getElementById("ma").style.display="";
+		document.getElementById("ma1").style.display="none";
+	}
+</script>
+</TABLE>
+
+</div>
+<% help_box("1","_Wizard_setup") %>
+</FORM>
+</BODY>
+</HTML>

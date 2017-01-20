@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<% cfg_set("from_setting","1") %>
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_hijack_04_applySettings.js"></script>
+<% hijack_language() %>
+<script language="javascript" type="text/javascript">
+var is_04_refresh_page = 0;
+var ap_mode = "<% cfg_get("ap_mode") %>";
+if(top.dsl_enable_flag == "1")
+{
+var tHttp;
+
+function createXMLHttpRequest()
+{
+	if(typeof XMLHttpRequest == "undefined")
+		XMLHttpRequest = function(){
+			try{return new ActiveXObject("Msxml2.XMLHTTP.6.0");}
+				catch(e){}
+			try{return new ActiveXObject("Msxml2.XMLHTTP.3.0");}
+				catch(e){}
+			try{return new ActiveXObject("Msxml2.XMLHTTP");}
+				catch(e){}
+			return false;
+		}
+	return new XMLHttpRequest();
+}
+}
+</script>
+</head>
+
+<body>
+
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+		<h1><!--apply_connection--></h1>
+			
+		<p><!--plz_waite_apply_connection--></p>
+		
+		<div id="applySettings_wait" class="waiting_img_div" align="center">
+			<img src="image/wait30.gif" />
+		</div>
+		
+	</div>
+		
+</div>
+
+</body>
+
+</html>

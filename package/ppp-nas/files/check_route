@@ -1,0 +1,24 @@
+#!/bin/sh
+PPP0_DNS_FILE="/etc/ppp/pppoe1-dns.conf"
+PPP1_DNS_FILE="/etc/ppp/pppoe2-dns.conf"
+
+route_del() {
+	local a=$1
+	local tmp
+	route -n | grep ppp1|grep $a > /tmp/check_list 2>/dev/null
+	for tmp in `cat /tmp/check_list 2>/dev/null | awk {'print$1'}`; do
+		if [ $tmp = $a ] ;then
+			route del $tmp dev ppp1
+		fi
+	done
+}
+[ ! -f $PPP1_DNS_FILE ] && exit
+[ ! -f $PPP0_DNS_FILE ] && exit
+for dns in `cat $PPP0_DNS_FILE`;do
+	for dns1 in `cat $PPP1_DNS_FILE`;do
+		if [ "x$dns" = "x$dns1" ] ;then
+			route_del $dns1
+		fi
+	done
+done
+[ -f /tmp/check_list ] && rm /tmp/check_list

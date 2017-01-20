@@ -1,0 +1,125 @@
+#!/bin/sh
+
+. ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+# standard settings - accept overrides from the calling environment
+BINARY="aperture-controller.sh"
+BINARY_ONERUN="aperture"
+DISPLAY_NAME="Aperture"
+export RUNDIR BINDIR BINARY BINARY_ONERUN
+
+# this daemon is not required to run in order for Streamboost to be ok
+SB_NONCRITICAL=1
+
+LOGGER="logger -p daemon.info -t ${BINARY}"
+export LOGGER
+
+# controller arguments - exported, since the controller is a script
+# comment LOGDEST line to use stderr instead of syslog
+LOGDEST="--use-syslog"
+PIDFILE="${RUNDIR}/${BINARY}.pid"
+PIDFILE_ONERUN="${RUNDIR}/${BINARY_ONERUN}.pid"
+LOCKFILE="${RUNDIR}/${BINARY_ONERUN}.initlock"
+INTERVAL=3600
+INTERVAL_DECAYPERCENT=200
+INTERVAL_CUTOFF=604800
+RETRYINTERVAL=300
+CONVERGEDELAY=1
+LOGLEVEL=6
+THRESHOLD=4096
+BWCD_SOCKET="--"
+SRC_PORT=321
+RESULTS_FILE="--"
+RESULTS_FILE_OUT="${RUNDIR}/aperture_last_measurement"
+HISTORY_FILE="--"
+STCACHE_FILE="--"
+DEBUGLOG_FILE="${RUNDIR}/aperture-debug.log"
+BWCD_BWCFG="${RUNDIR}/bw.conf"
+SERVERLIST_URL="http://${CONFIG_HOST}/speedtest.v1/speedtest-servers.xml"
+GEOLOCATE_URL="http://www.speedtest.net/speedtest-config.php"
+REDIS_HOST="127.0.0.1"
+REDIS_PORT=6379
+export PIDFILE PIDFILE_ONERUN LOCKFILE INTERVAL INTERVAL_DECAYPERCENT INTERVAL_CUTOFF RETRYINTERVAL CONVERGEDELAY LOGDEST LOGLEVEL THRESHOLD BWCD_SOCKET SRC_PORT CONFIG_FILE RESULTS_FILE RESULTS_FILE_OUT HISTORY_FILE STCACHE_FILE DEBUGLOG_FILE BWCD_BWCFG SERVERLIST_URL GEOLOCATE_URL REDIS_HOST REDIS_PORT
+
+# additional command line arguments
+CMDLINE=""
+
+
+start() {
+	if [ "$ENABLE_AUTO_BW" = "no" ]; then
+		$LOGGER "$DISPLAY_NAME turned off"
+	else
+		# run in the background, since the controller script
+		# doesn't daemonize itself
+		$LOGGER "$DISPLAY_NAME starting"
+		${BINDIR}/${BINARY} ${CMDLINE} >/dev/null 2>&1 "$@" &
+	fi
+}
+
+stop() {
+	killall ${BINARY} 2>/dev/null
+	killall sleep 2>/dev/null
+	trap "" TERM
+	killall ${BINARY_ONERUN} 2>/dev/null
+	while status >/dev/null 2>&1 ; do
+		sleep 1
+	done
+	$LOGGER "$DISPLAY_NAME stopped"
+}
+
+reload() {
+	killall -HUP ${BINARY} 2>/dev/null
+}
+
+boot() {
+	[ ! -d "$RUNDIR" ] && {
+		mkdir -p $RUNDIR
+	}
+	start "$@"
+}
+
+measure() {
+	RESULTS_FILE="${1:-$RESULTS_FILE_OUT}"
+	$LOGGER "$DISPLAY_NAME running manual measurement"
+	${BINDIR}/${BINARY} measure ${CMDLINE} >/dev/null 2>&1 "$@"
+}
+
+applybw() {
+	RESULTS_FILE="${1:-$RESULTS_FILE_OUT}"
+	${BINDIR}/${BINARY} applybw
+}
+
+status() {
+	if [ "$ENABLE_AUTO_BW" = "no" ]; then
+		echo "$DISPLAY_NAME turned off"
+		return 1
+	fi
+
+	default_status
+}
+
+action() {
+	action=${1:-boot}
+	shift
+
+	case "${action}" in
+		boot|init)
+			boot "$@"
+			;;
+		start|stop|restart|status|reload)
+			${action} "$@"
+			;;
+		enable|disable)
+			${action} "$@"
+			;;
+		measure|applybw)
+			${action} "$@"
+			;;
+		*)
+			echo "Usage: $0 start|boot|init|stop|restart|status|reload|measure|applybw"
+			exit 1
+	esac
+}
+
+action "$@"
+exit $?

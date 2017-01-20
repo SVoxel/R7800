@@ -1,0 +1,35 @@
+The scripts contained here are used to extract and format flow events contained
+within the redis db, written there by the Statistics and Events Aggretator
+(sea).
+
+Events are currently stored by sea in csv format and these scripts are
+responsible for converting the csv into json.
+
+FAQ::
+
+M4?  what?
+	Redis supports LUA scripts but with limitations, the biggest of
+	which is that global state cannot be modified by scripts.  What
+	this means is that you cannot load a script as a module which
+	can later be required or included or imported by another script.
+	Put another way, Redis has builtin LUA modules such as cjson,
+	but you cannot add your own modules.
+
+	The reason include functionality would be nice for us is because
+	we store our events into the redis database in a format that
+	is not suitable for our external interfaces so we must convert it
+	in some way, but we have several scripts that work with this data.
+	If a script could include another script, then we could keep our
+	conversion routines in one file and then include that file in each
+	of the filter_events*.lua scripts thereby achieving good coding
+	practices.
+
+	Since we can't include other files, we instead have to copy-paste
+	the conversion routines into each script that needs to be able to
+	decode events.
+
+	Enter M4.  In order to prevent having multiple copies of these
+	functions in our repo, we store them in one file and then use a
+	preprocessor to include them from scripts that need it.  This allows
+	us to have a single copy of the conversion routine, but keep the
+	final lua scripts self-contained as required by Redis.

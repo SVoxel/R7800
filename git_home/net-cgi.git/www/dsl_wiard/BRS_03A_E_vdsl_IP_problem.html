@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_03A_E_IP_problem.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<% hijack_language() %>
+<% cat_rm_file("tmp/ping_result") %>
+<% cfg_set("form_set2","") %>
+</head>
+
+<body>
+<% form_submit("func", "BRS_03A_detcInetType.html", "wizard_detwan")  %>
+<!--bug 22145 add hijack_toBasic-->
+<% save_timestamp("wizard_detwan", "hijack_toBasic") %>
+<script language="javascript" type="text/javascript">var ts="<% cfg_get("hijack_toBasic") %>";
+addLoadEvent(initPage);
+function initPage()
+{
+	 var btns_div2 = document.getElementById("btnsContainer_div2");
+		if( master == "admin" )
+        btns_div2.onclick = function()
+        {
+                return  modemCycleChoice();
+        }
+	showFirmVersion("");
+}
+
+function modemCycleChoice()
+{
+	var forms = document.getElementsByTagName("form");
+        var cf = forms[0];
+
+	var choices_div = document.getElementById("choices_div");
+	var choices = choices_div.getElementsByTagName("input");
+
+	if(choices[0].checked || choices[1].checked)
+		this.location.href = "BRS_vdsl_detect.html";
+	else if(choices[2].checked)
+		this.location.href = "BRS_03A_E_IP_problem_staticIP.html";
+	else
+	{
+		alert(bh_select_an_option);
+		return false;
+	}
+
+	return true;
+}
+
+
+</script>
+
+<div class="wizard_content_div">
+
+	<div id="text_div" class="wizard_words_div">
+		<h1 class="h1_red"><script language="javascript" type="text/javascript">document.write(bh_no_internet_ip);</script></h1>
+		<p><script language="javascript" type="text/javascript">document.write(bh_genie_cannot_find_ip);</script></p>
+		<p><script language="javascript" type="text/javascript">document.write(bh_genie_cannot_find_ip_reason1);</script></p>
+		<p class="desc_text"><script language="javascript" type="text/javascript">document.write(bh_genie_cannot_find_ip_reason1_desc);</script></p>
+		<p><script language="javascript" type="text/javascript">document.write(bh_genie_cannot_find_ip_reason3);</script></p>
+		<p class="desc_text"><script language="javascript" type="text/javascript">document.write(bh_genie_cannot_find_ip_reason_desc3);</script></p>
+
+	        <p><script language="javascript" type="text/javascript">document.write(bh_select_no_IP_option);</script></p>
+		<div id="choices_div">
+			<div class="radio_div">
+				<input type="radio" name="cycle_modem_choice" value="0" /><script language="javascript" type="text/javascript">document.write(bh_select_no_IP_option1);</script>
+			</div>
+			<div class="radio_div">
+				<input type="radio" name="cycle_modem_choice" value="1" /><script language="javascript" type="text/javascript">document.write(bh_genie_cannot_find_ip_option2);</script>
+			</div>
+			<div class="radio_div">
+				<input type="radio" name="cycle_modem_choice" value="1"  checked /><script language="javascript" type="text/javascript">document.write(bh_select_no_IP_option3);</script>
+			</div>
+		</div>
+	</div>
+
+       <!--bug 222145 add a new button-->
+       <div id="allBtns_div" class="wizard_buttons_div" align="right">
+
+               <!--div id="btnsContainer_div1" class="buttons_img_div" align="center">
+                       <img src="image/ca_purple_long_button.gif" />
+                       <div class="buttons_words_div">manual_config_connection</div>
+               </div-->
+
+               <div id="btnsContainer_div2" class="buttons_img_div" align="center">
+			<script>
+		var master="<% cfg_get("http_loginname") %>";
+		if( master == "admin" )
+				document.write('<img src="image/ca-little-purple-button.gif" />');
+		else
+				document.write('<img src="image/ca-little-grey-button.png" />');
+			</script>
+			<div class="buttons_words_div"><script language="javascript" type="text/javascript">document.write(bh_next_mark);</script></div>
+		</div>
+	</div>
+	
+</div>
+
+</form>
+</body>
+
+</html>

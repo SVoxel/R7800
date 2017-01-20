@@ -1,0 +1,214 @@
+#!/bin/sh
+
+. /etc/net6conf/6data.conf
+TunnelName="6rd"
+
+check_6rd_is_running() {
+        if ifconfig $TunnelName >&- 2>&- ; then
+                return 0
+        else
+                return 1
+        fi
+}
+
+# make ipv6 address to uppercase && rm :
+to_upper()
+{
+	local prefix=$1
+	local part1=`echo $prefix|cut -f1 -d:`
+	local part2=`echo $prefix|cut -f2 -d:`
+	local part3=`echo $prefix|cut -f3 -d:`
+	local part4=`echo $prefix|cut -f4 -d:`
+
+	[ "x$part2" = "x" ] && part2=0
+	[ "x$part3" = "x" ] && part3=0
+	[ "x$part4" = "x" ] && part4=0
+
+	printf "%04X%04X%04X%04X" 0x$part1 0x$part2 0x$part3 0x$part4
+}
+
+# generate 64 bits hex digital from bin
+bin2hex()
+{
+	local bin=`echo "ibase=2;obase=10000;$1"|bc`
+	local part1=`echo $bin|cut -c 1-4`
+	local part2=`echo $bin|cut -c 5-8`
+	local part3=`echo $bin|cut -c 9-12`
+	local part4=`echo $bin|cut -c 13-16`
+
+	printf $part1:$part2:$part3:$part4::
+}
+
+# the first digital by use bc to change from hex to bin needs to supply.
+supply()
+{
+	local new_prefix=$1
+	local ch=$2
+
+	if [ "$ch" = "0" ] ;then
+		new_prefix="0000$new_prefix"
+	elif [ "$ch" = "1" ] ;then
+		new_prefix="000$new_prefix"
+	elif [ "$ch" = "2" ] || [ "$ch" = "3" ] ;then
+		new_prefix="00$new_prefix"
+	elif [ "$ch" = 4 ] || [ "$ch" = 5 ] || [ "$ch" = 6 ] || [ "$ch" = 7 ] ;then
+		new_prefix="0$new_prefix"
+	fi
+	printf $new_prefix
+}
+
+#printf '%x' $num2
+generate_6rd_prefix()
+{
+	local prefix=$1
+	local plen=$2
+	local zero=0
+
+	prefix=`echo $prefix|cut -c -$plen`
+	local i=$((64 - $plen))
+	while [ $i -gt 0 ]; do
+		prefix="$prefix$zero"
+		i=$(($i - 1))
+	done
+	prefix=$(bin2hex $prefix)
+	new_6rd_prefix="$prefix"
+	echo "generate_6rd_prefix:$new_6rd_prefix"
+}
+
+# to gererate 6rd prefix according to rfc5969.
+# use 6rd.prefix:ipv4address
+generate_6rd_v4_prefix()
+{
+	local prefix=$1
+	local plen=$2
+	local ip4=$3
+	local len4=$((32 - $4))
+
+	local ch=`echo $prefix|cut -c -1`
+	prefix=$(to_upper $prefix)
+	echo "after upper:$prefix"
+	local new_prefix=`echo "ibase=16;obase=2;$prefix"|bc`
+	echo "after to 16:$new_prefix"
+	new_prefix=$(supply $new_prefix $ch)
+
+	generate_6rd_prefix $new_prefix $plen
+
+	new_prefix=`echo $new_prefix|cut -c -$plen`
+	echo "get new_prefix:$new_prefix"
+
+	local new_ip=`printf '%02X%02X%02X%02X' $(echo $ip4| sed 's/\./ /g')`
+	echo "ip hex:$new_ip"
+	ch=`echo $new_ip|cut -c -1`
+	new_ip=`echo "ibase=16;obase=2;$new_ip"|bc`
+	new_ip=$(supply $new_ip $ch)
+	echo "new ip:$new_ip"
+	new_ip=`echo $new_ip|cut -c $(($4 + 1))-`
+
+	local new_prefix2="$new_prefix$new_ip"
+	local total_len=$(($len4 + $plen))
+	local zero=0
+	if [ $total_len -le 64 ] ;then
+		local i=$((64 - $total_len))
+		while [ $i -gt 0 ]; do
+			new_prefix2="$new_prefix2$zero"
+			i=$(($i - 1))
+		done
+	else
+		new_prefix2=`echo $new_prefix2|cut -c -64`
+	fi
+	echo "to gen64:$new_prefix2"
+	new_6rd_v4_prefix=$(bin2hex $new_prefix2)
+	echo "get final:$new_6rd_v4_prefix"
+}
+
+# $1: 2001
+#     2001:1
+#     2001:1:2
+#     2001:1:2:3
+# $2: cafe:1234
+# $3: 1:2:3:4
+# count: ":" number of $1
+generate_6rd_ip()
+{
+	local eui=$1
+	local new_6rd_ip=`echo $new_6rd_v4_prefix|sed 's/:://g'`
+
+	new_6rd_ip="$new_6rd_ip:$eui"
+	printf $new_6rd_ip
+}
+
+start() {
+	if check_6rd_is_running; then
+		echo "6rd function is already running"
+		return 0
+	fi
+	[ "$wan6_type" != "6rd" ] && [ "$wan6_type" != "autoDetect" ] && return
+
+	[ "x$Mask" = "x" ] && Mask=0
+	if [ "$wan6_type" = "autoDetect" ]; then
+		Ipv66rdPrefix=`$CONFIG get Ipv6rdPrefixDynamic`
+		Ipv66rdPrefixlen=`$CONFIG get Ipv6rdPlenDynamic`
+		gw=`$CONFIG get Ipv6rdRelayDynamic`
+		Mask=`$CONFIG get Ipv6rdv4MaskDynamic`
+	fi
+
+	echo "Enabling IPv6RD Tunneling.." > /dev/console
+	LocalIp=`ifconfig $WAN4 | grep 'inet addr' | cut -d':' -f 2|cut -d' ' -f 1`
+	[ "x${LocalIp}" = "x" ]	&& return
+	ValidIp=`echo "$LocalIp" | grep '^[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*$'`
+	if [ ! "${ValidIp}" ]; then
+		echo "Local IP=$LocalIp is invalid"
+		exit 
+	fi
+
+	localip_t1=`printf '%02x%02x:%02x%02x' $(echo $LocalIp | sed 's/\./ /g')`
+	generate_6rd_v4_prefix $Ipv66rdPrefix $Ipv66rdPrefixlen $LocalIp $Mask
+
+	wanlinkip=$(ifconfig $bridge | grep "fe80" | awk '{print $3}' | awk -F/ '{print $1}')
+	eui64=$(geteui64 $wanlinkip)
+	localip=$(generate_6rd_ip $eui64)
+	echo "got localip: $localip" > /dev/console
+
+	$IP addr add $localip/64 dev $bridge
+	$IP tunnel add $TunnelName mode sit local $LocalIp ttl 64
+	$IP tunnel 6rd dev $TunnelName 6rd-prefix $new_6rd_prefix/$Ipv66rdPrefixlen 6rd-relay_prefix $gw/$Mask
+	$IP addr add $localip/$Ipv66rdPrefixlen dev $TunnelName
+	$IP link set $TunnelName up
+	$IP -6 route add ::/0 via ::$gw dev $TunnelName
+
+	# turn off the "Do Not Fragment" flag
+	echo 1 > /proc/sys/net/ipv6/ipv6_6to4_force_ip4fragoff_zero
+
+	$CONFIG set ipv6_6rd_prefix=$new_6rd_v4_prefix
+	$CONFIG set ipv6_6rd_prelen=64
+}
+
+stop_6rd() {
+	echo "Disabling IPv6RD Tunneling.." > /dev/console
+        ifconfig $TunnelName down
+	$IP tunnel del $TunnelName 2>/dev/null
+	/bin/config set ipv6_6rd_prefix=
+	/bin/config set ipv6_6rd_prelen=
+}
+
+stop() {
+        check_6rd_is_running && stop_6rd
+}
+
+restart() {
+	stop
+	start
+}
+
+case "$1" in
+	start)
+	start
+	;;
+	stop)
+	stop
+	;;
+	restart)
+	restart
+	;;
+esac
+

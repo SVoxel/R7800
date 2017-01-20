@@ -1,0 +1,22 @@
+# QSDK WIFI SCRIPT configuration
+
+menu "Configuration"
+
+config QSDK_WIFI_SCRIPT_GIT_REPOSITORY
+	string "Repository name of qsdk wifi script"
+	default ""
+	help
+	  Specify the git repository name of qsdk wifi script, should be the foler name in
+	  git_home path.
+
+config QSDK_WIFI_SCRIPT_GIT_URL
+	string "URL of sqdk wifi script in remote server"
+	default ""
+	help
+	  Should be the URL to indentify repository path in dniserver.
+
+config QSDK_WIFI_SCRIPT_GIT_TREEISH
+	string "Which tag used on the git repository"
+	default ""
+
+endmenu

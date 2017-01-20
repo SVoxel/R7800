@@ -1,0 +1,165 @@
+<% ca_http_header("style/hijack_style.css","style/hijack_ru_welcome.css","/funcs.js","/bas_pppoe.js") %>
+<% nohelp_header("RU_isp_fail.htm", "RU_welcome") %>
+
+<script>
+//load_default(1); 
+var isp_type=parent.isp_type;
+var str_pppoe_with_sta_ip="";
+var str_hidden="";
+var lan_ip="<% cfg_get("lan_ipaddr") %>";
+var lan_subnet="<% cfg_get("lan_netmask") %>";
+
+function loadvalue()
+{
+	str_pppoe_with_sta_ip=document.getElementById("pppoe_sta").innerHTML;
+	document.getElementById("pppoe_sta").innerHTML="";
+	str_hidden=document.getElementById("hidden").innerHTML;
+	document.getElementById("hidden").innerHTML="";
+		
+	var cf=document.forms[0];
+	parent.pppoe_server=parent.connection_id;
+	
+	cf.pppoe_username.value=parent.pppoe_username;
+	cf.pppoe_passwd.value=parent.pppoe_password;
+	cf.pppoe_servername.value=parent.pppoe_server;
+	
+	if(isp_type=="7" || isp_type=="8") /*pppoe+dynamic*/
+	{
+		  document.getElementById("view").innerHTML=str_hidden;
+	}
+	else if(isp_type=="17" || isp_type=="18") //pppoe
+	{
+		  document.getElementById("view").innerHTML=str_hidden;		
+	}
+	else if(isp_type=="87") /*pppoe(dyn) with static ip*/
+	{
+		  cf.pppoe_servername.value="";
+		  document.getElementById("view").innerHTML=str_hidden;
+		
+	}	
+	else if(isp_type=="88") /*pppoe(sta) with static ip*/
+	{
+		  cf.pppoe_servername.value="";
+		  document.getElementById("view").innerHTML=str_pppoe_with_sta_ip;
+		
+	}
+
+        //buttons left
+        var btns_div1 = document.getElementById("btnsContainer_div1");
+		if( master == "admin" )
+		{
+			btns_div1.onclick = function()
+			{
+                location.href="RU_welcome.htm";
+			}
+		}
+
+        //buttons right
+        var btns_div2 = document.getElementById("btnsContainer_div2");
+		if( master == "admin" )
+		{
+			btns_div2.onclick = function()
+			{
+                RU_pppoe_user_info();
+			}
+		}
+
+}
+
+
+</script>
+
+<input type="hidden" name="conflict_wanlan">
+<input type="hidden" name="change_wan_type" value="0">
+<input type="hidden" name="run_test" value="">
+<input type="hidden" name="WANAssign">
+<input type="hidden" name="pppoe_dod">
+<input type="hidden" name="pppoe_ipaddr">
+<input type="hidden" name="pppoe_dual_ipaddr">
+<input type="hidden" name="pppoe_dual_subnet">
+<input type="hidden" name="pppoe_dual_gateway">
+<input type="hidden" name="DNSAssign">
+<input type="hidden" name="pppoe_dnsaddr1">
+<input type="hidden" name="pppoe_dnsaddr2">
+<input type="hidden" name="hidden_pppoe_idle_time" value="0">
+<input type="hidden" name="dual_access" value="1">
+<input type="hidden" name="pppoe_dual_assign">
+<input type="hidden" name="basic_type" value="0">
+<input type="hidden" name="ppp_login_type" value="0">
+<input type="hidden" name="pppoe_servername" >
+<input type="hidden" name="welcome_wan_type">
+<div class="wizard_content_div">
+<div class="wizard_words_div">
+	<H1><script>document.write(RU_CA_head)</script></H1>
+<TABLE width=100%>
+<tr>
+	<td colspan=2><script>document.write(RU_isp_l2tp_head)</script></td>
+</tr>
+	<tr><td><br></td></tr>
+<tr>
+	<td><script>document.write(basic_pppoe_login)</script></td><td align=right><input type=text name=pppoe_username></td>	
+</tr>
+<tr>
+	<td><script>document.write(basic_pppoe_passwd)</script></td><td align=right><input type=text name=pppoe_passwd></td>	
+</tr>
+
+</table>
+<div id=view></div>
+<div align="center" ID="pppoe_sta" style="position:absolute;top:0;left:0;visibility:hidden">
+<table width=100%>
+	<TR>
+	<TD><script>document.write(pppoe_mark_ip)</script></TD>
+
+	<TD align=right>
+	<input type="text" name="WPethr1"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="WPethr2"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="WPethr3"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="WPethr4"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+  </TR>
+</table>	
+</div>	
+
+<div align="center" ID="hidden" style="position:absolute;top:0;left:0;visibility:hidden">
+	<input type="hidden" name="WPethr1"  value="" >
+	<input type="hidden" name="WPethr2"  value="" >
+	<input type="hidden" name="WPethr3"  value="" >
+	<input type="hidden" name="WPethr4"  value="" >
+</div>	
+
+<table width=100%>
+
+<tr><td><br></td></tr>
+</TABLE>
+</div><!--wizard_words_div -->
+<div id="center_buttons">
+  <div id="allBtns_div" class="wizard_buttons_div" align="center">
+                <div id="btnsContainer_div1" class="buttons_img_div" align="center">
+				<script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							document.write('<img src="image/ca-little-grey-button.png" />');
+                        </script>
+                        <div class="buttons_words_div"><script>document.write(RU_back)</script></div>
+                </div>
+                <div class="buttons_split"></div>
+                <div id="btnsContainer_div2" class="buttons_img_div" align="center">
+						<script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							
+							document.write('<img src="image/ca-little-grey-button.png" />');
+						</script>
+                      
+                        <div class="buttons_words_div"><script>document.write(RU_next)</script></div>
+                </div>
+  </div><!--allBtns_div -->
+</div>
+</div><!--wizard_content_div -->
+</form>
+</BODY>
+</HTML>

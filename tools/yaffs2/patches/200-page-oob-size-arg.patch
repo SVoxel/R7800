@@ -1,0 +1,61 @@
+diff --git a/yaffs2/utils/mkyaffs2image.c b/yaffs2/utils/mkyaffs2image.c
+index 4526399..9dcdb2f 100644
+--- a/yaffs2/utils/mkyaffs2image.c
++++ b/yaffs2/utils/mkyaffs2image.c
+@@ -43,8 +43,8 @@ unsigned yaffs_traceMask=0;
+ 
+ #define MAX_OBJECTS 50000
+ 
+-#define chunkSize 2048
+-#define spareSize 64
++static unsigned chunkSize = 2048;
++static unsigned spareSize = 64;
+ 
+ const char * mkyaffsimage_c_version = "$Id: mkyaffs2image.c,v 1.2 2005/12/13 00:34:58 tpoynor Exp $";
+ 
+@@ -456,20 +456,37 @@ int main(int argc, char *argv[])
+ {
+     int fixstats = 0;
+ 	struct stat stats;
++	int opt;
+ 	
+-	if (argc > 1) {
+-        if (strcmp(argv[1], "-f") == 0) {
+-            fixstats = 1;
+-            argc--;
+-            argv++;
+-        }
+-    }
++	while ((opt = getopt(argc, argv, "fp:o:")) != -1)
++	{
++		switch(opt)
++		{
++		case 'f':
++			fixstats = 1;
++			break;
++		case 'p':
++			chunkSize = strtoul(optarg, NULL, 10);
++			break;
++		case 'o':
++			spareSize = strtoul(optarg, NULL, 10);
++			break;
++		default:
++			printf("Unknown option '-%c'\n", opt);
++			exit(1);
++		}
++	}
++
++	argv += (optind - 1);
++	argc -= (optind - 1);
+ 
+ 	if(argc < 3)
+ 	{
+ 	    fprintf(stderr,"mkyaffs2image: image building tool for YAFFS2 built "__DATE__"\n");
+-		fprintf(stderr,"usage: mkyaffs2image [-f] dir image_file [convert]\n");
++		fprintf(stderr,"usage: mkyaffs2image [options] dir image_file [convert]\n");
+         fprintf(stderr,"           -f         fix file stat (mods, user, group) for device\n");
++		fprintf(stderr,"           -p N       no. of bytes per page/chunk, default 2048\n");
++		fprintf(stderr,"           -o N       no. of oob bytes per page, default 64\n");
+ 		fprintf(stderr,"           dir        the directory tree to be converted\n");
+ 		fprintf(stderr,"           image_file the output file to hold the image\n");
+         fprintf(stderr,"           'convert'  produce a big-endian image\n");

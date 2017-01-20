@@ -1,0 +1,132 @@
+#!/bin/sh
+
+. ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+#
+# Environment config
+#
+BINARY="p0f"
+NAME=${BINARY}
+DISPLAY_NAME=p0f
+
+#
+# P0f config
+#
+P0F_BIN="${BINDIR}/${BINARY}"
+PIDFILE="${RUNDIR}/${BINARY}.pid"
+# server socket for client requests
+SOCKET="${RUNDIR}/${NAME}.sock"
+# monitored interface
+IFACE="$LAN_IFACE"
+# fingerprint database path
+if [ -e "${RUNDIR}/p0f.fp" ]; then
+	FINGERPRINT_FILE="${RUNDIR}/p0f.fp"
+else
+	FINGERPRINT_FILE="${CFGDIR}/p0f.fp"
+fi
+
+# if the debug file exists, policy_engine is not started at boot
+KROUTER_DEBUG_FILE=${KROUTER_DEBUG_FILE:-"/etc/krouter_debug"}
+
+# the command line parameters
+P0F_OPTIONS="-s ${SOCKET} -i ${IFACE} -f ${FINGERPRINT_FILE}"
+
+#
+# Functions
+#
+
+# p0f won't start unless $IFACE has an ip address
+# wait for the ip address here
+wait_for_iface() {
+	local checkcount
+	checkcount=0
+	while [ ${checkcount} -lt 5 ] && ! ifconfig ${IFACE} | grep "inet addr" > /dev/null
+	do
+		echo "waiting for ${IFACE}"
+		sleep 1
+		checkcount=$((checkcount+1))
+	done
+}
+
+get_netaddr() {
+	for num in $(route -n | grep ${IFACE} | awk '{ print $1 }'); do
+		first=$(echo ${num} | awk -F\. '{ print $1 }')
+		if [ "${first}" -lt "224" ]; then
+			echo ${num}
+			return
+		fi
+	done
+}
+
+get_netmask() {
+	echo $(ifconfig ${IFACE} | grep "inet addr" | awk -F' ' '{ print $4 }' | awk -F: '{ print $2 }')
+}
+
+start() {
+	local netaddr
+	local netmask
+	local filter
+
+	wait_for_iface
+
+	netaddr=`get_netaddr`
+	netmask=`get_netmask`
+	if [ "${netaddr}" != "" ]; then
+		filter="(not src net ${netaddr} mask ${netmask} or not dst net ${netaddr} mask ${netmask}) and (port 80 or ((tcp[tcpflags] & tcp-syn) == 1))"
+	fi
+
+	[ ! -d "${RUNDIR}" ] && {
+		mkdir ${RUNDIR}
+	}
+
+	[ -e "${SOCKET}" ] && {
+		rm ${SOCKET}
+	}
+
+	[ -x ${P0F_BIN} ] || {
+		echo "${BINARY} not found: ${P0F_BIN}"
+		exit 2
+	}
+
+	echo -n "Starting ${NAME}: "
+	${P0F_BIN} ${P0F_OPTIONS} "${filter}" >${P0F_FIFO} "$@" &
+	retval=$?
+	echo
+
+	# p0f doesn't write its pid to a file, neither does start-stop-daemon
+	# Sometimes we get a parent pid if we pidof too early
+	sleep 1
+	pidof p0f > ${PIDFILE}
+
+	return ${retval}
+}
+
+boot() {
+	if [ -n "${KROUTER_DEBUG_FILE}" ] && [ -e "${KROUTER_DEBUG_FILE}" ]
+	then
+		# If the debug file is present, don't start
+		echo "debug mode requested, refusing to start ${NAME}"
+	else
+		start "$@"
+	fi
+}
+
+stop() {
+	[ -f "${PIDFILE}" ] && {
+		echo -n "Stopping ${NAME}: "
+		kill -TERM $(cat ${PIDFILE})
+		retval=$?
+		echo
+		[ ${retval} -eq 0 ] && {
+			rm -f ${PIDFILE}
+			[ -e "${SOCKET}" ] && {
+				rm ${SOCKET}
+			}
+		}
+		return ${retval}
+	}
+	return 0
+}
+
+action "$@"
+exit $?

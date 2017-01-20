@@ -1,0 +1,19 @@
+#!/bin/sh
+
+. /etc/appflow/rc.appflow
+
+[ "$ACTION" = "ifup" ] && [ "$INTERFACE" = "wan" ] && {
+	/etc/init.d/streamboost ifup
+}
+
+[ "$ACTION" = "ifdown" ] && [ "$INTERFACE" = "wan" ] && {
+	/etc/init.d/streamboost ifdown
+}
+
+[ "$ACTION" = "ifup" ] && [ "$INTERFACE" = "lan" ] && {
+	/etc/init.d/streamboost ifup
+}
+
+[ "$ACTION" = "ifdown" ] && [ "$INTERFACE" = "lan" ] && {
+	/etc/init.d/streamboost ifdown
+}

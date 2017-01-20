@@ -1,0 +1,31 @@
+ifeq ($(obj),)
+obj := .
+endif
+
+DEPTH := ../..
+
+include $(obj)/$(DEPTH)/os/linux/Makefile-linux.common
+OSDEP_SRC := $(DEPTH)/os/linux/src
+
+ifneq ($(strip ${ATH_WLAN_COMBINE}),1)
+INCS += -I$(HAL) -I$(HAL)/$(OS) -I$(ATH) -I$(ATH_RATE) -I$(ATH_PKTLOG) -I$(ATH_DFS) 
+INCS += -I$(obj)/$(DEPTH)/umac/include -I$(obj)/$(DEPTH)/umac/if_lmac
+else
+INCS +=	-I$(obj)/$(DEPTH)/include -I$(obj)/$(DEPTH)/umac/include \
+		-I$(obj)/$(DEPTH)/umac/if_lmac -I$(obj)/$(DEPTH)/umac/crypto \
+		-I$(obj)/$(DEPTH)/umac/scan -I$(obj)/$(DEPTH)/umac/resmgr \
+		-I$(obj)/$(DEPTH)/umac/pm -I$(obj)/$(DEPTH)/umac/txrx \
+		-I$(obj)/$(DEPTH)/umac/acs \
+		-I$(obj)/$(DEPTH)/hal -I$(obj)/$(DEPTH)/lmac/ath_dev \
+		-I$(obj)/$(DEPTH)/hal/$(OS) -I$(obj)/$(DEPTH)/os/$(OS)/ath_hal \
+		-I$(ATH_RATE) -I$(ATH_PKTLOG) -I$(ATH_DFS) -I$(ATH_SPECTRAL)
+endif 
+
+
+obj-m += wlan_ext.o
+
+EXTRA_CFLAGS+= $(INCS) $(COPTS) -Wno-unused-function
+
+wlan_ext-objs := ieee80211_ext.o
+
+wlan_ext-y := ieee80211_ext.o

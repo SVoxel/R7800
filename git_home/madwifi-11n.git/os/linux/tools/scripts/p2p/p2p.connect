@@ -1,0 +1,299 @@
+#!/bin/bash
+# Script to start p2p connection.
+
+#
+# Copyright (c) 2013 Qualcomm Atheros, Inc.
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary.
+#
+
+PEER_WAIT_TIMEOUT=2
+PEER_WAIT_STRING=
+PEER_WAIT_RETURN=0
+PEER_WAIT_SUCC_STRING=
+PEER_WAIT_FAIL_STRING=
+PEER_SIGNAL=0
+MASTER=0
+ITERATION=0
+PING_FAIL=0;
+j=0
+
+function usage()
+{
+  echo "usage: p2p.connect -d -f <find_timeout> -i <iterations>  <device address of the peer>"
+  echo "-d collects packetlog"
+  echo "-m master"
+  exit 1;
+}
+
+function exit_action()
+{
+   if [ $PKT_LOG = "1" ]
+   then 
+     pktlogstop  >> /tmp/p2plog 2>&1 
+     owldump.pl -Bea pktlogdump.dat > dump.text
+   fi
+}
+
+function next_iter()
+{
+   exit_action;
+   let j=$j+1;
+   echo -n " Wait for Peer to be ready for next iter ."
+   if [ $MASTER = "0" ]
+   then
+     echo "NEXT ITER $j" >> p2p.log 
+   fi
+   PEER_SIGNAL=0
+   PEER_WAIT_TIMEOUT=500
+   PEER_WAIT_STRING="NEXT ITER"
+   PEER_WAIT_SUCC_STRING="PEER NEXT ITER"
+   PEER_WAIT_FAIL_STRING="WAIT FOR PEER NEXT ITER FAILED"
+   if [ $PING_FAIL = "1" ]
+   then
+     wpa_cli terminate > /dev/null 2>&1
+   fi
+   wait_for_peer;
+   if [ $PING_FAIL = "1" ]
+   then
+     copy_logs;
+   fi
+   echo "Next Iteration $j ..."  
+   ITERATION=$j
+   if [ $MASTER = "1" ]
+   then
+     echo "NEXT ITER $j" >> p2p.log 
+   fi
+   sleep 5
+}
+
+function copy_logs()
+{
+   if [ $MASTER = "1" ]
+   then 
+    LOGDIR=`date "+log%Y-%m-%d#%H:%M:%S"`
+    mkdir -p ~/p2plog/$LOGDIR
+    scp $PEER_DEBUG_ADDR:~/p2p/dump.text ~/p2plog/$LOGDIR/dump2.text  
+    scp $PEER_DEBUG_ADDR:~/supp2.log ~/p2plog/$LOGDIR/supp2.log  
+    scp $PEER_DEBUG_ADDR:/tmp/p2plog ~/p2plog/$LOGDIR/p2plog2 
+    cp ~/p2p/dump.text ~/p2plog/$LOGDIR/dump1.text  
+    cp ~/supp2.log ~/p2plog/$LOGDIR/supp1.log  
+    cp /tmp/p2plog ~/p2plog/$LOGDIR/p2plog1 
+   fi
+}
+
+function wait_for_peer()
+{
+   l=0;
+   while [ $l -lt $PEER_WAIT_TIMEOUT ]
+   do
+      echo -n "."
+      scp $PEER_DEBUG_ADDR:~/p2p/p2p.log /tmp   > /tmp/log 
+      grep -i "$PEER_WAIT_STRING" /tmp/p2p.log  > /tmp/log
+      if [ $? -eq 0 ]
+      then
+          break;
+      fi
+      let l=$l+1;
+      sleep 1
+   done
+   echo " "
+   if [ $l -eq $PEER_WAIT_TIMEOUT ]
+   then
+      echo $PEER_WAIT_FAIL_STRING | tee -a /tmp/p2plog 2>&1 
+      PEER_SIGNAL=0
+   else
+      echo $PEER_WAIT_SUCC_STRING | tee -a /tmp/p2plog 2>&1 
+      PEER_SIGNAL=1
+   fi
+
+}
+
+DEVICE_ADDR="0"
+FIND_TIMEOUT=15
+CONNECT_ITER=1
+PKT_LOG=0
+FAST_LISTEN=0
+FAST_FIND=0
+PEER_IP=0
+PEER_DEBUG_ADDR=0
+
+CONTINUE_CONNECT=0
+
+args=($*)
+
+i=0
+while [ $i -lt $# ]
+do
+case ${args[$i]} in
+        -f) let i=$i+1;
+            if [ $i -eq $# ]
+            then
+               usage;
+            fi;
+            FIND_TIMEOUT=${args[$i]};;
+        -i) let i=$i+1;
+            if [ $i -eq $# ]
+            then
+               usage;
+            fi;
+            CONNECT_ITER=${args[$i]};;
+        -d) PKT_LOG=1;;
+        -m) MASTER=1;;
+        -fd) FAST_FIND=1;;
+        -fl) FAST_LISTEN=1;;
+        -c) CONTINUE_CONNECT=1;;
+        -p) let i=$i+1;
+            if [ $i -eq $# ]
+            then
+               usage;
+            fi;
+            PEER_IP=${args[$i]};;
+        -pd) let i=$i+1;
+            if [ $i -eq $# ]
+            then
+               usage;
+            fi;
+            PEER_DEBUG_ADDR=${args[$i]};;
+        -*) usage;;
+         *) DEVICE_ADDR=${args[$i]};;
+esac
+let i=$i+1;
+done
+
+if [ $DEVICE_ADDR = "0" ]
+then
+  usage;
+fi
+
+echo find timeout $FIND_TIMEOUT seconds
+echo connection iterations $CONNECT_ITER
+echo device address $DEVICE_ADDR
+j=0
+touch wpa_cli.log
+if [ $PKT_LOG = "1" ]
+then 
+    sudo ath80211 -i p2p1 +scan +roam +state +auth +assoc +crypto +power +action +elemid +state +mlme +input +scanentry >& /dev/null 
+    sudo ath80211 -i p2p0 +scan +roam +state +auth +assoc +crypto +power +action +elemid +state +mlme +input +scanentry >& /dev/null
+fi
+while [ $j -lt $CONNECT_ITER ]
+do 
+   echo "" > p2p.log 
+   echo "" > /tmp/p2plog 
+   wpa_cli terminate > /dev/null 2>&1
+   wlanconfig p2p1 stop 0
+   sleep 2
+   open p2pdev.start &
+   sleep 3
+
+   if [ $PKT_LOG = "1" ]
+   then
+      pktlogstart >> /tmp/p2plog 2>&1 
+   fi
+   if [ $FAST_FIND = "1" ] 
+   then
+      wpa_cli p2p_find 5
+      sleep 5
+   else
+     if [ $FAST_LISTEN = "1" ] 
+     then
+        wpa_cli p2p_listen 
+        sleep 7
+     else 
+      wpa_cli p2p_find 
+      echo -n "DISCOVERING PEER ."
+      sleep 2 
+      l=0;
+      TIME_OUT=$FIND_TIMEOUT
+      sleep 2
+      while [ $l -lt $TIME_OUT ]
+         do
+         echo -n "."
+         sleep 2
+         grep -i "Device Info: addr $DEVICE_ADDR" ~/supp2.log > /tmp/log
+            if [ $? -eq 0 ]
+            then
+                echo " "
+                echo "DEVICE FOUND"
+                echo "DEVICE FOUND" >> p2p.log 
+               break;
+            fi
+         let l=$l+1;
+         done
+     fi
+   fi
+
+#if peer not found then bail out.
+
+   if [ $l -eq $TIME_OUT ]
+   then
+      echo " "
+      echo "DEVICE NOT FOUND" | tee -a  /tmp/p2plog 2>&1
+      next_iter;
+      continue;
+   fi
+#wait for peer to find me.
+   echo -n "WAITING FOR PEER TO DISCOVER ME ."
+   if [ $PEER_DEBUG_ADDR = "0" ] 
+   then
+     sleep 5 
+   else
+     PEER_SIGNAL=0
+     PEER_WAIT_TIMEOUT=$FIND_TIMEOUT
+     PEER_WAIT_STRING="DEVICE FOUND"
+     PEER_WAIT_SUCC_STRING="PEER FOUND ME"
+     PEER_WAIT_FAIL_STRING="PEER FAILED TO FIND ME"
+     wait_for_peer;
+     if [ $PEER_SIGNAL -eq 0 ]
+     then
+       next_iter;
+       continue;
+     fi
+   fi
+
+   wpa_cli p2p_stop 
+   sleep 1
+
+   wpa_cli p2p_connect $DEVICE_ADDR pbc 
+   l=0;
+   TIME_OUT=4
+   echo -n "CONNECTING ."
+   while [ $l -lt $TIME_OUT ]
+   do
+    sleep 2
+    echo -n "."
+    grep -i "P2P-GROUP-FORMATION-SUCCESS" ~/supp2.log > /tmp/log
+    if [ $? -eq 0 ]
+    then
+               break;
+    fi
+    let l=$l+1;
+   done
+
+    grep -i "P2P-GROUP-FORMATION-SUCCESS" ~/supp2.log > /tmp/log
+    if [ $? -eq 0 ]
+    then
+      echo "" 
+      echo "GROUP FORMATION SUCCESS" | tee -a /tmp/p2plog 2>&1
+    fi
+   l=0
+   TIME_OUT=2
+   while [ $l -lt $TIME_OUT ]
+   do
+    if { ping -c 3 $PEER_IP; } 
+    then
+      break;
+    fi
+    let l=$l+1;
+   done
+   PING_FAIL=0
+   if { ping -c 2 $PEER_IP; } 
+    then
+      echo "PING SUCCESS" | tee -a  /tmp/p2plog 2>&1
+    else
+      echo "PING FAILED" | tee -a /tmp/p2plog 2>&1
+      PING_FAIL=1
+   fi
+   grep -i "P2P-" ~/supp2.log  >> /tmp/p2plog
+  next_iter;
+done

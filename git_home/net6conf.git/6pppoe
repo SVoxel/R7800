@@ -1,0 +1,302 @@
+#!/bin/sh
+
+. /etc/net6conf/6data.conf
+
+INSMOD=/sbin/insmod
+MODDIR=/lib/modules/2.6.15
+MIN_MTU=1280
+MAX_MTU=1492
+PPP_SCT="/etc/ppp/peers/pppoe-ipv6"
+WAN_IF=`config get wan_ifname`
+PPPOEv6_WAY=`config get ipv6_pppoe_way`
+IPV6_UP="/etc/ppp/ipv6-up"
+IPV6_DOWN="/etc/ppp/ipv6-down"
+PPP_CHAPS="/etc/ppp/chap-secrets"
+PPP_PAPS="/etc/ppp/pap-secrets"
+IPV6_PPPS="/etc/ppp/ipv6-secrets"
+IPV4_PPPS="/etc/ppp/ipv4-secrets"
+
+write_dhcp6c_conf() {
+	printf   'interface ppp%s {\n' $IPV6_PPPOE_UNIT
+if [ "$PPPOEv6_WAY" != "1" ]; then
+	printf       '\tsend ia-na 1;\n'
+fi
+	printf       '\tsend ia-pd 11;\n'
+	printf       '\trequest domain-name;\n'
+	printf       '\trequest domain-name-servers;\n'
+	printf       '\trequest ntp-servers;\n'
+	printf       '\trequest sip-server-domain-name;\n'
+	printf       '\trequest sip-server-address;\n'
+	printf       '\tscript "%s";\n' "$DHCP6C_SCRIPT"
+	printf   '};\n\n'
+
+if [ "$PPPOEv6_WAY" != "1" ]; then
+	printf   'id-assoc na 1 {\n'
+	printf   '};\n\n'
+fi
+	printf   'id-assoc pd 11 {\n'
+	printf   '};\n'
+}
+
+
+write_ipv6_up() {
+	printf   '#!/bin/sh\n\n'
+	printf   '/etc/net6conf/6pppoe autodet\n'
+	#add the default route
+	printf   '%s -6 route add default dev %s\n' $IP $WAN
+	printf   'echo 1 > /tmp/ppp/ppp2-status\n'
+}
+
+write_ipv6_down() {
+	printf   '#!/bin/sh\n\n'
+	printf   'ifconfig %s down\n' $WAN
+	printf   'while [ 1 ]\n'
+	printf   'do\n'
+	printf   '	if ps | grep dhcp6c | grep -v grep >&- 2>&- ; then\n'
+	printf   '		/etc/net6conf/6dhcpc stop\n'
+	printf   '		sleep 1\n'
+	printf   '	else\n'
+	printf   '		break\n'
+	printf   '	fi\n'
+	printf   'done\n'
+	printf   '/etc/net6conf/net6conf clear\n'
+	printf   'local reload=`/bin/config get ipv6_pppoe_reload`\n'
+	printf   '[ "x$reload" = "x1" ] && /etc/net6conf/6service reload\n'
+	printf   'sleep 2\n'
+	printf   'echo 0 > /tmp/ppp/ppp2-status\n'
+}
+
+print_pppoe_options() {
+	local user=$1
+	local mtu=$2
+	local service=$3
+
+	printf   'defaultroute\n'
+	printf   '%s\n' "-ip"
+	printf   '+ipv6\n'
+	printf   'ipv6cp-accept-local\n'
+	printf   'ipv6cp-use-persistent\n'
+# config ppp options
+	printf   'noauth\n'
+	printf   'noipdefault\n'
+	printf   'noaccomp\n'
+	printf   'hide-password\n'
+	printf   'default-asyncmap\n'
+	printf   'connect /bin/true\n'
+	printf   'persist\n'
+	printf   'lcp-echo-failure 6\n'
+	printf   'lcp-echo-interval 20\n'
+	printf   'mru %s\n' $mtu
+	printf   'mtu %s\n' $mtu
+	printf   'user %s\n' $user
+	printf   'unit %s\n' $IPV6_PPPOE_UNIT
+	printf   'plugin rp-pppoe.so %s\n' $WAN_IF
+
+	printf   '%s\n' "$service"
+}
+
+del_ppp0_ip6() {
+	local pre_ip=`ifconfig ppp0|grep "inet6 addr" |awk '{print $3}'`
+	for loop in $pre_ip
+	do
+		$IP -6 addr del $loop dev ppp0
+	done
+}
+
+start() {
+	# we must wait the interface "ppp2/ppp0" is down
+	while [ 1 ]
+	do
+		if ifconfig -a | grep $WAN >&- 2>&-; then
+			sleep 1
+			continue
+		else
+			break
+		fi
+	done
+
+	#write the dhcpv6 client config file to start dhcp6c After the PPP link has been established successfully;
+	write_dhcp6c_conf > $DHCP6C_CONF
+
+	#write the ipv6 up script
+	write_ipv6_up > $IPV6_UP
+	chmod +x $IPV6_UP
+	#write the ipv6 down script
+	write_ipv6_down > $IPV6_DOWN
+	chmod +x $IPV6_DOWN
+
+	#stop dhcpv6 client
+	local pid=`ps | grep dhcp6c | grep -v grep |awk  -F: '{print  $1}'`
+	if [ "x$pid" != "x" ]; then
+		/bin/kill -9 $pid
+	fi
+
+	#insmod related module
+	local modpppoe=`lsmod | grep pppoe`
+	if [ "x$modpppoe" = "x" ]; then
+		$INSMOD $MODDIR/slhc.ko
+		$INSMOD $MODDIR/ppp_generic.ko
+		$INSMOD $MODDIR/pppox.ko
+		$INSMOD $MODDIR/pppoe.ko
+	fi
+	# check if pppoev6 uses the same session with pppoev4
+	local pppoe_dod=`config get wan_endis_dod`
+	if [ "x$PPPOEv6_type" = "x1" ] ;then
+		if [ "x$pppoe_dod" = "x1" -o "x$pppoe_dod" = "x2" ] ;then
+			echo "currently only support ipv6 pppoe persist"
+			return
+		fi
+		. /lib/network/ppp.sh
+		setup_interface_ppp $1
+		return
+	else
+		#create dev/ppp and dir /tmp/ppp/peers
+		mknod /dev/ppp c 108 0
+		mkdir -p /tmp/ppp
+		mkdir -p /etc/ppp/peers
+		if ! [ -f "$IPV6_UP" ]; then
+			write_ipv6_up > $IPV6_UP
+			chmod +x $IPV6_UP
+			write_ipv6_down > $IPV6_DOWN
+			chmod +x $IPV6_DOWN
+		fi	
+	fi
+
+	local ipv4_proto=`$CONFIG get wan_proto`
+	local mtu
+	if [ "$ipv4_proto" = "l2tp" ]; then
+		mtu=`$CONFIG get wan_l2tp_mtu`
+	elif [ "$ipv4_proto" = "pptp" ]; then
+		mtu=`$CONFIG get wan_pptp_mtu`
+	elif [ "$ipv4_proto" = "pppoe" ]; then
+		mtu=`$CONFIG get wan_pppoe_mtu`
+	else
+		# ipv6 ppp2 base on wan port(such as eth0);
+		# ppp packet has 8 byte head more than ethernet packet; 
+		# So pppoe port mtu = ethernet mtu(web set) - 8
+		mtu=`$CONFIG get wan_dhcp_mtu`
+		mtu=$(($mtu-8))
+	fi
+
+	if [ "$mtu" -gt "$MAX_MTU" -o "$mtu" -lt "$MIN_MTU" ]; then
+		mtu=1454
+	fi
+
+	local user=`$CONFIG get ipv6_pppoe_username`
+	local passwd=`$CONFIG get ipv6_pppoe_passwd`
+	[ "x$($CONFIG get ipv6_pppoe_servername)" != "x" ] && service="rp_pppoe_service $($CONFIG get ipv6_pppoe_servername)"
+
+	print_pppoe_options "$user" "$mtu" "$service" > $PPP_SCT
+
+	sed -i '/user/ s/\\/\\\\/g' $PPP_SCT
+	sed -i '/user/ s/\#/\\#/g' $PPP_SCT
+
+	sed -i '/rp_pppoe_service/ s/\\/\\\\/g' $PPP_SCT
+	sed -i '/rp_pppoe_service/ s/\#/\\#/g' $PPP_SCT
+
+	echo "${user} * \"${passwd}\"" > $IPV6_PPPS
+	sed -i 's/\\/\\\\/g' $IPV6_PPPS
+	sed -i 's/\#/\\#/g' $IPV6_PPPS
+
+	#combination ipv4 and ipv6 ppp secrets file
+	if [ -f $IPV4_PPPS ]; then
+		cat $IPV4_PPPS > $PPP_CHAPS
+		cat $IPV4_PPPS > $PPP_PAPS
+		cat $IPV6_PPPS >> $PPP_CHAPS
+		cat $IPV6_PPPS >> $PPP_PAPS
+	else
+		cat $IPV6_PPPS > $PPP_CHAPS
+		cat $IPV6_PPPS > $PPP_PAPS
+	fi
+
+	# start up pppd
+	/sbin/ifconfig $WAN_IF up
+	/usr/sbin/pppd call pppoe-ipv6 updetach &
+}
+
+stop() {
+	local ipv6_pppd=`ps | grep "pppd call pppoe-ipv6 updetach" | grep -v "grep" |awk '{print $1}'`
+	if [ "x$ipv6_pppd" != "x" ]; then
+		/bin/kill $ipv6_pppd
+	fi
+
+	# only kill ppp v4 when currently use the same session
+	if [ "x$PPPOEv6_type" = "x1" -a "x$wan6_type" = "xpppoe" ] ;then
+		local ipv4_pppd=`ps | grep "pppd call dial-provider updetach" | grep -v "grep" |awk '{print $1}'`
+        	if [ "x$ipv4_pppd" != "x" ]; then
+                	/bin/kill -SIGHUP $ipv4_pppd
+	                /bin/kill $ipv4_pppd
+        	fi
+	fi
+
+	del_ppp0_ip6
+	return 0
+}
+
+add_ipv6_dns() {
+	if [ "x$wan6_type" = "xpppoe" -a "$PPPOEv6_WAY" = "1" ] || [ "x$wan6_type" = "xautoConfig" ] ; then
+		write_ra_dns $RA_DNS_FILE  /tmp/resolv.conf
+	fi
+	write_ra_dns $IPV6_DNS  /tmp/resolv.conf
+}
+
+pppoe_autodet() {
+        local wait_time="3"
+        while [ "$wait_time" -gt "0" ]; do
+		/usr/bin/killall dhcp6c
+        	echo 1 > /proc/sys/net/ipv6/conf/${WAN}/autoconf
+		echo 0 > /proc/sys/net/ipv6/conf/${WAN}/forwarding
+		/sbin/rs_send -i $WAN -h $WAN_IF -c 3 -t 1 &
+                sleep 4
+		echo 0 > /proc/sys/net/ipv6/conf/${WAN}/autoconf
+		echo 1 > /proc/sys/net/ipv6/conf/${WAN}/forwarding
+		sleep 2
+                ra_ip=`ifconfig $WAN |grep "inet6 addr" |grep -v "Link" |awk '{print $3}'`
+		/usr/bin/killall -9 dhcp6c
+                if [ "x$ra_ip" != "x" ]; then
+			PPPOEv6_WAY=1
+			config set ipv6_pppoe_way=1
+			break
+		else
+			PPPOEv6_WAY=0
+			config set ipv6_pppoe_way=0
+			write_dhcp6c_conf > $DHCP6C_CONF
+			write_ipv6_up > $IPV6_UP
+			/usr/sbin/dhcp6c -3 -h $WAN_IF -c /tmp/dhcp6c.conf $WAN
+                	sleep 6
+                	dhcp_ip=`ifconfig $WAN |grep "inet6 addr" |grep -v "Link" |awk '{print $3}'`
+			[ "x$dhcp_ip" != "x" ] && break
+                fi
+                wait_time=$(( $wait_time - 1 ))
+        done
+
+	if [ "$PPPOEv6_WAY" = "1" ]; then
+		write_dhcp6c_conf > $DHCP6C_CONF
+		/usr/sbin/dhcp6c -3 -h $WAN_IF -c /tmp/dhcp6c.conf $WAN
+		echo 1 > /proc/sys/net/ipv6/conf/${WAN}/autoconf
+	fi
+	return 0
+}
+
+restart() {
+	stop
+	start
+}
+
+case "$1" in
+	start)
+	start
+	;;
+	stop)
+    	stop
+    	;;
+	restart)
+	restart
+	;;
+	adddns)
+	add_ipv6_dns
+	;;
+	autodet)
+	pppoe_autodet
+	;;
+esac

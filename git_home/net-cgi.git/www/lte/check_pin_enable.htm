@@ -1,0 +1,33 @@
+<% http_header("style/form.css") %>
+<body>
+<div class="page_title">$sim_head</div>
+<div id="main" class="main">
+	<table width=100% border=0 cellpadding=0 cellspacing=3>
+		$bluebar
+		<tr id="fail"><td nowrap colspan=2 align=center><br/>$enable_pin_error<br/><br/></td></tr>
+		<tr id="succ" style="display:none"><td nowrap colspan=2 align=center><br/>Enable/Disable PIN Successfully!<br/><br/></td></tr>
+		$bluebar
+	</table>
+</div>
+<script>
+var action_ret="<% cfg_get("lte_sim_action_ret") %>";
+function goback()
+{
+	location.href="check_sim_wait.htm";
+}
+
+if(action_ret == "100")
+{
+	document.getElementById("succ").style.display="";
+	document.getElementById("fail").style.display="none";
+	setTimeout("goback();",3000);
+}
+else
+{
+	document.getElementById("succ").style.display="none";
+	document.getElementById("fail").style.display="";
+	setTimeout("goback();",3000);
+}
+</script>
+</body>
+</html>

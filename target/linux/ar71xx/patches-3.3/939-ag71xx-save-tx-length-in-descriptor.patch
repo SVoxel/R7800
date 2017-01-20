@@ -1,0 +1,54 @@
+From 002d3d496e9ca3b1d14744b5074c115651ee67d9 Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Tue, 11 Jun 2013 16:55:50 -0500
+Subject: [ag71xx] save tx length in descriptor
+
+We save the TX length in the descriptor so we do not have to read
+the SKB again.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx.h      | 5 ++++-
+ drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c | 3 ++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+index ffbd692..9b18e7c 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+@@ -98,7 +98,10 @@ struct ag71xx_buf {
+ 	struct sk_buff		*skb;
+ 	struct ag71xx_desc	*desc;
+ 	struct ag71xx_buf	*next;
+-	dma_addr_t		dma_addr;
++	union {
++		uint16_t		len;
++		dma_addr_t		dma_addr;
++	};
+ };
+ 
+ /*
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+index b0b4046..218cece 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+@@ -744,6 +744,7 @@ static netdev_tx_t ag71xx_hard_start_xmit(struct sk_buff *skb,
+ 
+ 	netdev_sent_queue(dev, len);
+ 	curr->skb = skb;
++	curr->len = len;
+ 
+ 	dma_addr = dma_map_single(&dev->dev, skb->data, len, DMA_TO_DEVICE);
+ 
+@@ -910,7 +911,7 @@ static int ag71xx_tx_packets(struct ag71xx *ag, struct net_device *dev,
+ 		}
+ 
+ 		sent++;
+-		bytes_compl += skb->len;
++		bytes_compl += dirty->len;
+ 
+ 		dirty->skb = NULL;
+ 		dirty = dirty->next;
+-- 
+1.8.1.2
+

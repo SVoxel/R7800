@@ -1,0 +1,114 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<body onload='loadvalue();'>
+<div class="page_title">$firm_upgrade</div>
+<div id="main" class="main">
+<form method="post" action="/upgrade.cgi" target=formframe>
+<input type="hidden" name="upgrade_yes_no" value="">
+
+<div><img src=/liteblue.gif width=100%% height=12></div>
+
+<% table_header() %>
+<script language="javascript" type="text/javascript">
+<% list_upgrade_file_info() %>
+/*  list_upgrade_file_info shows the following three lines:
+var module_name="";
+var new_version="";
+var new_region="";
+*/
+new_version=new_version.substring(1);
+var current_version="<% cat_file("/firmware_version") %>".substring(1);
+var current_region="<% get_firmware_region() %>";
+var str_old = "<tr><td>" + "$old_ver" + "&nbsp;&nbsp;&nbsp;&nbsp;" + current_version + "</td></tr>";
+var str_new = "<tr><td>" + "$upload_ver" + "&nbsp;&nbsp;&nbsp;&nbsp;" + new_version +"</td></tr>";
+document.write(str_old);
+document.write(str_new);
+</script>
+
+$bluebar
+
+<tr align="right"><td nowrap="nowrap"> 
+<script language="javascript" type="text/javascript">
+function click_button(form, flag)
+{
+	if (flag == 1)
+	{
+		if(top.topframe && !top.hidden_upgrade) //if top.topframe exists and top.hidden_upgrade does not exit
+			top.topframe.location.href="top_nochange.html";
+		else if(top.topframe && top.hidden_upgrade)     //if top.hidden_upgrade exits, top is the hidden page CheckNewFirmware.htm
+			top.topframe.location.href="CheckNewFW_top.htm";
+
+		top.enable_action=0;
+	}
+
+	form.upgrade_yes_no.value = flag;
+	form.submit();
+}
+</script>
+<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if( master == "admin" )
+		document.write('<input class="short_common_bt" type="button" name="Yes" value="$yes_mark" onclick="click_button(document.forms[0], 1);">&nbsp;&nbsp;&nbsp;<input class="short_common_bt" type="button" name="No" value="$no_mark" onclick="click_button(document.forms[0], 0);">');
+	else
+		document.write('<input class="short_common1_bt" type="button" name="Yes" value="$yes_mark" disabled>&nbsp;&nbsp;&nbsp;<input class="short_common1_bt" type="button" name="No" value="$no_mark" disabled>');
+</script>		
+</td></tr>
+
+<script language="javascript" type="text/javascript">
+function return_to_upgrade_page()
+{
+	if(top.hidden_upgrade)  //if top.hidden_upgrade exits, top is CheckNewFirmware.htm
+		this.location.href = "CheckNewFW_upgrade.htm";
+	else
+		this.location.href = "UPG_upgrade.htm";
+}
+function loadvalue()
+{
+	netgear_region=current_region;	
+	file_region=new_region;
+
+	var file_num=0, numa_len=0, numb_len=0;
+	var numa_array=new_version.split(/\.|-|_/);
+	var numc_array=current_version.split(/\.|-|_/);
+	for(i=0;i<numa_array.length;i++) {
+		if ( isNaN(numa_array[i]) )
+			break;
+		file_num=parseInt(numa_array[i])+file_num*100;
+	}
+	numa_len=i;
+
+	var netgear_num=0;
+	
+	for(i=0;i<numc_array.length;i++) {
+		if ( isNaN(numc_array[i]) )
+			break;
+		netgear_num=parseInt(numc_array[i])+netgear_num*100;
+	}
+	numc_len=i;
+
+	for(i=0; i<numa_len-numc_len; i++){
+		netgear_num*=100;
+	}
+	for(i=0; i<numc_len-numa_len; i++){
+		file_num*=100;
+	}
+
+	if(netgear_num<file_num)
+	{
+		click_button(document.forms[0], 1);
+	}
+	else if( netgear_num > file_num )
+	{
+		if(!confirm("$oldver1" +new_version + " $oldver2" + current_version + " $oldver3"))
+		{
+			return_to_upgrade_page();
+			return false;
+		}
+	}
+}
+</script>
+
+</table>
+</form>
+</div>
+</body>
+</html>

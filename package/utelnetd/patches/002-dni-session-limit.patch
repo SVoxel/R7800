@@ -1,0 +1,39 @@
+--- utelnetd-0.1.9.org/utelnetd.c	2008-03-10 09:25:07.000000000 +0800
++++ utelnetd-0.1.9/utelnetd.c	2008-03-10 11:08:16.000000000 +0800
+@@ -253,10 +253,18 @@
+ 	ts->size2 += 3;
+ }
+ 
++#define SESSION_LIMIT 2
++
++static int session_num;
+ 
+ static struct tsession *
+ make_new_session(int sockfd)
+ {
++	if (session_num == SESSION_LIMIT) {
++		fprintf(stderr, "Allow only %d sessions for Telnet at one time!\n", SESSION_LIMIT);
++		return 0;
++	}
++
+ 	struct termios termbuf;
+ 	int pty, pid;
+ 	static char tty_name[32];
+@@ -358,6 +366,8 @@
+ 	}
+ 
+ 	ts->shell_pid = pid;
++	
++	session_num++;
+ 
+ 	return ts;
+ }
+@@ -391,6 +401,8 @@
+ 	if(ts->ptyfd == maxfd || ts->sockfd == maxfd)
+ 		maxfd--;
+ 
++	session_num--;
++
+ 	free(ts);
+ }
+ 

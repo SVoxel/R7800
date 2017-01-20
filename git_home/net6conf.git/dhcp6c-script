@@ -1,0 +1,206 @@
+#!/bin/sh
+
+. /etc/net6conf/6data.conf
+
+#Fix Bug 23366[IPv6-Auto Config] DUT should disable prefix option in Router Advertisement 
+#message when the prefix valid lifetime is expired.
+prefix_timeout() {
+	# Remove the LAN side IPv6 address, which has been expired
+	# timeout_prefix would be like: 5600 2800 2000:458:ff01:3800:: 56
+	prefix_addr=`echo $timeout_prefix |cut -f3 -d' ' |sed s/:://`
+	lan6_ip=`ifconfig $bridge |grep "inet6 addr: $prefix" |grep -v "Link" |awk '{print $3}'`
+	echo "Try to delete $lan6_ip from $bridge" > /dev/console
+	[ "x$lan6_ip" != "x" ] && $IP -6 addr del $lan6_ip dev $bridge
+
+	#when prefix is timeout, remove old prefix info files
+	rm /tmp/dhcp6c_script_envs
+	rm $DHCP6C_PD
+	rm $DHCP6S_PD
+
+	#reload the LAN side IPv6 related services:
+	#rewrite config file: radvd_write_config, dhcp6s_write_config.
+	echo "reload 6service" > /dev/console
+	/etc/net6conf/6service reload
+}
+
+#To do prefix timeout envents.
+if [ "x$REASON" = "xprefix_timeout" ] ;then
+	lan_prefix_info=`cat $DHCP6S_PD`
+	#value $timeout_prefix is got from wide-dhcpv6
+	[ "$timeout_prefix" != "$lan_prefix_info" ] && exit
+	prefix_timeout
+	exit
+fi
+
+#fix the bug 27061[ST/Netgear-67-71--IPv6 DHCP] There is IPv6 address On LAN port in GUI When DUT send a Decline message to the server.
+if [ "x$REASON" = "xdecline" ] ;then
+	lan6_ip=`ifconfig $bridge |grep "inet6 addr" |grep -v "Link" |awk '{print $3}'`
+	echo "Try to delete $lan6_ip from $bridge" > /dev/console
+	[ "x$lan6_ip" != "x" ] && $IP -6 addr del $lan6_ip dev $bridge
+
+	#when duplicate address detected, remove old prefix info files
+	rm /tmp/dhcp6c_script_envs
+	rm $DHCP6S_PD
+
+	#After DUT sending decline packet, stop the DHCPv6 server and autoconfigure address service(radvd)
+	killall dhcp6s
+	killall radvd
+	exit
+fi
+
+del_dns6() {
+        sed '/.:./d' /tmp/resolv.conf > /tmp/resolv.conf$$
+	#avoid that the permission of /tmp/resolv.conf$$ have be changed to -rw------ under pppoev6
+	chmod 644 /tmp/resolv.conf$$
+        mv /tmp/resolv.conf$$ /tmp/resolv.conf
+        echo -n "" > $IPV6_DNS
+}
+
+
+#write ra_dns to resolv.conf
+write_ra_tmp_dns(){
+        sed '/.:./d' /tmp/resolv.conf > /tmp/resolv.conf$$
+        mv /tmp/resolv.conf$$ /tmp/resolv.conf
+        echo -n "" >  $RA_DNS_FILE
+        for loop in $new_ra_dns_servers
+                do
+                        echo "nameserver $loop" >> $RA_DNS_FILE
+                done
+        write_ra_dns $IPV6_DNS  /tmp/resolv.conf
+        write_ra_dns $RA_DNS_FILE  /tmp/resolv.conf
+}
+#when received ra packet with RDNSS option
+local conn_type=`$CONFIG get ipv6_type`
+local PPPOEv6_WAY=`$CONFIG get ipv6_pppoe_way`
+if [ "x$REASON" = "xra_dns" ]; then
+      if [ "x$conn_type" = "xpppoe" -a "$PPPOEv6_WAY" = "1" ] || [ "x$conn_type" = "xautoConfig" ] ; then
+              echo "write ra_dns..."  > /dev/console
+              write_ra_tmp_dns
+      fi
+
+fi
+
+lease_changed()
+{
+	local envs_p_file="/tmp/dhcp6c_script_envs"
+
+	[ -f "$envs_p_file" ] && . $envs_p_file
+	[ -z "$new_domain_name" ] && new_domain_name="$new_domain_name_p"
+	[ -z "$new_sip_name" ] && new_sip_name="$new_sip_name_p"
+	[ -z "$new_domain_name_servers" ] && new_domain_name_servers="$new_domain_name_servers_p"
+	[ -z "$new_ntp_servers" ] && new_ntp_servers="$new_ntp_servers_p"
+	[ -z "$new_sip_servers" ] && new_sip_servers="$new_sip_servers_p"
+	cat > $envs_p_file << EOF
+new_domain_name_p="$new_domain_name"
+new_sip_name_p="$new_sip_name"
+new_domain_name_servers_p="$new_domain_name_servers"
+new_ntp_servers_p="$new_ntp_servers"
+new_sip_servers_p="$new_sip_servers"
+EOF
+
+	if [ "x$REASON" = "xNBI" ] ;then
+		[ -f "$DHCP6C_PD" ] && . $DHCP6C_PD
+		[ -z "$new_prefix" ] && new_prefix="$prefix_p"
+		cat > $DHCP6C_PD << EOF
+prefix_p="$new_prefix"
+EOF
+		# Determine the Prefix change no matter the prefer and valid lifetime
+		OLD_PREFIX_AND_LEN=`echo "$prefix_p" | awk '{print $3$4}'`
+		PREFIX_AND_LEN=`echo "$new_prefix" | awk '{print $3$4}'`
+
+		[ "$PREFIX_AND_LEN" != "$OLD_PREFIX_AND_LEN" ] && return 0
+	fi
+
+	[ "$new_domain_name" != "$new_domain_name_p" ] && return 0
+	[ "$new_sip_name" != "$new_sip_name_p" ] && return 0
+	[ "$new_domain_name_servers" != "$new_domain_name_servers_p" ] && return 0
+	[ "$new_ntp_servers" != "$new_ntp_servers_p" ] && return 0
+	[ "$new_sip_servers" != "$new_sip_servers_p" ] && return 0
+
+	return 1
+}
+
+# let radvd know prefix lifetime is available
+if ! lease_changed ; then
+	killall -SIGUSR2 radvd #R7800 SIGUSR1 will kill radvd
+	echo "dhcp6c lease is not changed !" > /dev/console
+	exit 0
+fi
+
+echo "dhcp6c lease changed !" > /dev/console
+
+if [ "x`$CONFIG get ipv6_dhcps_enable`" = "x1" ]; then
+	# lease changed, pull low LAN port for 3 seconds to force LAN PC's to re-acquire their IPv6 assignments
+	echo -n 3 > /proc/switch_phy
+fi
+
+# The prefix changed, we delete all the ip of the bridge
+pre_ip=`ifconfig $bridge |grep "inet6 addr" |grep -v "Link" |awk '{print $3}'`
+for loop in $pre_ip
+do
+	$IP -6 addr del $loop dev $bridge
+done
+
+local dns_type=`$CONFIG get ipv6_${conn_type}_dns_assign`
+
+# wirte the dhcp6s_pd and dhcp6s_dsn file
+
+	if [ "x$new_prefix" != "x" ]; then
+		echo $new_prefix > $DHCP6S_PD
+#		echo "DHCP" > /tmp/ipv6_auto_output
+	fi
+
+	# for avoid adding more line
+	echo " " > $DHCP6S_DSN
+
+	for loop in $new_domain_name
+	do
+		echo "option domain-name \"$loop\";" >> $DHCP6S_DSN
+	done
+	
+	for loop in $new_sip_name
+	do
+		echo "option sip-server-domain-name \"$loop\";" >> $DHCP6S_DSN
+	done
+
+# According to NTGR Router Spec:
+# The domain-name-servers should be DUT's IPv6 LAN interface's link local address.
+# The link local address could be added in net6conf/6service script, so comment below code.
+#	if [ "x$new_domain_name_servers" != "x" ]; then
+#		echo "option domain-name-servers $new_domain_name_servers;" >> $DHCP6S_DSN
+#	fi
+
+	# only add dns to resolv.conf when dns is not assigned(static)
+	if [ "x$dns_type" != "x1" -a "x$conn_type" != "xfixed" ] ;then
+		del_dns6
+		for loop in $new_domain_name_servers
+		do
+			echo "nameserver $loop" >> $IPV6_DNS
+		done
+		if [ "x$conn_type" = "xpppoe" -a "$PPPOEv6_WAY" = "1" ] || [ "x$conn_type" = "xautoConfig" ] ; then 
+			write_ra_dns $RA_DNS_FILE  /tmp/resolv.conf
+		fi
+		write_ra_dns $IPV6_DNS  /tmp/resolv.conf
+	fi
+
+	if [ "x$new_ntp_servers" != "x" ]; then
+		echo "option ntp-servers $new_ntp_servers;" >> $DHCP6S_DSN
+	fi
+
+	if [ "x$new_sip_servers" != "x" ]; then
+		echo "option sip-server-address $new_sip_servers;" >> $DHCP6S_DSN
+	fi
+
+if [ -s $DHCP6S_PD ] && [ -s $DHCP6S_CONF ]; then
+	if ! grep "address-pool " >&- 2>&- $DHCP6S_CONF; then
+		echo "Got the prefix, reload the config file" > /dev/console
+		echo "The prefix for LAN is $new_prefix" > /dev/console
+		srv_reload="1"
+	fi
+fi
+
+	if ps | grep dhcp6s | grep -v grep >&- 2>&- ; then
+		echo "dhcpv6 server is running, reload dhcp6s config file !"
+		/etc/net6conf/6service reload &
+	fi
+

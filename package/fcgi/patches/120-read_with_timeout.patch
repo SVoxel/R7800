@@ -1,0 +1,204 @@
+diff --git a/include/fcgios.h b/include/fcgios.h
+index de7c3c7..92a2707 100644
+--- a/include/fcgios.h
++++ b/include/fcgios.h
+@@ -105,6 +105,7 @@ DLLAPI void OS_LibShutdown(void);
+ DLLAPI int OS_CreateLocalIpcFd(const char *bindPath, int backlog);
+ DLLAPI int OS_FcgiConnect(char *bindPath);
+ DLLAPI int OS_Read(int fd, char * buf, size_t len);
++DLLAPI int OS_ReadWithTimeout(int fd, char * buf, size_t len, int msecs);
+ DLLAPI int OS_Write(int fd, char * buf, size_t len);
+ DLLAPI int OS_SpawnChild(char *execPath, int listenFd);
+ DLLAPI int OS_AsyncReadStdin(void *buf, int len, OS_AsyncProc procPtr,
+diff --git a/libfcgi/os_unix.c b/libfcgi/os_unix.c
+index 03e4046..6c5ef75 100644
+--- a/libfcgi/os_unix.c
++++ b/libfcgi/os_unix.c
+@@ -50,6 +50,8 @@ static const char rcsid[] = "$Id: os_unix.c,v 1.37 2002/03/05 19:14:49 robs Exp
+ #ifdef HAVE_SYS_SOCKET_H
+ #include <sys/socket.h> /* for getpeername */
+ #endif
++#include <fcntl.h>
++#include <stdbool.h>
+ 
+ #ifdef HAVE_UNISTD_H
+ #include <unistd.h>
+@@ -463,12 +465,73 @@ int OS_Read(int fd, char * buf, size_t len)
+ /*
+  *--------------------------------------------------------------
+  *
++ * OS_ReadWithTimeout --
++ *
++ *	Blocking read with optional timeout.
++ *
++ * Results:
++ *	Returns number of byes read (can be 0), -ETIMEDOUT timeout,
++ *      or -1 failure: errno contains actual error.
++ *
++ * Side effects:
++ *	None.
++ *
++ *--------------------------------------------------------------
++ */
++int OS_ReadWithTimeout(int fd, char * buf, size_t len, int msecs)
++{
++	int ret;
++	struct timeval tmo;
++	fd_set localFdSet;
++	int fhFlags;
++	bool set_mode = false;
++
++	if (shutdownNow) return -1;
++	fhFlags = fcntl(fd, F_GETFL);
++	if ((fhFlags >= 0) && ((fhFlags & O_NONBLOCK) == 0))
++		set_mode = true;
++
++	tmo.tv_sec = msecs/1000;
++	tmo.tv_usec = (msecs - tmo.tv_sec * 1000) * 1000;
++	do {
++		FD_ZERO(&localFdSet);
++		FD_SET(fd, &localFdSet);
++	
++		ret = select(fd + 1, &localFdSet, NULL, NULL, &tmo);
++	
++		if (ret < 0)
++			return -1;
++
++		if (ret == 0)
++			return -ETIMEDOUT;
++
++		if (set_mode)
++			fcntl(fd, F_SETFL, fhFlags | O_NONBLOCK);
++		ret = read(fd, buf, len);
++		if (set_mode)
++			fcntl(fd, F_SETFL, fhFlags);
++
++		/* there is a documented bug in select() where it can return
++		   data available but read still blocks, because the data was
++		   discarded upon further inspection by the OS (e.g. invalid
++		   checksum was discovered)
++		*/
++		if (ret < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
++			continue;
++
++		return ret;
++	} while (1);
++}
++
++/*
++ *--------------------------------------------------------------
++ *
+  * OS_Write --
+  *
+  *	Pass through to unix write function.
+  *
+  * Results:
+  *	Returns number of byes read, 0, or -1 failure: errno
+  *      contains actual error.
+  *
+  * Side effects:
+diff --git a/libfcgi/os_win32.c b/libfcgi/os_win32.c
+index d286aec..8d677e8 100644
+--- a/libfcgi/os_win32.c
++++ b/libfcgi/os_win32.c
+@@ -28,5 +28,6 @@ static const char rcsid[] = "$Id: os_win32.c,v 1.33 2002/03/05 18:15:15 robs Exp
+ #include <stdio.h>
+ #include <sys/timeb.h>
+ #include <process.h>
++#include <errno.h>
+ 
+ #define DLLAPI  __declspec(dllexport)
+@@ -979,6 +980,93 @@ int OS_Read(int fd, char * buf, size_t len)
+ /*
+  *--------------------------------------------------------------
+  *
++ * OS_ReadWithTimeout --
++ *
++ *	Blocking read with optional timeout. Only implemented for sockets.
++ *
++ * Results:
++ *	Returns number of byes read (can be 0), -ETIMEDOUT timeout,
++ *      or -1 failure: errno contains actual error.
++ *
++ * Side effects:
++ *	None.
++ *
++ *--------------------------------------------------------------
++ */
++int OS_ReadWithTimeout(int fd, char * buf, size_t len, int msecs)
++{
++	int ret;
++	struct timeval tmo;
++	fd_set localFdSet;
++	u_long fhFlags;
++	SOCKET s;
++	int set_mode = 0;
++
++	ASSERT((fd >= 0) && (fd < WIN32_OPEN_MAX));
++
++	if (shutdownNow) return -1;
++
++	switch (fdTable[fd].type) 
++	{
++	case FD_SOCKET_SYNC:
++
++		set_mode = 1;
++
++	case FD_SOCKET_ASYNC:
++
++		s = fdTable[fd].fid.sock;
++		break;
++
++	default:
++
++		ASSERT(0);
++	}
++
++	tmo.tv_sec = msecs/1000;
++	tmo.tv_usec = (msecs - tmo.tv_sec * 1000) * 1000;
++	do {
++		FD_ZERO(&localFdSet);
++		FD_SET(fd, &localFdSet);
++	
++		ret = select(fd + 1, &localFdSet, NULL, NULL, &tmo);
++	
++		if (ret < 0)
++			return -1;
++
++		if (ret == 0)
++			return -ETIMEDOUT;
++
++		if (set_mode) {
++			fhFlags = 1;
++			ioctlsocket(s, FIONBIO, &fhFlags);
++		}
++
++		ret = recv(fdTable[fd].fid.sock, buf, len, 0);
++		if (ret == SOCKET_ERROR) {
++			fdTable[fd].Errno = WSAGetLastError();
++			ret = -1;
++		}
++
++		if (set_mode) {
++			fhFlags = 0;
++			ioctlsocket(s, FIONBIO, &fhFlags);
++		}
++
++		/* there is a documented bug in select() where it can return
++		   data available but read still blocks, because the data was
++		   discarded upon further inspection by the OS (e.g. invalid
++		   checksum was discovered)
++		*/
++		if (ret < 0 && (fdTable[fd].Errno == WSAEWOULDBLOCK))
++			continue;
++
++		return ret;
++	} while (1);
++}
++
++/*
++ *--------------------------------------------------------------
++ *
+  * OS_Write --
+  *
+  *	Perform a synchronous OS write.

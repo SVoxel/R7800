@@ -1,0 +1,55 @@
+<HTML>
+<HEAD>
+<META http-equiv="content-type" content='text/html; charset=UTF-8'>
+<LINK rel="stylesheet" type="text/css" href="style/hijack_style.css">
+<script language="javascript" type="text/javascript" src="/advanced.js"></script>
+</HEAD>
+<BODY onload="loadvalue();" bgcolor=#ffffff>
+<script>
+/*function loadvalue()
+{*/
+var dyn_bridge_get_ip = "<% cfg_get("bridge_ether_ip_assign") %>";
+var bridge_ipaddr = "<% bridge_mode_ip() %>";
+  
+var delay_time=100000;
+function loadvalue()
+{
+	setTimeout("timeout()",delay_time);
+}
+
+function timeout()
+{
+	var host= window.location.host;
+	//alert(host);
+
+/*the below code.no matter ap_mode is 0 or 1,after return from apply, need to show ap page,but we also need ro refresh menu bar.if we use the previous host,the dns catche will keep the old ip, so the menu will not refresh. and the catche will be keeped for a little while.so the below code is to change the host, in order to force the menu be refreshed*/	
+	if(dyn_bridge_get_ip == "1"){
+		if(host.indexOf("www") != -1)
+		{
+			if( host.indexOf("net") != -1)
+				top.location.href="http://www.routerlogin.com/adv_index.htm";
+			else
+				top.location.href="http://routerlogin.net/adv_index.htm";
+		}
+		else
+		{
+			if(host.indexOf("net") != -1)
+				top.location.href="http://routerlogin.com/adv_index.htm";
+			else
+				top.location.href="http://www.routerlogin.net/adv_index.htm";
+		}
+	}else{
+		top.location.href="http://"+bridge_ipaddr+"/adv_index.htm";
+	}
+}
+</script>
+<div  class="wizard_words_div" align="center"><BR><BR><h1>
+<script>
+	document.write('$bas_plz_wait_process');		
+ //<h1>$bas_plz_wait_process</h1>
+</script>
+</h1><BR><BR></div>
+<div class="waiting_img_div" align="center"><img src="image/wait30.gif" alt="waiting" /></div>
+</BODY>
+</HTML>
+

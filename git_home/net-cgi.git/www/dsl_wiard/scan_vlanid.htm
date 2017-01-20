@@ -1,0 +1,90 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% body_header_sel("_wiz_logs", "scan_vlanid.htm", "scan_vlanid") %>
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+        <TD nowrap colspan=2 align=left height="10px"></TD>
+</TR>
+<TR>
+		<TD nowrap colspan=2 align=left width=20%>
+        </TD>
+		
+        <TD nowrap colspan=2 font=80px>
+        <input class="common_bt" type="submit" name="start" value="start" onClick="return show_vlanid()">&nbsp;&nbsp;
+        &nbsp;&nbsp;<span style="font-size: 17px;">to start scanning isp wan connection information</span>
+        </TD>
+</TR>
+</TABLE>
+
+<% table_header() %> 
+
+<script language="javascript">
+var dsl_wan_preference = "<% cfg_get("dsl_wan_preference") %>";
+var have_click_start = "<% cfg_get("click_start") %>";
+<% cfg_set("click_start","0") %>;
+
+function show_vlanid()
+{
+    var cf=document.forms[0];
+	if(dsl_wan_preference == "2"){
+		alert(" the WAN connection type must be ADSL/VDSL, please go to WAN Setup page for changing WAN Preference to \"Must use DSL WAN\"");
+		return false;
+	}
+	return true;
+//	cf.action="/apply.cgi?/logs.htm timestamp="+ts;
+}
+function refreshvlanid()
+{
+        xmlHttp = createXMLHttpRequest();
+        xmlHttp.open("GET","isp_dsl_info.txt",true);
+        xmlHttp.onreadystatechange = startCallback;
+        xmlHttp.send(null);
+
+	setTimeout("refreshvlanid()",5000);
+}
+
+function startCallback()
+{
+	//The response is complete
+	if(xmlHttp.readyState == 4)
+	{
+		//Request has been successfully
+		if(xmlHttp.status == 200)
+		{
+			pollCallback();
+		}
+	}
+}
+function pollCallback()
+{
+	var cf=document.forms[0];
+        var respText = xmlHttp.responseText;
+        var coil_word_arr=respText.split("\n");
+		var len = coil_word_arr.length;
+		if(coil_word_arr[len-2].indexOf("end") > -1)
+		{
+			this.location.href="scan_vlanid.htm";
+		}
+		document.getElementById("vlanid_show").innerHTML=respText;
+}
+function loadvalue()
+{
+	var form=document.forms[0];
+	form.start.disabled = false;
+	if(have_click_start == "1"){
+		form.start.className = "common1_bt";
+		form.start.disabled = true;
+		refreshvlanid();
+	}
+}
+
+</script>
+<TR>
+	<TD nowrap colspan=2 align=center>
+	<textarea id="vlanid_show" NAME="log_detail" ROWS="35" cols="140" WRAP="vitural" readonly><% wiz_log_message("/www/isp_dsl_info.txt") %></textarea>	
+	</TD>
+</TR>
+</TABLE>
+</form>
+</body>
+</html>
+

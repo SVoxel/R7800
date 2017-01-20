@@ -1,0 +1,6 @@
+config PPP_NAS_GIT_TREEISH
+	string
+	prompt "treeish of ppp-nas git repository"
+	default "HEAD"
+	help
+	  input the treeish of ppp-nas git repository which you want to build

@@ -1,0 +1,269 @@
+<% http_header("style/form.css", "/funcs.js", "/schedule.js") %>
+<% body_header("_FW_schedule", "FW_schedule.htm", "schedule") %>
+<div class="page_title" name="Schedule">$schedule_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" id="cancel" name="Cancel" type="button" value="$cancel_mark" onClick="location.href=\'/FW_schedule.htm\';return false;">&nbsp;&nbsp;<input class="apply_bt" id="apply" name="Apply" type="button" value="$apply_mark" onClick="return check_schedule_apply(document.forms[0])"></TD>');
+else
+	document.write(' <TD nowrap colspan=2 align=center><input class="cancel1_bt" name="Cancel" id="cancel" type="button" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" id="apply" name="Apply" type="button" value="$apply_mark" disabled></TD>');
+       
+</script>
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<script>
+var select_ntp='<% cfg_get("ntp_hidden_select") %>';
+var old_ntpadjust="<% cfg_get("ntpadjust") %>";
+
+var cur_time="<% cur_time() %>";
+var gui_region="<% cfg_get("GUI_Region") %>";
+var netgear_region=top.netgear_region;
+cur_time=change_cur_time(cur_time,gui_region);
+
+var enable_ap_flag="<% cfg_get("ap_mode") %>"; //for bug 30286 add this
+var enable_extender_flag="<% cfg_get("extender_mode") %>";
+var is_jp_version=((gui_region == "Japanese" && (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "JP")? 1 : 0;
+function loadvalue()
+{
+	var cf=document.forms[0];
+	if(is_jp_version == 1)
+	{
+		document.getElementById("multipppoe").style.display = "";
+		var enable_multipppoe_sche="<% cfg_get("enable_multipppoe_sche") %>";
+		if(enable_multipppoe_sche == "0")
+			cf.session[0].checked = true;
+		else
+			cf.session[0].checked = true;
+	}
+	else
+		document.getElementById("multipppoe").style.display = "none";
+
+	var day_to_block='<% cfg_get("schedule_days_to_block") %>';
+	if (day_to_block != '')
+	{
+		if( day_to_block == 'everyday' )
+			cf.checkboxNameAll.checked = true;
+		else
+		{
+			var day_array=day_to_block.split(',');
+			for(i=0;i<day_array.length;i++)
+			{
+				if(day_array[i] == "0")
+					cf.checkboxNameSun.checked = true;
+				else if(day_array[i] == "1")
+					cf.checkboxNameMon.checked = true;
+				else if(day_array[i] == "2")					
+					cf.checkboxNameTue.checked = true;
+				else if(day_array[i] == "3")			
+					cf.checkboxNameWed.checked = true;
+				else if(day_array[i] == "4")			
+					cf.checkboxNameThu.checked = true;
+				else if(day_array[i] == "5")			
+					cf.checkboxNameFri.checked = true;
+				else if(day_array[i] == "6")			
+					cf.checkboxNameSat.checked = true;
+			}
+		}
+	}
+	var schedule_get_all_day='<% cfg_get("schedule_all_day") %>';
+	if(schedule_get_all_day == '1')
+	{
+		cf.checkboxNamehours.checked =true;
+		ClearData1();
+	}
+	var schedule_get_start_block_time='<% cfg_get("schedule_start_block_time") %>';
+	var schedule_get_end_block_time='<% cfg_get("hidden_schedule_end_block_time") %>';
+	if(schedule_get_start_block_time!='')
+	{	
+		var start=schedule_get_start_block_time;
+		start_array=start.split(':');
+		cf.start_hour.value=start_array[0];
+		cf.start_minute.value=start_array[1];
+	}
+	if(schedule_get_end_block_time!='')
+	{
+		var end=schedule_get_end_block_time;
+		end_array=end.split(':');
+		cf.end_hour.value=end_array[0];
+		cf.end_minute.value=end_array[1];
+	}
+	BlockAllClickCheck(cf);	
+
+	var hidden_ntpserver='<% cfg_get("ntpserver_select") %>';
+        cf.time_zone.options[eval(select_ntp)].selected =true;
+	if( old_ntpadjust == "1")
+                cf.adjust.checked =true;
+        else
+                cf.adjust.checked =false;
+}
+</script>
+<input type="hidden" name="days_to_block">
+<input type="hidden" name="start_block_time">
+<input type="hidden" name="end_block_time">
+<input type="hidden" name="hidden_all_day">
+<input type="hidden" name="ntpadjust">
+<input type="hidden" name="ntpserver1">
+<input type="hidden" name="ntpserver2">
+<input type="hidden" name="hidden_ntpserver">
+<input type="hidden" name="hidden_dstflag">
+<input type="hidden" name="hidden_select">
+<input type="hidden" name="dif_timezone">
+<TR id="multipppoe" style="display:none;">
+	<TD nowrap colspan=2>
+	<input type="radio" name="session" value="session1">$mul_session1
+	<input type="radio" name="session" value="session2">$mul_session2
+	</TD>
+</TR>
+<script>
+	if(is_jp_version == 1)
+		document.write("$bluebar");
+</script>
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_FW_schedule','blocksch')"><B>$schedule_days:</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<input name="checkboxNameAll" id="everyday" onclick="BlockAllClickCheck(document.forms[0])"; type="checkbox" value=1>$schedule_everyday
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<input name=checkboxNameSun type=checkbox id="sun" value=1>$schedule_sun
+	</TD>
+</TR>
+<TR>
+	<TD nowrap> 
+	<input name=checkboxNameMon type=checkbox id="mon" value=1>$schedule_mon
+	</TD>
+</TR> 
+<TR>
+	<TD nowrap>
+	<input name=checkboxNameTue type=checkbox id="tue" value=1>$schedule_tue
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<input name=checkboxNameWed type=checkbox id="wed" value=1>$schedule_wed
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<input name=checkboxNameThu type=checkbox id="thu" value=1>$schedule_thu
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<input name=checkboxNameFri type=checkbox id="fri" value=1>$schedule_fri
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<input name=checkboxNameSat type=checkbox id="sat" value=1>$schedule_sat
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_FW_schedule','blocksch')"><B>$schedule_time:</B></A>$schedule_24hour
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input name="checkboxNamehours" id="all_day" onclick="BlockPeriodClick(document.forms[0])"; type="checkbox" value=1>$schedule_allday
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$schedule_start</TD>
+	<TD nowrap>
+	<input maxLength=2 type="text" id="start_hour" name=start_hour size=3 onKeyPress="return getkey('num', event)">$schedule_hour
+	<input maxLength=2 type="text" id="start_minute" name=start_minute size=3 onKeyPress="return getkey('num', event)">$schedule_min
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$schedule_end</TD>
+	<TD nowrap>
+	<input maxLength=2 type="text" id="end_hour" name=end_hour size=3 onKeyPress="return getkey('num', event)">$schedule_hour
+	<input maxLength=2 type="text" id="end_minute" name=end_minute size=3 onKeyPress="return getkey('num', event)">$schedule_min
+	</TD>
+</TR>
+$bluebar
+<TR>
+        <TD nowrap colspan=2>
+        <A tabindex=-1 href="javascript:loadhelp('_FW_schedule','timezone')"><B>$email_timezone</B></a>
+        </TD>
+</TR>
+<TR>
+        <TD nowrap colspan=2>
+        <select name="time_zone" id="time_zone">					  <!--vcna-->
+		<option value="GMT+12" selected>$gmt_12_1</option><!--0-->
+		<option value="GMT+11" >$gmt_11</option>	<!--1-->
+		<option value="GMT+10" >$gmt_10</option>	<!--2-->
+		<option value="GMT+9" >$gmt_9</option>		<!--3-->
+		<option value="GMT+8" >$gmt_8</option>		<!--4-->
+		<option value="GMT+7" >$gmt_7_1</option>	<!--5-->
+		<option value="GMT+7" >$gmt_7_2</option>	<!--6-->
+		<option value="GMT+6" >$gmt_6_1</option>	<!--7-->
+		<option value="GMT+6" >$gmt_6_2</option>        <!--8-->
+		<option value="GMT+5" >$gmt_5_1_1</option>	<!--9--><!--8-->
+		<option value="GMT+5" >$gmt_5_1_2</option>	<!--10--><!--9-->
+		<option value="GMT+5" >$gmt_5_2</option>	<!--11--><!--10-->
+		<option value="GMT+4" >$gmt_4</option>		<!--12--><!--11-->
+		<option value="GMT+3:30" >$gmt_3_1</option>	<!--13--><!--12-->
+		<option value="GMT+3" >$gmt_3</option>		<!--14--><!--13-->
+		<option value="GMT+2" >$gmt_2</option>		<!--15--><!--14-->
+		<option value="GMT+1" >$gmt_1</option>		<!--16--><!--15-->
+		<option value="GMT-0" >$gmt_0_1</option>	<!--17--><!--16-->
+		<option value="GMT-0" >$gmt_0_2</option>	<!--18--><!--17-->
+		<option value="GMT-1" >$gmt1_1</option>		<!--19--><!--18-->
+		<option value="GMT-1" >$gmt1_2</option>		<!--20--><!--19-->
+		<option value="GMT-1" >$gmt1_3</option>		<!--21--><!--20-->
+		<option value="GMT-1" >$gmt1_4</option>		<!--22--><!--21-->
+		<option value="GMT-2" >$gmt2_1</option>		<!--23--><!--22-->
+		<option value="GMT-2" >$gmt2_2</option>		<!--24--><!--23-->
+		<option value="GMT-2" >$gmt2_3</option>		<!--25--><!--24-->
+		<option value="GMT-3" >$gmt3_1</option>		<!--26--><!--25-->
+		<option value="GMT-3" >$gmt3_2</option>		<!--27--><!--26-->
+		<option value="GMT-4" >$gmt4</option>		<!--28--><!--27-->
+		<option value="GMT-5" >$gmt5_1</option>		<!--29--><!--28-->
+		<option value="GMT-5:30" >$gmt5_2_1</option>	<!--30--><!--29-->
+		<option value="GMT-6" >$gmt6_1</option>		<!--31--><!--30-->
+		<option value="GMT-7" >$gmt7</option>		<!--32--><!--31-->
+		<option value="GMT-8" >$gmt8_1_1</option>	<!--33--><!--32-->
+		<option value="GMT-8" >$gmt8_2_1</option>	<!--34--><!--33-->
+		<option value="GMT-9" >$gmt9</option>		<!--35--><!--34-->
+		<option value="GMT-9:30" >$gmt9_1</option>	<!--36-->
+		<option value="GMT-10" >$gmt10_1</option>	<!--37--><!--35-->
+		<option value="GMT-10" >$gmt10_2_1</option>	<!--38--><!--36-->
+		<option value="GMT-10" >$gmt10_2_2</option>	<!--39--><!--37-->
+		<option value="GMT-11" >$gmt11_1</option>	<!--40--><!--38-->
+		<option value="GMT-11" >$gmt11</option>		<!--41--><!--39-->
+		<option value="GMT-12" >$gmt12_1</option>	<!--42--><!--40-->
+		<option value="GMT-12" >$gmt12_2</option>	<!--43--><!--41-->
+		<option value="GMT-13" >$gmt13</option>		<!--44--><!--42-->
+        </select>
+        </TD>
+</TR>
+<TR>
+        <TD nowrap colspan=2>
+        <input type="checkbox" name="adjust" id="adjust" value="1">$email_auto_adjust
+        </TD>
+</TR>
+<TR>
+        <TD nowrap colspan=2 align=center><B id="current_time">$ntp_curtime: <script>document.write(cur_time)</script></B></TD>
+</TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_FW_schedule") %>
+</FORM>
+</BODY>
+</HTML>

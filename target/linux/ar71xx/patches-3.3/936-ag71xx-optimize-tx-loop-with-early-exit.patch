@@ -1,0 +1,56 @@
+From 77a8a4554ed88111f206c9c845a5f14a547f79da Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Tue, 11 Jun 2013 16:51:01 -0500
+Subject: [ag71xx] optimize tx loop with early exit
+
+Add an early exit check for the TX completion loop.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+index 408b2dc..926e4e3 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+@@ -879,15 +879,25 @@ static int ag71xx_tx_packets(struct ag71xx *ag, struct net_device *dev)
+ 	unsigned int sent = 0;
+ 	unsigned int bytes_compl = 0;
+ 	struct ag71xx_buf *dirty = ring->dirty;
+-	struct ag71xx_desc *desc = dirty->desc;
++	struct ag71xx_desc *desc;
+ 	unsigned int used = ring->used;
+ 	struct sk_buff *skb;
+ 
+ 	DBG("%s: processing TX ring\n", dev->name);
+ 
++	/*
++	 * If we haven't transmitted anything then we're done!
++	 */
++	if (!used)
++		return sent;
++
++	/*
++	 * Start by looking at the SKB that will be up next.
++	 */
+ 	skb = dirty->skb;
++	desc = dirty->desc;
+ 
+-	while (used) {
++	do {
+ 		struct sk_buff *next_skb;
+ 
+ 		if (unlikely(!(desc->ctrl & DESC_EMPTY))) {
+@@ -923,7 +933,7 @@ static int ag71xx_tx_packets(struct ag71xx *ag, struct net_device *dev)
+ 		skb = next_skb;
+ 
+ 		used--;
+-	}
++	} while (used);
+ 
+ 	ag71xx_wr_flush(ag->tx_status_reg);
+ 
+-- 
+1.8.1.2
+

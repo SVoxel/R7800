@@ -1,0 +1,40 @@
+--
+-- KEYS: the key of the flow events list
+-- ARGV[1]: first entry of the list to look at
+-- ARGV[2]: last entry of the list to look at
+-- ARGV[3] and beyond: a list of event types to keep; events not listed will be discarded
+-- ARGV[3]: use '*' to disable filtering, in which case no events will be discarded
+-- returns: json-formatted list of events
+--
+m4_include(`codec.lua')
+
+-- our encoder/decoder object
+-- decode_from_db: converts a single event in db storage format (currently csv)
+--		   into a lua table
+-- encode_to_json: converts a lua table containing a list of events into json
+local xlate = { decode_from_db = csv_to_table,
+		encode_to_json = table_to_json }
+-- pull the event list
+local beginentry=ARGV[1]
+local endentry=ARGV[2]
+local events = redis.call('lrange', KEYS[1], beginentry, endentry)
+if #events == 0 then return {ok='done'} end
+-- determine which event types to keep
+local event_types = {}
+for i,v in ipairs(ARGV) do
+	if i > 2 then
+		event_types[v] = true
+	end
+end
+-- cycle through the events.  for each event, decode it,
+-- determine if the event is a type we want to keep, and if
+-- so store it encoded
+local ret = {}
+for i,e in ipairs(events) do
+	local t = xlate.decode_from_db(e)
+	if t and t['event'] and
+		(event_types['*'] or event_types[t['event']]) then
+		ret[#ret+1] = xlate.encode_to_json(t)
+	end
+end
+if #ret == 0 then return {ok=''} else return ret end

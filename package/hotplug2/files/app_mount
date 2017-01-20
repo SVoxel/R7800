@@ -1,0 +1,34 @@
+#! /bin/sh
+
+try_ntfs()
+{
+	ntfs-3g.probe --readwrite $1
+	case "$?" in
+	0)
+		ntfs-3g $1 $2 -o locale=en_US.UTF-8
+		;;
+	14)
+		ntfs-3g $1 $2 -o remove_hiberfile,locale=en_US.UTF-8
+                ;;
+	15)
+		ntfs-3g $1 $2 -o force,locale=en_US.UTF-8
+		;;
+	*)
+	esac
+}
+
+
+if [ $# -eq 0 ]; then
+	echo "Must run with devicename."
+	exit 1
+fi
+
+mount -o utf8=yes,fmask=0000,dmask=0000 $1 $2
+if [ $? -ne 0 ]; then
+# UTF8 can't be added to mounting ext2/3
+	mount $1 $2
+	if [ $? -ne 0 ]; then
+	        try_ntfs $1 $2
+	fi
+fi
+

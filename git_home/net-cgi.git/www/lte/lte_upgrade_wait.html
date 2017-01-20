@@ -1,0 +1,35 @@
+<HTML>
+	<HEAD>
+		<META http-equiv="Refresh" content="6; url=/lte_upgrade_wait.html">
+		<META http-equiv=content-type content='text/html; charset=UTF-8'>
+		<LINK rel="stylesheet" href="style/form.css">
+		<script>
+			var result="<% cfg_get("lte_upgrade_status") %>";
+
+			if( result == "1" )
+			{
+				alert("Congratulations! LTE firmware upgrade is completed!");
+				location.href="at_log.html";
+			}
+			else if( result == "2" )
+			{
+				alert("Sorry! LTE firmware upgrade is failed, please reboot device and try again!");
+				location.href="at_log.html";
+			}
+			else if( parent.lte_upg_refresh_time >= 100 )
+			{
+				alert("Sorry! LTE firmware upgrade is failed, please reboot device and try again!");
+				location.href="at_log.html";
+			}
+
+			parent.lte_upg_refresh_time = parent.lte_upg_refresh_time + 1;
+		</script>
+	</HEAD>
+	<BODY bgcolor=#ffffff>
+	<table cellspacing=5 cellPadding=0 width=100% border=0>
+		<TR><TD colspan=2><BR><img src=/liteblue.gif width=100% height=12></TD></TR>
+		<TR><TD><BR><BR>Please wait a moment...<BR><BR></TD></TR>
+		<TR><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+	</table>
+</BODY></HTML>
+

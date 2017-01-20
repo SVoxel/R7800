@@ -1,0 +1,15 @@
+<html>
+<head>
+<script>
+var port_forward_trigger="<% cfg_get("port_forward_trigger") %>";
+if (port_forward_trigger == "1")
+	location.href="triggering.htm";
+else
+{
+	location.href="forwarding.htm";
+}
+</script>
+</head>
+<body>
+</body>
+</HTML>

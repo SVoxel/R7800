@@ -1,0 +1,134 @@
+#!/bin/sh
+
+. /etc/net6conf/6data.conf
+
+start_6to4() {
+	localip4=`ifconfig $WAN4 |grep "inet addr" |cut -f2 -d: |cut -f1 -d' '`
+	[ -z "$localip4" ] && exit
+
+	if [ `$CONFIG get ipv6_6to4_relay_type` = "0" ]; then
+		remoteip4="192.88.99.1"
+	else
+		remoteip4=`$CONFIG get ipv6_6to4_relay`
+	fi
+	wanmtu=`ifconfig $WAN4 |grep "MTU" |cut -f2 -d: |cut -f1 -d' '`
+	sitmtu=$(($wanmtu - 20))
+	localip6=`printf "2002:%02x%02x:%02x%02x::1" \`echo $localip4 | sed 's/\./ /g'\``
+	remoteip6="::${remoteip4}"
+	#remoteip6=`printf "2002:%02x%02x:%02x%02x::1" \`echo $remoteip4 | sed 's/\./ /g'\``
+	
+	if [ "$remoteip4" = "192.88.99.1" ]; then
+		$IP tunnel add sit1 mode sit ttl 128 remote any local $localip4
+	else
+		$IP tunnel add sit1 mode sit ttl 128 remote $remoteip4 local $localip4
+	fi
+	# initalize kernel 6rd struct since 6rd and 6to4 use some shared code.
+	$IP tunnel 6rd dev sit1 6rd-prefix 2002::/16
+	$IP link set dev sit1 up
+	$IP link set mtu $sitmtu dev sit1
+	$IP -6 addr add ${localip6}/16 dev sit1
+#	route -A inet6 add 2000::/3 gw $remoteip6 dev sit1
+	$IP -6 route add ::/0 dev sit1
+	$IP -6 route add 2000::/3 via $remoteip6 dev sit1
+
+	# turn off the "Do Not Fragment" flag
+	echo 1 > /proc/sys/net/ipv6/ipv6_6to4_force_ip4fragoff_zero
+
+	# decide start up ipv4 wan.
+	local proto=$($CONFIG get wan_proto)
+	# we should check the mode of l2tp connection
+	if [ "$proto" = "pptp" -o "$proto" = "pppoe" -o "$proto" = "l2tp" ]; then
+		local wan_ppp_mode=$($CONFIG get wan_pppoe_demand)
+		local wan_end_dod=$($CONFIG get wan_endis_dod)
+		if [ "x$wan_ppp_mode" != "x0" -o "x$wan_end_dod" != "x0" ]; then
+			$CONFIG set wan_pppoe_demand=0
+			$CONFIG set wan_endis_dod=0
+			/etc/init.d/net-wan restart
+		fi
+	fi
+
+}
+
+stop_6to4() {
+	# sit1's route table will be flushed automatically after it's down
+	# $IP -6 route flush dev sit1
+	ifconfig sit1 down
+	$IP tunnel del sit1
+}
+
+_6to4_is_running() {
+	if ifconfig sit1 >&- 2>&- ; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+set_lan_ip() {
+	localip4=`ifconfig $WAN4 |grep "inet addr" |cut -f2 -d: |cut -f1 -d' '`
+	[ -z "$localip4" ] && exit
+	
+	local wanlinkip=$(ifconfig $bridge_wan | grep "fe80" | awk '{print $3}' | awk -F/ '{print $1}')
+	local ipv6_interface_id_enable=`$CONFIG get ipv6_dhcps_interface_id_enable`
+	if [ "x$ipv6_interface_id_enable" == "x1" ];then
+		#If "Use This Interface ID" is enabled,Then we use it.
+		local eui64=`$CONFIG get ipv6_dhcps_interface_id`
+	else
+		local eui64=$(geteui64 $wanlinkip)
+	fi
+	local lanip6=`printf "2002:%02x%02x:%02x%02x:$IPV6_SIDE_ID:$eui64" \`echo $localip4 | sed 's/\./ /g'\``
+	$IP -6 addr add ${lanip6}/64 dev $bridge
+}
+
+
+start() {
+	if ! [ -x $IP ]; then
+		echo "$IP is required to setup the tunnel";
+		exit 1;
+	fi
+	if _6to4_is_running ; then
+		echo "6to4 function is already running"
+		return 0
+	fi
+
+	# if ipv4 wan type is pppoe(pptp) and the mode is not always on,then change the mode.
+	local proto=$($CONFIG get wan_proto)
+	if [ "$proto" = "pptp" -o "$proto" = "pppoe" -o "$proto" = "l2tp" ]; then
+		local wan_ppp_mode=$($CONFIG get wan_pppoe_demand)
+		local wan_pptp_mode=$($CONFIG get wan_pptp_demand)
+		local wan_l2tp_mode=$($CONFIG get wan_l2tp_demand)
+		local wan_end_dod=$($CONFIG get wan_endis_dod)
+		if [ "x$wan_ppp_mode" != "x0" -o "x$wan_pptp_mode" != "x0" -o "x$wan_l2tp_mode" != "x0" ]; then
+			$CONFIG set wan_pppoe_demand=0
+			$CONFIG set wan_pptp_demand=0
+			$CONFIG set wan_l2tp_demand=0
+			$CONFIG set wan_endis_dod=0
+			/etc/init.d/net-wan restart
+			return 0;
+		fi
+	fi
+
+	start_6to4
+	set_lan_ip
+}
+
+stop() {
+	_6to4_is_running && stop_6to4
+}
+
+restart() {
+	stop
+	start
+}
+
+case "$1" in
+	start)
+	start
+	;;
+	stop)
+    stop
+    ;;
+    restart)
+	restart
+	;;
+esac

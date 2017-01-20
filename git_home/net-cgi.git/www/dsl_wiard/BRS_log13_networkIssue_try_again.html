@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<% hijack_language() %>
+</head>
+<% wizlog_networkIssue_ck13("0") %>
+<body onLoad="loadvalue()">
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+		<div class="waiting_connect_div" align="center">
+			<h1>
+				<script>document.write(bh_check_ap);</script>
+			</h1>
+		</div>
+		
+		<div class="waiting_img_div" align="center">
+			<img src="image/wait30.gif" />
+		</div>
+	
+	</div>
+</div>
+</body>
+<script>
+function loadvalue()
+{
+	if(top.location.href.indexOf("BRS_index.htm") > -1){
+		this.location.href = "BRS_ISP_country_help.html";
+	}
+	else
+	{
+		this.location.href = "DSL_WIZ_sel.htm";
+	}
+}
+</script>
+</html>

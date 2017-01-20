@@ -1,0 +1,340 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% nobody_header("RST_statistic.htm", "show_statistic") %>
+
+<script>
+<% dsl_statistic() %>
+<% show_statistic() %>
+var timereset="<% cfg_sed_xss("timereset") %>";
+var clock = 0;
+
+if (timereset == "")
+	timereset="5";
+
+function auto_refresh()
+{
+	if( timereset != "0")
+	{
+		if(clock >= timereset)
+		{
+			location.href = "RST_statistic.htm";
+			document.getElementById("set_interval").disabled = true;
+		}
+		else
+			setTimeout("clock = clock + 0.5; auto_refresh();", 500);
+	}
+}
+auto_refresh();
+
+<% web_flag() %>
+var enable_bridge_flag="<% cfg_get("bridge_mode") %>";
+<% bridge_link_rate() %>
+
+function translate_status(stat)
+{
+	if(stat.indexOf("Full")>0)
+		stat=stat.replace("Full", "$full");
+	else if(stat.indexOf("Half")>0)
+		stat=stat.replace("Half", "$half");
+	return stat;
+		
+}
+</script>
+<TABLE name="statistic_table" id="statistic_table" cellspacing=5 cellPadding=0 width=100% border=0>
+$bluebar
+<TR>
+	<TD nowrap><B>$statistics_sysuptime</B>&nbsp;
+<script>
+var uptime=sys_uptime;
+var new_time=change_sec_to_time(uptime);
+document.write(new_time);
+</script>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<TABLE border=1 cellpadding=2 cellspacing=0 width=100%>
+	<TR> 
+	<TD nowrap align=center><span class="thead">$block_ser_service_port</span></TD>
+	<TD nowrap align=center><span class="thead">$stalist_Status</span></TD>
+	<TD nowrap align=center><span class="thead">$statistics_txpkts</span></TD>
+	<TD nowrap align=center><span class="thead">$statistics_rxpkts</span></TD>
+	<TD nowrap align=center><span class="thead">$statistics_coll</span></TD>
+	<TD nowrap align=center><span class="thead">$statistics_tx</span></TD>
+	<TD nowrap align=center><span class="thead">$statistics_rx</span></TD>
+	<TD nowrap align=center><span class="thead">$statistics_up</span></TD>
+	</TR>
+	<TR> 
+	<TD nowrap align=center><span class="thead">$statistics_wan</span></TD>
+	<TD nowrap align=center><span class="ttext"><script>
+	if (wan_status != "Link down"){
+		document.write(translate_status(wan_status));
+	}
+	else
+		document.write("$link_down");
+	</script></span></TD>
+	<TD nowrap align=center><span class="ttext"><script>document.write(wan_txpkts)</script></span></TD>
+	<TD nowrap align=center><span class="ttext"><script>document.write(wan_rxpkts)</script></span></TD>
+	<TD nowrap align=center><span class="ttext"><script>document.write(wan_collisions)</script></span></TD>
+	<TD nowrap align=center><span class="ttext"><script>document.write(wan_txbs)</script></span></TD>
+	<TD nowrap align=center><span class="ttext"><script>document.write(wan_rxbs)</script></span></TD>
+	<TD nowrap align=center><span class="ttext">
+<script>
+	if (wan_status != "Link down")
+	{
+		var uptime=wan_systime;
+		var new_time=change_sec_to_time(uptime);
+		document.write(new_time);
+	}
+	else
+		document.write("00:00:00");
+</script>	
+	</span></TD>
+	</TR>
+	<TR id=lan1_info>
+	<TD nowrap align=center><span class="thead">$statistics_lan 1</span></TD>
+	<TD nowrap align=center><span class="ttext"><script>
+	if (lan_status0 != "Link down")
+		document.write(translate_status(lan_status0));
+	else
+		document.write("$link_down");
+	</script></span></TD>
+	<TD nowrap align=center rowspan=4><span class="ttext"><script>document.write(lan_txpkts)</script></span></TD>
+	<TD nowrap align=center rowspan=4><span class="ttext"><script>document.write(lan_rxpkts)</script></span></TD>
+	<TD nowrap align=center rowspan=4><span class="ttext"><script>document.write(lan_collisions)</script></span></TD>
+	<TD nowrap align=center rowspan=4><span class="ttext"><script>document.write(lan_txbs)</script></span></TD>
+	<TD nowrap align=center rowspan=4><span class="ttext"><script>document.write(lan_rxbs)</script></span></TD>
+	<TD nowrap align=center><span class="ttext">
+<script>
+	if (lan_status0 != "Link down")
+	{
+		var uptime=lan0_systime;
+		var new_time=change_sec_to_time(uptime);
+		document.write(new_time);
+	}
+	else
+		document.write("00:00:00");
+</script>
+	</span></TD>
+	</TR>
+	<TR id=lan2_info>
+	<TD nowrap align=center><span class="thead">$statistics_lan 2</span></TD>
+	<TD nowrap align=center><span class="ttext"><script>
+	if (lan_status1 != "Link down")
+		document.write(translate_status(lan_status1));
+	else
+		document.write("$link_down");	
+	</script></span></TD>
+	<TD nowrap align=center><span class="ttext">
+<script>
+	if (lan_status1 != "Link down")
+	{
+		var uptime=lan1_systime;
+		var new_time=change_sec_to_time(uptime);
+		document.write(new_time);
+	}
+	else
+		document.write("00:00:00");
+</script>
+	</span></TD>
+	</TR>
+	<TR id=lan3_info>
+	<TD nowrap align=center><span class="thead">$statistics_lan 3</span></TD>
+	<TD nowrap align=center><span class="ttext"><script>
+	if (lan_status2 != "Link down")
+		document.write(translate_status(lan_status2));
+	else
+		document.write("$link_down");
+	</script></span></TD>
+	<TD nowrap align=center><span class="ttext">
+<script>
+	if (lan_status2 != "Link down")
+	{
+		var uptime=lan2_systime;
+		var new_time=change_sec_to_time(uptime);
+		document.write(new_time);
+	}
+	else
+		document.write("00:00:00");
+</script>		
+	</span></TD>
+	</TR>
+	<TR id=lan4_info>
+	<TD nowrap align=center><span class="thead">$statistics_lan 4</span></TD>
+	<TD nowrap align=center><span class="ttext"><script>
+	if (lan_status3 != "Link down")
+		document.write(translate_status(lan_status3))
+	else
+		document.write("$link_down");
+	</script></span></TD>
+	<TD nowrap align=center><span class="ttext">
+<script>
+	if (lan_status3 != "Link down")
+	{
+		var uptime=lan3_systime;
+		var new_time=change_sec_to_time(uptime);
+		document.write(new_time);
+	}
+	else
+		document.write("00:00:00");
+</script>	
+	</span></TD>
+	</TR>
+	<script>
+	if(typeof(lan_ports_num) != "undefined" && lan_ports_num == 1)
+	{
+		document.getElementById("lan2_info").style.display = "none";
+		document.getElementById("lan3_info").style.display = "none";
+		document.getElementById("lan4_info").style.display = "none";
+	}
+	</script>
+	<TR id=wlan_info>
+	<TD nowrap align=center><span class="thead">$statistics_wlan <script>if(an_router_flag == 1) document.write("b/g/n");</script></span></TD>
+	<TD nowrap align=center><span class="ttext"><script>
+	if (bgn_status != "Link down"){
+		if(enable_bridge_flag == "1")
+			document.write(link_rate+" Mbps");
+		else
+			document.write(bgn_status);
+	}
+	else
+		document.write("$link_down");
+	</script></span></TD>
+	<TD nowrap align=center><span class="ttext"><script>document.write(bgn_txpkts)</script></span></TD>
+	<TD nowrap align=center><span class="ttext"><script>document.write(bgn_rxpkts)</script></span></TD>
+	<TD nowrap align=center><span class="ttext"><script>document.write(bgn_collisions)</script></span></TD>
+	<TD nowrap align=center><span class="ttext"><script>document.write(bgn_txbs)</script></span></TD>
+	<TD nowrap align=center><span class="ttext"><script>document.write(bgn_rxbs)</script></span></TD>
+	<TD nowrap align=center><span class="ttext">
+<script>
+	if (bgn_status != "Link down")
+	{
+		var uptime=bgn_systime;
+		var new_time=change_sec_to_time(uptime);
+		document.write(new_time);
+	}
+	else
+		document.write("00:00:00");
+</script>
+	</span></TD>
+	</TR>
+<script>
+if(typeof(have_wifi_flag) != "undefined" && have_wifi_flag == 0)
+	document.getElementById("wlan_info").style.display = "none";
+if(an_router_flag == 1){
+
+        document.write('<TR>');
+        document.write('<TD nowrap align=center><span class="thead">');
+	if(ac_router_flag == 1)
+		document.write('$statistics_wlan a/n/ac');
+	else
+		document.write('$statistics_wlan a/n');
+	document.write('</td>');
+	if (an_status != "Link down")
+	        document.write('<TD nowrap align=center><span class="ttext">'+an_status+'</span></TD>');
+	else
+		document.write('<TD nowrap align=center><span class="ttext">$link_down</span></TD>');
+        document.write('<TD nowrap align=center><span class="ttext">'+an_txpkts+'</span></TD>');
+        document.write('<TD nowrap align=center><span class="ttext">'+an_rxpkts+'</span></TD>');
+        document.write('<TD nowrap align=center><span class="ttext">'+an_collisions+'</span></TD>');
+        document.write('<TD nowrap align=center><span class="ttext">'+an_txbs+'</span></TD>');
+        document.write('<TD nowrap align=center><span class="ttext">'+an_rxbs+'</span></TD>');
+        document.write('<TD nowrap align=center><span class="ttext">');
+
+        if (an_status != "Link down")
+        {
+                var uptime=an_systime;
+                var new_time=change_sec_to_time(uptime);
+                document.write(new_time);
+        }
+        else
+                document.write("00:00:00");
+
+        document.write('</span></TD>');
+        document.write('</TR>');
+}
+</script>	
+	</TABLE>
+	</TD>
+</TR>
+<tr><td>
+<br>
+
+<script>
+if(top.dsl_enable_flag == 1)
+{
+	document.write('<TABLE id="dsl_status" border=1 cellpadding=2 cellspacing=0 width=100%>');
+	document.write('<tr>'); 
+	document.write('<td nowrap align="center"><span class="thead">$dsl_adsl_link</span></td>');
+	document.write('<td nowrap align="center"><span class="thead">$dsl_downstream</span></td>');
+	document.write('<td nowrap align="center"><span class="thead">$dsl_upstream</span></td>');
+	document.write('</tr>');
+	document.write('<tr>');
+	document.write('<td nowrap align="center"><span class="thead">$dsl_conn_speed</span></td>');
+	document.write('<td nowrap align="center"><span class="ttext">' + conn_down + '</span></td>');
+	document.write('<td nowrap align="center"><span class="ttext">' + conn_up + '</span></td>');
+	document.write('</tr>');
+	document.write('<tr>');
+	document.write('<td nowrap align="center"><span class="thead">$dsl_line_atten</span></td>');
+	document.write('<td nowrap align="center"><span class="ttext">' + line_down + '</span></td>');
+	document.write('<td nowrap align="center"><span class="ttext">' + line_up + '</span></td>');
+	document.write('</tr>');
+	document.write('<tr>');
+	document.write('<td nowrap align="center"><span class="thead">$dsl_noise_margin</span></td>');
+	document.write('<td nowrap align="center"><span class="ttext">' + noise_down + '</span></td>');
+	document.write('<td nowrap align="center"><span class="ttext">' + noise_up + '</span></td>');
+	document.write('</tr>');
+	document.write('</table></td></tr></TABLE>');
+}
+</script>
+
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR>
+	<TD nowrap><B>$statistics_poll :</B>
+<script>
+if (timereset != "0")
+	document.write("<input TYPE=TEXT NAME=timeset id=\"timeset\" SIZE=5 MAXLENGTH=5 VALUE="+timereset+" onKeyPress=\"return getkey('num',event)\"> (secs)");
+else
+	document.write("<input TYPE=TEXT NAME=timeset id=\"timeset\" SIZE=5 MAXLENGTH=5 VALUE='' onKeyPress=\"return getkey('num', event)\"> (secs)");
+</script>
+	</TD>
+	<TD nowrap>
+	<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if( master == "admin" )
+		document.write('<input class="common_bt" TYPE="button" NAME="Set Interval" id="set_interval" VALUE="$statistics_set" WIDTH="80" onClick="reset_time(this);">&nbsp;&nbsp;<input class="common_bt" TYPE="button" NAME="Stop" id="stop" VALUE="$statistics_stop" WIDTH="80" onClick="stop_time(this);">');
+	else
+		document.write('<input class="common1_bt" TYPE="button" NAME="Set Interval" id="set_interval" VALUE="$statistics_set" WIDTH="80" disabled>&nbsp;&nbsp;<input class="common1_bt" TYPE="button" NAME="Stop" id="stop" VALUE="$statistics_stop" WIDTH="80" disabled>');
+		
+	</script>
+	</TD>
+</TR>
+</TABLE>
+<script>
+function reset_time(th)
+{
+	cf=document.forms[0];
+	if( cf.timeset.value == "")
+	{
+		cf.timeset.value = "5";
+	}
+	var timeset=cf.timeset.value;
+	if(!(timeset > 4 && timeset < 86401))
+	{
+		alert("$rang_pool");
+		return false;
+	}
+	th.disabled = true;
+	cf.submit();
+}
+
+function stop_time(th)
+{
+	cf=document.forms[0];
+	cf.timeset.value="0";
+	th.disabled = true;
+	cf.submit();
+}
+</script>
+</FORM>
+</BODY>
+</HTML>

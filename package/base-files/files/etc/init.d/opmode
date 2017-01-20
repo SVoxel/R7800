@@ -1,0 +1,119 @@
+#!/bin/sh /etc/rc.common
+START=20
+. /lib/cfgmgr/cfgmgr.sh
+. /lib/cfgmgr/opmode.sh
+
+vlan_iptv_wl_enable()
+{
+	local i
+	local value
+	local wl
+
+	local vlan_iptv_enable=$($CONFIG get i_opmode)
+
+	case $vlan_iptv_enable in
+	vlan)
+		for i in 1 2 3 4 5 6 7 8 9 10; do
+			value=$($CONFIG get vlan_tag_$i)
+			if [ "x$value" = "x" ] ;then
+				break
+			fi
+			wl=`echo $value|awk '{print $6}'`
+			[ "x$wl" != "x0" ] && return 0
+		done
+		;;
+	iptv)
+		[ "$($CONFIG get wan_brig_ssid1)" = "1" ] && return 0
+		[ "$($CONFIG get wan_brig_ssid2)" = "1" ] && return 0
+		[ "$($CONFIG get wan_brig_guest_ssid1)" = "1" ] && return 0
+		[ "$($CONFIG get wan_brig_guest_ssid2)" = "1" ] && return 0
+
+	;;
+	*) return 1 ;;
+	esac
+	return 1
+}
+
+bridge_stop_nss()
+{
+	case "$($CONFIG get i_opmode)" in
+	apmode|extmode)
+		return 0
+		;;
+	*)
+		return 1
+		;;
+	esac
+}
+
+start_stage0() # $1: boot/start
+{
+	op_set_induced_configs
+	op_create_brs_and_vifs
+
+	#For AP mode and Bridge mode turn off access control
+	local opmode=$($CONFIG get i_opmode)
+	if [ "$opmode" = "apmode"  -o "$opmode" = "brmode" ]; then
+		$CONFIG set enable_block_device=0
+	else
+		[ "x$($CONFIG get old_enable_acl_status)" != "x" ] && $CONFIG set enable_block_device=$($CONFIG get old_enable_acl_status)
+	fi
+	/etc/init.d/acl restart
+
+
+	case "$($CONFIG get i_opmode)" in
+	normal|iptv|vlan)
+		if [ "$1" = "start" ]; then
+			/sbin/cmd_traffic_meter restart
+		fi
+		/etc/init.d/net-lan $1 mode
+		/etc/init.d/net-wan $1 mode
+		;;
+	*)
+		/etc/init.d/net-br $1
+		;;
+	esac
+
+	if vlan_iptv_wl_enable || bridge_stop_nss; then
+		/etc/init.d/qca-nss-ecm stop &
+	fi
+}
+
+stop0()
+{
+	case "$($CONFIG get i_opmode)" in
+	normal|iptv|vlan)
+		/etc/init.d/init6 stop
+		/etc/init.d/net-wan stop
+		/etc/init.d/net-lan stop
+		;;
+	*)
+		/etc/init.d/net-br stop
+		;;
+	esac
+	op_del_all_brs_vifs
+}
+
+start()
+{
+	start_stage0 start
+}
+
+stop()
+{
+	/etc/init.d/wlan-common stop
+	stop0
+}
+
+restart()
+{
+	stop
+	start
+}
+
+boot()
+{
+	op_create_br0_brwan
+	start_stage0 boot
+}
+

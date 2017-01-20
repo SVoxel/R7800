@@ -1,0 +1,296 @@
+#!/bin/sh
+START=60
+
+CONFIG=/bin/config
+PROG=/usr/sbin/openvpn
+mtdn=`grep cert /proc/mtd | awk -F ':' '{print $1}' | awk -F 'd' '{print $2}'`
+partion=/dev/mtd$mtdn
+OPENVPN_CONF_DIR=/tmp/openvpn/
+EASY_RSA_DIR=/tmp/etc/easy-rsa
+
+generate_server_conf_file() {
+	# Set default DH/CA/CERT/KEY/PUSH values
+	dh=/tmp/openvpn/dh1024.pem
+	ca=/tmp/openvpn/ca.crt
+	cert=/tmp/openvpn/server.crt
+	key=/tmp/openvpn/server.key
+	push=/tmp/openvpn/push_routing_rule
+
+	# Check existence of /root/openvpn
+	if [ -d /root/openvpn ]; then
+		OWN_CONF_DIR=/root/openvpn
+	else
+		OWN_CONF_DIR=/etc/openvpn/config
+	fi
+
+	# Search for DH file in the config directory
+	for dh in $OWN_CONF_DIR/dh*.pem; do
+		if [[ -f $dh ]]; then
+			break
+	    	fi
+	done
+
+	# Search for CA file in the config directory
+	for ca in $OWN_CONF_DIR/*ca.crt; do
+		if [[ -f $ca ]]; then
+			break
+		fi
+	done
+
+	# Search for server CRT file in the config directory
+	for cert in $OWN_CONF_DIR/*.crt; do
+		if [[ -f $cert ]] && [[ $cert != $ca ]]; then
+			break
+	    	fi
+	done
+
+	# Search for server KEY file in the config directory
+	for key in $OWN_CONF_DIR/*.key; do
+		if [[ -f $key ]]; then
+			break
+	    	fi
+	done
+
+	# Search for server PUSH file in the config directory
+	if [ -x $OWN_CONF_DIR/push_routing_rule ]; then
+		push=$OWN_CONF_DIR/push_routing_rule
+	fi
+
+	if [ "$1" = "tap" ]; then
+		# Generate TAP server config
+		port=$($CONFIG get vpn_serv_port)
+		proto=$($CONFIG get vpn_serv_type)
+		if [ "$proto" = "udp" ]; then
+			sndbuf=393216
+			rcvbuf=393216
+		else
+			sndbuf=0
+			rcvbuf=0
+		fi
+
+		# Create TAP server config
+		cat <<EOF
+dh $dh
+ca $ca
+cert $cert
+key $key
+dev tap0
+server-bridge nogw
+proto $proto 
+port $port 
+keepalive 10 120
+verb 3
+mute 5
+log-append /tmp/openvpn_log
+writepid /tmp/openvpnd.pid
+status /tmp/openvpnd.status
+mtu-disc yes
+topology subnet
+script-security 2
+cipher AES-128-CBC
+auth sha1
+tls-server
+client-to-client
+duplicate-cn
+comp-lzo
+fast-io
+client-connect "$push tap"
+sndbuf $sndbuf
+rcvbuf $rcvbuf
+EOF
+	else 
+		# Generate TUN server config
+		port=$($CONFIG get tun_vpn_serv_port)
+		proto=$($CONFIG get tun_vpn_serv_type)
+		lan_netmask=$($CONFIG get lan_netmask)
+		lan_ipaddr=$($CONFIG get lan_ipaddr)
+		subnet=$(tun_net $lan_ipaddr $lan_netmask)
+		if [ "$proto" = "udp" ]; then
+			sndbuf=393216
+			rcvbuf=393216
+		else
+			sndbuf=0
+			rcvbuf=0
+		fi
+
+		# Create TUN server config
+		cat <<EOF
+dh $dh
+ca $ca
+cert $cert
+key $key
+server $subnet $lan_netmask
+dev tun0
+proto $proto 
+port $port 
+keepalive 10 120
+verb 3
+mute 5
+log-append /tmp/openvpn_tun_log
+writepid /tmp/openvpnd_tun.pid
+status /tmp/openvpnd_tun.status
+mtu-disc yes
+topology subnet
+script-security 2
+cipher AES-128-CBC
+auth sha1
+client-to-client
+duplicate-cn
+comp-lzo
+fast-io
+push "dhcp-option DNS $lan_ipaddr"
+client-connect "$push tun"
+sndbuf $sndbuf
+rcvbuf $rcvbuf
+EOF
+	fi
+}
+
+set_up_ethernet_bridge() {
+	br="br0"
+	tap="tap0"
+	lan_ipaddr=$($CONFIG get lan_ipaddr)
+	lan_netmask=$($CONFIG get lan_netmask)
+	$PROG --mktun --dev $tap
+	brctl addif $br $tap
+	ifconfig $tap 0.0.0.0 promisc up
+	ifconfig $br $lan_ipaddr netmask $lan_netmask 
+	
+}
+
+extract_cert_file() {
+	mkdir -p $OPENVPN_CONF_DIR
+
+	dd if=$partion of=/tmp/openvpn_keys.tar.gz 
+	tar -xzvf /tmp/openvpn_keys.tar.gz -C $OPENVPN_CONF_DIR
+	TAR_STATUS=$?
+	if [ -s $OPENVPN_CONF_DIR/cert.info  -a -s $OPENVPN_CONF_DIR/ca.crt -a -s $OPENVPN_CONF_DIR/dh1024.pem -a -s $OPENVPN_CONF_DIR/client.crt -a -s $OPENVPN_CONF_DIR/client.key -a -s $OPENVPN_CONF_DIR/server.crt -a -s $OPENVPN_CONF_DIR/server.key ]; then
+		FILES_EXIST=1
+	fi
+	if [ "$TAR_STATUS" = "0" -a "$FILES_EXIST" = "1" ]; then
+		RET_STATUS=0
+	else
+		RET_STATUS=1
+		rm -f $OPENVPN_CONF_DIR/*
+	fi	   
+	rm -f /tmp/openvpn_keys.tar.gz
+	echo $RET_STATUS > $OPENVPN_CONF_DIR/cert_file_status
+	cp /etc/openvpn/push_routing_rule $OPENVPN_CONF_DIR
+	return $RET_STATUS
+}
+
+write_back_to_partion(){
+	cd $EASY_RSA_DIR/keys
+	CERT_FILE="cert.info ca.crt dh1024.pem client.crt client.key server.crt server.key" 
+
+	tar -czvf openvpn_keys.tar.gz $CERT_FILE
+	dd if=/dev/zero bs=124k count=1 | tr "\000" "\377" >124kdata
+	dd if=openvpn_keys.tar.gz of=124kdata conv=notrunc
+	flash_erase $partion 0 0
+	cat 124kdata > $partion
+	
+	cp $CERT_FILE $OPENVPN_CONF_DIR
+}
+
+regenerate_cert_file() {
+	mkdir $EASY_RSA_DIR
+	cp /etc/easy-rsa/openssl-*.cnf $EASY_RSA_DIR
+
+	clean-all
+	build-ca
+	build-key-server server
+	build-dh
+	build-key client
+
+	# Input: artmtd -r sn
+	# Output: sn:3V01475S00025
+	#         SN: 3V01475S00025
+	sn=$(artmtd -r sn | grep sn: | sed 's/sn://g')
+	echo $sn > $EASY_RSA_DIR/keys/cert.info
+	write_back_to_partion
+}
+
+boot() {
+	extract_cert_file || {
+		echo "extract vpn cert file fail, can not start vpn server" >/dev/console
+		exit 1
+	}	
+	start
+}
+
+start() {
+	if [ "$($CONFIG get vpn_enable)" = "0" ]; then
+		exit 1
+	fi
+	if [ "$($CONFIG get endis_ddns)" = "0" ] && [ "$($CONFIG get wan_proto)" != "static" ] && [ "$($CONFIG get wan_pppoe_wan_assign)" = "0" ]; then
+		exit 1
+	fi
+	if [ "$($CONFIG get ap-mode)" = "1" ]; then
+		exit 1
+	fi
+
+	[ -d /tmp/openvpn ] || extract_cert_file
+	OPENVPN_TAP_CONF_FILE=/tmp/openvpn/server_tap.conf
+	OPENVPN_TUN_CONF_FILE=/tmp/openvpn/server_tun.conf
+
+	generate_server_conf_file tap > $OPENVPN_TAP_CONF_FILE
+	generate_server_conf_file tun > $OPENVPN_TUN_CONF_FILE
+
+    	set_up_ethernet_bridge
+
+	# Open the door to let client in 
+	net-wall rule
+	net-wall start
+
+	# Start TAP server
+	$PROG $OPENVPN_TAP_CONF_FILE &
+
+	# Start TUN server
+	$PROG $OPENVPN_TUN_CONF_FILE &
+
+	/usr/sbin/wget -T 10 http://www.speedtest.net/api/country -O /tmp/openvpn/server_location
+}
+
+stop() {
+	br="br0"
+	tap="tap0"
+
+	kill `cat /tmp/openvpnd.pid` 
+	rm -f /tmp/openvpnd.pid
+	kill `cat /tmp/openvpnd_tun.pid`
+	rm -f /tmp/openvpnd_tun.pid
+
+	brctl delif $br $tap
+	$PROG --rmtun --dev $tap
+
+	#close the door
+	net-wall rule
+	net-wall start
+}
+
+restart() {
+	stop
+	start
+}
+
+case "$1" in
+	"boot")
+		boot
+	;;
+	"start")
+		start
+	;;
+	"stop")
+		stop
+	;;
+	"restart")
+		restart
+	;;
+	"regenerate_cert_file")
+		regenerate_cert_file
+	;;
+	*)
+		echo "Unknow command" > /dev/console
+		echo "Usage: $0 boot|start|stop|restart|regenerate_cert_file" > /dev/console
+	;;
+esac

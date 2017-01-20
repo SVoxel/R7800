@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<script>
+var lte_vendor="<% cfg_get("lte_vendor") %>";
+if(lte_vendor == "sequans")
+	document.write("<meta http-equiv=\"refresh\" content=\"90; url=BRS_checkNet_ping.html\" />");
+else
+	document.write("<meta http-equiv=\"refresh\" content=\"40; url=BRS_checkNet_ping.html\" />");
+</script>
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<% hijack_language() %>
+</head>
+<body>
+
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+
+		<div class="waiting_connect_div" align="center">
+			<h1 class="h1_black"><script>document.write(bh_plz_wait_moment);</script></h1>
+		</div>
+
+		<div class="waiting_img_div" align="center">
+			<img src="image/wait30.gif" />
+		</div>
+
+	</div>
+
+</div>
+
+</body>
+
+</html>
+
+

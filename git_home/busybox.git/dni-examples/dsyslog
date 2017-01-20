@@ -1,0 +1,49 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+START=49
+
+LOG_CATEGORY_FILE=/tmp/logcategory
+CONFIG=/bin/config
+
+# save the log category information
+g_total=0
+
+update_check_log ()
+{
+        local LAS=$(($($CONFIG get log_allow_sites) << 0))
+        local LBSS=$(($($CONFIG get log_block_sites_services) << 1))
+        local LCWI=$(($($CONFIG get log_conn_web_interface) << 2))
+        local LRO=$(($($CONFIG get log_router_operation) << 3))
+        local LDAPS=$(($($CONFIG get log_dos_attacks_port_scans) << 4))
+        local LPFT=$(($($CONFIG get log_port_firwarding_trigering) << 5))
+        local LWA=$(($($CONFIG get log_wire_access) << 6))
+        local LACR=$(($($CONFIG get log_internet_conn_reset) << 7))
+        local LWOS=$(($($CONFIG get log_wire_signal_sched) << 8))
+        local LVPN=$(($($CONFIG get log_vpn_head) << 10))
+
+        g_total=$(($LAS + $LBSS + $LCWI + $LRO + $LDAPS + $LPFT + $LWA + $LACR + $LWOS + $LVPN))
+}
+
+start ()
+{
+	update_check_log
+	syslogd -m 0 -T "$($CONFIG get time_zone)" -c "$g_total"
+
+	# the fisrt log
+	local sys_first=`$CONFIG get syslog_up_first`
+	if [ "x$sys_first" = "x0" ]; then
+		logger "[Initialized, firmware version: $(cat /firmware_version)$(cat /firmware_region)]"
+		$CONFIG set syslog_up_first=1
+	fi
+}
+
+stop ()
+{
+	killall syslogd
+}
+
+restart ()
+{
+	stop
+	start
+}

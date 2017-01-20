@@ -1,0 +1,45 @@
+diff --git a/nandwrite.c b/nandwrite.c
+index 9c3fe8f..694e840 100644
+--- a/nandwrite.c
++++ b/nandwrite.c
+@@ -421,6 +421,25 @@ int main(int argc, char * const argv[])
+ 						errmsg("too many bad blocks, cannot complete request");
+ 						goto closeall;
+ 					}
++				} else {
++					if (!quiet)
++						fprintf(stdout, "Erasing for writing from %#08llx to %#08llx\n",
++							offs, offs + ebsize_aligned - 1);
++					if (mtd_erase(mtd_desc, &mtd, fd, offs / ebsize_aligned)) {
++						int errno_tmp = errno;
++						sys_errmsg("%s: MTD Erase failure", mtd_device);
++						if (errno_tmp != EIO)
++							goto closeall;
++						if (markbad) {
++							fprintf(stderr, "Marking block at %08llx bad\n",
++									offs & (~mtd.eb_size + 1));
++							if (mtd_mark_bad(&mtd, fd, offs / ebsize_aligned)) {
++								sys_errmsg("%s: MTD Mark bad block failure", mtd_device);
++								goto closeall;
++							}
++							mtdoffset = blockstart + ebsize_aligned;
++						}
++					}
+ 				}
+ 
+ 				offs +=  ebsize_aligned / blockalign;
+@@ -542,6 +561,14 @@ int main(int argc, char * const argv[])
+ 					sys_errmsg("%s: MTD Erase failure", mtd_device);
+ 					if (errno_tmp != EIO)
+ 						goto closeall;
++					if (markbad) {
++						fprintf(stderr, "Marking block at %08llx bad\n",
++							i & (~mtd.eb_size + 1));
++						if (mtd_mark_bad(&mtd, fd, i / mtd.eb_size)) {
++							sys_errmsg("%s: MTD Mark bad block failure", mtd_device);
++							goto closeall;
++						}
++					}
+ 				}
+ 			}
+ 

@@ -1,0 +1,71 @@
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+--- a/arch/mips/ath79/dev-wmac.c
++++ b/arch/mips/ath79/dev-wmac.c
+@@ -280,6 +280,11 @@ void __init ath79_wmac_disable_5ghz(void
+ 	ath79_wmac_data.disable_5ghz = true;
+ }
+ 
++__init struct ath9k_platform_data *ath79_get_wmac_data(void)
++{
++	return &ath79_wmac_data;
++}
++
+ void __init ath79_register_wmac(u8 *cal_data, u8 *mac_addr)
+ {
+ 	if (soc_is_ar913x())
+--- a/arch/mips/ath79/dev-wmac.h
++++ b/arch/mips/ath79/dev-wmac.h
+@@ -12,10 +12,13 @@
+ #ifndef _ATH79_DEV_WMAC_H
+ #define _ATH79_DEV_WMAC_H
+ 
++#include <linux/ath9k_platform.h>
++
+ void ath79_register_wmac(u8 *cal_data, u8 *mac_addr);
+ void ath79_wmac_disable_2ghz(void);
+ void ath79_wmac_disable_5ghz(void);
+ 
+ bool ar93xx_wmac_read_mac_address(u8 *dest);
++struct ath9k_platform_data *ath79_get_wmac_data(void);
+ 
+ #endif /* _ATH79_DEV_WMAC_H */
+--- a/arch/mips/ath79/Kconfig
++++ b/arch/mips/ath79/Kconfig
+@@ -757,6 +757,7 @@ config ATH79_DEV_NFC
+ 	def_bool n
+ 
+ config ATH79_DEV_NAND
++	select ATH79_NAND_CALDATA_FIXUP
+ 	def_bool n
+ 
+ config ATH79_DEV_SPI
+@@ -769,6 +770,9 @@ config ATH79_DEV_WMAC
+ 	depends on (SOC_AR913X || SOC_AR933X || SOC_AR934X || SOC_QCA955X)
+ 	def_bool n
+ 
++config ATH79_NAND_CALDATA_FIXUP
++	def_bool n
++
+ config ATH79_NVRAM
+ 	def_bool n
+ 
+--- a/arch/mips/ath79/Makefile
++++ b/arch/mips/ath79/Makefile
+@@ -33,6 +33,7 @@ obj-$(CONFIG_ATH79_DEV_WMAC)		+= dev-wma
+ #
+ # Miscellaneous objects
+ #
++obj-$(CONFIG_ATH79_NAND_CALDATA_FIXUP)	+= nand-caldata-fixup.o
+ obj-$(CONFIG_ATH79_NVRAM)		+= nvram.o
+ obj-$(CONFIG_ATH79_PCI_ATH9K_FIXUP)	+= pci-ath9k-fixup.o
+ obj-$(CONFIG_ATH79_ROUTERBOOT)		+= routerboot.o

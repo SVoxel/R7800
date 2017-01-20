@@ -1,0 +1,131 @@
+--- a/arch/mips/ath79/Kconfig
++++ b/arch/mips/ath79/Kconfig
+@@ -140,18 +140,6 @@
+ 	select ATH79_DEV_M25P80
+ 	select ATH79_DEV_USB
+ 
+-config ATH79_MACH_APH131
+-	bool "Atheros APH131 reference board"
+-	select SOC_QCA955X
+-	select ATH79_DEV_GPIO_BUTTONS
+-	select ATH79_DEV_LEDS_GPIO
+-	select ATH79_DEV_SPI
+-	select ATH79_DEV_USB
+-	select ATH79_DEV_WMAC
+-	help
+-	  Say 'Y' here if you want your kernel to support the
+-	  Atheros APH131 reference board.
+-
+ config ATH79_MACH_CUS227
+ 	bool "Qualcomm Atheros CUS227 support"
+ 	select SOC_AR934X
+@@ -196,19 +184,6 @@
+ 	  Say 'Y' here if you want your kernel to support the
+ 	  Atheros DB120 reference board with TB388 extension.
+ 
+-config ATH79_MACH_DB120_VHYFI
+-	bool "Atheros DB120-vhyfi reference board"
+-	select SOC_AR934X
+-	select ATH79_DEV_GPIO_BUTTONS
+-	select ATH79_DEV_LEDS_GPIO
+-	select ATH79_DEV_ETH
+-	select ATH79_DEV_SPI
+-	select ATH79_DEV_USB
+-	select ATH79_DEV_WMAC
+-	help
+-	  Say 'Y' here if you want your kernel to support the
+-	  Atheros DB120-vhyfi reference board.
+-
+ config ATH79_MACH_PB42
+ 	bool "Atheros PB42 board support"
+ 	select SOC_AR71XX
+@@ -237,17 +212,23 @@
+ 	select ATH79_DEV_PB9X_PCI if PCI
+ 	select ATH79_DEV_USB
+ 
+-config ATH79_MACH_REH132
+-	bool "Atheros REH132 reference board"
++config ATH79_MACH_GENERIC_DT
++	bool "Qualcomm Atheros reference boards with device tree"
++	select SOC_AR913X
++	select SOC_AR933X
+ 	select SOC_AR934X
++	select SOC_QCA955X
++	select ATH79_DEV_AP9X_PCI if PCI
++	select ATH79_DEV_ETH
+ 	select ATH79_DEV_GPIO_BUTTONS
+ 	select ATH79_DEV_LEDS_GPIO
+-	select ATH79_DEV_SPI
++	select ATH79_DEV_M25P80
++	select ATH79_DEV_NFC
+ 	select ATH79_DEV_USB
+ 	select ATH79_DEV_WMAC
+ 	help
+ 	  Say 'Y' here if you want your kernel to support the
+-	  Atheros REH132 reference board.
++	  Qualcomm Atheros reference boards with device tree.
+ 
+ config ATH79_MACH_AW_NR580
+ 	bool "AzureWave AW-NR580 board support"
+--- a/arch/mips/ath79/machtypes.h
++++ b/arch/mips/ath79/machtypes.h
+@@ -31,13 +31,11 @@
+ 	ATH79_MACH_AP81,		/* Atheros AP81 reference board */
+ 	ATH79_MACH_AP83,		/* Atheros AP83 */
+ 	ATH79_MACH_AP96,		/* Atheros AP96 */
+-	ATH79_MACH_APH131,		/* Atheros APH131 */
+ 	ATH79_MACH_AW_NR580,		/* AzureWave AW-NR580 */
+ 	ATH79_MACH_CAP4200AG,		/* Senao CAP4200AG */
+ 	ATH79_MACH_CUS227,		/* Qualcomm Atheros CUS227 board */
+ 	ATH79_MACH_DB120,		/* Atheros DB120 reference board */
+ 	ATH79_MACH_DB120_TB388,		/* Atheros DB120/TB388 ref board */
+-	ATH79_MACH_DB120_VHYFI,		/* Atheros DB120-vhyfi ref board */
+ 	ATH79_MACH_PB44,		/* Atheros PB44 reference board */
+ 	ATH79_MACH_DIR_600_A1,		/* D-Link DIR-600 rev. A1 */
+ 	ATH79_MACH_DIR_615_C1,		/* D-Link DIR-615 rev. C1 */
+@@ -46,6 +44,7 @@
+ 	ATH79_MACH_EW_DORIN,		/* embedded wireless Dorin Platform */
+ 	ATH79_MACH_EW_DORIN_ROUTER,	/* embedded wireless Dorin Router Platform */
+ 	ATH79_MACH_EAP7660D,		/* Senao EAP7660D */
++	ATH79_MACH_GENERIC_DT,		/* Qualcomm Atheros boards with device tree */
+ 	ATH79_MACH_JA76PF,		/* jjPlus JA76PF */
+ 	ATH79_MACH_JA76PF2,		/* jjPlus JA76PF2 */
+ 	ATH79_MACH_JWAP003,		/* jjPlus JWAP003 */
+@@ -74,7 +73,6 @@
+ 	ATH79_MACH_RB_751G,		/* Mikrotik RouterBOARD 751G */
+ 	ATH79_MACH_RB_2011G,		/* Mikrotik RouterBOARD 2011UAS-2HnD */
+ 	ATH79_MACH_RB_2011L,		/* Mikrotik RouterBOARD 2011L */
+-	ATH79_MACH_REH132,		/* Atheros REH132 */
+ 	ATH79_MACH_RW2458N,		/* Redwave RW2458N */
+ 	ATH79_MACH_TEW_632BRP,		/* TRENDnet TEW-632BRP */
+ 	ATH79_MACH_TEW_673GRU,		/* TRENDnet TEW-673GRU */
+--- a/arch/mips/ath79/Makefile
++++ b/arch/mips/ath79/Makefile
+@@ -55,18 +55,17 @@
+ obj-$(CONFIG_ATH79_MACH_AP81)		+= mach-ap81.o
+ obj-$(CONFIG_ATH79_MACH_AP83)		+= mach-ap83.o
+ obj-$(CONFIG_ATH79_MACH_AP96)		+= mach-ap96.o
+-obj-$(CONFIG_ATH79_MACH_APH131)		+= mach-aph131.o
+ obj-$(CONFIG_ATH79_MACH_AW_NR580)	+= mach-aw-nr580.o
+ obj-$(CONFIG_ATH79_MACH_CAP4200AG)	+= mach-cap4200ag.o
+ obj-$(CONFIG_ATH79_MACH_CUS227)		+= mach-cus227.o
+ obj-$(CONFIG_ATH79_MACH_DB120)		+= mach-db120.o
+ obj-$(CONFIG_ATH79_MACH_DB120_TB388)	+= mach-db120-tb388.o
+-obj-$(CONFIG_ATH79_MACH_DB120_VHYFI)	+= mach-db120-vhyfi.o
+ obj-$(CONFIG_ATH79_MACH_DIR_600_A1)	+= mach-dir-600-a1.o
+ obj-$(CONFIG_ATH79_MACH_DIR_615_C1)	+= mach-dir-615-c1.o
+ obj-$(CONFIG_ATH79_MACH_DIR_825_B1)	+= mach-dir-825-b1.o
+ obj-$(CONFIG_ATH79_MACH_EW_DORIN)	+= mach-ew-dorin.o
+ obj-$(CONFIG_ATH79_MACH_EAP7660D)	+= mach-eap7660d.o
++obj-$(CONFIG_ATH79_MACH_GENERIC_DT)	+= mach-generic-dt.o
+ obj-$(CONFIG_ATH79_MACH_JA76PF)		+= mach-ja76pf.o
+ obj-$(CONFIG_ATH79_MACH_JWAP003)	+= mach-jwap003.o
+ obj-$(CONFIG_ATH79_MACH_HORNET_UB)	+= mach-hornet-ub.o
+@@ -81,7 +80,6 @@
+ obj-$(CONFIG_ATH79_MACH_RB4XX)		+= mach-rb4xx.o
+ obj-$(CONFIG_ATH79_MACH_RB750)		+= mach-rb750.o
+ obj-$(CONFIG_ATH79_MACH_RB2011)		+= mach-rb2011.o
+-obj-$(CONFIG_ATH79_MACH_REH132)		+= mach-reh132.o
+ obj-$(CONFIG_ATH79_MACH_RW2458N)	+= mach-rw2458n.o
+ obj-$(CONFIG_ATH79_MACH_TEW_632BRP)	+= mach-tew-632brp.o
+ obj-$(CONFIG_ATH79_MACH_TEW_673GRU)	+= mach-tew-673gru.o

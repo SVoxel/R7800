@@ -1,0 +1,180 @@
+<% ca_http_header("style/hijack_style.css","style/hijack_ru_welcome.css","/funcs.js","/RU_mac_spoof.js") %>
+<% nohelp_header("RU_isp_static.htm", "RU_welcome") %>
+
+<script>
+//load_default(1); 
+var isp_type=parent.isp_type;
+var wan_factory_mac="<% cfg_get("wan_factory_mac"); %>";
+var wan_remote_mac="<% cfg_get("wan_remote_mac") %>";
+var consolidate_device_name = parent.consolidate_device_name;
+
+function loadvalue()
+{
+	var cf=document.forms[0];
+	cf.MACAssign[1].checked = true;
+	setMAC(cf, wan_remote_mac);
+
+	//buttons left
+	var btns_div1 = document.getElementById("btnsContainer_div1");
+	if( master == "admin" )
+	{
+		btns_div1.onclick = function()
+		{
+			RU_spoof_back();
+		}
+	}
+	//buttons right
+	var btns_div2 = document.getElementById("btnsContainer_div2");
+	if( master == "admin" ){
+		btns_div2.onclick = function()
+		{
+			RU_check_spoof();
+		}
+	}
+
+	if(consolidate_device_name == 1)
+		cf.system_name.value = "<% cfg_sed("Device_name") %>";
+	else
+		cf.system_name.value = "<% cfg_sed("wan_hostname") %>";
+
+}
+
+</script>
+<input type="hidden" name="welcome_wan_type">
+<input type="hidden" name="conflict_wanlan">
+<input type="hidden" name="basic_type">
+<input type="hidden" name="ppp_login_type">
+<input type="hidden" name="run_test">
+<input type="hidden" name="DNSAssign">
+<input type="hidden" name="change_wan_type" value="0">
+<input type="hidden" name="WANAssign">
+<input type="hidden" name="STATIC_DNS">
+
+<!-- DHCP & Static -->
+<input type="hidden" name="ether_ipaddr">
+<input type="hidden" name="ether_subnet">
+<input type="hidden" name="ether_gateway">
+<input type="hidden" name="ether_dnsaddr1">
+<input type="hidden" name="ether_dnsaddr2">
+<input type="hidden" name="system_name">
+<input type="hidden" name="domain_name" value="<% cfg_sed("wan_domain") %>">
+
+<!-- PPPoE -->
+<input type="hidden" name="pppoe_username">
+<input type="hidden" name="pppoe_passwd">
+<input type="hidden" name="pppoe_servername">
+<input type="hidden" name="pppoe_ipaddr">
+<input type="hidden" name="dual_access">
+<input type="hidden" name="pppoe_dod">
+<input type="hidden" name="pppoe_dual_ipaddr">
+<input type="hidden" name="pppoe_dual_subnet">
+<input type="hidden" name="pppoe_dual_gateway">
+<input type="hidden" name="pppoe_dual_assign">
+<input type="hidden" name="hidden_pppoe_idle_time">
+<input type="hidden" name="pppoe_dnsaddr1">
+<input type="hidden" name="pppoe_dnsaddr2">
+
+<!-- PPTP -->
+<input type="hidden" name="pptp_username">
+<input type="hidden" name="pptp_passwd">
+<input type="hidden" name="pptp_myip">
+<input type="hidden" name="pptp_serv_ip">
+<input type="hidden" name="pptp_gateway">
+<input type="hidden" name="pptp_conn_id">
+<input type="hidden" name="pptp_dnsaddr1">
+<input type="hidden" name="pptp_dnsaddr2">
+<input type="hidden" name="pptp_dod">
+<input type="hidden" name="pptp_mynetmask">
+<input type="hidden" name="hidden_pptp_idle_time">
+
+<!-- L2TP -->
+<input type="hidden" name="l2tp_username">
+<input type="hidden" name="l2tp_passwd">
+<input type="hidden" name="l2tp_myip">
+<input type="hidden" name="l2tp_serv_ip">
+<input type="hidden" name="l2tp_gateway">
+<input type="hidden" name="l2tp_conn_id">
+<input type="hidden" name="l2tp_dnsaddr1">
+<input type="hidden" name="l2tp_dnsaddr2">
+<input type="hidden" name="l2tp_dod">
+<input type="hidden" name="l2tp_mynetmask">
+<input type="hidden" name="hidden_l2tp_idle_time">
+
+<div class="wizard_content_div">
+<div class="wizard_words_div">
+	<H1><script>document.write(RU_CA_head)</script></H1>
+<TABLE>
+<tr>
+	<td colspan=3><script>document.write(RU_isp_spoof_head)</script></td>
+</tr>
+	<tr><td><br></td></tr>
+<!--tr>
+	<TD colspan=2 class="RU_radio">
+	<input type="radio" name="macspoof" value="0" ><script>document.write(basic_int_default_mac)</script>
+	</TD>
+</tr>
+<tr>
+	<TD colspan=2 class="RU_radio">
+	<input type="radio" name="macspoof" value="1" checked ><script>document.write(basic_int_computer_mac)</script>
+	</TD>
+</tr>
+<tr>
+	<TD colspan=2 class="RU_radio">
+	<input type="radio" name="macspoof" value="2" ><script>document.write(basic_int_this_mac)</script>
+	</TD>
+	<td><input type=text name=thismac></td>
+</tr-->
+
+
+<TR id=mac_default style="display:none">
+        <TD nowrap colspan=2 class="RU_radio">
+        <input type="radio"  name="MACAssign" value="0" onClick="setMAC(document.forms[0], wan_factory_mac)"><script>document.write(basic_int_default_mac)</script>
+        </TD>
+</TR>
+<TR id=mac_comp>
+        <TD nowrap colspan=2 class="RU_radio">
+        <input type="radio" name="MACAssign" value="1" onClick="setMAC(document.forms[0], wan_remote_mac)"><script>document.write(basic_int_computer_mac)</script>
+        </TD>
+</TR>
+<TR id=mac_this>
+        <TD nowrap colspan=2 class="RU_radio">
+        <input type="radio" name="MACAssign" value="2" onClick="setMAC(document.forms[0], wan_factory_mac)"><script>document.write(basic_int_this_mac)</script>
+        </TD>
+        <TD nowrap align=right>
+        <input type="text" value="" name="Spoofmac" maxlength="17" size="20" onKeyPress="return getkey('mac',event)">
+        </TD>
+</TR>
+<tr><td><br></td></tr>
+</TABLE>
+</div><!--wizard_words_div -->
+<div id="center_buttons">
+  <div id="allBtns_div" class="wizard_buttons_div" align="center">
+                <div id="btnsContainer_div1" class="buttons_img_div" align="center">
+						<script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							document.write('<img src="image/ca-little-grey-button.png" />');
+                        </script>
+                        <div class="buttons_words_div"><script>document.write(RU_back)</script></div>
+                </div>
+                <div class="buttons_split"></div>
+                <div id="btnsContainer_div2" class="buttons_img_div" align="center">
+						<script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							
+							document.write('<img src="image/ca-little-grey-button.png" />');
+						</script>
+                        
+                        <div class="buttons_words_div"><script>document.write(RU_next)</script></div>
+                </div>
+  </div><!--allBtns_div -->
+</div>
+</div><!--wizard_content_div -->
+</FORM>
+</BODY>
+</HTML>

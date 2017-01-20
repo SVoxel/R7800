@@ -1,0 +1,335 @@
+<% http_header("style/form.css", "/funcs.js", "/USB_NETStorage.js", "/check_user.js") %>
+<% nohelp_header("USB_Folder_creat.htm", "sharefolder_edit") %>
+<div class="page_title">$edit_network_folder</div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+
+<script>
+<!--
+var getEditNum=location.href.indexOf("editFolderID");
+var num=location.href.substr(getEditNum+13);
+<% show_usb_fileder_items() %>
+<% change_folder_path() %>
+<% userhdd_items_xss() %>
+
+/*---check last time the saved folder path is real or not ----------*/
+<% check_path() %>
+<% save_timestamp("sharefolder_edit","open_browser_window","sharefolder_creat") %>
+var ts='<% cfg_get("sharefolder_edit") %>';
+var nopassword_num=opener.nopassword_num;
+if( noThisPath == 0 )
+{
+	alert("$folder_notExist");
+}
+        
+	var str = eval('usb_sharefolder' + num ).replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+	var volname_str = eval('usb_sharefolder_volname' + num).replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+        echo_info = str.split('*');
+
+        //change echo_info[1]
+        for(i=0;i<sda_num;i++){
+                var sda_str = eval('sda_U' + i);
+                each_info = sda_str.split('*');
+                if( echo_info[1] == each_info[0]){
+                        usbdevice=""+each_info[1]+":";
+			var deviceLable=each_info[1];
+                }
+        }
+        var UsbDevice=usbdevice+"("+volname_str+")";
+        var File_system=echo_info[7];
+
+function loadvalue()
+{
+	form=document.forms[0];
+//16168	if( parent.folder_path=="" )		
+		form.folder.value=usbdevice+echo_info[0].replace(/\//g,"\\");
+//16168	else
+//16168		form.folder.value=parent.folder_path;
+	
+	
+	if( echo_info[9] != "Not Shared" ){
+		form.shareName.value=echo_info[9];
+		form.old_shareName.value=echo_info[9];
+		form.volumeName.value=volname_str;
+		form.deviceName.value=echo_info[10];
+
+		if(echo_info[5].indexOf("All") != -1)
+		{
+			form.readAccess_all.checked = true;
+			check_disable_all_read_user();
+		}
+		else 
+		{
+			form.readAccess_ad.checked = true;
+			form.readAccess_ad.disabled = true;
+			edit_default();
+		}
+		
+
+		if (echo_info[6].indexOf("All") != -1)
+		{
+			form.writeAccess_all.checked = true;
+			check_disable_all_write_user();
+		}
+		else if(echo_info[6].indexOf("admin") != -1)
+		{	
+			form.writeAccess_ad.checked = true;
+			form.writeAccess_ad.disabled = true;
+			edit_default();
+		}
+	}
+	form.action="/apply.cgi?/USB_Folder_edit.htm?editFolderID="+num+" timestamp="+ts;
+	
+	if(opener.parent.usb_edit_apply_already == 1)//bug 41187
+	{
+		opener.parent.usb_edit_apply_already = 0;
+		close_window();
+	}
+}
+
+function edit_default()
+{
+	form=document.forms[0];
+	
+	if(array_num==1)
+	{
+		if(echo_info[11] == 3)
+		{
+			form.readAccess_n.checked = true;
+			form.writeAccess_n.checked = true;
+		}
+		else if (echo_info[11] == 2)
+		{
+			form.readAccess_n.checked = true;
+			form.writeAccess_n.checked = false;
+		}
+		else if (echo_info[11] == 1)
+		{
+			form.readAccess_n.checked = false;
+			form.writeAccess_n.checked = false;
+		}
+	}
+	else
+		for(i =0; i < array_num; i++)
+		{
+			if(echo_info[11+i] == 3)
+			{
+				form.readAccess_n[i].checked = true;
+				form.writeAccess_n[i].checked = true;
+			}
+			else if (echo_info[i+11] == 2)
+			{
+				form.readAccess_n[i].checked = true;
+				form.writeAccess_n[i].checked = false;
+			}
+			else if (echo_info[i+11] == 1)
+			{
+				form.readAccess_n[i].checked = false;
+				form.writeAccess_n[i].checked = false;
+			}
+		}
+}
+		
+function openBrowse()
+{
+	var form = document.forms[0];
+
+	form.devicePath.value = echo_info[1];
+//16168	form.action="/apply.cgi?/USB_browse.htm?openfile=USB_Folder_edit.htm?editFolderID="+num+""
+	form.submit_flag.value="open_browser_window";
+	form.submit();
+
+	window.open('USB_browse.htm','browse','resizable=0,scrollvars=yes,width=400,height=400,left=400,top=300').focus();
+}
+function change_type(str)
+{
+	var info=str.split("/");
+	var root_path="/"+info[1]+"/"+info[2]+"/"+info[3]+"";
+	for(i=0;i<sda_num;i++){
+		 var sda_str = eval('sda_U' + i);
+		each_info = sda_str.split('*');
+		if( root_path == each_info[0]){
+			root_path=""+each_info[1]+":";
+		 }
+	}
+	str=root_path;
+	for(j=4;j<info.length;j++){
+		str=""+str+"/"+info[j]+"";
+	}
+	var path=str.replace(/\//g,"\\");
+
+}
+
+function click_edit()
+{
+	var form = document.forms[0];
+
+/*	if( form.folder.value.checkFolder()){
+		alert("$invalid_folderPath");
+		return false;
+	} */
+	if( form.shareName.value.checkShareName()){
+		alert("$invalid_shareName");
+		return false;
+	}
+
+	form.folder.value = form.folder.value.replace(/(^\s*)/g, "");
+	form.folder.value = delete_end_space(form.folder.value);
+	if( form.folder.value == ""){
+		alert("$folder_NULL");
+		return false;
+	}
+	var upfolder="\\.";
+	if( form.folder.value.indexOf(upfolder) > -1 ){
+		alert("$invalid_up_folderpath");
+		return false;
+	}
+
+	form.shareName.value = form.shareName.value.replace(/(^\s*)/g, "");
+	form.shareName.value = delete_end_space(form.shareName.value);
+	if( form.shareName.value == ""){
+		alert("$shareName_NULL");
+		return false;
+	}
+	if( form.shareName.value == "Not Shared" ){
+		alert("$usb_notSharedName");
+		return false;
+	}
+	for( i=0; i < folder_number ; i++ ){
+		var str = eval( 'usb_sharefolder' + i ).replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+		each_info = str.split('*');
+		if( i != num &&  form.shareName.value.toLowerCase() == each_info[4].toLowerCase() ){
+			alert("$shareName_exist");
+			return false;
+		}
+	}
+
+ if(((nopassword_num == 1 && (echo_info[5].indexOf("password") != -1 )) && form.readAccess_all.checked == false) || nopassword_num == 0)//to fix bug33330
+       {
+                alert("$usb_nopassward_msg");
+       }
+
+
+
+	 /*	----change path----       */
+	var info=form.folder.value.replace(/\\/g,"\/").split(":");
+	var device_lable=info[0];
+	for(i=0; i<sda_num; i++){
+		var sda_str = eval('sda_U' + i);
+		each_info = sda_str.split('*');
+		if( device_lable == each_info[1] ){
+			info[0]=each_info[0];
+		}
+	}
+	var str=""+info[0]+info[1]+"";
+	form.folderPath.value=str;
+	/*-----------------if edit 'not shared' folder, change this 'not shared' folder shared,
+			   add it in shared list, so submit_flag should is "sharefolder_creat" -------------------*/ 
+	if( echo_info[9] == "Not Shared" ){  
+		form.submit_flag.value="sharefolder_creat";
+	}
+	else
+		form.submit_flag.value="sharefolder_edit";
+		
+	check_value();
+	form.submit();
+	opener.parent.formframe.location.href = "USB_advanced.htm";
+	opener.parent.usb_edit_apply_already = 1;
+}
+-->
+</script>
+<input type="hidden" name="folderPath">
+<input type="hidden" name="old_shareName">
+<input type="hidden" name="devicePath">
+<input type="hidden" name="volumeName">
+<input type="hidden" name="deviceName">
+<input type="hidden" name="hid_read_a">
+<input type="hidden" name="hid_write_a">
+<input type="hidden" id="hid_user0" name="hid_user0" value= "0"><!--4 users, default not exist -->
+<input type="hidden" id="hid_user1" name="hid_user1" value= "0">
+<input type="hidden" id="hid_user2" name="hid_user2" value= "0">
+<input type="hidden" id="hid_user3" name="hid_user3" value= "0">
+
+<TR><TD colspan=2>
+	<TABLE border ="1" cellpadding ="2" cellspacing ="0" width="100%">
+	<TR>
+		<TD nowrap align=center><span class="thead">$usb_device</span></TD>
+		<TD nowrap><span class="ttext">
+		<script>document.write(UsbDevice)</script>
+		</span>	</TD>
+	</TR>
+        <TR>
+                <TD nowrap align=center><span class="thead">$file_system</span></TD>
+                <TD nowrap ><span class="ttext">
+		<script>document.write(File_system)</script>
+                </span> </TD>
+        </TR>
+
+	<TR>
+		<TD nowrap align=center><span class="thead">$folder</span></TD>	
+		<TD nowrap><span class="ttext">
+			<input type="text" name="folder"  size=20 >
+			<input class="short_common_bt" type="button" name="browse" value="$browse_mark" onClick='openBrowse();'>
+		</span></TD>
+	</TR>
+	<TR>
+		<TD nowrap align=center><span class="thead">$share_name</span></TD>
+		<TD nowrap><span class="ttext">
+			<input type="text" name="shareName" value="" size=20 maxlength="31" onKeyPress=" return getkey('shareName', event)">
+		</span></TD>
+	</TR>
+	<TR>
+		<TD nowrap align=center><span class="thead">$read_access</span></TD>
+		<TD nowrap align="left">
+			<input type="checkbox" name="readAccess_all" value="1" onClick="check_all_read();">$usb_access_no_pass
+			<br>
+			<input type="checkbox" name="readAccess_ad" value="1" onClick="check_other_read();">$usb_access_admin
+			<br>
+			<script>
+			for(i=1; i <= array_num; i++)
+			{
+				var str = eval ( 'userhddArray' + i );
+				var each_info=str.split(' ');
+				document.write('<input type="checkbox" name="readAccess_n" value='+i+' onClick="check_other_read();">'+each_info[0]+'');
+				document.write('<br>');
+			}
+		</script>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap align=center><span class="thead">$write_access</span></TD>
+		<TD nowrap align="left">
+			<input type="checkbox" name="writeAccess_all" value="1" onClick="check_all_write();">$usb_access_no_pass
+			<br>
+			<input type="checkbox" name="writeAccess_ad" value="1" onClick="check_other_write();">$usb_access_admin
+			<br>
+			<script>
+				for(i=1; i <= array_num; i++)
+				{
+					var str = eval ( 'userhddArray' + i );
+					var each_info=str.split(' ');
+					document.write('<input type="checkbox" name="writeAccess_n" value='+i+' onClick="check_other_write();">'+each_info[0].replace(/</g, "&#60;").replace(/>/g, "&#62;")+'');
+					document.write('<br>');
+				}
+			</script>
+		</TD>
+	</TR>
+	</TABLE>
+</TD></TR>
+
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD colspan=2 align="center">
+<input class="apply_bt" type="button" name="Apply" value="  $apply_mark  " onClick='click_edit();'>
+</TD></TR>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD colspan=2><img src=/liteblue.gif width=100%% height=12></TD></TR>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD colspan=2 align="center">
+<input class="delete_bt" type="button" name="close" value="  $close_win_mark  " onClick='close_window();'>
+</TD></TR>
+</TABLE>
+</div>
+</FORM>
+</BODY>
+</HTML>

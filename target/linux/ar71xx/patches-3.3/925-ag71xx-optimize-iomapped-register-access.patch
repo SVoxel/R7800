@@ -1,0 +1,155 @@
+From 0adbbac91c712506b37a91043d9398079431bd39 Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Tue, 11 Jun 2013 15:50:17 -0500
+Subject: [ag71xx] optimize iomapped register access
+
+Add register accessors that remove the per-register range check that
+was done previously.  Additionally, we separate the write from the
+subsequent read that is designed to flush the write; this can now be
+called separately.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx.h      | 21 ++++++++++++++++++
+ drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c | 26 +++++++++++++++++------
+ 2 files changed, 40 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+index f3e6a42..d6bf6e7 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+@@ -166,6 +166,12 @@ struct ag71xx {
+ 	struct ag71xx_ring	rx_ring ____cacheline_aligned;
+ 	struct ag71xx_ring	tx_ring ____cacheline_aligned;
+ 
++	void __iomem		*rx_ctrl_reg;
++	void __iomem		*rx_status_reg;
++	void __iomem		*tx_ctrl_reg;
++	void __iomem		*tx_status_reg;
++	void __iomem		*int_status_reg;
++
+ 	unsigned int		rx_buf_offset;
+ 	unsigned int		rx_buf_size;
+ 
+@@ -385,6 +391,16 @@ static inline void ag71xx_check_reg_offset(struct ag71xx *ag, unsigned reg)
+ 	}
+ }
+ 
++static inline void ag71xx_wr_fast(void  __iomem *r, u32 value)
++{
++	__raw_writel(value, r);
++}
++
++static inline void ag71xx_wr_flush(void  __iomem *r)
++{
++	(void)__raw_readl(r);
++}
++
+ static inline void ag71xx_wr(struct ag71xx *ag, unsigned reg, u32 value)
+ {
+ 	void __iomem *r;
+@@ -397,6 +413,11 @@ static inline void ag71xx_wr(struct ag71xx *ag, unsigned reg, u32 value)
+ 	(void) __raw_readl(r);
+ }
+ 
++static inline u32 ag71xx_rr_fast(void  __iomem *r)
++{
++	return __raw_readl(r);
++}
++
+ static inline u32 ag71xx_rr(struct ag71xx *ag, unsigned reg)
+ {
+ 	void __iomem *r;
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+index 6e402d7..5616f05 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+@@ -706,7 +706,8 @@ static netdev_tx_t ag71xx_hard_start_xmit(struct sk_buff *skb,
+ 	DBG("%s: packet injected into TX queue\n", ag->dev->name);
+ 
+ 	/* enable TX engine */
+-	ag71xx_wr(ag, AG71XX_REG_TX_CTRL, TX_CTRL_TXE);
++	ag71xx_wr_fast(ag->tx_ctrl_reg, TX_CTRL_TXE);
++	ag71xx_wr_flush(ag->tx_ctrl_reg);
+ 
+ 	return NETDEV_TX_OK;
+ 
+@@ -838,7 +839,7 @@ static int ag71xx_tx_packets(struct ag71xx *ag, struct net_device *dev)
+ 			break;
+ 		}
+ 
+-		ag71xx_wr(ag, AG71XX_REG_TX_STATUS, TX_STATUS_PS);
++		ag71xx_wr_fast(ag->tx_status_reg, TX_STATUS_PS);
+ 
+ 		skb = dirty->skb;
+ 		dirty->skb = NULL;
+@@ -856,6 +857,8 @@ static int ag71xx_tx_packets(struct ag71xx *ag, struct net_device *dev)
+ 		used--;
+ 	}
+ 
++	ag71xx_wr_flush(ag->tx_status_reg);
++
+ 	ring->dirty = dirty;
+ 	ring->used = used;
+ 
+@@ -916,7 +919,7 @@ static int ag71xx_rx_packets(struct ag71xx *ag, struct net_device *dev, int limi
+ 			break;
+ 		}
+ 
+-		ag71xx_wr(ag, AG71XX_REG_RX_STATUS, RX_STATUS_PR);
++		ag71xx_wr_fast(ag->rx_status_reg, RX_STATUS_PR);
+ 
+ 		pktlen = desc_ctrl & DESC_PKTLEN_M;
+ 		pktlen -= ETH_FCS_LEN;
+@@ -964,6 +967,7 @@ next:
+ 		done++;
+ 	}
+ 
++	ag71xx_wr_flush(ag->rx_status_reg);
+ 	ring->curr = curr;
+ 	ring->used = used - done;
+ 	return done;
+@@ -1044,13 +1048,15 @@ static int ag71xx_poll(struct napi_struct *napi, int limit)
+ 		return 0;
+ 	}
+ 
+-	status = ag71xx_rr(ag, AG71XX_REG_RX_STATUS);
++	status = ag71xx_rr_fast(ag->rx_status_reg);
+ 	if (unlikely(status & RX_STATUS_OF)) {
+-		ag71xx_wr(ag, AG71XX_REG_RX_STATUS, RX_STATUS_OF);
++		ag71xx_wr_fast(ag->rx_status_reg, RX_STATUS_OF);
++		ag71xx_wr_flush(ag->rx_status_reg);
+ 		dev->stats.rx_fifo_errors++;
+ 
+ 		/* restart RX */
+-		ag71xx_wr(ag, AG71XX_REG_RX_CTRL, RX_CTRL_RXE);
++		ag71xx_wr_fast(ag->rx_ctrl_reg, RX_CTRL_RXE);
++		ag71xx_wr_flush(ag->rx_ctrl_reg);
+ 	}
+ 
+ 	if (rx_done < limit) {
+@@ -1078,7 +1084,7 @@ static irqreturn_t ag71xx_interrupt(int irq, void *dev_id)
+ 	struct ag71xx *ag = netdev_priv(dev);
+ 	u32 status;
+ 
+-	status = ag71xx_rr(ag, AG71XX_REG_INT_STATUS);
++	status = ag71xx_rr_fast(ag->int_status_reg);
+ 	ag71xx_dump_intr(ag, "raw", status);
+ 
+ 	if (unlikely(!status))
+@@ -1209,6 +1215,12 @@ static int __devinit ag71xx_probe(struct platform_device *pdev)
+ 		goto err_free_dev;
+ 	}
+ 
++	ag->rx_ctrl_reg = ag->mac_base + AG71XX_REG_RX_CTRL;
++	ag->rx_status_reg = ag->mac_base + AG71XX_REG_RX_STATUS;
++	ag->tx_ctrl_reg = ag->mac_base + AG71XX_REG_TX_CTRL;
++	ag->tx_status_reg = ag->mac_base + AG71XX_REG_TX_STATUS;
++	ag->int_status_reg = ag->mac_base + AG71XX_REG_INT_STATUS;
++
+ 	dev->irq = platform_get_irq(pdev, 0);
+ 	err = request_irq(dev->irq, ag71xx_interrupt,
+ 			  IRQF_DISABLED,
+-- 
+1.8.1.2
+

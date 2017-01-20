@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<% hijack_language() %>
+<% cfg_set("from_nowan_retry", "0") %>
+</head>
+
+<body>
+<script>
+
+var hijack_process="<% cfg_get("hijack_process") %>";
+
+function clickRetry()
+{
+
+	if( master != "admin" )
+		return;
+
+	document.getElementById("no_wan").style.display="none";
+	document.getElementById("please_wait").style.display="";
+	showFirmVersion("none");
+	//document.forms[0].submit();
+	this.location.href = "BRS_dsl_type_detc.html";
+
+	return true;
+}
+
+
+</script>
+<% form_submit("func", "BRS_03A_detcInetType.html", "wizard_detwan")  %>
+
+<div id="no_wan" class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+			<h1 class="h1_red"><script>document.write(bh_dsl_no_cable);</script></h1>
+
+			<p><script>document.write(bh_dsl_detecting_connection);</script></p>
+			<p><script>document.write(bh_inet_detecting_connection);</script></p>
+
+			<p><script>document.write(bh_dsl_click_try_again);</script></p>
+		
+	</div>
+	
+	<div class="wizard_buttons_div" align="center">
+
+		<div id="btnsContainer_div" class="buttons_img_div"  align="center" onclick="clickRetry()">
+			<script>
+			var master="<% cfg_get("http_loginname") %>";
+			if( master == "admin" )
+				document.write('<img src="image/ca-little-purple-button.gif" />');
+			else
+				document.write('<img src="image/ca-little-grey-button.png" />');
+			</script>
+			<div id="btn_div" class="buttons_words_div"><script>document.write(bh_try_again)</script></div>
+		</div>
+	
+	</div>
+
+</div>
+<div id="please_wait" class="wizard_content_div" style="display: none">
+
+        <div class="wizard_words_div">
+
+                        <h1><script>document.write(bh_detecting_connection)</script></h1>
+                        <p><script>document.write(bh_plz_wait_process)</script></p>
+
+                <div class="waiting_img_div" align="center">
+                        <img src="image/wait30.gif" />
+                </div>
+
+        </div>
+
+</div>
+
+
+</form>
+</body>
+</html>

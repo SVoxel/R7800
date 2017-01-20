@@ -1,0 +1,16 @@
+menu "Configuration"
+	depends on PACKAGE_kmod-qca-wifi
+
+config QCA_WIFI_USE_DNI_GIT
+	bool "Use DNI git reporitory"
+	default n
+
+config QCA_WIFI_USE_CLIENT_BRIDGE
+	bool "Use client bridge feature"
+	default n
+
+config QCA_WIFI_DISPLAY_SCAN_IN_PROC
+	bool "Display scan result in proc system"
+	default n
+
+endmenu

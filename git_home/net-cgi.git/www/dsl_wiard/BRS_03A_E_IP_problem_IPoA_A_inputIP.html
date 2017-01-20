@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_03A_E_IP_problem_staticIP_A_inputIP.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/funcs.js"></script>
+<% hijack_language() %>
+<script language="javascript" type="text/javascript">
+<!--% wizlog_problem_ck10("1") %-->
+var lan_ip="<% cfg_get("lan_ipaddr") %>";
+var lan_subnet="<% cfg_get("lan_netmask") %>";
+var wan_phy_mode="<% cfg_get("wan_phy_mode") %>";
+var vpc_string="<% cat_file("/tmp/auto_pvc") %>";
+var checking_result = "<% detwan_status() %>";
+</script>
+
+</head>
+
+<body>
+<% form_submit("apply", "BRS_04_applySettings.html", "hijack_ipoa") %>
+
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+			<h1><script>document.write(bh_fix_ip_setting)</script></h1>
+			<p><script>document.write(bh_enter_ip_setting)</script></p>
+			
+			<div id="mainContent_div">					
+				<div id="IP_addr" class="input_left_div" align="right"><script>document.write(bh_info_mark_ip)</script><!--info_mark_ip--></div>
+				<div class="input_img_div">
+					<input type="text" align="right" id="ip_address" maxlength="15" name="ip_address" class="input_text" />
+				</div>
+				
+				<div id="Sub_mask" class="input_left_div" align="right"><script>document.write(bh_info_mark_mask)</script><!--info_mark_mask--></div>
+				<div class="input_img_div">
+					<input type="text" align="right" id="subnet_mask" maxlength="15" name="subnet_mask" class="input_text" />
+				</div>
+				
+				<div id="Gateway" class="input_left_div" align="right"><script>document.write(bh_constatus_defgtw)</script><!--constatus_defgtw--></div>
+				<div class="input_img_div">
+					<input type="text" align="right" id="gateway" maxlength="15" name="gateway" class="input_text" />
+				</div>
+				
+				<div id="preDNS" class="input_left_div" align="right"><script>document.write(bh_preferred_dns)</script><!--prefferd_dns--></div>
+				<div class="input_img_div">
+					<input type="text" align="right" id="prefferd_dns" maxlength="15" name="prefferd_dns" class="input_text" />
+				</div>
+				
+				<div id="alteDNS" class="input_left_div" align="right"><script>document.write(bh_alternate_dns)</script><!--alternate_dns--></div>
+				<div class="input_img_div">
+					<input type="text" align="right" id="alternate_dns" maxlength="15" name="alternate_dns" class="input_text" />
+				</div>
+				
+				<div style="clear:both"></div>
+			</div>
+		
+	</div>
+	
+	<div id="allBtns_div" class="wizard_buttons_div" align="right">
+		<div id="btnsContainer_div" class="buttons_img_div" onclick="checkStaticIP()" >
+			<img src="image/ca-little-purple-button.gif" />
+			<div id="btn_text_div" class="buttons_words_div" align="center"><script>document.write(bh_next_mark)</script><!--next_mark--></div>
+		</div>	
+	</div>
+	
+</div>
+
+</form>
+</body>
+<script>
+function checkStaticIP()
+{
+	var forms = document.getElementsByTagName("form");
+	var cf = forms[0];
+
+	if(check_static_ip_mask_gtw()==false)
+		return false;
+	if(check_ether_samesubnet()==false)
+		return false;
+	if(check_static_dns(true)==false)
+		return false;
+
+	cf.submit();
+
+	return true;
+}
+
+function check_static_ip_mask_gtw()
+{
+	var ether_ipaddr = document.getElementById("ip_address");
+	var ether_subnet = document.getElementById("subnet_mask");
+	var ether_gateway = document.getElementById("gateway");
+
+	if(checkipaddr(ether_ipaddr.value)==false || is_sub_or_broad(ether_ipaddr.value, ether_ipaddr.value, ether_subnet.value) == false)
+	{
+		alert(bh_invalid_ip);
+		return false;
+	}
+	if(checksubnet(ether_subnet.value)==false)
+	{
+		alert(bh_invalid_mask);
+		return false;
+	}
+	if(ether_gateway.value != "")
+	{
+		if(checkgateway(ether_gateway.value)==false)
+		{
+			alert(bh_invalid_gateway);
+			return false;
+		}	
+		if(isGateway(ether_ipaddr.value,ether_subnet.value,ether_gateway.value)==false)
+		{
+			alert(bh_invalid_gateway);
+			return false;
+		}
+		if(isSameIp(ether_ipaddr.value, ether_gateway.value) == true)
+		{
+			alert(bh_invalid_gateway);
+			return false;
+		}
+		if(isSameSubNet(ether_ipaddr.value,ether_subnet.value,ether_gateway.value,ether_subnet.value) == false)
+		{
+			alert(bh_same_subnet_ip_gtw);
+			return false;
+		}
+	}
+
+	return true;
+}
+
+function check_ether_samesubnet()
+{
+	var ether_ipaddr = document.getElementById("ip_address");
+	var ether_subnet = document.getElementById("subnet_mask");
+	var ether_gateway = document.getElementById("gateway");
+	
+	if(isSameSubNet(ether_ipaddr.value,ether_subnet.value,lan_ip,lan_subnet) == true)
+	{
+		alert(bh_same_lan_wan_subnet);
+		return false;
+	}
+	if(isSameSubNet(ether_ipaddr.value,lan_subnet,lan_ip,lan_subnet) == true)
+	{
+		alert(bh_same_lan_wan_subnet);
+		return false;
+	}
+	if(isSameSubNet(ether_ipaddr.value,ether_subnet.value,lan_ip,ether_subnet.value) == true)
+	{
+		alert(bh_same_lan_wan_subnet);
+		return false;
+	}
+	if(isSameIp(ether_ipaddr.value,lan_ip) == true)
+	{
+		alert(bh_same_lan_wan_subnet);
+		return false;
+	}
+	
+	return true;
+}
+
+function check_static_dns(wan_assign)
+{
+	var ether_ipaddr = document.getElementById("ip_address");
+	var ether_dnsaddr1 = document.getElementById("prefferd_dns");
+	var ether_dnsaddr2 = document.getElementById("alternate_dns");
+
+	if( check_DNS(ether_dnsaddr1.value,ether_dnsaddr2.value,wan_assign,ether_ipaddr.value))
+		return true;
+	else
+		return false;
+}
+</script>
+</html>

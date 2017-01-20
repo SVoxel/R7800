@@ -1,0 +1,37 @@
+#!/bin/sh
+
+CONFIG=/bin/config
+
+firmware_region=`cat /tmp/firmware_region | awk '{print $1}'`
+local GR=0
+if [ "$firmware_region" = "GR" ] ; then
+        GR=1
+elif [ "$firmware_region" = "WW" ]||[ "x$firmware_region" = " " ] ; then
+        if [ "x$($CONFIG get GUI_Region)" = "xGerman" ] ; then
+                GR=1
+        fi
+fi
+
+# Non GR, disable this feature.
+[ "$GR" != "1" ] && exit
+
+# Internet connection auto reset is not enabled
+[ "$($CONFIG get bas_auto_conn_flag)" != "1" ] && exit
+
+# WAN connection type is not PPP mode
+[ "$($CONFIG get wan_proto)" != "pppoe" -a "$($CONFIG get wan_proto)" != "pptp" -a "$($CONFIG get wan_proto)" != "l2tp" ] && exit
+
+# If the Connection Mode set to Always On, after the disconnection, the router will
+# connect to Internet automatically again. If the Connection Mode set to Manually Connect
+# and the Internet connection is ON at that time, after the disconnection, the router will
+# connect to Internet automatically again. If the Connection Mode set to Manually Connect
+# and the Internet connection is OFF at that time, we don't need to do anything for this
+# case. If the Connection Mode set to Dial on Demand, this feature "Enable automatc
+# Internet connection reset at" is disabled and gray out.
+[ "$($CONFIG get wan_endis_dod)" == "1" ] && exit
+[ "$($CONFIG get wan_endis_dod)" == "2" -a ! -f /tmp/ppp/ppp0-status -o  "$(/bin/cat /tmp/ppp/ppp0-status)" != "1" ] && exit
+
+logger "[Internet disconnected] 24hr automatic disconnection. "
+
+[ "$($CONFIG get wan_endis_dod)" == "0" ] && /etc/init.d/net-wan restart
+[ "$($CONFIG get wan_endis_dod)" == "2" ] && /etc/init.d/net-wan restart manually

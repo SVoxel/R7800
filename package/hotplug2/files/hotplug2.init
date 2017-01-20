@@ -1,0 +1,11 @@
+#!/bin/sh /etc/rc.common
+START=70
+
+boot() {
+	if [ ! -d /tmp/mnt ]; then
+		mkdir /tmp/mnt
+	fi
+#	mount -t sysfs sysfs /sys
+	#/sbin/hotplug2 --set-rules-file /etc/hotplug2.rules --persistent &
+
+}

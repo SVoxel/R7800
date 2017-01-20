@@ -1,0 +1,47 @@
+ifeq ($(obj),)
+obj := .
+endif
+
+DEPTH := ../..
+
+ifeq ($(strip ${QCA_PARTNER_MAKE_F_SUPPORT}),1)
+export QCA_PARTNER_MAKE_F_INC=1
+endif
+include $(obj)/$(DEPTH)/os/linux/Makefile-linux.common
+
+INCS += -I$(HAL) -I$(HAL)/$(OS) -I$(ATH) -I$(ATH_RATE) -I$(ATH_PKTLOG) -I$(ATH_DFS)
+
+INCS += -I$(obj)/$(DEPTH)/umac/include -I$(obj)/$(DEPTH)/umac/if_lmac
+
+obj-m += ath_pktlog.o
+
+EXTRA_CFLAGS+= $(INCS) $(COPTS)
+
+ifeq ($(strip ${QCA_PARTNER_MAKE_F_SUPPORT}),1)
+MOD_CFLAGS = -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(ath_pktlog.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(ath_pktlog)" 
+endif
+
+ifeq ($(ATH_TGT_TYPE),AR900B)
+   EXTRA_CFLAGS += -DCONFIG_AR900B_SUPPORT
+endif
+
+ath_pktlog-objs := pktlog.o linux.o
+
+clean-files := modules.order
+
+ifeq ($(strip ${QCA_PARTNER_MAKE_F_SUPPORT}),1)
+all: ath_pktlog.ko
+
+ath_pktlog.mod.o: ath_pktlog.mod.c
+	${CC} -c -o $@ ${EXTRA_CFLAGS} ${MOD_CFLAGS} $<
+
+ath_pktlog.o: ${ath_pktlog-objs}
+	$(LD) -m elf32btsmip -r -o ath_pktlog.o $(ath_pktlog-objs)
+	$(KERNELPATH)/scripts/mod/modpost ath_pktlog.o
+
+ath_pktlog.ko: ath_pktlog.o ath_pktlog.mod.o
+	$(LD) $(LDOPTS) -o ath_pktlog.ko ath_pktlog.o ath_pktlog.mod.o
+
+%.o: %.c 
+	${CC} -c -o $@ ${EXTRA_CFLAGS} $<
+endif

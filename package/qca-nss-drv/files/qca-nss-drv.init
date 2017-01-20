@@ -1,0 +1,15 @@
+#!/bin/sh /etc/rc.common
+#
+# Copyright (c) 2014 The Linux Foundation. All rights reserved.
+
+START=70
+
+start() {
+
+	irq_nss_rps=`grep nss /proc/interrupts | sed '4,$d' | cut -d ':' -f 1 | tail -n1 | tr -d ' '`
+	[ -n "$irq_nss_rps" ] && echo 2 > /proc/irq/$irq_nss_rps/smp_affinity
+
+	# Enable NSS RPS
+	sysctl -w dev.nss.general.rps=1 >/dev/null 2>/dev/null
+
+}

@@ -1,0 +1,34 @@
+<% help_head() %>
+</head>
+<script language="javascript" type="text/javascript">
+var guest_router_flag=parent.guest_router_flag;
+var adv_coexistence_flag = top.adv_coexistence_flag;
+</script>
+$h_wladv
+<script language="javascript" type="text/javascript">
+		if( adv_coexistence_flag == 1 )
+			document.write("$h_wladv_coexistence");
+		if( parent.qos_router_flag == 0 )
+			document.write("$h_wladv_2");
+
+		document.write("$h_wladv_Frag");
+
+		if( parent.transmit_router_flag == 1)
+			document.write("$h_wladv_tpc");	
+	
+		document.write("$h_wladv_4");
+
+		document.write("$h_wladv_wps_1");
+
+		document.write("<hr/>");
+
+		document.write("$h_wladv_beamforming");
+
+		if(top.mu_mimo_flag == 1)
+			document.write("$h_wladv_mimo");
+		
+		if(top.support_ht160_flag == 1)
+			document.write("$h_wladv_ht160");
+</script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+#!/bin/sh
+
+. /etc/net6conf/6data.conf
+
+start_connection() {
+	if ! [ -f /proc/net/if_inet6 ]; then
+		echo "IPv6 not enabled, install kmod-ipv6";
+		exit 1;
+	fi
+
+	local wan6_type=`$CONFIG get ipv6_type`
+	case "$wan6_type" in
+		dhcp)			# start dhcpv6 client
+		${BASEDIR}/6dhcpc start
+		;;
+		6to4)			# start 6to4
+		${BASEDIR}/6to4 start
+		;;
+		6rd)
+		${BASEDIR}/6rd start
+		;;
+		bridge)			# setup bridge to passthrough all ipv6 traffic
+		${BASEDIR}/6bridge start
+		;;
+		fixed)			#  setup the wan manually
+		${BASEDIR}/6fixed start
+		;;
+		pppoe)			#  start pppoe
+		${BASEDIR}/6pppoe start
+		;;
+		autoDetect)		# auto detect connection type
+		${BASEDIR}/6autodet start
+		;;
+		autoConfig)		# auto config the wan connection (icmpv6 ra)
+		${BASEDIR}/6autoconf start
+		;;
+		*) ;;
+	esac
+}
+
+stop_connection() {
+	${BASEDIR}/6bridge stop
+	${BASEDIR}/6dhcpc stop
+	${BASEDIR}/6to4 stop
+	${BASEDIR}/6rd stop
+	${BASEDIR}/6fixed stop
+	${BASEDIR}/6pppoe stop
+	${BASEDIR}/6autoconf stop
+}
+
+start_service() {
+	${BASEDIR}/6service start
+}
+
+stop_service() {
+	${BASEDIR}/6service stop
+}
+
+reset_iface_ip6() {
+	local dev=$1
+
+	ip6s=`ifconfig $dev |grep "inet6 addr" |grep -v "Link" |awk '{print $3}'`
+	echo "$ip6s" |while read ip6; do
+		if [ -n $ip6 ]; then
+			$IP -6 route del ${ip6} dev $dev
+			$IP -6 addr del ${ip6} dev $dev
+		fi
+	done
+}
+
+set_interface_id()
+{
+	local ipv6_interface_id_enable=`$CONFIG get ipv6_dhcps_interface_id_enable`
+	local ipv6_interface_id_oldenable=`$CONFIG get ipv6_dhcps_interface_id_oldenable`
+	local ipv6_interface_id=`$CONFIG get ipv6_dhcps_interface_id`
+	local ipv6_old_interface_id=`$CONFIG get old_interface_id`
+	local ip6=`ifconfig $bridge |grep "inet6 addr" |grep "Link" |awk '{print $3}'`
+
+	#Set Wan link address.
+	local wan_ip6link=`ifconfig $WAN|grep "inet6 addr" |grep "Link" |awk '{print $3}'`
+	local wanhw=$(ifconfig $WAN| grep "HWaddr" | awk '{print $5}')
+	local waneui64=$(geneui64 $wanhw)
+	$IP -6 addr del ${wan_ip6link} dev $WAN
+	$IP -6 addr add fe80::$waneui64/64 dev $WAN
+	
+	#if the interface id is not change, don't do anything.
+	if [ "x$ipv6_interface_id_enable" != "x$ipv6_interface_id_oldenable" ]; then
+		$CONFIG set ipv6_dhcps_interface_id_oldenable=$ipv6_interface_id_enable
+	else
+		if [ "x$ipv6_interface_id" != "x$ipv6_old_interface_id" ]; then
+			$CONFIG set old_interface_id="$ipv6_interface_id"
+		fi
+	fi
+
+	if [ "x$ipv6_interface_id_enable" != "x1" ]; then
+		$IP -6 addr del ${ip6} dev $bridge
+		local lanhw=$(ifconfig $bridge | grep "HWaddr" | awk '{print $5}')
+		local eui64=$(geneui64 $lanhw)
+		$IP -6 addr add fe80::$eui64/64 dev $bridge
+		return 0;
+	fi
+
+	if [ "$wan6_type" = "autoDetect" -o "$wan6_type" = "autoConfig" -o "$wan6_type" = "6to4" -o "$wan6_type" = "dhcp" -o "$wan6_type" = "pppoe" -o "$wan6_type" = "6rd" ]; then  
+		$IP -6 addr del ${ip6} dev $bridge
+		$IP -6 addr add fe80::$ipv6_interface_id/64 dev $bridge
+	fi
+}
+
+del_dns6() {
+	sed '/.:./d' /tmp/resolv.conf > /tmp/resolv.conf$$
+	mv /tmp/resolv.conf$$ /tmp/resolv.conf
+	echo -n "" > $IPV6_DNS
+}
+
+del_gw() {
+	$IP -6 route del default
+}
+
+add_dns() {
+	local wan6_type=`$CONFIG get ipv6_type`
+	local dns_type=`$CONFIG get ipv6_${wan6_type}_dns_assign`
+	if [ "x$dns_type" != "x1" -o "x$wan6_type" = "xfixed" ] ;then
+		return
+	fi
+
+	local dns1=`$CONFIG get ipv6_${wan6_type}_dns1`
+	local dns2=`$CONFIG get ipv6_${wan6_type}_dns2`
+	# Add the IPv6 DNS
+	echo -n "" > $IPV6_DNS
+	[ "x$dns1" != "x" ] && echo "nameserver $dns1" > $IPV6_DNS
+	[ "x$dns2" != "x" ] && echo "nameserver $dns2" >> $IPV6_DNS
+	cat $IPV6_DNS >> /tmp/resolv.conf
+}
+
+start() {
+	local wan6_type=`$CONFIG get ipv6_type`
+	local logo_test=`$CONFIG get endis_ipv6_logo_test`
+
+	#set ipv6 proc file
+	${BASEDIR}/6proc start
+
+	if [ "x$wan6_type" = "xdisabled" ]; then
+		echo "the ipv6 wan type is disable";
+		return 0;
+	fi
+
+	set_interface_id
+	echo 0 > /proc/sys/net/ipv6/neigh/${bridge}/not_send_neighbor_solicitation
+	start_connection
+	start_service
+	/usr/sbin/net-wall -6 start
+	#under ppoev6 we check if there is lan v6 ip,if no ,we reload the server.
+	local lan6_ip=`ifconfig $bridge |grep "inet6 addr" |grep -v "Link" |awk '{print $3}'`
+	[ "x$wan6_type" = "xpppoe" ] && [ "x$lan6_ip" = "x" ] && /etc/net6conf/6service reload 
+
+	if [ "x$logo_test" = "x1" -a "x$wan6_type" = "xfixed" ]; then
+		local ip6_cmd="/usr/sbin/ip6tables"
+		#delete INPUT chain "IPv6-CONE"
+		local rules=`$ip6_cmd -vnL INPUT | sed '1,2d' | grep -n IPv6-CONE |awk  -F: '{print  $1}'`
+		$ip6_cmd -D INPUT $rules
+		#delete FORWARD chain "IPv6-CONE"
+		rules=`$ip6_cmd -vnL FORWARD | sed '1,2d' | grep -n IPv6-CONE |awk  -F: '{print  $1}'`
+		$ip6_cmd -D FORWARD $rules
+		#delete mangle table PREROUTING chain "IPv6-CONE"
+		rules=`$ip6_cmd -t mangle -vnL PREROUTING | sed '1,2d' | grep -n IPv6-CONE |awk  -F: '{print  $1}'`
+		$ip6_cmd -t mangle -D PREROUTING $rules
+	fi
+
+	add_dns
+}
+
+stop () {
+	killall daemonv6
+	stop_connection
+	stop_service
+	reset_iface_ip6 $bridge_wan
+	reset_iface_ip6 $bridge
+	del_dns6
+	del_gw
+	/usr/sbin/net-wall -6 stop
+        killall 6pppoe #kill pppoev6 autodet
+}
+
+restart() {
+	# if restart, 6pppoe will not reload
+	$CONFIG set ipv6_pppoe_reload=0
+	stop
+	start
+	$CONFIG set ipv6_pppoe_reload=1
+	sleep 2 #For sometimes GUI have enough time to show address.
+}
+
+clear() {
+	reset_iface_ip6 "ppp$IPV6_PPPOE_UNIT"
+	reset_iface_ip6 $bridge_wan
+	reset_iface_ip6 $bridge
+	del_dns6
+	del_gw
+}
+
+case "$1" in
+	start)
+	start
+	;;
+	stop)
+	stop
+	;;
+	restart)
+	restart
+	;;
+	clear)
+	clear
+	;;
+esac

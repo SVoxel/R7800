@@ -1,0 +1,79 @@
+<% http_header("style/form.css", "/funcs.js", "/upgrade.js") %>
+<body onLoad="loadvalue(); please_wait(false);">
+<div id="page_title_div" class="page_title" style="display:block">$firm_upgrade</div>
+<div id="main" class="main">
+
+<div id="FW_checking_div" style="display:block">
+<form method="post" action="/apply.cgi?/UPG_upgrade.htm" target="formframe">
+<input type="hidden" name="submit_flag" value="auto_upgrade_check" />
+
+<div><img src=/liteblue.gif width=100% height=12></div>
+
+<script>
+<% refresh_timestamp("auto_upgrade_check", "download_confile") %>
+var ts="<% cfg_get("auto_upgrade_check") %>"
+
+<% cfg_set("hidden_upgrade", "0") %>
+
+function loadvalue()
+{
+	var autoup = '<% cfg_get("auto_check_for_upgrade") %>';
+	var cf = document.forms[0];
+
+	cf.action = "/apply.cgi?/UPG_upgrade.htm timestamp=" + ts;
+}
+var netgear_module="<% cat_file("/module_name") %>";
+var netgear_region=top.netgear_region;
+var netgear_ver="<% cat_file("/firmware_version") %>";
+</script>
+
+<input type="hidden" name="auto_check_for_upgrade">
+<% table_header() %>
+<tr>
+	<td nowrap><a tabindex=-1 href="javascript:loadhelp('_upgrade','check')"><b>$upgrade_new_version</b></a></td>
+	<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if( master == "admin" )
+		document.write('<td nowrap><input class="short_common_bt" type="button" name="Check" id="check" value="$check_mark" onclick="click_check();"></td>');
+	else
+		document.write('<td nowrap><input class="short_common1_bt" type="button" name="Check" id="check" value="$check_mark" disabled></td>');
+	</script>
+</tr>
+$bluebar
+</table>
+</form>
+</div>
+
+<div id="FW_upg_div" style="display:block">
+<form method="post" action="/upgrade_check.cgi" target="formframe" enctype="multipart/form-data">
+<table width="100%" border="0" cellpadding="0" cellspacing="3">
+<tr>
+	<td nowrap>
+	<a tabindex=-1 href="javascript:loadhelp('_upgrade','locate')"><b>$upgrade_select_disk</b></a>
+	</td>
+</tr>
+<tr><td nowrap>
+	 <input name="mtenFWUpload" type="file" size="32" id="router_upload" maxlength="1024" class="type-file-file" onchange="this.form.upfile.value=this.value.substr(this.value.lastIndexOf('\\')+1);" contentEditable=false onkeydown="return false;" onbeforeeditfocus="return false;" onpaste="return false;" onmouseover="this.style.cursor='pointer';" />
+	 <input type="text" name="upfile" size="20" maxlength="1024" readonly />&nbsp;&nbsp;&nbsp;
+	 <input type="button" value="$browse_mark"  id="browse" name="Browse" class="middle_common_bt" onclick="if(IE_version()!=6){this.form.router_upload.click();}" onmouseover="this.style.cursor='default';" />
+</td></tr>
+$bluebar
+<script>
+	if( master == "admin" )
+		document.write('<tr><td nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'UPG_upgrade.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="button" name="Upload" id="Upload" value="$upg_mark" onClick="return clickUpgrade(document.forms[1]);"></td></tr>');
+	else
+		document.write('<tr><td nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="button" name="Upload" id="Upload" value="$upg_mark" disabled></td></tr>');
+</script>
+</table>
+</form>
+</div>
+
+<div id="pls_wait_div" style="display:none">
+<div align="center"><br /><br /><b>$wizard_pls_wait</b><br /><br /></div>
+<div class="waiting_img_div" align="center"><img src="image/wait30.gif" /></div>
+</div>
+
+</div>
+<% help_box("0","_upgrade") %>
+</body>
+</html>

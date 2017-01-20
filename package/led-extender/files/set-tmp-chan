@@ -1,0 +1,4 @@
+#!/bin/sh
+
+now_chan=$(iwlist ath0 channel | grep "Frequency" | awk '/Channel/{print $5}' | awk -F"\)" '{print $1}')
+config set last_channel=$now_chan

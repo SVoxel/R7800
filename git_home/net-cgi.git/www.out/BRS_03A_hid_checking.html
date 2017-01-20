@@ -1,0 +1,147 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+</head>
+<body bgcolor="#ffffff">
+<script>
+parent.port_status = "<% cat_file("/tmp/port_status") %>";
+parent.checking_result = "<% detwan_status() %>";
+if(top.dsl_enable_flag == 1)
+{
+   var  dsl_port_status = "<% cat_file("/tmp/dsl_port_status") %>";
+   var country = "<% cfg_get("dsl_wan_country") %>";
+   var isp = "<% cfg_get("dsl_wan_isp") %>";
+   var dsl_type = "<% cfg_get("dsl_wan_type") %>";
+   function pageRedirect_dsl()
+   {
+	switch(parent.checking_result)
+	{
+		case "10002":
+	
+			parent.location.href = "BRS_03A_B_pppoe.html";
+			break;
+		case "10007":
+			parent.location.href = "BRS_03A_C_pptp.html";
+			break;
+                case "10010":
+                        parent.location.href = "BRS_03A_F_l2tp.html";
+			break;
+		case "10006":
+//bug 35045		parent.location.href = "BRS_03A_D_bigpond.html";
+			if(top.dsl_enable_flag == "1")
+				parent.location.href = "BRS_03A_E_vdsl_IP_problem.html";
+			else
+				parent.location.href = "BRS_03A_E_IP_problem.html";
+			break;
+		case "10003":
+			if(top.dsl_enable_flag == "1")
+				parent.location.href = "BRS_03A_E_vdsl_IP_problem.html";
+			else
+				parent.location.href = "BRS_03A_E_IP_problem.html";
+			break;
+		case "10004":
+            if(top.dsl_enable_flag == "1")
+				parent.location.href = "BRS_03A_E_vdsl_IP_problem.html";
+			else
+				parent.location.href = "BRS_03A_E_IP_problem.html";
+                        break;
+		case "10001":
+			parent.location.href = "BRS_04_B_checkNet_ping_before.html";
+			break;
+	// quick scan success
+		case "10011":
+			parent.location.href = "BRS_03A_B_pppoa.html";
+			break;
+		case "10013":
+			parent.location.href = "BRS_03A_E_IP_problem_IPoA_A_inputIP.html";
+			break;
+		case "10014":
+			parent.location.href = "BRS_03A_H_dhcp_61.html"
+			break;
+		case "10012":
+			if (country == "Germany" && isp == "Deutsche Telekom") 
+				parent.location.href = "BRS_03A_B_vdsl_Gemany_pppoe.html";
+			else if (country == "Germany" && isp == "1&1")
+				parent.location.href = "BRS_03A_B_vdsl_Gemany11_pppoe.html";
+			else 
+				parent.location.href = "BRS_03A_B_vdsl_pppoe.html";
+			   break;
+		case "10100"://quick scan failed, ask full scan or not
+			   if(dsl_type == "adsl")
+				   parent.location.href = "BRS_quick_scan_failed.html";
+			   else
+				   parent.location.href = "BRS_03A_detcInetType_fullscan.html";
+			   break;
+		case "10101"://full scan failed, goto country, isp list page
+			if(top.location.href.indexOf("BRS_index.htm")>-1)	
+				parent.location.href = "BRS_ISP_country_help.html";
+			else
+				parent.location.href = "DSL_WIZ_sel.htm";
+			break;
+
+		default:
+			parent.location.href = "BRS_03A_A_noWan.html";
+			break;
+	}
+   }
+/*   if(parent.port_status == "0" && dsl_port_status =="0")
+   {
+	parent.location.href = "BRS_log06_etherCable_no.html";
+   }*/
+   if(parent.checking_result > 10000)
+   {
+	   pageRedirect_dsl();
+   }else
+   {
+	   setTimeout('location.href="BRS_03A_hid_checking.html";', 1000);
+   }
+   
+}else
+{
+	if(parent.port_status == "0")
+	{
+		parent.location.href = "BRS_03A_A_noWan.html";
+	}
+	if(parent.checking_result > 10000)
+	{
+		pageRedirect();
+	}else
+	{
+		setTimeout('location.href="BRS_03A_hid_checking.html";', 1000);
+	}
+}
+
+  function pageRedirect()
+  {
+	switch(parent.checking_result)
+	{
+		case "10002":
+			parent.location.href = "BRS_03A_B_pppoe.html";
+			break;
+		case "10007":
+			parent.location.href = "BRS_03A_C_pptp.html";
+			break;
+                case "10010":
+                        parent.location.href = "BRS_03A_F_l2tp.html";
+			break;
+		case "10006":
+//bug 35045		parent.location.href = "BRS_03A_D_bigpond.html";
+			parent.location.href = "BRS_03A_E_IP_problem.html";
+			break;
+		case "10003":
+			parent.location.href = "BRS_03A_E_IP_problem.html";
+			break;
+		case "10004":
+                        parent.location.href = "BRS_03A_E_IP_problem.html";
+                        break;
+		case "10001":
+			parent.location.href = "BRS_04_B_checkNet_ping.html";
+			break;
+		default:
+			parent.location.href = "BRS_03A_A_noWan.html";
+			break;
+	}
+  }
+</script>
+</body>
+</html>

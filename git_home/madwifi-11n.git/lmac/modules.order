@@ -1,0 +1,6 @@
+kernel//home/haiyan.zhuang/project/r7800-beta2-buildroot.git/build_dir/linux-ipq806x/qca-wifi-10.4-4.0.1756.382/os/linux/../../lmac/ath_dev/ath_dev.ko
+kernel//home/haiyan.zhuang/project/r7800-beta2-buildroot.git/build_dir/linux-ipq806x/qca-wifi-10.4-4.0.1756.382/os/linux/../../lmac/ath_pktlog/ath_pktlog.ko
+kernel//home/haiyan.zhuang/project/r7800-beta2-buildroot.git/build_dir/linux-ipq806x/qca-wifi-10.4-4.0.1756.382/os/linux/../../lmac/ext/wlan_ext.ko
+kernel//home/haiyan.zhuang/project/r7800-beta2-buildroot.git/build_dir/linux-ipq806x/qca-wifi-10.4-4.0.1756.382/os/linux/../../lmac/ratectrl/ath_rate_atheros.ko
+kernel//home/haiyan.zhuang/project/r7800-beta2-buildroot.git/build_dir/linux-ipq806x/qca-wifi-10.4-4.0.1756.382/os/linux/../../lmac/dfs/ath_dfs.ko
+kernel//home/haiyan.zhuang/project/r7800-beta2-buildroot.git/build_dir/linux-ipq806x/qca-wifi-10.4-4.0.1756.382/os/linux/../../lmac/spectral/ath_spectral.ko

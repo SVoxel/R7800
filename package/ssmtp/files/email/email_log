@@ -1,0 +1,279 @@
+#!/bin/sh
+
+nvram=/bin/config
+smtpc=/usr/sbin/ssmtp
+LOG_FILE=/var/log/messages
+ALERT_LOG_FILE=/var/log/block-site-messages
+email_lock_file=/tmp/tmp_email_lock_file
+
+trap "rm -f $email_lock_file; exit 1" SIGTERM
+trap "rm -f $email_lock_file; exit 1" SIGINT
+
+
+# try without ssl first, if fail then try it with ssl
+no_ssl_first=1
+
+# email related configs (in nvram get command) :
+#   email_smtp        : smtp server address
+#   email_endis_auth  : smtp sever needs authentication or not ?
+#   email_username    : username for smtp server authentication
+#   email_password    : password for smtp server authentication
+#
+#   email_addr        : "To addr", the addr of the receiver.
+#   email_from_assign : assign "From addr" or not ?
+#   email_this_addr   : "From addr", the addr the email (says itself) comes from.
+#
+#   email_notify      :
+#   email_send_alert  :
+
+tls_required() # $1: smtp_server
+{
+	# smtp.gmail.com requests TLS support
+	echo $1 | grep -q 'gmail'
+}
+
+print_smtpc_conf()
+{
+	local smtp_server=$($nvram get email_smtp)
+	local smtp_port=$($nvram get email_port)
+	echo "mailhub=$smtp_server"
+	echo "FromLineOverride=yes"
+
+	if [ $($nvram get email_endis_auth) = "1" ]; then
+		echo "AuthUser=$($nvram get email_username)"
+		echo "AuthPass=$($nvram get email_password)"
+
+		if [ "x$no_ssl_first" = "x0" -o "x$smtp_port" = "x465" ] ; then
+			echo "UseTLS=YES"
+			if [ "x$smtp_port" = "x465" ]; then
+				echo "UseSTARTTLS=NO"
+			else
+				echo "UseSTARTTLS=YES"
+			fi
+		fi 
+	fi
+}
+
+print_email_header()
+{
+	local hostname="$(cat /proc/sys/kernel/hostname)"
+	local from
+	local addr="$($nvram get email_addr)"
+	local username="$($nvram get email_username)"
+	local smtp_server="$($nvram get email_smtp)"
+
+	if [ "$($nvram get email_from_assign)" = "1" ]; then
+		from="\"root@$hostname\"<$($nvram get email_this_addr)>"
+	else
+		# If no username specify,Just use the email_addr
+		if [ -n "$username" ]; then
+			from="\"root@$hostname\"<$($nvram get email_username)>"
+		else
+			from="\"root@$hostname\"<$($nvram get email_addr)>"
+		fi
+		# as I know, different smtp servers have different rules about "From addr" :
+		# * dni : drops mails that "From addr" != "account email addr" silently.
+		# * pchome : rejects sending mails that "From addr" != "account email addr".
+		# * gmail : tranforms the "From addr" to "account email addr".
+		# the smtp servers that don't care about "From addr" and just send mails are getting
+		# scarce.
+		case "$smtp_server" in
+			 smtp.pchome.com.tw)
+			 [ -n "$username" ] && from="${username}@pchome.com.tw"
+			 ;;
+		esac
+	fi
+
+	cat <<EOF
+Subject: NETGEAR $hostname Log
+From: $from
+To: $addr
+
+EOF
+}
+
+print_log()
+{
+	local lang_select="$($nvram get GUI_Region)"
+	local gl_task_name="$(cat /tmp/gl_task_name)"
+	local display_path="$(echo $2 | sed 's/\//\\/g')"
+	
+	print_email_header
+
+	if [ "x$1" = "xgreendownloader_task" ];then
+		if [ "$lang_select" = "Chinese" ];then
+			echo "任务$gl_task_name已下载完成。文件保存$display_path。- NETGEAR Downloader"
+		elif [ "$lang_select" = "Russian" ];then
+			echo "Загрузка $gl_task_name завершена. Файл сохранен в $display_path. - Загрузчик NETGEAR"
+		else
+			echo "Your downloading task $gl_task_name is successfully finished. The downloaded file is saved at $display_path. - NETGEAR Downloader"
+		fi
+	else
+		if [ "$2" = "send_email_alert" ]; then
+			cat $ALERT_LOG_FILE
+		else
+			sed -n '1! G;$p;h' $LOG_FILE | sed -n '1,256 p'
+		fi
+	fi
+}
+
+sendmail()
+{
+        local conf=/tmp/ssmtp.conf
+        local email_file=/tmp/tmp_email_file
+        local err_file=/tmp/tmp_email_err_file
+        local addr="$($nvram get email_addr)"
+        print_smtpc_conf > $conf
+        print_log "$1" "$2" > $email_file
+        if ! cat $email_file | $smtpc -C$conf $addr >/dev/null 2>$err_file; then
+                return 1
+        else
+                return 0
+        fi
+}
+
+sendlog() # $1: clearlog_if_success $2: send_email_alert
+{
+	local count=0
+	local conf=/tmp/ssmtp.conf
+	local email_file=/tmp/tmp_email_file
+	local err_file=/tmp/tmp_email_err_file
+	local addr="$($nvram get email_addr)"
+
+	#Fix bug when 56487 sometimes DUT send Log to Email content is blank
+	while :; do
+		if [ -f $email_lock_file ];then
+			let count=$count+1
+			if [ "$count" = "10" ];then
+				break
+			fi
+			sleep $count
+			continue
+		fi
+		break
+	done
+	touch $email_lock_file
+	if ! sendmail "$1" "$2" 
+	then
+		if [ "x$no_ssl_first" = "x1" ] ; then
+			no_ssl_first=0
+			if ! sendmail "$1" "$2"
+			then
+				logger -- "[email sent to: $addr]"
+				logger -- "[email failed] $(cat $err_file)"
+				rm -f $conf $email_file $err_file $email_lock_file
+				return 1
+			fi
+		else
+			logger -- "[email sent to: $addr]"
+			logger -- "[email failed] $(cat $err_file)"
+			rm -f $conf $email_file $err_file $email_lock_file
+			return 1
+		fi
+	fi
+	rm -f $conf $email_file $err_file $email_lock_file
+
+	if [ "$1" = "clearlog_if_success" -a "$2" != "send_email_alert" ]; then
+		rm -f $LOG_FILE
+	fi
+	logger -- "[email sent to: $addr]"
+	return 0
+}
+
+print_email_header_for_hdd()
+{
+	local hostname="$(cat /proc/sys/kernel/hostname)"
+	local from
+	local addr="$($nvram get email_addr)"
+	local username="$($nvram get email_username)"
+	local smtp_server="$($nvram get email_smtp)"
+
+	if [ "$($nvram get email_from_assign)" = "1" ]; then
+		from="\"root@$hostname\"<$($nvram get email_this_addr)>"
+	else
+		# If no username specify,Just use the email_addr
+		if [ -n "$username" ]; then
+			from="\"root@$hostname\"<$($nvram get email_username)>"
+		else
+			from="\"root@$hostname\"<$($nvram get email_addr)>"
+		fi
+		case "$smtp_server" in
+			 smtp.pchome.com.tw)
+			 [ -n "$username" ] && from="${username}@pchome.com.tw"
+			 ;;
+		esac
+	fi
+
+	cat <<EOF
+Subject: Warning!R7800 Internal HDD might have some issues
+From: $from
+To: $addr
+
+EOF
+}
+
+print_hdd_log()
+{
+	print_email_header_for_hdd
+	echo "[HDD ERROR] Warning! The internal hard drive have the reallocated sector error frequently, we suggest you to replace the internal hard drive now."
+}
+
+# per NTGR's requirement, when the internal disk have something wrong, we need to email to the user ath 9:30 AM.
+email_HDD_err_log()
+{
+	local conf=/tmp/hdd_err.conf
+	local email_file=/tmp/tmp_hdd_email.file
+	local err_file=/tmp/tmp_hdd_err_email.file
+	local addr="$($nvram get email_addr)"
+
+	echo "email_HDD_err_log in ..." > /dev/console
+	print_smtpc_conf > $conf
+	print_hdd_log > $email_file
+	if ! cat $email_file | $smtpc -C$conf $addr >/dev/null 2>$err_file; then
+		logger -- "[email sent to: $addr]"
+		logger -- "[email failed] $(cat $err_file)"
+		rm -f $conf $email_file $err_file
+		return 1
+	fi
+	rm -f $conf $email_file $err_file
+	logger -- "[email sent to: $addr]"
+	return 0
+
+}
+
+### start here ###
+
+prog=${0##*/}
+
+case "$prog" in
+email_log)
+	[ $($nvram get email_notify) = "0" ] && exit
+	sendlog "clearlog_if_success"
+	;;
+email_full_log)
+	[ $($nvram get email_notify) = "0" ] && exit
+	# send log only if lines of log file > 256 * 90% = 230.4
+	[ ! -s $LOG_FILE ] && exit
+	[ "$(wc -l $LOG_FILE | sed -n 's/[^0-9]*//gp')" -le "230" ] && exit
+	sendlog "clearlog_if_success"
+	;;
+send_email_alert)
+	[ $($nvram get email_notify) = "0" ] && exit
+	if [ "x$1" = "xgreendownloader_task" ];then
+		[ "$($nvram get green_download_email_noti)" = "0" ] && exit
+		sendlog "$1" "$2"
+	else
+		[ "$($nvram get email_send_alert)" = "0" ] && exit
+		sendlog "clearlog_if_success" "send_email_alert"
+	fi
+	;;
+send_log)
+	[ $($nvram get email_notify) = "0" ] && exit
+	sendlog
+	;;
+email_HDD_err_log)
+	[ $($nvram get email_notify) = "0" ] && exit
+	email_HDD_err_log
+	;;
+esac
+

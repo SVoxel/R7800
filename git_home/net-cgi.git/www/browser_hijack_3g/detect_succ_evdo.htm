@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="/funcs.js"></script>
+<script language="javascript" type="text/javascript" src="script/hsdpa.js"></script>
+<script language="javascript" type="text/javascript" src="style/form.css"></script>
+
+</head>
+
+<body onLoad="loadvalue();" bgcolor=#ffffff>
+<% form_submit("apply", "simcard_yes_or_not.htm", "succ_evdo") %>
+<script>
+var ts="<% cfg_get("succ_evdo") %>";
+<% save_timestamp("succ_evdo", "succ_conn_evdo") %>
+
+
+function loadvalue()
+{
+	var form=document.forms[0];
+	//blue bar
+	form.G3g_username.value="<% cfg_sed("wan_cdma_username_sg") %>";
+	form.G3g_passwd.value="<% cfg_sed("wan_cdma_password_sg") %>";
+}
+
+function submit_check()
+{
+	var cf=document.forms[0];
+	var i;
+	if(document.forms[0].G3g_username.value == "")
+	{
+		alert("Ivalid value!");
+		document.forms[0].G3g_username.focus();
+		return false;
+	}
+	if(document.forms[0].G3g_passwd.value == "")
+	{
+		alert("Ivalid value!");
+		document.forms[0].G3g_passwd.focus();
+		return false;
+	}
+	set_evdo();		
+}
+function apply_submit(){
+	submit_check();
+}
+</script>
+<input type="hidden" name="run_test" value="">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<tr><td nowrap colspan=2 align=center><h3>$detect_hsdpa_msg</h3></td></tr>
+$bluebar
+<br>
+<!--tr><td nowrap colspan=2>$spacebar&nbsp;$detect_hsdpa_msg1</td></tr-->
+<tr><td colspan=2>$spacebar&nbsp;$enter_config_param</td></tr>
+<TR>
+	<TD nowrap>
+		<b>$spacebar&nbsp;$basic_pppoe_login</b>
+	</TD>
+	<TD nowrap align=right>
+	<input type="text" name="G3g_username" maxLength="64" size="16" onKeyPress="return getkey('ssid', event)" value="">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+		<b>$spacebar&nbsp;$basic_pppoe_passwd</b>
+	</TD>
+	<TD nowrap align=right>
+	<input type="password" name="G3g_passwd" maxlength="64" size="16" onKeyPress="return getkey('ssid', event)" value="">
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2 align=center>
+	<input type="button" name="Apply" value="$apply_mark" onClick="return apply_submit()">&nbsp;&nbsp;
+	<input type='button' name='Cancel' value='$cancel_mark' onClick='location.href="BRS_021_genieHelp.html"'>&nbsp;&nbsp;
+	<!--input type="button" name="Test" value="$test_mark"onClick="return test_submit()">&nbsp;&nbsp;-->
+	</TD>
+</TR>
+</TABLE>
+</FORM>
+</BODY>
+</HTML>

@@ -1,0 +1,308 @@
+<% http_header("style/form.css", "/funcs.js", "/logs.js") %>
+<% body_header("_CF_log", "FW_log.htm", "logs") %>
+<div class="page_title">$logs_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+        <TD nowrap colspan=2 align=center>
+        <input class="common_bt" type="button" name="action_Refresh" id="action_refresh" value='$refresh_mark' onClick="return refresh_log(document.forms[0]);">&nbsp;&nbsp;
+	<script>
+		var have_email_flag=(typeof(parent.have_email_flag) == "undefined")? 1 : parent.have_email_flag;
+		var gui_region="<% cfg_get("GUI_Region") %>";
+		var master="<% cfg_get("http_loginname") %>";
+		if(gui_region == "Greek")
+		{
+			if( master == "admin" )
+			{
+				document.write('<input class="common_big_bt" type="button" id="action_clear" name="action_Clear" value="$clear_log" onclick="return check_logs_clear(document.forms[0])">&nbsp;&nbsp;');
+				document.write('<input class="common_big_bt" type="button" id="action_send" name="action_Send" value="$send_log" onclick="return check_logs_send(document.forms[0])">&nbsp;&nbsp;');
+			}
+			else
+			{
+				document.write('<input class="common_big_gray_bt" type="button" id="action_clear" name="action_Clear" value="$clear_log" disabled>&nbsp;&nbsp;');
+				document.write('<input class="common_big_gray_bt" type="button" id="action_send" name="action_Send" value="$send_log" disabled>&nbsp;&nbsp;');
+			}
+		}
+		else
+		{
+			if( master == "admin" )
+			{
+				document.write('<input class="common_bt" type="button" id="action_clear" name="action_Clear" value="$clear_log" onclick="return check_logs_clear(document.forms[0])">&nbsp;&nbsp;');
+				document.write('<input class="common_bt" type="button" id="action_send" name="action_Send" value="$send_log" onclick="return check_logs_send(document.forms[0])">&nbsp;&nbsp;');
+			}
+			else
+			{
+				document.write('<input class="common1_bt" type="button" id="action_clear" name="action_Clear" value="$clear_log" disabled>&nbsp;&nbsp;');
+				document.write('<input class="common1_bt" type="button" id="action_send" name="action_Send" value="$send_log" disabled>&nbsp;&nbsp;');
+			}
+		}
+		if( master == "admin" )
+			document.write('<input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onClick="return check_log_apply(document.forms[0])">');
+		else
+			document.write('<input class="apply1_bt" type="button" name="Apply" id="apply" value="$apply_mark" disabled>');
+		if(have_email_flag == 1)
+			document.getElementById("action_send").style.display = "";
+		else
+			document.getElementById("action_send").style.display = "none";
+	</script>
+        </TD>
+</TR>
+</TABLE>
+
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %> 
+
+<script language="javascript">
+var email_get_notify="<% cfg_get("email_notify") %>";
+var log_get_site="<% cfg_get("log_allow_sites") %>";
+var log_get_block="<% cfg_get("log_block_sites_services") %>";
+var log_get_conn="<% cfg_get("log_conn_web_interface") %>";
+var log_get_router="<% cfg_get("log_router_operation") %>";
+var log_get_dosport="<% cfg_get("log_dos_attacks_port_scans") %>";
+var log_get_port="<% cfg_get("log_port_firwarding_trigering") %>";
+var log_get_wire="<% cfg_get("log_wire_access") %>";
+//bug 24992:add two checkbox
+var log_get_conn_reset="<% cfg_get("log_internet_conn_reset") %>";
+var log_get_wire_sched="<% cfg_get("log_wire_signal_sched") %>";
+var cur_time="<% cur_time() %>";
+cur_time=change_cur_time(cur_time,gui_region);
+<% save_timestamp("logs", "logs_refresh", "logs_clear","logs_send") %>
+var ts='<% cfg_get("logs") %>'
+var logs_checkbox_flag = parent.logs_checkbox_flag;
+var netgear_region=parent.netgear_region;
+var auto_conn_flag=parent.auto_conn_flag;
+var autoconn_flag=(auto_conn_flag == 1 && ((gui_region == "German" &&  (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "GR"))? 1 : 0;
+var readyshare_flag=parent.usb_router_flag;
+var mobile_conn_flag=parent.mobile_conn_flag;
+var log_get_readyshare="<% cfg_get("log_readyshare") %>";
+var log_get_mobile_conn="<% cfg_get("log_mobile_conn") %>";
+var log_get_vpn_head="<% cfg_get("log_vpn_head") %>";
+var have_wifi_flag=(typeof(parent.have_wifi_flag) == "undefined") ? 1 :parent.have_wifi_flag;
+var vpn_show_flag=parent.vpn_show_flag;
+var port_forwarding_flag=(typeof(parent.port_forwarding_flag) == "undefined") ? 1 : parent.port_forwarding_flag;
+var port_triggering_flag=(typeof(parent.port_triggering_flag) == "undefined") ? 1 : parent.port_triggering_flag;
+var block_sites_flag=parent.block_sites_flag;
+
+function checkbox_show()
+{
+	if(logs_checkbox_flag == 1)
+	{
+		document.getElementById("logs_3").style.display="";
+		document.getElementById("logs_4").style.display="";
+		document.getElementById("logs_5").style.display="";
+		document.getElementById("logs_6").style.display="";
+		document.getElementById("logs_10").style.display="";
+		
+		if(block_sites_flag == 1)
+		{
+			document.getElementById("logs_1").style.display="";
+			document.getElementById("logs_2").style.display="";
+		}
+		else
+		{
+			document.getElementById("logs_1").style.display="none";
+			document.getElementById("logs_2").style.display="none";
+		}
+		if( autoconn_flag == 1 )
+			document.getElementById("logs_8").style.display="";
+		else
+			document.getElementById("logs_8").style.display="none";
+		if( readyshare_flag == 1 )
+			document.getElementById("logs_11").style.display="";
+		else
+			document.getElementById("logs_11").style.display="none";
+		if( mobile_conn_flag == 1 )
+			document.getElementById("logs_12").style.display="";
+		else
+			document.getElementById("logs_12").style.display="none";
+		if( have_wifi_flag == 1)
+		{
+			document.getElementById("logs_7").style.display="";
+			document.getElementById("logs_9").style.display="";
+		}
+		else
+		{
+			document.getElementById("logs_7").style.display="none";
+			document.getElementById("logs_9").style.display="none";
+		}
+		if( vpn_show_flag == 1)
+			document.getElementById("logs_13").style.display="";
+		else
+			document.getElementById("logs_13").style.display="none"
+
+	}
+	else
+	{
+		document.getElementById("logs_1").style.display="none";
+		document.getElementById("logs_2").style.display="none";
+		document.getElementById("logs_3").style.display="none";
+		document.getElementById("logs_4").style.display="none";
+		document.getElementById("logs_5").style.display="none";
+		document.getElementById("logs_6").style.display="none";
+		document.getElementById("logs_7").style.display="none";
+		document.getElementById("logs_8").style.display="none";
+		document.getElementById("logs_9").style.display="none";
+		document.getElementById("logs_10").style.display="none";
+		document.getElementById("logs_11").style.display="none";
+		document.getElementById("logs_12").style.display="none";
+		document.getElementById("logs_13").style.display="none";
+	}
+}
+
+function loadvalue()
+{
+	var form=document.forms[0];
+	
+	if(log_get_site=='1')
+		form.log_site.checked = true;
+	else
+		form.log_site.checked = false;
+	if(log_get_block=='1')
+		form.log_block.checked = true;
+	else
+		form.log_block.checked = false;
+	if(log_get_conn=='1')
+		form.log_conn.checked = true;
+	else
+		form.log_conn.checked = false;
+	if(log_get_router=='1')
+		form.log_router.checked = true;
+	else
+		form.log_router.checked = false;
+	if(log_get_dosport=='1')
+		form.log_dosport.checked = true;
+	else
+		form.log_dosport.checked = false;
+	if(log_get_port=='1')
+		form.log_port.checked = true;
+	else
+		form.log_port.checked = false;
+	if(log_get_wire=='1')
+		form.log_wire.checked = true;
+	else
+		form.log_wire.checked = false;
+	if(log_get_conn_reset=='1')
+		form.log_conn_reset.checked = true;
+	else
+		form.log_conn_reset.checked = false;
+	if(log_get_wire_sched=='1')
+		form.log_wire_sched.checked = true;
+	else
+		form.log_wire_sched.checked = false;
+	if(log_get_readyshare=='1')
+		form.log_readyshare.checked = true;
+	else
+		form.log_readyshare.checked = false;
+	if(log_get_mobile_conn=='1')
+		form.log_mobile_conn.checked = true;
+	else
+		form.log_mobile_conn.checked = false;
+	if(log_get_vpn_head=='1')
+		form.log_vpn_head.checked = true;
+	else
+		form.log_vpn_head.checked = false;
+}
+</script>
+<input type="hidden" name="hidden_log_site">
+<input type="hidden" name="hidden_log_block">
+<input type="hidden" name="hidden_log_conn">
+<input type="hidden" name="hidden_log_router">
+<input type="hidden" name="hidden_log_dosport">
+<input type="hidden" name="hidden_log_port">
+<input type="hidden" name="hidden_log_wire">
+<input type="hidden" name="hidden_log_conn_reset">
+<input type="hidden" name="hidden_log_wire_sched">
+<input type="hidden" name="hidden_log_readyshare">
+<input type="hidden" name="hidden_log_mobile_conn">
+<input type="hidden" name="hidden_log_vpn_head">
+<TR>
+	<TD nowrap colspan=2 align=center><B id="current_time">$ntp_curtime: <script>document.write(cur_time)</script></B></TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2 align=center>
+	<pre><textarea NAME="log_detail" ROWS="20" id="log_detail" cols="60" WRAP="vitural" readonly><% log_message() %></textarea>
+	</pre>	
+	</TD>
+</TR>
+$bluebar
+<TR id=logs_1>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="log_site" id="log_asites" value="1">$logs_access_sites	
+	</TD>
+</TR>
+<TR id=logs_2>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="log_block" id="log_block" value="1">$logs_access_block_sites_services	
+	</TD>
+</TR>
+<TR id=logs_3>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="log_conn" id="log_conn" value="1">$logs_conn_web_interface	
+	</TD>
+</TR>
+<TR id=logs_4>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="log_router" id="log_router" value="1">$logs_router_operation	
+	</TD>
+</TR>
+<TR id=logs_5>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="log_dosport" id="log_dosport" value="1">$logs_dos_attacks_port_scans	
+	</TD>
+</TR>
+<TR id=logs_6>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="log_port" id="log_fwd" value="1">	
+	<script>
+	if(port_forwarding_flag ==1 && port_triggering_flag ==1)
+		document.write("$logs_port_forward_trigger");
+	else if(port_forwarding_flag ==1 && port_triggering_flag !=1)
+		document.write("$port_forward");
+	else if(port_forwarding_flag !=1 && port_triggering_flag ==1)
+		document.write("$port_trigger");
+	</script>
+	</TD>
+</TR>
+<TR id=logs_7>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="log_wire" id="log_wlan" value="1">$logs_wireless_access	
+	</TD>
+</TR>
+<TR id=logs_8>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="log_conn_reset" value="1">$logs_internet_conn_reset	
+	</TD>
+</TR>
+<TR id=logs_9>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="log_wire_sched" value="1">$adva_signal_schedule	
+	</TD>
+</TR>
+<TR id=logs_11>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="log_readyshare" value="1">$readyshare
+	</TD>
+</TR>
+<TR id=logs_12>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="log_mobile_conn" value="1">$readyshare_mobile_conn
+	</TD>
+</TR>
+<TR id=logs_13>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="log_vpn_head" value="1">$vpn_head
+	</TD>
+</TR>
+<TR id=logs_10>
+	<TD colspan=2><img src=/liteblue.gif width=100% height=12></TD>
+</TR>
+</TABLE>
+</div>
+<% help_box("0","_CF_log") %>
+</form>
+<script>
+	checkbox_show();
+</script>
+</body>
+</html>

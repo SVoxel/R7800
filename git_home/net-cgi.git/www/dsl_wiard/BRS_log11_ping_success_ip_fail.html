@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="/script/brs_hijack.js"></script>
+<% hijack_language() %>
+</head>
+<% wizlog_checkPing_ck11("2") %>
+<body onLoad="loadvalue()">
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+		<h1><script language="javascript" type="text/javascript">document.write(bh_apply_connection);</script></h1>
+			
+		<p><script language="javascript" type="text/javascript">document.write(bh_plz_waite_apply_connection);</script></p>
+		
+		<div id="applySettings_wait" class="waiting_img_div" align="center">
+			<img src="image/wait30.gif" />
+		</div>
+		
+	</div>
+		
+</div>
+</body>
+<script>
+showFirmVersion("none");
+var apmode_flag = top.apmode_flag;
+var ap_mode = "<% cfg_get("ap_mode") %>";
+var ping_result = "success";
+var wan_proto="<% cfg_get("wan_proto") %>";
+var select_basic="<% cfg_get("internet_type") %>";  //select_basic = 1 dhcp or static, select_basic=0 pppoe or pptp 
+var select_type = "<% cfg_get("internet_ppp_type") %>"; //select_type = 0 pppoe ,select_type = 1 pptp
+var country="<% cfg_get("dsl_wan_country") %>";  //select_basic = 1 dhcp or static, select_basic=0 pppoe or pptp 
+var isp = "<% cfg_get("dsl_wan_isp") %>"; //select_type = 0 pppoe ,select_type = 1 pptp
+function loadvalue()
+{
+	if( apmode_flag == "1" && ap_mode == "1")
+	{
+		if(ping_result == "success")
+			this.location.href = "BRS_success.html";
+		else if(ping_result == "failed")
+			this.location.href = "BRS_06_networkIssue.html";
+	}
+	if(top.dsl_enable_flag == "1" && isp == "Fastweb")
+	{
+		this.location.href = "BRS_success.html";
+		return;
+	}
+
+	if(wan_proto == "3g") //3g
+	{
+		if(ping_result == "success")
+			this.location.href = "BRS_success.html";
+		else if(ping_result == "failed")
+			this.location.href = "BRS_06_networkIssue.html";
+	}
+	else if(select_basic == "0" && select_type == "5")//pppoa
+	{
+		if(ping_result == "failed")
+			this.location.href = "BRS_06_networkIssue.html";
+		else if(ping_result == "success")
+			this.location.href = "BRS_04_applySettings_wget.html";
+	}
+	else if(select_basic == "0" && select_type == "7")//pppoe quick
+	{
+	   if(country == "Germany" && isp == "Deutsche Telekom")
+	   {
+		
+		if(ping_result == "failed")
+			this.location.href = "BRS_06_networkIssue.html";
+		else if(ping_result == "success")
+			this.location.href = "BRS_04_applySettings_wget.html";
+
+	   }else{
+		if(ping_result == "failed")
+			this.location.href = "BRS_06_networkIssue.html";
+		else if(ping_result == "success")
+			this.location.href = "BRS_04_applySettings_wget.html";
+          }
+	}
+	else if(select_basic == "0" && select_type == "0")//pppoe
+	{
+		if(ping_result == "failed")
+			this.location.href = "BRS_06_networkIssue.html";
+		else if(ping_result == "success")
+			this.location.href = "BRS_04_applySettings_wget.html";
+	}
+	else if(select_basic == "0" && select_type == "1")//pptp
+	{
+		if(ping_result == "failed")
+			this.location.href = "BRS_06_networkIssue.html";
+		else if(ping_result == "success")
+			this.location.href = "BRS_04_applySettings_wget.html";
+	}
+	else if(select_basic == "0" && select_type == "4")//l2tp
+	{
+		if(ping_result == "failed")
+			this.location.href = "BRS_06_networkIssue.html";
+		else if(ping_result == "success")
+			this.location.href = "BRS_04_applySettings_wget.html";
+	}
+	else
+	{
+	     if(top.dsl_enable_flag == "1")
+	      {
+				
+		if(ping_result == "success")
+			this.location.href = "BRS_success.html";
+		else if(ping_result == "failed")
+			this.location.href = "BRS_06_networkIssue.html";
+	      }else{
+		if(ping_result == "success")
+			this.location.href = "BRS_success.html";
+		else if(ping_result == "failed")
+			this.location.href = "BRS_05_networkIssue.html";
+		}
+	}
+}
+</script>
+</html>

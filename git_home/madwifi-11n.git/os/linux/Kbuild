@@ -1,0 +1,44 @@
+#
+# Makefile for the HAL-based Atheros driver.
+#
+ifeq ($(obj),)
+obj := $(shell pwd)
+endif
+
+DEPTH := ../..
+
+include $(obj)/$(DEPTH)/os/linux/Makefile.inc
+
+obj-m += \
+    $(DEPTH)/adf/ $(DEPTH)/asf/  $(DEPTH)/smartantenna/ $(DEPTH)/testmodule/ \
+    $(DEPTH)/lmac/ ath_hal/
+
+ifeq ($(ATH_PERF_PWR_OFFLOAD),1)
+ifeq ($(strip $(ATH_HIF_TYPE)),sim)
+obj-m += $(PERF_PWR_OFFLOAD_DIR_PATH)/drivers/host/hif/sim/linux/
+endif
+
+ifeq ($(strip $(ATH_HIF_TYPE)),sdio)
+ifeq ($(strip $(NATIVE_SDIO)),0)
+	obj-m += $(PERF_PWR_OFFLOAD_DIR_PATH)/drivers/host/sdiostack/src/
+endif
+endif
+
+endif
+
+ifneq ($(strip ${ATH_WLAN_COMBINE}),1)
+obj-m += $(DEPTH)/umac/
+endif
+ifeq ($(ATH_SUPPORT_HTC),1)
+obj-m += $(DEPTH)/htc/
+obj-m += $(DEPTH)/htc/hif/
+endif
+ifeq ($(strip ${BUS}),USB)
+obj-m += $(DEPTH)/os/linux/src/
+endif
+ifeq ($(ATH_SUPPORT_TX99),1)
+obj-m += $(DEPTH)/lmac/tx99/
+endif
+ifeq ($(ATH_SW_WOW_SUPPORT),1)
+obj-m += $(DEPTH)/wow/
+endif

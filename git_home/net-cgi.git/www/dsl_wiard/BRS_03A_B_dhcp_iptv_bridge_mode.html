@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_03A_wanInput.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/funcs.js"></script>
+<% hijack_language() %>
+<% deleteFiles("/tmp/wan2_bridge_modeTmp") %>
+</head>
+<script>
+var lan_selecte="<% cfg_get("iptv_mask") %>";
+var lan1_selecte=lan_selecte & 1;
+addLoadEvent(initPage);
+var isp = "<% cfg_get("dsl_wan_isp") %>";
+var wan2_bridge="<% cfg_get("dsl_wan2_bridge_mode") %>";
+var lan_ports_num = (typeof(top.lan_ports_num) == "undefined") ? 4 : top.lan_ports_num;
+function initPage()
+{
+	var btns_container_div = document.getElementById("btnsContainer_div");
+	var cf = document.forms[0];
+	if(wan2_bridge == "1")
+		cf.bridge_ena.checked = true;
+	else
+		cf.bridge_ena.checked = false;
+	if((lan_selecte & 2) == 2)
+		cf.lan2.checked = true;
+	if((lan_selecte & 4) == 4)
+		cf.lan3.checked = true;
+	if((lan_selecte & 8) == 8)
+		cf.lan4.checked = true;
+	if(cf.lan2.checked == false && cf.lan3.checked== false && cf.lan4.checked== false)
+		cf.lan4.checked = true;
+	enable_bridge();
+	
+	if( master == "admin" )
+	{
+		btns_container_div.onclick = function()
+		{
+			return checkiptv();
+		}
+	}
+}
+function checkiptv()
+{
+	var forms = document.getElementsByTagName("form");
+    var cf = forms[0];	
+	
+	if((cf.lan2.checked == false) && (cf.lan3.checked == false) && (cf.lan4.checked == false) && lan_ports_num != 1)
+	{
+		alert(dsl_bridge_warning);
+		return false;
+	}
+	if(cf.bridge_ena.checked == true)
+	{
+		cf.bridge_en.value="1";
+		var lan_num = 0;
+		if(cf.lan2.checked == true)
+			lan_num = lan_num+2;
+		if(cf.lan3.checked == true)
+			lan_num = lan_num+4;
+		if(cf.lan4.checked == true)
+			lan_num = lan_num+8;
+		cf.hid_lan_num.value = lan_num | lan1_selecte;
+	}else{
+		cf.bridge_en.value="0";
+		cf.hid_lan_num.value =lan_selecte;
+	}
+	cf.submit();
+	return true;
+}
+
+function enable_bridge()
+{
+	var cf = document.forms[0];
+	if(cf.bridge_ena.checked == true)
+	{
+		cf.lan2.disabled = false;
+		cf.lan3.disabled = false;
+		cf.lan4.disabled = false;
+	}else
+	{
+		cf.lan2.disabled = true;
+		cf.lan3.disabled = true;
+		cf.lan4.disabled = true;
+	}
+}
+</script>
+<body>
+<% form_submit("apply", "BRS_vdsl_detect.html", "hijack_dhcp_iptv_bridge") %>
+<style type="text/css">
+</style>
+<input type="hidden" name="hid_lan_num" />
+<input type="hidden" name="bridge_en" />
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+			<h1><script>document.write(bh_dhcp_head)</script></h1>
+			<p><script>document.write(bh_enter_info_below)</script></p>
+			
+			<div id="content_div" class="wanInput_content_div">
+				
+				<div id="connection_identi" class="wanInput_left_divdhcp">
+					<input type="checkbox" name="bridge_ena" onclick="enable_bridge();"><span id="bridge"><script>document.write(bh_dsl_bridge)</script></span>
+					<div id="bridge_doc" class="iptvdoc"><script>document.write(bh_dsl_bridge_con);</script></div>
+					<div id="bridge_lans" class="iptvdoc2">
+					<input type="checkbox" name="lan4" value="8"><script>document.write(bh_dsl_bridge_lan4)</script>
+					<br>
+					<input type="checkbox" name="lan3" value="4"><script>document.write(bh_dsl_bridge_lan3)</script>
+					<br>
+					<input type="checkbox" name="lan2" value="2"><script>document.write(bh_dsl_bridge_lan2)</script>
+					</div>
+				</div>
+			</div>
+		
+	</div>
+	<script>
+	if(lan_ports_num == 1)
+		document.write('<div id="allBtns_div" class="wizard_buttons_div" align="center">');
+	else
+		document.write('<div id="allBtns_div" class="wizard_buttons_div" align="right">');
+	</script>
+		<div id="btnsContainer_div" class="buttons_img_div">
+			<script>
+			var master="<% cfg_get("http_loginname") %>";
+			if( master == "admin" )
+				document.write('<img src="image/ca-little-purple-button.gif" />');
+			else
+				document.write('<img src="image/ca-little-grey-button.png" />');
+			</script>
+			<div id="btn_text_div" class="buttons_words_div" align="center"><script>document.write(bh_next_mark)</script></div>
+		</div>	
+	</div>
+	
+
+</div>
+
+</form>
+<script>
+	control_display("dsl_dhcp");
+</script>
+</body>
+
+</html>

@@ -1,0 +1,51 @@
+--- a/arch/mips/ath79/Kconfig
++++ b/arch/mips/ath79/Kconfig
+@@ -196,6 +196,19 @@ config ATH79_MACH_DB120_TB388
+ 	  Say 'Y' here if you want your kernel to support the
+ 	  Atheros DB120 reference board with TB388 extension.
+ 
++config ATH79_MACH_DB120_VHYFI
++	bool "Atheros DB120-vhyfi reference board"
++	select SOC_AR934X
++	select ATH79_DEV_GPIO_BUTTONS
++	select ATH79_DEV_LEDS_GPIO
++	select ATH79_DEV_ETH
++	select ATH79_DEV_SPI
++	select ATH79_DEV_USB
++	select ATH79_DEV_WMAC
++	help
++	  Say 'Y' here if you want your kernel to support the
++	  Atheros DB120-vhyfi reference board.
++
+ config ATH79_MACH_PB42
+ 	bool "Atheros PB42 board support"
+ 	select SOC_AR71XX
+@@ -226,7 +239,7 @@ config ATH79_MACH_PB92
+ 
+ config ATH79_MACH_REH132
+ 	bool "Atheros REH132 reference board"
+-	select SOC_QCA955X
++	select SOC_AR934X
+ 	select ATH79_DEV_GPIO_BUTTONS
+ 	select ATH79_DEV_LEDS_GPIO
+ 	select ATH79_DEV_SPI
+--- a/arch/mips/ath79/Makefile
++++ b/arch/mips/ath79/Makefile
+@@ -61,6 +61,7 @@ obj-$(CONFIG_ATH79_MACH_CAP4200AG)	+= mach-cap4200ag.o
+ obj-$(CONFIG_ATH79_MACH_CUS227)		+= mach-cus227.o
+ obj-$(CONFIG_ATH79_MACH_DB120)		+= mach-db120.o
+ obj-$(CONFIG_ATH79_MACH_DB120_TB388)	+= mach-db120-tb388.o
++obj-$(CONFIG_ATH79_MACH_DB120_VHYFI)	+= mach-db120-vhyfi.o
+ obj-$(CONFIG_ATH79_MACH_DIR_600_A1)	+= mach-dir-600-a1.o
+ obj-$(CONFIG_ATH79_MACH_DIR_615_C1)	+= mach-dir-615-c1.o
+ obj-$(CONFIG_ATH79_MACH_DIR_825_B1)	+= mach-dir-825-b1.o
+--- a/arch/mips/ath79/machtypes.h
++++ b/arch/mips/ath79/machtypes.h
+@@ -37,6 +37,7 @@ enum ath79_mach_type {
+ 	ATH79_MACH_CUS227,		/* Qualcomm Atheros CUS227 board */
+ 	ATH79_MACH_DB120,		/* Atheros DB120 reference board */
+ 	ATH79_MACH_DB120_TB388,		/* Atheros DB120/TB388 ref board */
++	ATH79_MACH_DB120_VHYFI,		/* Atheros DB120-vhyfi ref board */
+ 	ATH79_MACH_PB44,		/* Atheros PB44 reference board */
+ 	ATH79_MACH_DIR_600_A1,		/* D-Link DIR-600 rev. A1 */
+ 	ATH79_MACH_DIR_615_C1,		/* D-Link DIR-615 rev. C1 */

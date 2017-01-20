@@ -1,0 +1,25 @@
+config GREENDOWNLOAD_GIT_TREEISH
+	string
+	prompt "treeish of greendownload git repository"
+	default "greendownload-1.0-dni5"
+	help
+           Input the treeish of greendownload git repository which you want to build
+
+config GREENDOWNLOAD_GIT_REPOSITORY
+	string
+	prompt "name of greendownload git repository"
+	default "greendownload.git"
+	help
+	   Input the name of greendownload git repository which you want to build
+
+config GREENDOWNLOAD_GIT_URL
+	string
+	prompt "url of greendownload git repository"
+	default "ssh://dniserver/scm/dnigit/common/apps/greendownload.git"
+	help
+	   Input the url of greendownload git repository which you want to build
+
+
+config TRAFFICMETER_PLATFORM_PATCH
+	bool "Apply platform specific patch"
+	default n

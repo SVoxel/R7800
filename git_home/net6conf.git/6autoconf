@@ -1,0 +1,107 @@
+#!/bin/sh /etc/rc.common
+
+. /etc/net6conf/6data.conf
+
+dhcp6c_write_config() {
+	printf 'interface %s {\n' "$WAN"
+	printf '\tsend ia-pd 11;\n'
+	printf '\trequest domain-name;\n'
+	printf '\trequest domain-name-servers;\n'
+	printf '\trequest ntp-servers;\n'
+	printf '\trequest sip-server-domain-name;\n'
+	printf '\trequest sip-server-address;\n'
+	printf '\tscript "%s";\n' "$DHCP6C_SCRIPT"
+	printf '};\n'
+	printf '\n'
+	printf 'id-assoc pd 11 {\n'
+	printf '};\n'
+}
+
+start_dhcp6c() {
+	local U_CLADATA=`$CONFIG get ipv6_autoConfig_userClass`
+	local U_DOMAIN=`$CONFIG get ipv6_autoConfig_domainName`
+	# Using DHCP6 Client to get LAN's IPv6 prefix
+	dhcp6c_write_config > /tmp/dhcp6c.conf
+	/usr/sbin/dhcp6c -c /tmp/dhcp6c.conf -3 ${U_CLADATA:+-u $U_CLADATA} ${U_DOMAIN:+-U $U_DOMAIN} $WAN
+
+	#add the default route
+#	$IP -6 route add default dev $WAN
+}
+
+stop_dhcp6c() {
+	/usr/bin/killall dhcp6c
+	#wait the dhcpv6 client send release package
+	sleep 2
+}
+
+dhcpv6c_is_running() {
+	if ps | grep dhcp6c | grep -v grep >&- 2>&- ; then
+		return 0;
+	else
+		return 1;
+	fi
+}
+
+autoconf_wan() {
+	# Change the WAN(eth0) interface to send the IPv6 Router Solicitation
+	echo 1 > /proc/sys/net/ipv6/conf/${WAN}/autoconf
+	echo 1 > /proc/sys/net/ipv6/icmp/ra_sel_flag
+	rs_send -i $WAN -c 3 -t 4 &
+#	ifconfig $WAN down && ifconfig $WAN up
+}
+
+start() {
+	if ! [ -f /proc/net/if_inet6 ]; then
+		echo "IPv6 not enabled, install kmod-ipv6";
+		unlock
+		exit 1;
+	fi
+	if dhcpv6c_is_running ; then
+		echo "DHCPv6 Client Daemon is already running, kill it!!";
+		local pid=`ps | grep dhcp6c | grep -v grep |awk '{print  $1}'`
+		if [ "x$pid" != "x" ]; then
+			/bin/kill -9 $pid
+		fi
+	fi
+	rm $RA_DNS_FILE
+
+	autoconf_wan
+
+	start_dhcp6c
+}
+
+stop () {
+	if ! dhcpv6c_is_running ; then
+		echo "DHCPv6 client is not running! Return";
+		return 1;
+	fi
+
+	# Stop the dhcp6c daemon
+	stop_dhcp6c
+
+	# Delete the config file
+	rm -rf /tmp/dhcp6c.conf
+
+	# Delete the prefix, prefix time, dns, ntp, sip file
+	rm $DHCP6S_DSN
+	rm $DHCP6S_PD
+	rm $RA_DNS_FILE
+
+	# Enable WAN(eth0) interface forwarding
+#	echo 1 > /proc/sys/net/ipv6/conf/$WAN/forwarding
+
+	# Global addr and gw will be flushed in net6conf script
+}
+
+case "$1" in
+	start)
+	start
+	;;
+	stop)
+    stop
+    ;;
+    restart)
+	stop
+	start
+	;;
+esac

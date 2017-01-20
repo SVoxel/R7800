@@ -1,0 +1,54 @@
+config DNSMASQ_GIT_TREEISH
+	string
+	prompt "treeish of dnsmasq git repository"
+	default "HEAD"
+	help
+	  input the treeish of dnsmasq git repository which you want to build
+
+config DNSMASQ_SUP_PARENTAL_CTL
+	bool "support Parental Control feature"
+	default n
+	help
+	  If Parental Control is enabled, any dns query will be sent to 208.67.222.222 or 208.67.202.202
+
+	  If unsure, say N.
+
+config DNSMASQ_SUP_STATIC_PPTP
+	bool "support static pptp for Russian Version"
+	default n
+	help
+	  If unsure, say N.
+
+config DNSMASQ_SUP_USBSHARE_DOMAIN
+	bool "support USB share domain"
+	default n
+	help
+	  dnsmasq will resolve "readyshare.routerlogin.net" and "readyshare.routerlogin.com" to Router LAN IP if this option is enabled.
+	  Say Y if your produce support USB
+
+	  If unsure, say N.
+
+config DNSMASQ_SUP_IPV6_FEATURE
+	bool "support request of DNS with IPv6"
+	default n
+	help
+	  Router will accept DNS query from LAN interface with IPv6 source, and DNS server could be also IPv6.
+
+	  If unsure, say N.
+
+config DNSMASQ_BIND_SRVSOCK_TO_WAN
+	bool "bind server socket to WAN interface"
+	default n
+	help
+	  The query will only be forwarded to WAN interface if this option is enabled.
+	  Recommend to say Y if your enabled "support request of DNS with IPv6" option.
+
+	  If unsure, say N.
+
+config DNSMASQ_START_WHEN_BOOT_UP
+	bool "start dnsmasq when system boot up"
+	default n
+	help
+	  Say Y if your net-wan script does not call "/etc/init.d/dnsmasq start".
+
+	  If unsure, say N.

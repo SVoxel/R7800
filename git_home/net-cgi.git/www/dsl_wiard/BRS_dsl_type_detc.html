@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="/style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="/script/brs_hijack.js"></script>
+<% hijack_language() %>
+
+<script language="javascript" type="text/javascript">
+var port_status = "<% cat_file("/tmp/port_status") %>";
+var dsl_port_status = "<% cat_file("/tmp/dsl_port_status") %>";
+var ts="<% cfg_get("hijack_tointenet") %>";
+<% check_adsl_vdsl() %>
+var dsl_wan_pre = "<% cfg_get("dsl_wan_preference") %>";
+var have_set_preference = "<% cfg_get("have_dsl_preference") %>";
+<% cfg_set("have_dsl_preference", "0") %>
+function loadvalue()
+{
+	var head_tag = document.getElementsByTagName("h1");
+	
+	var head_text = document.createTextNode(bh_detecting_connection);
+	head_tag[0].appendChild(head_text);
+	
+	var paragraph = document.getElementsByTagName("p");
+	
+	var paragraph_text = document.createTextNode(bh_plz_wait_process);
+	paragraph[0].appendChild(paragraph_text);
+	formSubmit();
+	//show Fireware Version
+	showFirmVersion("none");
+}
+function formSubmit()
+{
+	if( "<% cfg_get("wizard_debug") %>" == "1")
+		return;
+	if(have_set_preference == "0")
+	{
+		if(dsl_port_status == "1")
+		{
+			if(dsl_mode == "adsl")
+			{	// none all
+				this.location.href = "BRS_log05_dsl_conn_ATM.html";
+			}
+			else
+			{	
+				this.location.href = "BRS_log05_dsl_conn_PTM.html";
+			}	
+		}
+		else if(port_status == "0" && dsl_port_status != "1")
+		{       // none all
+			this.location.href = "BRS_log06_etherCable_no.html";
+		}
+		else
+		{ //ether link ->vdsl
+			location.href="BRS_log06_etherCable_yes.html";
+		}
+	}else if(have_set_preference == "1")//eth dsl_wan_preference have set 2
+	{
+		if(dsl_wan_pre == "2")	
+			this.location.href="BRS_log06_etherCable_yes.html";
+		else
+			this.location.href = "BRS_log06_etherCable_no.html";
+	}
+}
+</script>
+</head>
+
+<body onLoad="loadvalue()">
+<input type="hidden" name="submit_flag" value="hijack_tointenet" />
+<form>
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+			<h1><!--detecting_connection--></h1>
+			<p><!--plz_wait_process--></p>
+		
+		<div class="waiting_img_div" align="center">
+			<img src="image/wait30.gif" />
+		</div>
+		
+	</div>
+
+<script>
+if( "<% cfg_get("wizard_debug") %>" == "1")
+{
+	document.write('<a href="BRS_log05_dsl_conn_PTM.html" class="ui-corner-all">VDSL</a><br>');
+	document.write('<a href="BRS_log05_dsl_conn_ATM.html" class="ui-corner-all">ADSL</a><br>');
+	document.write('<a href="BRS_log05_dsl_conn_PTM.html" class="ui-corner-all">No DSL cable and have ether cable, goto VDSL</a><br>');
+	document.write('<a href="BRS_log06_etherCable_no.html" class="ui-corner-all">No DSL cable and No ether cable</a><br>');
+
+}	
+</script>
+</div>
+<!--<iframe name="check_frame" src="BRS_03A_hid_checking.html" allowtransparency="true" scrolling="no" frameborder="0" ></iframe>-->
+</form>
+</body>
+</html>

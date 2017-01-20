@@ -1,0 +1,34 @@
+From 0dff1151feb1d11ce700d22efedd0ae2dbd6da9d Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Tue, 11 Jun 2013 12:18:46 -0500
+Subject: [ag71xx] reduce NAPI weight
+
+In an attempt to increase our cache warmth, we are decreasing NAPI.
+This increases the warmth of the reused SKBs.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx.h | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+index 9df5053..db6ec8a 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+@@ -42,7 +42,12 @@
+ #define AG71XX_DRV_NAME		"ag71xx"
+ #define AG71XX_DRV_VERSION	"0.5.35"
+ 
+-#define AG71XX_NAPI_WEIGHT	64
++/*
++ * For our NAPI weight bigger does *NOT* mean better - it means more
++ * D-cache misses and lots more wasted cycles than we'll ever
++ * possibly gain from saving instructions.
++ */
++#define AG71XX_NAPI_WEIGHT	32
+ #define AG71XX_OOM_REFILL	(1 + HZ/10)
+ 
+ #define AG71XX_INT_ERR	(AG71XX_INT_RX_BE | AG71XX_INT_TX_BE)
+-- 
+1.8.1.2
+

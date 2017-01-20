@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta content="MSHTML 6.00.2800.1141" name="GENERATOR">
+</head>
+
+<body onload="loadvalue();">
+<script>
+<% refresh_timestamp("lte_debug", "lte_ping", "lte_refresh") %>
+var ts='<% cfg_get("lte_debug") %>'
+var str_info="";
+var str_at_test_info="";
+var str_upgrade_info="";
+var str_ping_info="";
+var str_boot_info="";
+function loadvalue()
+{
+	str_info=getObj("info").innerHTML;
+	str_at_test_info=getObj("at_test_info").innerHTML;
+	str_upgrade_info=getObj("upgrade_info").innerHTML;
+	str_ping_info=getObj("ping_info").innerHTML;
+	str_boot_info=getObj("boot_info").innerHTML;
+	getObj("info").innerHTML='';
+	getObj("at_test_info").innerHTML='';
+	getObj("upgrade_info").innerHTML='';
+	getObj("ping_info").innerHTML='';
+	getObj("boot_info").innerHTML='';
+	change_select();
+}
+
+function getObj(name)
+{
+       if (document.getElementById)
+       {
+               return document.getElementById(name);
+       }
+       else if (document.all)
+       {
+               return document.all[name];
+       }
+       else if (document.layers)
+       {
+               return document.layers[name];
+       }
+}
+
+function change_select()
+{
+	if(top.select_num==0)
+		getObj("view").innerHTML=str_info;
+	else if(top.select_num==1)
+		getObj("view").innerHTML=str_at_test_info;
+	else if(top.select_num==2)
+		getObj("view").innerHTML=str_upgrade_info;
+	else if(top.select_num==3)
+		getObj("view").innerHTML=str_ping_info;
+	else if(top.select_num==4)
+		getObj("view").innerHTML=str_boot_info;
+}
+
+function clickupgrade(form)
+{
+	if(form.lteupgrade.value=="")
+	{
+		alert("$in_upgrade");
+		return false;
+	}
+	var filestr=form.lteupgrade.value;
+	var file_format=filestr.substr(filestr.lastIndexOf(".")+1);
+	if(file_format.toUpperCase()!="BIN")
+	{
+		alert("$not_correct_file"+"bin");
+		return false;
+	}
+	parent.lte_upg_refresh_time=0;
+	document.getElementById("upgrade_div").style.display="none";
+	document.getElementById("pls_wait_div").style.display="";
+
+	form.submit();
+	return true;
+}
+
+function click_refresh_2(sec)
+{
+	parent.refresh_time=sec;
+	location.href="lte_pls_wait.html";
+}
+
+function click_refresh(form)
+{
+	parent.refresh_time=10;
+	form.submit_flag.value="lte_refresh";
+	form.action="/apply.cgi?/lte_pls_wait.html timestamp=" +ts;
+	form.submit();
+}
+
+function click_run(form)
+{
+	parent.refresh_time=2;
+	form.submit_flag.value="lte_debug";
+	form.action="/apply.cgi?/lte_pls_wait.html timestamp=" +ts;
+	form.submit();
+}
+
+function click_ping(form)
+{
+	parent.refresh_time=6;
+	form.submit_flag.value="lte_ping";
+	form.action="/apply.cgi?/lte_pls_wait.html timestamp=" +ts;
+	form.submit();
+}
+
+</script>
+
+<div id="view"></div>
+<div align="center" id="info" style="position:absolute;top:0;left:0;visibility:hidden">
+
+<FORM method="POST" action="/apply.cgi?/lte_pls_wait.html">
+<input type=hidden name=submit_flag>
+
+	<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+	<TR><TD nowrap><B>Network Info:</B></TD></TR>
+	<tr><td><textarea id="log_detail1" rows="10" cols="60" wrap="vitural" readonly><% show_at_log("/tmp/AT_log_3") %></textarea></td></tr>
+	<tr><td><input type="button" value="Refresh" onClick="click_refresh(document.forms[0]);"></td></tr>
+	</TABLE>
+</form>
+</div>
+
+<div align="center" id="at_test_info" style="position:absolute;top:0;left:0;visibility:hidden">
+
+<FORM method="POST" action="/apply.cgi?/lte_pls_wait.html">
+<input type=hidden name=submit_flag>
+
+	<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+	<TR><TD nowrap><B>AT Test Log:</B></TD></TR>
+	<TR><TD nowrap><textarea id="log_detail2" rows="10" cols="60" wrap="vitural" readonly><% show_at_log("/tmp/AT_log_2") %></textarea></TD></TR>
+	<tr><td><input type="button" value="Refresh" onClick="click_refresh_2(2);"></td></tr>
+	<tr>
+	<td colspan=2><B>AT command: </B>
+		<input type="text" maxlength="256" size="32" name="command_txt">
+		<input type="button" value="Run" onClick="click_run(document.forms[0]);">
+	</td>
+	</tr>
+	</TABLE>
+</form>
+</div>
+
+<style>
+.waiting_img_div { height:40px; width:100%; margin:50px auto }
+.waiting_img_div img { height:40px; width:40px; margin:0 }
+</style>
+
+<div align="center" id="upgrade_info" style="position:absolute;top:0;left:0;visibility:hidden">
+<FORM method="POST" action="/upgrade_lte.cgi" enctype="multipart/form-data">
+	<div id=upgrade_div>
+	<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+	<tr><td nowrap><B>LTE Upgrade: </B><input name="lteupgrade" type="file" size="32"></td></tr>
+	<TR><TD nowrap>&nbsp;</TD></TR>
+	<tr>
+	<td nowrap colspan=2>
+	<input type="reset" name="Cancel" value='Cancel' onClick='location.href="at_log.html";'>&nbsp;&nbsp;
+	<input type="button" name="Upgrade" value="Upload" onClick='return clickupgrade(document.forms[0]);'>
+	</td>
+	</tr>
+	</TABLE>
+	</div>
+
+	<div id="pls_wait_div" style="display:none">
+	<div align="center"><br/><br/><b>$wizard_pls_wait</b></div>
+	<div class="waiting_img_div" align="center"><img src="image/wait30.gif" /></div>
+	</div>
+</form>
+</div>
+
+<div align="center" id="ping_info" style="position:absolute;top:0;left:0;visibility:hidden">
+
+<FORM method="POST" action="/apply.cgi?/lte_pls_wait.html">
+<input type=hidden name=submit_flag>
+
+	<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+	<TR><TD nowrap><B>Ping Result:</B></TD></TR>
+	<TR><TD nowrap><textarea id="log_detail3" rows="10" cols="60" wrap="vitural" readonly><% show_at_log("/tmp/ping_log") %></textarea></TD></TR>
+	<tr><td><input type="button" value="Refresh" onClick="click_refresh_2(6);"></td></tr>
+	<tr>
+	<td colspan=2><B>Ping Address: </B>
+	<input type="text" maxlength="256" size="32" name="ping_address">
+	<input type="button" value="Ping" onClick="click_ping(document.forms[0]);">
+	</td>
+	</tr>
+	</TABLE>
+</form>
+</div>
+
+<div align="center" id="boot_info" style="position:absolute;top:0;left:0;visibility:hidden">
+
+<FORM method="POST" action="/save_lteinfo.cgi" enctype="multipart/form-data">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+	<TR><TD nowrap><B>Bootup Info:</B></TD></TR>
+	<tr><td><textarea id="log_detail4" rows="10" cols="60" wrap="vitural" readonly><% show_at_log("/tmp/AT_log") %></textarea></td></tr>
+	<tr><td><input type="submit" value="Save"></td></tr>
+</TABLE>
+</form>
+</div>
+
+</body>
+</html>

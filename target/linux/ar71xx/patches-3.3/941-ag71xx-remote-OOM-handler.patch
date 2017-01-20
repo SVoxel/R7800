@@ -1,0 +1,62 @@
+From f0f6439a90531e5ec4196aad3f3777b182750ada Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Tue, 11 Jun 2013 12:56:34 -0500
+Subject: [ag71xx] remove OOM handler
+
+We avoid the need for the OOM handler by ensuring that the RX handler
+will not release a buffer unless it can allocate the replacement.  We
+do not ACK to the GMAC, so we will take another interrupt once they
+are enabled.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx.h      |  1 -
+ drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c | 22 ----------------------
+ 2 files changed, 23 deletions(-)
+
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+@@ -209,7 +209,6 @@ struct ag71xx {
+ 
+ 	struct work_struct	restart_work;
+ 	struct delayed_work	link_work;
+-	struct timer_list	oom_timer;
+ 
+ #ifdef CONFIG_AG71XX_DEBUG_FS
+ 	struct ag71xx_debug	debug;
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+@@ -702,7 +702,6 @@ static int ag71xx_stop(struct net_device
+ 	ag71xx_dma_reset(ag);
+ 
+ 	napi_disable(&ag->napi);
+-	del_timer_sync(&ag->oom_timer);
+ 
+ 	spin_unlock_irqrestore(&ag->lock, flags);
+ 
+@@ -827,14 +826,6 @@ static int ag71xx_do_ioctl(struct net_de
+ 	return -EOPNOTSUPP;
+ }
+ 
+-static void ag71xx_oom_timer_handler(unsigned long data)
+-{
+-	struct net_device *dev = (struct net_device *)data;
+-	struct ag71xx *ag = netdev_priv(dev);
+-
+-	napi_schedule(&ag->napi);
+-}
+-
+ static void ag71xx_tx_timeout(struct net_device *dev)
+ {
+ 	struct ag71xx *ag = netdev_priv(dev);
+@@ -1334,10 +1325,6 @@ static int __devinit ag71xx_probe(struct
+ 
+ 	INIT_WORK(&ag->restart_work, ag71xx_restart_work_func);
+ 
+-	init_timer(&ag->oom_timer);
+-	ag->oom_timer.data = (unsigned long) dev;
+-	ag->oom_timer.function = ag71xx_oom_timer_handler;
+-
+ 	ag->tx_ring.size = AG71XX_TX_RING_SIZE_DEFAULT;
+ 	ag->tx_ring.mask = AG71XX_TX_RING_SIZE_DEFAULT - 1;
+ 	ag->rx_ring.size = AG71XX_RX_RING_SIZE_DEFAULT;

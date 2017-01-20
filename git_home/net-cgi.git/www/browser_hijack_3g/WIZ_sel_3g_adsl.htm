@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_02_genieHelp.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/wiz_sel_3g_adsl.js"></script>
+<% hijack_language() %>
+</head>
+
+<body>
+<% form_submit("apply", "WIZ_set_det_type.htm", "set_dettype") %>
+<input type="hidden" name="hidden_wan_type" value="MyDetc">
+<script>
+var wizard_3g_check_enable = "<% wizard_3g_check_enable() %>";
+var wizard_lte_check_enable = "<% wizard_lte_check_enable() %>";
+
+//Reset Failover & Loadbalance
+top.multi_wan_mode="none";  // none, multi
+top.multi_wan_mode_ether="0";//0:unconfigured, 1:configured
+top.multi_wan_mode_mobile="0";//0:unconfigured, 1:configured
+</script>
+
+<div class="wizard_content_div">
+	<div id="choices_div" class="wizard_words_div">
+		<h1><!-- choose_conn_mode --></h1>
+
+		<div id="choices_div" class="helpChoice_divs">
+			<div class="radio_div">
+				<input type="radio" name="help_choice" value="0" checked="checked" /><!--ethernet connection-->
+			</div>
+			<div class="radio_div">
+				<input type="radio" name="help_choice" value="1" /><!-- mobile broadband connect -->
+			</div>
+			<div class="radio_div">
+				<input type="radio" name="help_choice" value="2" /><!--multiple wan-->
+			</div>
+		</div>
+	</div>
+
+	<div id="buttons_div_02" class="wizard_buttons_div" align="center">
+		<div id="btnsContainer_div" class="buttons_img_div"  align="center">
+			<img src="image/ca-little-purple-button.gif" />
+			<div id="btn_div" class="buttons_words_div"><!--next_mark--></div>
+		</div>
+	</div>
+</div>
+
+</form>
+</body>
+
+</html>

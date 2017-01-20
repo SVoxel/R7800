@@ -1,0 +1,299 @@
+<% http_header("style/form.css", "/funcs.js", "add_download_item.js") %>
+<% body_header("_green_download_emule", "GREEN_emule_basic.htm", "add_download_item") %>
+<div id="page_title" class="page_title" style="display:none">$greendl_common_manager</div>
+<div id="main" class="main" style="display:none">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+        <TD nowrap colspan=2 align=center>
+	<div id="msg_line_1" class="msg_nousb" style="display:none"><b>$greendl_common_plug_usb</b></div>
+	<div id="msg_line_2" class="msg_nousb" style="display:none"><b>$greendl_common_usb_removed</b></div>
+	<div class="download_bts">
+	<input class="cancel_bt" type='button' name="Cancel" value='$cancel_mark' onClick='reset_form(); loadvalue();'>&nbsp;&nbsp;
+	<input class="apply_bt" type='submit' name="Apply" value='$apply_mark' onclick='return enable_greendownload(document.forms[0],"emule");'>
+        </div>
+	</TD>
+</TR>
+</TABLE>
+<% table_header() %>
+
+<script>
+<% show_devices() %>
+<% save_timestamp("add_download_item", "enable_green_download", "pause_download", "refresh_download", "resume_download") %>
+<% save_timestamp("add_download_item", "remove_download", "change_priority", "remove_history", "green_download_fail") %>
+var ts="<% cfg_get("add_download_item") %>";
+var green_disk_lable = "<% cfg_get("green_disk_lable") %>";
+var green_download_enable="<% cfg_get("green_download_enable") %>";
+var max_tasks_all=0;
+if( "<% cfg_get("green_download_max_tasks_all") %>" != "" )
+	max_tasks_all=parseInt("<% cfg_get("green_download_max_tasks_all") %>", 10);
+var file_num = 0;
+var autorefresh_onoff="<% cfg_get("green_enable_autorefresh_status") %>";
+var refresh_time="<% cfg_get("green_download_refresh_time")%>"; //Ex:refresh_time=5(Time/Minute), that is refresh page 5 per minute.
+var delay_time=(1000*60)/refresh_time; //that is how long to refresh page once
+<% list_download_item() %>
+<% list_downloaded_file()%>
+var lan_ip="<% cfg_sed_xss("lan_ipaddr") %>";
+var samba_path="<% get_samba_path() %>";
+var mlnet_error="<% get_dlclient_result() %>";
+var max_concurrent_tasks="<% cfg_get("green_download_max_tasks_run") %>";
+var fileTP_max_concurrent_tasks="<% cfg_get("green_download_fileTP_max_tasks") %>";
+<% cfg_set("mlnet_error", "0") %>
+<% config_commit() %>
+<% change_folder_path() %>
+var this_download_type = "emule";
+<% green_download_changed() %>
+
+function add_item()
+{
+	form = document.forms[0];
+
+	var str_down_url = form.download_url.value;
+	//var str_low_2 = str_down_url.substr(0,5).toLowerCase();
+	var str_low_2 = str_down_url.substr(0,5);
+
+	if( str_low_2 != "ed2k:" )
+	{
+		alert("$greendl_donkey_alert_link");
+		return false;
+	}
+	if(form.download_url.value == "")
+	{
+		alert("$greendl_donkey_alert_link");
+		return false;
+	}
+	var index_blank = str_down_url[str_down_url.length-1];
+	if( index_blank == ' ' )
+	{
+		alert("$greendl_common_alert_no_blank");
+		return false;
+	}
+	var task_num_all = top.green_download_item_num;
+	if( task_num_all >= max_tasks_all )
+	{
+		alert("$greendl_common_alert_maxtask");
+		return false;
+	}
+
+	top.download_type = this_download_type;
+	return true;
+}
+function loadvalue()
+{
+	if(disk_num == 0)
+	{
+		if( green_download_changed == "1")
+			document.getElementById("msg_line_2").style.display="";
+		else
+			document.getElementById("msg_line_1").style.display="";
+	}
+	
+	var cf=document.forms[0];
+
+	if( green_download_enable == "1")
+		cf.enable_green_download.checked = true;
+	else
+		cf.enable_green_download.checked = false;
+
+	if(disk_num==0)
+	{
+		cf.Cancel.disabled = true;
+		cf.Apply.disabled = true;
+		cf.Cancel.className = "common_gray_bt";
+		cf.Apply.className = "common_gray_bt";
+		document.getElementById("download_endis").style.color="gray";
+		cf.enable_green_download.disabled=true;
+		document.getElementById("download_save_path").style.color="gray";
+		cf.green_link_basic.disabled=true;
+		cf.green_link_basic.className="long_edit_gray_bt";
+		document.getElementById("type").style.color="gray";
+		cf.download_type_1.disabled=true;
+		cf.download_url.disabled=true;
+		cf.Add.disabled=true;
+		cf.reset.disabled=true;
+		cf.Add.className = "add_gray_bt";
+		cf.reset.className = "long_delete_gray_bt";
+	}
+	else if(disk_num !=0 && green_download_enable == "0")
+	{
+		cf.Cancel.disabled = false;
+		cf.Apply.disabled = false;
+		cf.Cancel.className = "cancel_bt";
+		cf.Apply.className = "apply_bt";
+		document.getElementById("download_endis").style.color="black";
+		cf.enable_green_download.disabled=false;
+		document.getElementById("download_save_path").style.color="black";
+		cf.green_link_basic.disabled=false;
+		cf.green_link_basic.className="long_edit_bt";
+		document.getElementById("type").style.color="gray";
+		cf.download_type_1.disabled=true;
+		cf.download_url.disabled=true;
+		cf.Add.disabled=true;
+		cf.reset.disabled=true;
+		cf.Add.className = "add_gray_bt";
+		cf.reset.className = "long_delete_gray_bt";
+	}
+	else
+	{
+		cf.Cancel.disabled = false;
+		cf.Apply.disabled = false;
+		cf.Cancel.className = "cancel_bt";
+		cf.Apply.className = "apply_bt";
+		document.getElementById("download_endis").style.color="black";
+		cf.enable_green_download.disabled=false;
+		document.getElementById("download_save_path").style.color="black";
+		cf.green_link_basic.disabled=false;
+		cf.green_link_basic.className="long_edit_bt";
+		document.getElementById("type").style.color="black";
+		cf.download_type_1.disabled=false;
+		cf.download_url.disabled=false;
+		cf.Add.disabled=false;
+		cf.reset.disabled=false;
+		cf.Add.className = "add_bt";
+		cf.reset.className = "long_delete_bt";
+	}
+	if(disk_num == 0 || (disk_num !=0 && green_download_enable == "0"))
+	{
+		document.body.style.color="gray";
+		cf.chbx_all_item.disabled=true;
+		cf.start.disabled=true;
+		cf.start.className = "common_gray_bt";
+		cf.resume.disabled=true;
+		cf.resume.className = "common_gray_bt";
+		cf.pause.disabled=true;
+		cf.pause.className = "common_gray_bt";
+		cf.remove.disabled=true;
+		cf.remove.className = "common_gray_bt";
+		cf.rm_history.disabled=true;
+		cf.rm_history.className = "common_big_gray_bt";
+	}
+	else
+	{
+		document.body.style.color="black";
+		cf.chbx_all_item.disabled=false;
+		cf.start.disabled=false;
+		cf.start.className = "common_bt";
+		cf.resume.disabled=false;
+		cf.resume.className = "common_bt";
+		cf.pause.disabled=false;
+		cf.pause.className = "common_bt";
+		cf.remove.disabled=false;
+		cf.remove.className = "common_bt";
+		cf.rm_history.disabled=false;
+		cf.rm_history.className = "common_big_bt";
+	}
+	refresh_content();
+
+	document.getElementById("pls_wait_div").style.display = "none";
+	document.getElementById("page_title").style.display = "block";
+	document.getElementById("main").style.display = "block";
+	greenErrorHandling(cf);
+}
+</script>
+<input type=hidden name=download_type value="emule">
+<input type=hidden name=save_usb_path>
+<input type=hidden name=green_download_open_flag>
+<TR id="download_endis">
+	<TD nowrap colspan=2>
+		<input type="checkbox" name="enable_green_download"><b>$greendl_manager_enable</b>
+	</TD>
+</TR>
+<TR id="download_save_path">
+	<TD nowrap><b>$greendl_common_showSavedPath:&nbsp;</b>
+		<script>
+			if(disk_num != 0)
+				document.write(green_disk_lable);
+		</script>
+	</TD>
+	<TD nowrap align="center">
+		<input class="long_edit_bt" type="button" name="green_link_basic" value="$greendl_manager_config_set_mark" onClick="redirect_config_download();">
+	</TD>
+</TR>
+$bluebar
+<TR id="type">
+        <TD nowrap colspan=2><A tabindex=-1 href="javascript:loadhelp('_green_download_edonkey','')"><b>$greendl_manager_downloadtype</b></A>
+        <select name="download_type_1" size="1" onchange="change_downlaod_type(this);">
+                <option value="bt">$greendl_bt</option>
+                <option value="emule" selected>Emule</option>
+                <option value="http">$greendl_filetp</option>
+        </select>
+</TD></TR>
+
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_green_download_edonkey','emule_url')"><B>$greendl_donkey_link</B></A>
+	</TD>
+	<TD nowrap align=right>
+		<input type="text" size="64" name="download_url" value="">
+	</TD>
+$bluebar
+<TR>
+	<TD nowrap colspan=2 align=center>
+	<input class="add_bt" type="submit" name="Add" value="$add_mark" onClick="return add_item();">&nbsp;&nbsp;
+	<input class="long_delete_bt" type='button' name='reset' value='$green_qos_reset' onClick='reset_form();'>
+	</TD>
+</TR>
+</tr>
+	<TR><TD colSpan=2><A tabindex=-1 href="javascript:loadhelp('_green_download_edonkey','bt_emule_http_table')"><B>$greendl_common_InfoShowTable</B></A></TD></TR>
+	<TR><TD colSpan=2></TD></TR>
+	<TR><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+	<TR><TD colSpan=2 id="download_tb">
+		<TABLE border=1 cellpadding=2 cellspacing=0 width=100%>
+		<TR>
+			<TD nowrap align=center><span class="subhead">$greendl_common_showSelect<input type=checkbox name="chbx_all_item" value="0" onclick="select_all_items()"></span></TD>
+			<TD nowrap align=center><span class="subhead">$greendl_common_showNo</span></TD>
+			<TD nowrap align=center><span class="subhead">$greendl_common_showFileName</span></TD>
+			<TD nowrap align=center><span class="subhead">$greendl_common_showFileSize</span></TD>
+			<TD nowrap align=center><span class="subhead">$qos_priority</span></TD>
+			<TD nowrap align=center><span class="subhead">$greendl_common_showSpeed</span></TD>
+			<TD nowrap align=center><span class="subhead">$greendl_common_showDownload</span></TD>
+			<TD nowrap align=center><span class="subhead">$stalist_Status</span></TD>
+			<TD nowrap align=center><span class="subhead">$block_ser_setup_pro</span></TD>
+		</TR>
+		</TABLE>
+		<script>refresh_download_table()</script>
+	</TD></TR>
+	$bluebar
+	<TR>
+		<TD nowrap colspan=2 align=center>
+		<input type="button" class="common_bt" name="resume" value="$greendl_common_button_resume" onClick="resume_download(document.forms[0]);">&nbsp;&nbsp;
+		<input type="button" class="common_bt" name="start" value="$refresh_mark" onClick="refresh_download(document.forms[0]);">&nbsp;&nbsp;
+		<input type="button" class="common_bt" name="pause" value="$greendl_common_button_pause" onClick="pause_download(document.forms[0]);">&nbsp;&nbsp;
+		<input type='button' class="common_bt" name='remove' value='$delete_mark' onClick='remove_item(document.forms[0]);'>
+		</TD>
+	</TR>
+	<TR><TD colSpan=2><A tabindex=-1 href="javascript:loadhelp('_green_download_edonkey','bt_emule_http_downloaded')"><B>$greendl_common_showDownloaded</B></A></TD></TR>
+	<TR><TD colSpan=2></TD></TR>
+	<TR><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+	<TR><TD colSpan=2 id="downloaded_tb">
+		<TABLE border=1 cellpadding=2 cellspacing=0 width=100%>
+		<TR>
+			<TD nowrap align=center><span class="subhead">$greendl_common_showNo</span> </TD>
+			<TD nowrap align=center><span class="subhead">$greendl_common_showFileName</span></TD>
+			<TD nowrap align=center><span class="subhead">$greendl_common_showFileSize</span></TD>
+			<TD nowrap align=center><span class="subhead">$greendl_common_showSavedPath</span></TD>
+		</TR>
+		</TABLE>
+		<script>refresh_downloaded_table()</script>
+	</TD></TR>
+	$bluebar
+	<TR>
+		<TD nowrap colspan=2 align=center>
+		<input type="button" class="common_big_bt"  name="rm_history" value="$greendl_common_button_removeHistory" onClick='remove_history(document.forms[0]);'>&nbsp;&nbsp;
+		</TD>
+	</TR>
+</TABLE>
+</div>
+<div id="pls_wait_div" style="color: #000;">
+	<table width="100%">
+		<tr><td align="center"><b>$wizard_pls_wait</b><br /><br /></td></tr>
+		<tr><td align="center"><img src="image/wait30.gif" /></td></tr>
+	</table>
+</div>
+<input type="hidden" name="select_ids" value="">
+<input type="hidden" name="select_ids_queuen" value="">
+<input type="hidden" name="priority_val">
+<input type="hidden" name="file_type" value="2">
+</FORM>
+<% help_box("0","_green_download_emule") %>
+</BODY>
+</HTML>

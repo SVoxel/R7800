@@ -1,0 +1,158 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% nohelp_header("AUTO_download_image.htm", "download_image") %>
+<% hijack_language() %>
+<div class="page_title"><script>printText(bh_wait_upg_head, "$wait_upg_head");</script></div>
+<div id="main" class="main">
+<script>
+<% check_version()  %>
+<% save_timestamp("download_image", "download_language", "download_all", "download_green", "download_language_image", "download_green_language", "download_green_image") %>
+var ts='<% cfg_get("download_image") %>';
+var is_in_cd_less = isCDLESS();
+
+function clickYes()
+{
+        var cf=document.forms[0];
+	if ( updateLanguage == 1 || updateFirmware == 1 || updateGreen == 1 ){
+		top.enable_action=0;
+		if(top.topframe && !top.hidden_upgrade) //if top.topframe exists and top.hidden_upgrade does not exit
+			top.topframe.location.href="top_nochange.html";
+		else if(top.topframe && top.hidden_upgrade)     //if top.hidden_upgrade exits, top is the hidden page CheckNewFirmware.htm
+			top.topframe.location.href="CheckNewFW_top.htm";
+	}
+
+	if ( updateLanguage == 1 && updateFirmware == 0 && updateGreen ==0 ){
+		cf.submit_flag.value="download_language";
+		cf.action="/func.cgi?/AUTO_download_language.htm timestamp="+ts;
+		cf.submit();
+	}
+	else if ( updateLanguage == 0 && updateFirmware == 1 && updateGreen ==0 ){
+		cf.submit_flag.value="download_image";
+		cf.action="/func.cgi?/AUTO_download_image.htm timestamp="+ts;
+		cf.submit();
+	}
+	else if ( updateLanguage == 1 && updateFirmware == 1 && updateGreen ==0 ){
+		cf.submit_flag.value="download_language_image";
+		cf.action="/func.cgi?/AUTO_download_image.htm timestamp="+ts;
+		cf.submit();
+	}
+	else if ( updateLanguage == 0 && updateFirmware == 0 && updateGreen ==1 )
+	{
+		cf.submit_flag.value="download_green";
+		cf.action="/func.cgi?/AUTO_download_green.htm timestamp="+ts;
+		cf.submit();
+	}
+	else if ( updateLanguage == 1 && updateFirmware == 0 && updateGreen ==1 )
+	{
+		cf.submit_flag.value="download_green_language";
+		cf.action="/func.cgi?/AUTO_download_green.htm timestamp="+ts;
+		cf.submit();
+	}
+	else if ( updateLanguage == 0 && updateFirmware == 1 && updateGreen ==1 )
+	{
+		cf.submit_flag.value="download_green_image";
+		cf.action="/func.cgi?/AUTO_download_image.htm timestamp="+ts;
+		cf.submit();
+	}
+	else if ( updateLanguage == 1 && updateFirmware == 1 && updateGreen ==1 )
+	{
+		cf.submit_flag.value="download_all";
+		cf.action="/func.cgi?/AUTO_download_image.htm timestamp="+ts;
+		cf.submit();
+	}
+
+}
+
+function clickNo()
+{
+	if(top.topframe)
+		top.topframe.location.href="/top.html";
+
+	if(top.hidden_upgrade)  //if top.hidden_upgrade exits, top is CheckNewFirmware.htm
+		close_top_window();
+	else if ( is_in_cd_less || isWIZARD() )
+		toInternet();
+	else	
+		this.location.href = "/UPG_upgrade.htm";
+}
+
+function loadvalue()
+{
+
+        if( updateFirmware == 1 ){
+		document.getElementById("cur_firm").style.display="";
+		document.getElementById("new_firm").style.display="";
+	}
+	else
+	{
+		document.getElementById("cur_firm").style.display="none";
+		document.getElementById("new_firm").style.display="none";
+	}
+
+	if( updateLanguage == 1 ){
+		document.getElementById("cur_lang").style.display="";
+		document.getElementById("new_lang").style.display="";
+	}
+	else{
+		document.getElementById("cur_lang").style.display="none";
+		document.getElementById("new_lang").style.display="none";
+	}
+
+	if( updateGreen == 1 ){
+		document.getElementById("cur_green").style.display="";
+		document.getElementById("new_green").style.display="";
+	}
+	else{
+		document.getElementById("cur_green").style.display="none";
+		document.getElementById("new_green").style.display="none";
+	}
+	
+}
+</script>
+<% table_header() %>
+$bluebar
+
+<TR>
+	<TD nowrap colspan=2><B><script>printText(bh_wait_new_version, "$wait_new_version");</script></B><BR><BR></TD>
+</TR>
+<TR id=cur_firm><TD nowrap><B><script>printText(bh_current_firmware, "$current_firmware");</script>:</B></TD><TD><% cat_file("/firmware_version") %><% get_firmware_region("single_blank", "ww_blank") %></TD></TR>
+<TR id=new_firm><TD nowrap><b><script>printText(bh_new_firmware, "$new_firmware");</script>:</B></TD><TD><% cat_file("/tmp/auto_version") %></TD></TR>
+<TR><TD>&nbsp;</TD><TD></TD></TR>
+<TR id=cur_lang><TD nowrap><b><script>printText(bh_current_language, "$current_language");</script>:</B></TD><TD><% get_language_version() %></TD></TR>
+<TR id=new_lang><TD nowrap><B><script>printText(bh_new_language, "$new_language");</script>:</B></TD><TD><% cat_file("/tmp/lang_version") %></TD></TR>
+<TR><TD>&nbsp;</TD><TD></TD></TR>
+<TR id=cur_green><TD nowrap><b><script>printText(bh_greendl_upgrade_version_cur, "$greendl_upgrade_version_cur");</script>:</b></TD><TD><% cat_file("/tmp/jffs2_green_download/version") %></TD></TR>
+<TR id=new_green><TD nowrap><b><script>printText(bh_greendl_upgrade_version_new, "$greendl_upgrade_version_new");</script>:</b></TD><TD><% cat_file("/tmp/green_version") %></TD></TR>
+
+
+<TR><TD colspan=2>
+<% get_upgrade_info() %>
+</TD>
+</TR>
+
+$bluebar
+<TR>
+	<TD nowrap colspan=2 align=center>
+	<script>
+		var no_mark = getText(bh_no_mark, "$no_mark");
+		var yes_mark = getText(bh_yes_mark, "$yes_mark");
+		var master="<% cfg_get("http_loginname") %>";
+
+		if(master=="admin" ){
+			document.write('<input class="short_common_bt" type="button" name="Yes" value="'+yes_mark+'" onclick="clickYes();">&nbsp;');
+			document.write('<input class="short_common_bt" type="button" name="No" value="'+no_mark+'" onclick="clickNo();">');
+		}
+		else
+		{
+			document.write('<input class="short_common1_bt" type="button" name="Yes" value="'+yes_mark+'" disabled>&nbsp;');
+			document.write('<input class="short_common_bt" type="button" name="No" value="'+no_mark+'" onclick="clickNo();">');
+		}
+	</script>
+	</TD>
+</TR>
+</TABLE>
+
+</div>
+
+</FORM>
+</BODY>
+</HTML>

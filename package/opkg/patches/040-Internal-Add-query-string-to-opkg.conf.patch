@@ -1,0 +1,117 @@
+From 12a2257f8e99483168a46e79a2d47a7f8b825629 Mon Sep 17 00:00:00 2001
+From: Mo Chen <moc@qca.qualcomm.com>
+Date: Thu, 18 Apr 2013 15:34:01 -0500
+Subject: [PATCH] Internal: Add query string to opkg.conf.
+
+This allows us to optionally send parameters to the update server.
+---
+ libopkg/opkg_conf.c     |    1 +
+ libopkg/opkg_conf.h     |    1 +
+ libopkg/opkg_download.c |   20 +++++++++++++++++---
+ 3 files changed, 19 insertions(+), 3 deletions(-)
+
+diff --git a/libopkg/opkg_conf.c b/libopkg/opkg_conf.c
+index 4711ce7..3c6d005 100644
+--- a/libopkg/opkg_conf.c
++++ b/libopkg/opkg_conf.c
+@@ -69,6 +69,7 @@ opkg_option_t options[] = {
+ 	  { "query-all", OPKG_OPT_TYPE_BOOL, &_conf.query_all },
+ 	  { "tmp_dir", OPKG_OPT_TYPE_STRING, &_conf.tmp_dir },
+ 	  { "verbosity", OPKG_OPT_TYPE_INT, &_conf.verbosity },
++	  { "http_query", OPKG_OPT_TYPE_STRING, &_conf.http_query },
+ #if defined(HAVE_OPENSSL)
+ 	  { "signature_ca_file", OPKG_OPT_TYPE_STRING, &_conf.signature_ca_file },
+ 	  { "signature_ca_path", OPKG_OPT_TYPE_STRING, &_conf.signature_ca_path },
+diff --git a/libopkg/opkg_conf.h b/libopkg/opkg_conf.h
+index 3a60bc5..fbc4258 100644
+--- a/libopkg/opkg_conf.h
++++ b/libopkg/opkg_conf.h
+@@ -86,6 +86,7 @@ struct opkg_conf
+      int noaction;
+      int download_only;
+      char *cache;
++     char *http_query;
+ 
+ #ifdef HAVE_SSLCURL
+      /* some options could be used by
+diff --git a/libopkg/opkg_download.c b/libopkg/opkg_download.c
+index 4a8b2a2..b0ad744 100644
+--- a/libopkg/opkg_download.c
++++ b/libopkg/opkg_download.c
+@@ -88,6 +88,7 @@ opkg_download(const char *src, const char *dest_file_name,
+ 
+     char *src_basec = xstrdup(src);
+     char *src_base = basename(src_basec);
++    char *src_with_query = NULL;
+     char *tmp_file_location;
+ 
+     opkg_msg(NOTICE,"Downloading %s.\n", src);
+@@ -125,6 +126,15 @@ opkg_download(const char *src, const char *dest_file_name,
+ 		conf->no_proxy);
+ 	setenv("no_proxy", conf->no_proxy, 1);
+     }
++    if (conf->http_query &&
++	(str_starts_with(src, "http://") || str_starts_with(src, "https://"))) {
++	    sprintf_alloc(&src_with_query, "%s?%s", src, conf->http_query);
++		opkg_msg(DEBUG,"Setting http query: http_query = %s.\n",
++			conf->http_query);
++		opkg_msg(DEBUG, "URL with query: %s\n", src_with_query);
++    } else {
++	    src_with_query = xstrdup(src);
++    }
+ 
+ #ifdef HAVE_CURL
+     CURLcode res;
+@@ -133,7 +143,7 @@ opkg_download(const char *src, const char *dest_file_name,
+     curl = opkg_curl_init (cb, data);
+     if (curl)
+     {
+-	curl_easy_setopt (curl, CURLOPT_URL, src);
++	curl_easy_setopt (curl, CURLOPT_URL, src_with_query);
+ 	curl_easy_setopt (curl, CURLOPT_WRITEDATA, file);
+ 
+ 	res = curl_easy_perform (curl);
+@@ -143,7 +153,8 @@ opkg_download(const char *src, const char *dest_file_name,
+ 	    long error_code;
+ 	    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &error_code);
+ 	    opkg_msg(hide_error?DEBUG2:ERROR, "Failed to download %s: %s.\n",
+-		    src, curl_easy_strerror(res));
++		    src_with_query, curl_easy_strerror(res));
++	    free(src_with_query);
+ 	    free(tmp_file_location);
+ 	    return -1;
+ 	}
+@@ -151,6 +162,7 @@ opkg_download(const char *src, const char *dest_file_name,
+     }
+     else
+     {
++	free(src_with_query);
+ 	free(tmp_file_location);
+ 	return -1;
+     }
+@@ -168,12 +180,13 @@ opkg_download(const char *src, const char *dest_file_name,
+       }
+       argv[i++] = "-O";
+       argv[i++] = tmp_file_location;
+-      argv[i++] = src;
++      argv[i++] = src_with_query;
+       argv[i++] = NULL;
+       res = xsystem(argv);
+ 
+       if (res) {
+ 	opkg_msg(ERROR, "Failed to download %s, wget returned %d.\n", src, res);
++        free(src_with_query);
+ 	free(tmp_file_location);
+ 	return -1;
+       }
+@@ -182,6 +195,7 @@ opkg_download(const char *src, const char *dest_file_name,
+ 
+     err = file_move(tmp_file_location, dest_file_name);
+ 
++    free(src_with_query);
+     free(tmp_file_location);
+ 
+     return err;
+-- 
+1.7.9.5
+

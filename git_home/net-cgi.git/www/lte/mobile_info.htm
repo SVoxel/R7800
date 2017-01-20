@@ -1,0 +1,33 @@
+<% http_header("style/form.css") %>
+
+<body>
+<div class="page_title">$mobile_info</div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+<tr><td colspan="2"><h1></h1></td></tr>
+
+<% mobile_signal_strength() %>
+
+<tr><td colspan="2"><h1></h1></td></tr>
+$bluebar
+</table>
+
+<table border=1 cellpadding=2 cellspacing=0 width=100%>
+<tr><td width="40%"><b>$network_operator</b></td><td><% cfg_get("lte_isp") %></td></tr>
+<tr><td><b>$mobile_imei</b></td><td><% cfg_get("mobile_imei") %></td></tr>
+<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+</table>
+
+<% table_header() %>
+$bluebar
+<tr>
+	<td nowrap colspan=2  align=center>
+		<input  class="common_key_bt" type=button name="refresh" value="$refresh_mark" onclick="location.href='mobile_info.htm'">
+		<input  class="common_key_bt" type=button name="close" value="$close_win_mark" onclick="self.close();">
+	</td>
+</tr>
+</table>
+</div>
+</body>
+</html>

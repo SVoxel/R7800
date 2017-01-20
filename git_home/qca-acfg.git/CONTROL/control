@@ -1,0 +1,15 @@
+Package: qca-acfg
+Version: 10.4-4.0.1.014-1
+Depends: libc, kmod-qca-wifi
+Provides: 
+Source: package/qca-acfg
+Section: QCA
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: Qualcomm Atheros
+Architecture: ipq806x
+Installed-Size: 59172
+Description:  QCA configuration utility provides a set of library
+ API's through which user applications can configure
+ and register events for wifi driver and hostap

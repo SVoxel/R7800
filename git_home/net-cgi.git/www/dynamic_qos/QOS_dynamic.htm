@@ -1,0 +1,496 @@
+<% cfg_set("en_dyn_basic", "0")%>
+<% http_header("style/form2.css", "/funcs.js", "/basic.js",  "/advanced.js" "/streamboost.js", "/jquery-1.7.2.min.js") %>
+<% body_header("_quality_service", "QOS_dynamic.htm", "apply_streamboost") %>
+<div class="qospage_title">$qos_head</div>
+<script>
+if(parent.type == "basic")
+	{
+		document.write("<div class=\"fix_button\">");
+	}
+	else if(parent.type == "advanced")
+	{
+		document.write("<div class=\"fix_adv_button\">");
+	}
+</script>
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+	<TD nowrap colspan=2 align=center>
+	<script>
+		var master="<% cfg_get("http_loginname") %>";
+		if( master == "admin" )
+			document.write('<input class="new_cancel_bt ui-corner-all" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="qos_advanced();"> &nbsp;&nbsp;<input class="new_apply_bt ui-corner-all" type="button" id="apply" name="Apply" value="$apply_mark" onClick="qos_click_apply();">');
+		else
+			document.write('<input class="new_greycancel_bt ui-corner-all" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled> &nbsp;&nbsp;<input class="new_greyapply_bt ui-corner-all" type="button" id="apply" name="Apply" value="$apply_mark" disabled>');
+	</script>
+	</TD>
+</TR>
+<tr id="labels"><td colspan=2>
+        <div id="streamboost_qos" class="label_unclick" onclick="select_lable(0)">
+                <div class="label_left"></div>
+                <div class="label_middle"><b><span id="Dynamic_qos">$home_net</span></b></div>
+                <div class="label_right"></div>
+        </div>
+        <div id="wmm" class="label_unclick" onclick="select_lable(1)">
+                <div class="label_left"></div>
+                <div class="label_middle"><b><span id="wmm">  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;$wmm_mark  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;</span></b></div>
+                <div class="label_right"></div>
+        </div>
+
+<script>
+if(parent.type == "advanced")
+	document.getElementById("labels").style.display = "";
+else if(parent.type == "basic")
+	document.getElementById("labels").style.display = "none";
+</script>
+</td>
+</tr>
+<tr><td style="height:20px"></td></tr>
+<TR class="manual_qos_tr">
+<TD><input type="checkbox" name="qosEnable" id="qos_enable" checked onClick="location.href='QOS_basic_dynamic.htm'"><b>$enable_qos</b></TD>
+</TR>
+<TR class="manual_qos_tr">
+<TD>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="basic_dynamic_qos" checked="true" >$dynamic_qos_more</TD>
+</TR>
+<TR class="manual_qos_tr">
+<TD>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="basic_dynamic_qos" onclick="location.href='QOS_wait.htm?adv_qos'">$adv_qos</TD>
+</TR>
+<TR class="manual_qos_tr"><TD colspan=2 class="spliteline"></TD></TR>
+<TR class="dynamic_qos_tr">
+<TD><input type="checkbox" name="dynamic_qos_enable">$dynamic_qos_more</TD>
+</TR>
+
+</TABLE>
+</div>
+<style>
+.checkbar {
+        font-family:Arial; padding:0px; height: 15px; width: 190px; font-weight: bolder; font-size: 10pt; border: 1px solid; border-color: #09c; color: #0000FF}
+#up_down_img { background-image:url(/image/ookla_speed.jpg);background-repeat:no-repeat; width:300px; height:40px; font-weight:bold; font-size:13px; font-family:arial; }
+#download_div{ position:relative; color:#ffffff; float:right; top:10px; }
+#uplink_div{ position:relative; color:#ffffff; float:right; top:10px; width:163px; right:3px; text-align:right; }
+#indicate{color:#4A708B;}
+</style>
+
+<div id="main" class="main_top_button" >
+<table width="100%" border="0" cellpadding="0" cellspacing="3">
+
+<script>
+<% save_timestamp("apply_streamboost", "ookla_speedtest", "detect_update") %>
+var ts='<% cfg_get("apply_streamboost") %>';
+
+<% check_update() %>
+var select_num=0;
+var streamboost_enable="<% cfg_get("streamboost_enable") %>";
+var detect_enable="<% cfg_get("auto_update") %>";
+var improve_service="<% cfg_get("improve_streamboost") %>";
+var uplink_value="<% cfg_get("uplimit") %>";
+var downlink_value="<% cfg_get("downlimit") %>";
+var uplink_detect="<% cfg_get("ookla_uplimit") %>";
+var downlink_detect="<% cfg_get("ookla_downlimit") %>";
+var bandwidth_type="<% cfg_get("bandwidth_type") %>";
+var first_flag="<% cfg_get("first_flag") %>";
+var netgear_region=top.netgear_region;
+update_version=format_version(update_version);
+var update_tag="<% cfg_get("update_tag") %>";
+<% reset_update_tag() %>
+
+var update_agreement = "<%cfg_get("update_agreement")%>";
+var first_speedtest_only = "<%cfg_get("first_speedtest_only")%>";
+
+var pchar = "|";
+var internet_status="<% detwan_valid() %>";//check internet status for speedtest
+var delay_time=2000;
+var charcount=0;
+var maxchars = 60;
+var test_mark=2;
+var upload_value="";
+var download_value="";
+var latest_test_time="<% cfg_get("last_speedtest_time") %>";
+
+if(first_flag == "0")
+{
+	uplink_detect = "";
+	downlink_detect = "";
+}
+
+function updateImage()
+{
+	var cf=document.forms[0];
+	if(test_mark == 1){
+		cf.downlink_value.value = download_value;
+		getObj("downlink_speed").innerHTML = "<B>" + (download_value==""? "0.00" : download_value) + "</B>";
+		getObj("download").className="icon";
+		getObj("upload").className="icon_active";
+		test_mark = 2;
+		setTimeout("updateImage()", 5000);
+	}
+	else{
+		cf.uplink_value.value = upload_value;
+		getObj("uplink_speed").innerHTML = "<B>" + (upload_value==""? "0.00" : upload_value) + "</B>";
+		getObj("upload").className="icon";
+		submitSpeedtestResult();
+	}
+}
+function updateProgress()
+{
+	var cf = document.forms[0];
+	if(charcount == 20)
+		detect_speedtest_value();
+	if (charcount < maxchars)
+	{
+		if((upload_value == "" && download_value == "") || first_flag != "1"){
+			charcount++;
+			setTimeout("updateProgress()",delay_time);
+		}
+	}
+	else
+	{
+		 sAlert("$fail_detect", function(){
+		var cf = document.forms[0];
+		 parent.ookla_speedtest_flag = 2;
+                 if(first_flag == "1") {
+			cf.hid_streamboost_enable.value=0;
+			cf.hid_first_flag.value="0";
+			if(top.have_advanced_qos == "1")
+				check_confirm(cf, "QOS_basic_dynamic.htm", ts);
+			else
+				check_confirm(cf, "QOS_dynamic.htm", ts);
+                 }else
+			this.location.href = "QOS_dynamic.htm";
+		});
+	}
+}
+function detect_speedtest_value()
+{
+        $$.ajax({
+                url: "QOS_speedtest_result.htm",
+                type: "GET",
+                success: function(data, textStatus){
+                        var down_up = data.split(";");
+                        if(down_up[0] != "" && down_up[1] != ""){
+                                saveValue(down_up[0], down_up[1]);
+                                parent.speedtest_time_sum = 0;
+                                parent.ookla_speedtest_flag = 2;
+				updateImage();
+                        }else{
+                                setTimeout("detect_speedtest_value()",3000);
+                        }
+                }
+        });
+
+}
+
+function submitSpeedtestResult(){
+                                cf = document.forms[0];
+				if(first_flag == "1"){
+                                       sAlert("$confirm_msg",function(){
+                                                var cf = document.forms[0];
+                                                if(detect_enable == "1" && update_agreement =="1" && first_speedtest_only != "1"){
+                                                        sAlert("$share_mac_warn",function(){
+                                                                var cf = document.forms[0];
+								cf.AutoUpdateEnable.checked = true;
+                                                                cf.hid_update_agreement.value = "0";
+                                                                cf.hid_streamboost_enable.value=1;
+                                                                cf.hid_first_flag.value="2";
+                                                                check_confirm(cf, "QOS_dynamic.htm", ts);
+                                                        },
+                                                        function(){
+                                                                var cf = document.forms[0];
+                                                                cf.AutoUpdateEnable.checked = false;
+                                                                cf.hid_update_agreement.value = "1";
+                                                                cf.hid_streamboost_enable.value=1;
+                                                                cf.hid_first_flag.value="2";
+                                                                check_confirm(cf, "QOS_dynamic.htm", ts);
+                                                        });
+                                                }
+                                                else
+                                                {
+                                                        cf.hid_streamboost_enable.value=1;
+                                                        cf.hid_first_flag.value="2";
+                                                        check_confirm(cf, "QOS_dynamic.htm", ts);
+                                                }
+                                        },
+                                        function(){
+                                                var cf = document.forms[0];
+                                                cf.hid_streamboost_enable.value=0;
+                                                cf.hid_first_flag.value="0";
+						if(top.have_advanced_qos == "1")
+                                                	check_confirm(cf, "QOS_basic_dynamic.htm", ts);
+						else
+							check_confirm(cf, "QOS_dynamic.htm", ts);
+                                        });
+				}
+				else if(first_flag == "0")
+				{
+					first_flag = "1";
+					submitSpeedtestResult();
+				}
+				else
+					location.href="QOS_dynamic.htm";
+}
+
+function saveValue(updata,downdata)
+{
+	if(updata != "")
+		upload_value = parseFloat(updata*8/1000000).toFixed(2);
+	if(downdata != "")
+		download_value = parseFloat(downdata*8/1000000).toFixed(2);
+}
+function fillValue(updata,downdata)
+{
+	var cf=document.forms[0];
+	if(updata != "")
+		cf.uplink_value.value = parseFloat(updata*8/1000000).toFixed(2);
+	else
+		cf.uplink_value.value = "";
+	if(downdata != "")
+		cf.downlink_value.value = parseFloat(downdata*8/1000000).toFixed(2);
+	else
+		cf.downlink_value.value = "";
+}
+
+function goto_attached()
+{
+	if(top.location.href.indexOf("adv_index") > -1){
+		top.open_or_close_sub('admin');
+		menu_color_change('attached');
+	}else
+		basic_menu_color_change('attached');
+	location.href="QOS_device.htm";
+}
+
+function loadvalue()
+{
+	if(master == "guest"){
+                $$("#speedtest").attr("class", "new_greyspeed_test ui-corner-all");
+                $$("#speedtest").attr("disabled", true);
+        }
+	document.getElementById("wmm").className="label_unclick";
+	document.getElementById("streamboost_qos").className="label_click";
+    var cf=document.forms[0];
+	if(parent.type == "advanced")
+		$$(".main_top_button").css("top", "185px");
+	else if(parent.type == "basic")
+		$$(".main_top_button").css("top", "155px");
+	if(top.have_advanced_qos == 1){
+		$$(".manual_qos_tr").css("display", "");
+		$$(".dynamic_qos_tr").css("display", "none");
+	}else{
+		$$(".manual_qos_tr").css("display", "none");
+		$$(".dynamic_qos_tr").css("display", "");
+		if(parent.type == "advanced" )
+			$$(".main_top_button").css("top", "155px");
+		if(parent.type == "basic" ){
+			$$(".main_top_button").css("top", "125px");
+			$$(".fix_button").css("background-position", "50% 60%");
+		}
+		if(streamboost_enable == "1")
+			cf.dynamic_qos_enable.checked = true;
+	}
+	if(streamboost_enable == "1") {
+		document.getElementById("device_app_link").style.display = "";
+		document.getElementById("updateBtn").disabled = false;
+		document.getElementById("updateBtn").className="new_speed_test ui-corner-all";
+		}
+	 else {
+		document.getElementById("device_app_link").style.display = "none";
+		document.getElementById("updateBtn").disabled = true;
+		document.getElementById("updateBtn").className="new_greyspeed_test ui-corner-all";
+	}
+
+	if(detect_enable == "1" || (improve_service == "" && netgear_region.toUpperCase() != "WW"))
+		cf.AutoUpdateEnable.checked = true;
+	else
+		cf.AutoUpdateEnable.checked = false;
+
+	if(improve_service == "1" || (improve_service == "" && netgear_region.toUpperCase() != "WW"))
+		cf.help_improve.checked = true;
+	else
+		cf.help_improve.checked = false;
+
+	fillValue(uplink_value, downlink_value);
+	if(parent.ookla_speedtest_flag == 1 || first_flag == "1")
+	{
+		cf.apply.disabled=true;
+		document.getElementById("apply").className="new_greyapply_bt  ui-corner-all";
+		cf.qosSetting[0].checked = true;
+		document.getElementById("speedtest").className="new_greyspeed_test ui-corner-all";
+		if(top.is_gr_version == 1)
+			 document.getElementById("speedtest").className = "new_greyspeed_test ui-corner-all";
+                cf.speedtest.disabled = true;
+		document.getElementById("define_radio1").style.display = "none";
+		document.getElementById("define_radio2").style.display = "none";
+		document.getElementById("speedtest_content").style.display = "";
+		document.getElementById("speedtest_icon").style.display = "";
+		document.getElementById("speedtest_data").style.display = "";
+		document.getElementById("updateBtn").disabled = true;
+		document.getElementById("updateBtn").className="new_greyspeed_test ui-corner-all";
+		getObj("indicate").innerHTML="$taking_speedtest";
+		getObj("download").className="icon_active";
+		getObj("downlink_speed").innerHTML = "<B>0.00</B>";
+		getObj("uplink_speed").innerHTML = "<B>0.00</B>";
+		test_mark=1; 
+		updateProgress();
+
+	}else if(parent.ookla_speedtest_flag == 2){
+		parent.ookla_speedtest_flag = 0;
+		if(master == "admin"){
+                	cf.apply.disabled=false;
+                	document.getElementById("apply").className="new_apply_bt ui-corner-all";
+		}
+                cf.qosSetting[0].checked = true;
+                document.getElementById("define_radio1").style.display = "none";
+                document.getElementById("define_radio2").style.display = "none";
+		document.getElementById("speedtest_content").style.display = "";
+	}
+	else {
+		if(master == "admin"){
+			cf.apply.disabled=false;
+			document.getElementById("apply").className="new_apply_bt ui-corner-all";
+		}
+		if(bandwidth_type == "0") {
+			cf.qosSetting[0].checked = true;
+			document.getElementById("define_radio1").style.display = "none";
+			document.getElementById("define_radio2").style.display = "none";
+			document.getElementById("speedtest_content").style.display = "";
+		} else {
+			cf.qosSetting[1].checked = true;
+			document.getElementById("define_radio1").style.display = "";
+			document.getElementById("define_radio2").style.display = "";
+			document.getElementById("speedtest_content").style.display = "none";
+		}
+	}
+	if(uplink_detect != "" && downlink_detect != "")
+	{
+		document.getElementById("speedtest_icon").style.display = "";
+		document.getElementById("speedtest_data").style.display = "";
+	}
+
+	if(update_tag == "11")
+		sAlert("$detect_old");
+	else if(update_tag == "0")
+		sAlert("$detect_new"+" "+update_version);
+	else if(update_tag == "100")
+		sAlert("$detect_fail");
+}
+
+</script>
+<input type="hidden" name="hid_streamboost_enable">
+<input type="hidden" name="hid_bandwidth_type">
+<input type="hidden" name="hid_streamboost_uplink">
+<input type="hidden" name="hid_streamboost_downlink">
+<input type="hidden" name="hid_first_flag">
+<input type="hidden" name="hid_detect_database">
+<input type="hidden" name="hid_improve_service">
+<input type="hidden" name="hid_update_agreement" value="<% cfg_get("update_agreement") %>">
+<TR>
+	<TD width=40% colspan=4>$spacebar
+	<b>$qos_message1</b></TD>
+</TR>
+<TR>
+	<TD height=12px colspan=4>&nbsp;</TD>
+</TR>
+<TR>
+	<TD width=40% colspan=4>$spacebar
+	<b>$bandwidth_title</b></TD>
+</TR>
+<TR>
+	<TD width=40% colspan=4>$spacebar&nbsp;$spacebar
+	<input type="radio" name="qosSetting" id="qos_speedtest" value="1" checked onClick="setSpeed(1)"><a tabindex=-1 href="javascript:loadhelp('_quality_service','ookla_detect')">$detect_bandwidth</a></TD>
+</TR>
+<TR id="speedtest_content">
+	<TD width=5%>&nbsp;</TD>
+	<TD colspan="3">
+	<TABLE>
+		<TR>
+			<TD colspan="2" height="50px" align="center">
+				<input type="button" name="speedtest" id="speedtest" value="$take_speedtest" class="new_speed_test ui-corner-all" onClick="return check_ookla_speedtest(document.forms[0])">
+				<div><span style="padding-left:10px;">$power_by</span><img src="/image/ookla.png" id="ookla_img" width="80px" height="18px" style="vertical-align:bottom;" /></div>
+			</TD>
+		</TR>
+		<TR id="speedtest_tip"><TD colspan="2" align="center"><span id="indicate">
+			<script>
+				if(uplink_detect != "" && downlink_detect != "")
+					document.write("$latest_result (" + latest_test_time + ")");
+			</script>
+		</span></TD></TR>
+		<TR id="speedtest_icon" style="display:none;">
+			<TD align="center" id="download" class="icon" width="120px">
+				<img src="/image/download.png" id="download_icon" width="15px" height="15px" /><B> $download_mark</B>
+			</TD>
+			<TD align="center" id="upload" class="icon"  width="120px">
+				<img src="/image/upload.png" id="upload_icon" width="15px" height="15px" /><B> $upload_mark</B>
+			</TD>
+		</TR>
+		<TR id="speedtest_data" style="display:none;"> 
+			<script>
+				if(uplink_detect == "" || downlink_detect == "")
+					document.write("<TD align='center'><span id='downlink_speed' style='font-size:16px'><B>0.00</B></span>Mbps</TD><TD align='center'><span id='uplink_speed' style='font-size:16px'><B>0.00</B></span>Mbps</TD>");
+				else
+					document.write("<TD align='center'><span id='downlink_speed' style='font-size:16px'><B>"+parseFloat(downlink_detect*8/1000000).toFixed(2)+"</B></span>Mbps</TD><TD align='center'><span id='uplink_speed' style='font-size:16px'><B>"+parseFloat(uplink_detect*8/1000000).toFixed(2)+"</B></span>Mbps</TD>");
+			</script>
+		</TR>
+	</TABLE>
+	</TD>
+</TR>
+<TR>
+	<TD width=40% colspan=4>$spacebar&nbsp;$spacebar
+	<input type="radio" name="qosSetting" id="qos_define_bw" value="2" onClick="setSpeed(2)"><a tabindex=-1 href="javascript:loadhelp('_quality_service','manual_define')">$define_bandwidth</a></TD>
+</TR>
+<TR id="define_radio1" style="display:none;">
+	<TD width=8%>&nbsp;</TD>
+	<TD width=32%>
+	<b>$downlink_width</b></TD>
+	<TD colspan=2><input type="text" name="downlink_value" maxlength="7" size="7" value="" onKeyPress="return getkey('colon_num',event)" onkeyup="clearNoNum(this)" onmouseout="clearNoNum(this)"></TD>
+</TR>
+<TR id="define_radio2" style="display:none;">
+	<TD width=8%>&nbsp;</TD>
+	<TD width=32%>
+	<b>$uplink_width</b></TD>
+	<TD colspan=2><input type="text" name="uplink_value" maxlength="7" size="7" value="" onKeyPress="return getkey('colon_num',event)" onkeyup="clearNoNum(this)" onmouseout="clearNoNum(this)"></TD>
+</TR>
+<TR>
+	<TD height=12px colspan=4>&nbsp;</TD>
+</TR>
+<TR>
+	<TD height=12px colspan=4>$spacebar<a tabindex=-1 href="javascript:loadhelp('_quality_service','performance')"><b>$detect_optimiz</b></a><br></TD>
+</TR>
+<TR>
+	<TD width=40% colspan=4>$spacebar
+	<input type="checkbox" name="AutoUpdateEnable" id="autoupdate_enable" value="0"/>&nbsp;&nbsp;<a tabindex=-1 href="javascript:loadhelp('_quality_service','auto_update')">$detect_database</a>
+	$spacebar<input class="new_greyspeed_test  ui-corner-all" name="update_now" type="button" id="updateBtn" value="$manual_update" disabled onClick="return check_manual_update(document.forms[0])"  />
+	</TD>
+</TR>
+<TR>
+	<TD width=40% colspan=4>$spacebar&nbsp;$spacebar&nbsp;&nbsp;$detect_info</TD>
+</TR>
+<TR>
+	<TD width=40% colspan=4>$spacebar&nbsp;$spacebar&nbsp;$spacebar&nbsp;
+	$detect_version <script>document.write("v" + update_version);</script></TD>
+</TR>
+<TR>
+	<TD width=40% colspan=4>$spacebar&nbsp;$spacebar&nbsp;$spacebar&nbsp;
+	$detect_date <script>document.write(format_time(update_time));</script><br></TD>
+</TR>
+<TR>
+	<TD width=40% colspan=4>$spacebar
+	<input type="checkbox" name="help_improve" value="0" onClick="" />&nbsp;&nbsp;<a tabindex=-1 href="javascript:loadhelp('_quality_service','improve_service')">$detect_improve</a>
+	</TD>
+</TR>
+<TR>
+        <TD height=12px colspan=4>&nbsp;</TD>
+</TR>
+<TR id="analytic_link" class="qos_link">
+        <TD width=40% colspan=4>$spacebar<a class="linktype linkbold" href="#" onclick="return confirm_dialox();">$analytic_link</a></TD>
+</TR>
+<TR>
+	<TD height=12px colspan=4>&nbsp;</TD>
+</TR>
+<TR id="device_app_link" style="display:none;" class="qos_link">
+	<TD width=40% colspan=4>$spacebar<a class="linktype linkbold" href="#" onclick="goto_attached(); return false;">$device_app_link</a></TD>
+</TR>
+</TABLE>
+</div>
+<% help_box("0","_quality_service") %>
+</FORM>
+</BODY>
+</HTML>

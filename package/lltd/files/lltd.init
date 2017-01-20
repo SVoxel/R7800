@@ -1,0 +1,12 @@
+#!/bin/sh /etc/rc.common
+
+#START=80
+
+start() {
+    lld2d br0
+}
+
+stop() {
+    killall lld2d
+}
+

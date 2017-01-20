@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<% hijack_language() %>
+<% cfg_set("wan1_flag", "0") %>
+<% cfg_set("wan2_flag", "0") %>
+<% cfg_set("dsl_wan_enablewan", "0") %>
+<% cfg_set("dsl_wan2_enablewan", "0") %>
+<script language="javascript" type="text/javascript">
+function loadvalue()
+{
+	var country = "<% cfg_get("dsl_wan_country") %>";
+	var isp = "<% cfg_get("dsl_wan_isp") %>";
+	if(country == "UK" && isp == "Sky")
+		this.location.href = "BRS_03A_B_dhcp_uk_sky.html";
+	else
+		this.location.href = "BRS_dsl_type_detc.html";
+}
+</script>
+</head>
+<% wizlog_setupWizard_ck04("0") %>
+<body onLoad="loadvalue();">
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+		<div class="waiting_connect_div" align="center">
+			<h1>
+				<script>document.write(bh_check_ap);</script>
+			</h1>
+		</div>
+		
+		<div class="waiting_img_div" align="center">
+			<img src="image/wait30.gif" />
+		</div>
+	
+	</div>
+</div>
+</body>
+</html>

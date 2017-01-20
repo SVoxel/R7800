@@ -1,0 +1,115 @@
+#!/bin/sh
+
+. /etc/net6conf/6data.conf
+
+#Fix Bug 24416[IPv6-LAN Auto Config] DUT should disable prefix option in Router Advertisement 
+#message when the prefix valid lifetime is expired.
+prefix_timeout() {
+	#when prefix is timeout, remove old prefix info files
+	rm /tmp/dhcp6c_script_envs
+	rm $DHCP6S_PD
+
+	#reload the LAN side IPv6 related services:
+	#rewrite config file: radvd_write_config, dhcp6s_write_config.
+	echo "reload 6service" > /dev/console
+	/etc/net6conf/6service reload
+}
+
+#To do prefix timeout envents.
+if [ "x$REASON" = "xprefix_timeout" ] ;then
+	prefix_timeout
+	exit
+fi
+
+del_dns6() {
+        sed '/.:./d' /tmp/resolv.conf > /tmp/resolv.conf$$
+        mv /tmp/resolv.conf$$ /tmp/resolv.conf
+        echo -n "" > $IPV6_DNS
+}
+
+lease_changed()
+{
+	local envs_p_file="/tmp/dhcp6c_script_envs"
+
+	[ -f "$envs_p_file" ] && . $envs_p_file
+
+	[ -z "$new_prefix" ] && new_prefix="$prefix_p"
+	[ -z "$new_domain_name" ] && new_domain_name="$new_domain_name_p"
+	[ -z "$new_sip_name" ] && new_sip_name="$new_sip_name_p"
+	[ -z "$new_domain_name_servers" ] && new_domain_name_servers="$new_domain_name_servers_p"
+	[ -z "$new_ntp_servers" ] && new_ntp_servers="$new_ntp_servers_p"
+	[ -z "$new_sip_servers" ] && new_sip_servers="$new_sip_servers_p"
+
+	cat > $envs_p_file << EOF
+prefix_p="$new_prefix"
+new_domain_name_p="$new_domain_name"
+new_sip_name_p="$new_sip_name"
+new_domain_name_servers_p="$new_domain_name_servers"
+new_ntp_servers_p="$new_ntp_servers"
+new_sip_servers_p="$new_sip_servers"
+EOF
+
+	[ "$new_prefix" != "$prefix_p" ] && return 0
+	[ "$new_domain_name" != "$new_domain_name_p" ] && return 0
+	[ "$new_sip_name" != "$new_sip_name_p" ] && return 0
+	[ "$new_domain_name_servers" != "$new_domain_name_servers_p" ] && return 0
+	[ "$new_ntp_servers" != "$new_ntp_servers_p" ] && return 0
+	[ "$new_sip_servers" != "$new_sip_servers_p" ] && return 0
+
+	return 1
+}
+
+# if dhcp6c lease is not changed, don't need to do anything.
+lease_changed || exit 0
+echo "dhcp6c lease changed !" > /dev/console
+
+# wirte the dhcp6s_pd and dhcp6s_dsn file
+
+	if [ "x$new_prefix" != "x" ]; then
+		echo $new_prefix > $DHCP6S_PD
+	fi
+
+	# for avoid adding more line
+	echo " " > $DHCP6S_DSN
+
+	for loop in $new_domain_name
+	do
+		echo "option domain-name \"$loop\";" >> $DHCP6S_DSN
+	done
+	
+	for loop in $new_sip_name
+	do
+		echo "option sip-server-domain-name \"$loop\";" >> $DHCP6S_DSN
+	done
+
+	if [ "x$new_domain_name_servers" != "x" ]; then
+		echo "option domain-name-servers $new_domain_name_servers;" >> $DHCP6S_DSN
+	fi
+
+	del_dns6
+	for loop in $new_domain_name_servers
+	do
+		echo "nameserver $loop" >> $IPV6_DNS
+	done
+	cat $IPV6_DNS >> /tmp/resolv.conf
+
+	if [ "x$new_ntp_servers" != "x" ]; then
+		echo "option ntp-servers $new_ntp_servers;" >> $DHCP6S_DSN
+	fi
+
+	if [ "x$new_sip_servers" != "x" ]; then
+		echo "option sip-server-address $new_sip_servers;" >> $DHCP6S_DSN
+	fi
+
+if [ -s $DHCP6S_PD ] && [ -s $DHCP6S_CONF ]; then
+	if ! grep "address-pool " >&- 2>&- $DHCP6S_CONF; then
+		echo "Got the prefix, reload the config file" > /dev/console
+		echo "The prefix for LAN is $new_prefix" > /dev/console
+		srv_reload="1"
+	fi
+fi
+
+	if ps | grep dhcp6s | grep -v grep >&- 2>&- ; then
+		echo "dhcpv6 server is running, reload dhcp6s config file !"
+		/etc/net6conf/6service reload
+	fi

@@ -1,0 +1,33 @@
+--- utelnetd-0.1.9.org/utelnetd.c	2008-02-25 15:19:50.000000000 +0800
++++ utelnetd-0.1.9/utelnetd.c	2008-02-25 18:06:45.000000000 +0800
+@@ -394,6 +394,15 @@
+ 	free(ts);
+ }
+ 
++static log_ip(char *ip)
++{
++	FILE *fp = fopen("/tmp/telnetip", "w");
++	if (fp == 0)
++		return;
++	fprintf(fp, "%s", ip);
++	fclose(fp);
++}
++
+ int main(int argc, char **argv)
+ {
+ 	struct sockaddr_in sa;
+@@ -563,11 +572,13 @@
+ 			} else {
+ 				/* Create a new session and link it into our active list. */
+ 				struct tsession *new_ts;
+-#ifdef USE_SYSLOG
++//#ifdef USE_SYSLOG
++#if 0
+ 				openlog(appname , LOG_NDELAY, LOG_DAEMON);	
+ 				syslog(LOG_INFO, "connection from: %s\n", inet_ntoa(sa.sin_addr));
+ 				closelog();
+ #endif
++				log_ip(inet_ntoa(sa.sin_addr));
+ 				new_ts = make_new_session(fd);
+ 				if (new_ts) {
+ 					new_ts->next = sessions;

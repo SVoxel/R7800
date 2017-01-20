@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#
+# Copyright (c) 2013 Qualcomm Atheros, Inc.
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary.
+#
+
+iwpriv wlan0 dbgLVL 0x90e80040
+iwpriv wlan1 dbgLVL 0x90e80040
+iwpriv wlan2 dbgLVL 0x90e80040
+pktlogconf  -s 4000000
+pktlogconf  -e rx,tx,rcu,rcf,text,txt 

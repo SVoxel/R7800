@@ -1,0 +1,1515 @@
+\documentclass[12pt]{report}
+\textwidth 6.5in
+\oddsidemargin 0pt
+\textheight 9in
+\topmargin 0pt
+\headsep 0pt
+\headheight 0pt
+%\linespread{1.6}
+\usepackage{amssymb,amsmath,epsfig,subfigure,psfrag}
+\newtheorem{prop}{Proposition}
+\newtheorem{Def}{Definition}
+\newtheorem{Cor}{Corollary}
+\newtheorem{Lem}{Lemma}
+\newtheorem{Thm}{Theorem}
+\newtheorem{Rem}{Remarks}
+\newcommand{\fclass}[1]{{\mathcal{#1}}} % function classes
+\newcommand{\msae}[1]{\bar{#1}}% Maximal Sub-Additive Embedded
+\newcommand{\mlabel}[1]{
+  \marginpar{#1} %to be deleted for hardcopy
+  }
+\newcommand{\tlabel}[1]{
+  \label{#1}%
+%  \marginpar{#1} %to be deleted for hardcopy
+  }
+\newcommand{\ispnpedf}{\mbox{ISP-NPEDF}}
+
+\newcommand{\myvector}[1]{
+  \boldsymbol{#1}%
+}
+\newcommand{\mathset}[1]{
+  \mathbb{#1}%
+}
+
+\newcommand{\esssup}[1]{
+  \mbox{\upshape ess}_{#1}\!\sup%
+}
+
+\newcommand{\abs}[1]{
+  | #1 |%
+}
+
+\newcommand{\norm}[1]{
+  \| #1 \|
+}
+
+\newcommand{\mybegineq}[1]{
+  \marginpar{#1} %to be deleted for hardcopy
+  \begin{equation}\label{#1}
+}
+
+\newcommand{\myendeq}{
+  \end{equation}%
+}
+
+
+
+
+
+\newcommand{\myscriptsize}{\small}
+\newcommand{\proof}{\noindent\hspace{2em}{\it Proof: }}
+\newcommand{\proofof}[1]{\noindent\hspace{2em}{\it Proof of #1: }}
+\newcommand{\myendproof}{\hspace*{\fill}$\blacksquare$}
+
+\begin{document}
+\title{R7500 Release notes}
+% \author{\normalsize{Chia-Sheng Chang}\thanks{
+%     Corresponding author: Chia-Sheng Chang, e-mail:
+%     \texttt{changcs@santos.ee.ntu.edu.tw,}
+%     postal address: Room 533, Electrical Engineering Building, No.\ 1, Sec.\
+%     4, Roosevelt Rd., Taipei 10617, Taiwan, R.O.C.}
+%   \normalsize{ and Kwang-Cheng Chen} \\
+%   \texttt{\small changcs@santos.ee.ntu.edu.tw, chenkc@cc.ee.ntu.edu.tw}\\
+%   {\small Institute of Communications Engineering and Department of
+%     Electrical Engineering}\\ {\small National Taiwan University}
+%   }
+
+\author{\normalsize{Torby Tong}}
+
+\maketitle
+\thispagestyle{empty}
+%% \begin{abstract}
+%%   \noindent Large delay schedulable regions, work-conserving property,
+%%   inter-session protection property, and acceptable realization
+%%   complexity are widely accepted performance metrics for
+%%   comparing packet
+%%   scheduling disciplines in packet-switching networks. % Under
+%% %  continuous-time assumptions, it is a difficult task to design a
+%% %  scheduling discipline with all these advantages.
+%%   In this paper, we propose a \emph{work-conserving} scheduling
+%%   discipline, called \ispnpedf, with \emph{optimal} delay schedulable
+%%   regions, and inter-session protection property. In addition,
+%%   the realization complexity of \ispnpedf\ is lower than that of
+%%   plain EDF (Earliest-Deadline First) with traffic regulators.
+
+
+
+%% %  \bfseries keywords: keywords
+
+%% \end{abstract}
+
+\psfull
+\tableofcontents
+\thispagestyle{empty}
+\newpage
+\setcounter{page}{1}
+
+\chapter{Revision History}
+\tlabel{sec:revision-history}
+   \begin{tabular}{|c|c|c|} \hline
+		2014/02/26 & Release V1.0.0.2 & Torby Tong \\ \hline
+		2014/03/17 & Release V1.0.0.4 & Torby Tong \\ \hline
+		2014/04/08 & Release V1.0.0.6 & Torby Tong \\ \hline
+		2014/04/14 & Release V1.0.0.8 & Torby Tong \\ \hline
+		2014/05/13 & Release V1.0.0.16 & Torby Tong \\ \hline
+		2014/05/21 & Release V1.0.0.20 & Torby Tong \\ \hline
+		2014/06/10 & Release V1.0.0.26 & Torby Tong \\ \hline
+		2014/06/11 & Release V1.0.0.28 & Torby Tong \\ \hline
+		2014/06/18 & Release V1.0.0.30 & Torby Tong \\ \hline
+		2014/06/26 & Release V1.0.0.34 & Torby Tong \\ \hline
+		2014/07/01 & Release V1.0.0.36 & Torby Tong \\ \hline
+		2014/07/03 & Release V1.0.0.38 & Torby Tong \\ \hline
+		2014/07/09 & Release V1.0.0.42 & Torby Tong \\ \hline
+		2014/07/21 & Release V1.0.0.44 & Torby Tong \\ \hline
+		2014/07/28 & Release V1.0.0.46 & Torby Tong \\ \hline
+		2014/08/08 & Release V1.0.0.48 & Torby Tong \\ \hline
+		2014/08/18 & Release V1.0.0.50 & Torby Tong \\ \hline
+   \end{tabular}
+			
+\section{Firmware V1.0.0.2}
+
+\tlabel{sec:1-0-1}
+\subsection{Repository}
+\begin{itemize}
+\item GIT Repository dniserver//scm/dnigit/openwrt-buildroot.git/torby.tong/r7500-buildroot.git
+\begin{enumerate}
+    \item Branch: \texttt{R7500-qt-br-IPQ806X-QTP840}
+                \item Tag: \texttt{R7500-FW-V1.0.0.2}
+    \end{enumerate}
+    \end{itemize}
+
+    \subsection{Fixed Bugs}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{Implement the features defined in PRD V0.10.}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Steps to burn boot loader and firmware}
+    \begin{itemize}
+    \item As below:
+            \begin{enumerate}
+	    	\item \texttt{Please burn u-boot-hw29764743p0p128p256p3x3p4x4-dni1-V0.2.bin}
+		\item \texttt{Set up a tftp server on your PC, its ip address is 192.168.1.10.}
+		\item \texttt{Entering into boot loader}
+		\item \texttt{(IPQ) \# setenv serverip 192.168.1.10}
+		\item \texttt{(IPQ) \# setenv ipaddr 192.168.1.1}
+		\item \texttt{(IPQ) \# tftpboot 0x41000000 u-boot-hw29764743p0p128p256p3x3p4x4-dni1-V0.2.bin}
+		\item \texttt{(IPQ) \# crc32 0x41000000 \$\{filesize\}}
+		\item \texttt{(IPQ) \# ipq\_nand sbl \&\& nand erase 0x00c80000 0x00680000 \&\& imgaddr=0x41000000 \&\& source \$imgaddr:script}
+		\item \texttt{(IPQ) \# reset}
+		\item \texttt{Entering into boot loader again}
+		\item \texttt{(IPQ) \# bootm}
+		\item \texttt{Then the device should be in tftp recovery mode. Please run the command "tftp -i 192.168.1.1 put R7500-V1.0.0.2.img" on MS-DOS of your PC.}
+            \end{enumerate}
+    \end{itemize}
+
+\subsection{Known issues}
+            \begin{enumerate}
+	    	\item \texttt{The new feature iTunes Server still not support.}
+		\item \texttt{The new feature Facebook wifi still not support.}
+		\item \texttt{The new feature StreamBoost still not support.}
+		\item \texttt{IPTV feature still not support for it needs to adjust the ethernet driver.}
+		\item \texttt{IGMP feature can't work, we also tried on demo board with qsdk image, QCA's igmpproxy also can't work, we have added a case 01462930 for QCA.}
+		\item \texttt{Time machine: We can backup with NTFS and EXT2/3/4 file system, but currently we still not support hfs+ file system.}
+		\item \texttt{Wireless statistic still not support.}
+		\item \texttt{Wireless log still not support.}
+		\item \texttt{5G WDS still not support.}
+		\item \texttt{5G WPS process state cannot show on WPS GUI page.}
+		\item \texttt{5G WPS generate random ssid and password still not support.}
+		\item \texttt{5G cannot switch countrycode.}
+            \end{enumerate}
+
+\section{Firmware V1.0.0.4}
+
+\tlabel{sec:1-0-1}
+\subsection{Repository}
+\begin{itemize}
+	\item GIT Repository dniserver//scm/dnigit/openwrt-buildroot.git/torby.tong/r7500-buildroot.git
+	\begin{enumerate}
+    		\item Branch: \texttt{R7500-qt-br-IPQ806X-QTP840}
+                \item Tag: \texttt{R7500-FW-V1.0.0.4}
+    	\end{enumerate}
+\end{itemize}
+
+    \subsection{Fixed Bugs}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{SQA1001,The CD-Less always shows success even if the WAN port cable is unplugged.}
+		\item \texttt{Bug46001/SQA1002,The DUT will crash after user enables IGMP proxy function.}
+		\item \texttt{Bug46177/SQA1003,The DUT couldn't access Internet and download files from FTP server via PPPoE mode.}
+		\item \texttt{SQA1004,The DUT couldn't access Internet and download files from FTP server via PPTP mode.}
+		\item \texttt{SQA1005,The DUT couldn't access Internet and download files from FTP server via L2TP mode. And it will disconnect automatically after few minutes later.}
+		\item \texttt{SQA1006,The DUT will block all Internet access after user enables the block sites function.}
+		\item \texttt{SQA1007,The log couldn't record the log when user attempted access to blocked site and services.}
+		\item \texttt{SQA1009,The Traffic Meter function doesn't work. It always displays 0.}
+		\item \texttt{SQA1010,The E-mail function doesn't work.}
+		\item \texttt{SQA1011,The respond to ping on Internet port function will be grayed out after user change the WAN port to Static IP mode.}
+		\item \texttt{SQA1012,Switch the WAN port mode from PPPoE, PPTP or L2TP to DHCP or Static IP mode. The VPN service will be often enabled automatically and sometimes the respond to ping on Internet port function will be enabled too.}
+		\item \texttt{SQA1019,The DUT can't authenticate well with oray service, even if the user name and password are correct. (www.oray.cn)}
+		\item \texttt{SQA1020,The logs couldn't record the known DoS attacks and port scans.}
+		\item \texttt{SQA1030,The VPN service page is always in English whatever user changes to other language.}
+		\item \texttt{SQA1031,The DUT doesn't support the following service providers: www.3322.org.}
+		\item \texttt{SQA1034,DUT doesn't support Streamboost feature.}
+		\item \texttt{SQA1035,GUI will direct to incorrect link, when user click the Step1 or Step7's URL link.}
+		\item \texttt{SQA1036,The Service type default is TCP on the VPN Service page.}
+		\item \texttt{SQA2001,Sometimes, the GUI can't display the correct information of channel on 5G band.}
+		\item \texttt{SQA2002,The system can't upgrade firmware with NMRP when WAN port is connected, please refer to the screenshot for more details.}
+		\item \texttt{SQA2006,The wireless mode didn't support up to 802.11ac 4x4 speed(1750M) option on the 5G band, please refer to the screenshot for more details.}
+		\item \texttt{SQA2007,The wireless mode didn't support up to 802.11n 3x3 256QAM(600M) option on the 2.4G band, please refer to the screenshot for more details.}
+		\item \texttt{SQA2012,wireless security mode has WEP-64/128 on 5G.}
+		\item \texttt{SQA2027,The web GUI can't record log of Turn off wireless signal by schedule properly.}
+		\item \texttt{SQA2028,The DUT can't update language tables with NMRP.}
+		\item \texttt{SQA2029,Traffic Control - Turn the Internet LED to flashing green/amber didn't work when configured monthly limit is reached.}
+		\item \texttt{SQA2034,The VPN service option didn't be grey out on AP mode, please refer to the screenshot for more details.}
+		\item \texttt{SQA2038,Sometimes, PC cannot get IP address from DUT when we reboot DUT or reset to factory default.}
+		\item \texttt{SQA2039,GUI displays "Not Share" on Share Name when we plug USB, eSATA into DUT.}
+		\item \texttt{SQA2040,We cannot Upload file to USB/eSATA and access Samba/FTP, when USB or eSATA is plugged into DUT, and then reset DUT to factory default.}
+		\item \texttt{SQA2041,There is no Share Folder that are careated via DUT GUI on Samba and FTP.}
+		\item \texttt{SQA2042,GUI displays abnormally on ReadySHARE page.}
+		\item \texttt{SQA2043,The "Delete" is grayed out on Advanced Settings page after we pluged eSATA into DUT.}
+		\item \texttt{SQA2044,GUI displays "no shares available!" when we click HTTP ,HTTP(via internet), FTP, FTP(via internet) Link}
+		\item \texttt{SQA2045,We cannot create Network Folder when we plug eSATA to DUT.}
+		\item \texttt{SQA2046,We cannot Upload file to USB, eSATA and access Samba, FTP when we enabled "Allow only approved devices" and add USB Devices to Approved USB Devices.}
+		\item \texttt{SQA2048,We cannot edit Folder when we plug eSATA to DUT.}
+		\item \texttt{SQA2050,DUT doesn't support iTunes Server feature.}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Steps to burn boot loader and firmware}
+    \begin{itemize}
+    \item As below:
+            \begin{enumerate}
+	    	\item \texttt{Please burn u-boot-hw29764743p0p128p256p3x3p4x4-dni1-V0.5-clean-ubifs.bin}
+		\item \texttt{Set up a tftp server on your PC, its ip address is 192.168.1.10.}
+		\item \texttt{Entering into boot loader}
+		\item \texttt{(IPQ) \# setenv serverip 192.168.1.10}
+		\item \texttt{(IPQ) \# setenv ipaddr 192.168.1.1}
+		\item \texttt{(IPQ) \# tftpboot 0x41000000 u-boot-hw29764743p0p128p256p3x3p4x4-dni1-V0.5-clean-ubifs.bin}
+		\item \texttt{(IPQ) \# crc32 0x41000000 \$\{filesize\}}
+		\item \texttt{(IPQ) \# ipq\_nand sbl \&\& nand erase 0x00c80000 0x00680000 \&\& imgaddr=0x41000000 \&\& source \$imgaddr:script}
+		\item \texttt{(IPQ) \# reset}
+		\item \texttt{Entering into boot loader again}
+		\item \texttt{(IPQ) \# bootm}
+		\item \texttt{Then the device should be in tftp recovery mode. Please run the command "tftp -i 192.168.1.1 put R7500-V1.0.0.4.img" on MS-DOS of your PC.}
+            \end{enumerate}
+    \end{itemize}
+
+\subsection{Known issues}
+            \begin{enumerate}
+		\item \texttt{The new feature Facebook wifi still not support.}
+		\item \texttt{IPTV feature still not support for it needs to adjust the ethernet driver.}
+		\item \texttt{Wireless statistic still not support.}
+		\item \texttt{Wireless log still not support.}
+		\item \texttt{5G WDS still not support.}
+		\item \texttt{5G WPS process state cannot show on WPS GUI page.}
+		\item \texttt{5G WPS generate random ssid and password still not support.}
+		\item \texttt{5G cannot switch countrycode.}
+            \end{enumerate}
+
+\section{Firmware V1.0.0.6}
+
+\tlabel{sec:1-0-1}
+\subsection{Repository}
+\begin{itemize}
+	\item GIT Repository dniserver//scm/dnigit/openwrt-buildroot.git/torby.tong/r7500-buildroot.git
+	\begin{enumerate}
+    		\item Branch: \texttt{R7500-qt-br-IPQ806X-QTP840}
+                \item Tag: \texttt{R7500-FW-V1.0.0.6}
+	\end{enumerate}
+\end{itemize}
+
+    \subsection{Fixed Bugs}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{SQA1015,The DUT will crash when it receives or bypass IPSec packets.}
+		\item \texttt{SQA1016,The GUI will show abnormal device name on the Access Control page.}
+		\item \texttt{SQA1017,The client often can't get an IP address form DHCP server of DUT.}
+		\item \texttt{SQA1018,The DUT doesn't hijack that HTTP request and show This device is blocked by Access Control in the router.}
+		\item \texttt{SQA1019,The DUT can't authenticate well with oray service.}
+		\item \texttt{SQA1027,The DNS doesn't Hijack for IPv6.}
+		\item \texttt{SQA1029,The password recovery doesn't work properly.}
+		\item \texttt{SQA1033,There is no WMM info in packets of 5G beacon.}
+		\item \texttt{SQA2004,The web GUI can't record log of wireless access events properly.}
+		\item \texttt{SQA2005,The WPS PBC process states information on 5G band can't be displayed correctly on web GUI. }
+		\item \texttt{SQA2009,The WiFi certificate new rule mentions that the WPA-TKIP shall be removed.}
+		\item \texttt{SQA2010,The WiFi certificate new rule mentions that the WPA-PSK-TKIP shall be removed.}
+		\item \texttt{SQA2012,wireless clients can't connect to the 5G wireless network.}
+		\item \texttt{SQA2019,There's no PBC enrollee overlap messages on  5G WPS PBC processes.}
+		\item \texttt{SQA2020,The DUT can't pass the authentication when set secutity as WPA/WPA2 Enterprise on 5G band (WPA2-AES or WPA-TKIP+WPA2-AES ).}
+		\item \texttt{SQA2021,Sometimes, the web GUI takes around 15~20 seconds to open the ADVANCED > Wireless Setup page.}
+		\item \texttt{SQA2026,The WPS LED for 5G didn't blinking when WPS PBC processes are launching by pressing the WPS hardware button.}
+		\item \texttt{SQA2027,The web GUI can't record log of Turn off wireless signal by schedule properly.}
+		\item \texttt{SQA2028,The DUT can't update language tables with NMRP.}
+		\item \texttt{SQA2030,wireless clients can't associate with 5G Guest Network successfully.}
+		\item \texttt{SQA2031,The Device Name of Address Reservation can't be displayed correctly when select device from table}
+		\item \texttt{SQA2032,Wired External Registrar can't work correctly with WPS PIN mehtod.(Vista and Win7)}
+		\item \texttt{SQA2033,Wireless External Registrar can't work correctly with WPS PIN mehtod.(Vista and Win7)}
+		\item \texttt{SQA2036,According to Netgear new requirements, Advanced -> Advanced Setup -> Wireless Repeating should be remove}
+		\item \texttt{SQA2049,DUT doesn't support Facebook Wi-Fi feature.}
+		\item \texttt{SQA2051,Set SSID as ASCILL on web GUI for both 2.4G and 5G, the DUT can't broadcast beacon with correct ASCII SSID.}
+		\item \texttt{SQA2052,Set wireless security key as "1234567890abcdef1234567890abcd \!\"'()*+,-./:;<=>?@~" on web GUI for both 2.4G and 5G, the DUT didn't broadcast beacons with correct SSID and wireless key}
+		\item \texttt{SQA1041,The status shows a wrong information, even if the IP is updated on the no-ip server.}
+		\item \texttt{SQA1044,Enable E-mail function and checked the "Send Alert Immediately." Once the log sends out by e-mail successfully, then it did not deleted from the logs.}
+		\item \texttt{SQA1047,The DUT doesn't display the new clients correctly which are new and blocked on the access control table.}
+		\item \texttt{SQA1048,While enabling SMTP authentication. DUT will send email client's authentication profile to SMTP server before sending it.}
+		\item \texttt{SQA1049,After user clicked the Speedtest button and Uplink/Downlink Bandwidth are detected. The detection result displayed "Your uplink Internet bandwidth detected is xxx 14.03Mbps and 40.60Mbps."}
+		\item \texttt{SQA1050,Web GUI access is very slow, ADVANCED Home page especially.}
+		\item \texttt{SQA1051,When user clicks For Windows or For non-Windows button, system only compress one file (client.ovpn) as one config file (*.zip). It causes us not able to establish VPN tunnel.}
+		\item \texttt{SQA1052,When the VPN Service is enabled and DDNS host name is changed, GUI doesn't pop out warning message in an alert window.}
+		\item \texttt{SQA1053,When VPN Service is enabled and DDNS is not enabled, user changes the Internet connection type from static ip to PPPoE/PPTP/L2TP mode, GUI doesn't pop out warning message in an alert window.}
+		\item \texttt{SQA1054,When 5G wireless client connected to DUT, the Device Type column displayed as "Wired" on Attched Devices page.}
+		\item \texttt{SQA1055,The Device Name column displayed as garbled on Attched Devices page.}
+		\item \texttt{SQA2061,When setup 2.4G mode on Up to 600 Mbps, the Mode of Wireless Settings (2.4GHz) displays Up to 300 Mbps. Please refer to the screenshot for more details.}
+		\item \texttt{SQA2062,When setup 5G mode on Up to 1733 Mbps, the Mode of Wireless Settings (5.0GHz) displays Up to 450 Mbps. Please refer to the screenshot for more details.}
+		\item \texttt{SQA2064,The GUI can set 5G wireless mode on Up to 1733 Mbps(802.11ac 4x4), but only links up on 450 Mbps(802.11n 3x3) when connect the DUT with R6300(3*3 802.11ac Bridge moe)}
+		\item \texttt{SQA2065,The RTS\_statistic.htm page didn't have 802.11ac information. The statistic table only has WLAN b/g/n and WLAN a/n.}
+		\item \texttt{SQA2067,The Device Name can't be displayed correctly when connect with wired windows PC. }
+		\item \texttt{SQA2071,5G Guest Network didn't broadcast beacon even ticked the Enable Guest Network on 5G.}
+		\item \texttt{SQA2073,iPhone and iPad can associate wihout wireless key when set 5G band with WPA2-PSK security.}
+		\item \texttt{SQA2078,Auto FW Upgrade Test failed. Please refer to the attached files for more details.}
+		\item \texttt{SQA2082,The WEP key option should be removed on 5G band. Please refer to the screenshot for more details.}
+		\item \texttt{SQA2086,According Specification v11 page 147, on the AP mode, the QoS function should be gray out by default. Please refer to the attached files for more details.}
+		\item \texttt{SQA2100,The other USB device that are not added to "Approved USB Devices" is still displayed on Available Network Folders.}
+		\item \texttt{SQA2101,GUI does not pop up message to ask user "Do you want to remove all devices? Yes No" after we click "Safely Remove USB Device" button.}
+		\item \texttt{SQA2102,GUI does not support iTune App button.}
+		\item \texttt{SQA2103,"Enable iTune Server" should be disabled by default.}
+		\item \texttt{SQA2104,The "Enable iTune Server" cannot be disabled.}
+		\item \texttt{SQA1060,The IGMP function doesn't work.}
+		\item \texttt{SQA1061,After DUT detects LAN/WAN conflict, DUT doesn't send arp ping to all subnet}
+		\item \texttt{TD6/bug46529,Usability-The R7500 Web server response very slowly, it is difficult to use our automation to run our test cases.}
+		\item \texttt{TD8/bug46484,Readyshare Vault cannot detect the usb hardware whcih connect to router.}
+		\item \texttt{TD9/bug46574,PNPX Cannot works in WIN8 x64 platform.}
+		\item \texttt{TD10/bug46572,Wireless 5G wpa/wpa2 enterprise cannot work.}
+		\item \texttt{TD11/bug46569,PNPX device picture display as R7000.}
+		\item \texttt{TD12/bug46502,Internet upgrade:  cannot check new firmware by click "check" in Firmware Upgrade page.}
+		\item \texttt{TD13/bug46492,Router status page show wrong  wireless mode information.}
+		\item \texttt{TD15/bug46584,The primary function of remote app. pairing does not work properly. It makes all iOS smartphone cannot use the iTune server.}
+		\item \texttt{TD20/bug46557,GUEST client can edit the router settings.}
+		\item \texttt{TD23/bug46628,The feature of Bonjour Printing does not work properly with MAC OSX 10.9/10.8/10.7.}
+		\item \texttt{TD25/bug46719,5G guest network cannot be find.}
+		\item \texttt{TD26/bug46720,The iTune server cannot playback the music file after indexing 100K media files.}
+		\item \texttt{TD27/bug46749,R7500 don't support SSID with space key input and don't support 32 char SSID with specail char.}
+		\item \texttt{TD28/bug46758,R7500 don't support passphrase with space  when set WPA2-PSK passphrase with space in between, the client can connect R7500 with none.}
+		\item \texttt{TD29/bug46835,R7500 don't support passphrase with special char when set WPA2-PSK passphrase with special char, the client can't connect R7500}
+		\item \texttt{TD30/bug46838,Guest Network, the IPv6 Guest wireless client can login GUI by domain(http://www.routerlogin.net) when enable IPv6.}
+		\item \texttt{TD31/bug46845,5G WPS PIN fail}
+		\item \texttt{TD32/bug46772,IPv6-WAN-6to4 tunnel,IPv6 client(disable IPv4) doesn't ping ipv6 website(ipv6.google.com) successfully when WAN is 6to4 tunnel.}
+		\item \texttt{TD33/bug46851,iTune server will incorrectly place the music files in the Movie playlist. It cannot playback the music files in the Movie playlist  and cause the iTune utility hang.}
+		\item \texttt{TD34/bug46854,The iTune server cannot playback the indexed video files and it cause the iTune utility hang.}
+		\item \texttt{TD35/bug46855,Turn off wireless by hardware button, reboot the dut, wilreless will be trun on.}
+		\item \texttt{TD36/bug46773,Setup Wizard -- Previously Set PPPoE and R7500 can't detect to DHCP server.}
+		\item \texttt{TD37/bug46815,Log-- There are no NTP init format log when reboot the DUT.}
+		\item \texttt{TD38/bug46860,USB issue- If the hard disk is divided into three part, it only show one part use http.}
+		\item \texttt{TD39/bug46862,USB issue-- if create or edit a new network folder, it can't access by smba and ftp.}
+		\item \texttt{TD40/bug46863,usb storage still can be access after click "Safety Remove USB Device"}
+		\item \texttt{TD42/bug46867,The iTune server will be disappeared after changing the media server name.}
+		\item \texttt{TD43/bug46871,The iTune server will incorrectly place the video files in the music playlist. It also cannot playback the video files in the music playlist.}
+		\item \texttt{TD44/bug46873,The iTune server is enabled by default. The default value of iTune server in R7000 is disabled.}
+		\item \texttt{TD47/bug46787,,After enable Parental Controls, client can not open any web site.}
+		\item \texttt{TD48/bug46882,Wrong bandwidth value show.}
+		\item \texttt{TD50/bug46777,openVPN client  can't connect DUT using configure file which download configure file from DUT.}
+		\item \texttt{TD51/bug46884,The configuration files for VPN client downloaded from GUI  have only client.ovpn(windows) or client.conf(non-windows) . It should include other 3 configure files(ca.crt,client.crt,client.key).}
+		\item \texttt{TD53/bug46888,The name of the downloaded configuration files(openvpn\_windows.zip and openvpn\_nonwindows.zip) for VPN client  should be follow R7000(windows.zip and nonwindows.zip) .}
+		\item \texttt{TD54/bug46896,The warning message always popup when click "apply" button or click "For windows", "For Non windows" button for download configure file in GUI.}
+		\item \texttt{TD55/bug46899,The field "remote" always is "0.0.0.0" in the downloaded configure file for openVPN cleint from GUI after configure DDNS.}
+		\item \texttt{TD56/bug46897,VPN interface name isn't correct. It should be "NETGEAR-VPN" and add guiding  the picture in GUI.}
+		\item \texttt{TD57/bug46900,Please folllow R7000 and put Clients VPN access mode in one row( All sites on the Internet Home Network , Home Network only, Auto)}
+		\item \texttt{TD59/bug46247,,Firewall ALG, DUT crash when  VPN client in DUT's LAN side can access the LAN of FVS114.}
+		\item \texttt{TD60/bug46902,bandwidth detect information not correct.}
+		\item \texttt{TD62/bug46905,internet QoS: device name  sometimes not correct.}
+		\item \texttt{TD64/bug46908,internet QoS: priority error.}
+		\item \texttt{TD65/bug46909,Internet Qos: device type is wrong.}
+		\item \texttt{TD67/bug46911,internet Qos: auto refresh not a request in spec.}
+		\item \texttt{TD68/bug46914,Internet QoS: bandwidth detect value same to the manual set value.}
+		\item \texttt{TD69/bug46824,SOAP API: new update api cannot work in v1.0.0.4.}
+		\item \texttt{TD70/bug46915,no GPL link.}
+		\item \texttt{TD71/bug46916,multilanguage GUI issue}
+		\item \texttt{TD72/bug46917,Internet Qos: uplink and downlink bandwidth value can not set 0.10 and 1000.}
+		\item \texttt{TD74/bug46919,internet QoS: disable the internet qos, but can show the priority and bandwidth colum.}
+		\item \texttt{TD75/bug46921,internet QoS: disable internet qos, but still can click a device and go into the device detail infor page}
+		\item \texttt{TD77/bug46924,WAN detection,Router Genie does not prompt user with the AP/Router setup option page on ATT U-Verse DHCP,Comcast business class DHCP and TNCP DHCP}
+		\item \texttt{TD78/bug46925,WAN detection - f/w Setup Wizard always fails tot detect DHCP internet connection. This issue exists all the DHCP internet connections}
+		\item \texttt{TD79/bug46935,The QoS throughput/bandwitdh is not accurate.}
+		\item \texttt{TD83/bug46939,Detect LG Google Nexus 4 and Dell Venus 8 Pro as PC device}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Steps to burn boot loader and firmware}
+    \begin{itemize}
+    \item As below:
+            \begin{enumerate}
+	    	\item \texttt{Please burn u-boot-hw29764743p0p128p256p3x3p4x4-dni1-V0.9.bin}
+		\item \texttt{Set up a tftp server on your PC, its ip address is 192.168.1.10.}
+		\item \texttt{Entering into boot loader}
+		\item \texttt{(IPQ) \# setenv serverip 192.168.1.10}
+		\item \texttt{(IPQ) \# setenv ipaddr 192.168.1.1}
+		\item \texttt{(IPQ) \# tftpboot 0x41000000 u-boot-hw29764743p0p128p256p3x3p4x4-dni1-V0.9.bin}
+		\item \texttt{(IPQ) \# crc32 0x41000000 \$\{filesize\}}
+		\item \texttt{(IPQ) \# ipq\_nand sbl \&\& nand erase 0x00c80000 0x00680000 \&\& imgaddr=0x41000000 \&\& source \$imgaddr:script}
+		\item \texttt{(IPQ) \# reset}
+		\item \texttt{Entering into boot loader again}
+		\item \texttt{(IPQ) \# bootm}
+		\item \texttt{Then the device should be in tftp recovery mode. Please run the command "tftp -i 192.168.1.1 put R7500-V1.0.0.6.img" on MS-DOS of your PC.}
+            \end{enumerate}
+    \end{itemize}
+
+\subsection{Known issues}
+            \begin{enumerate}
+		\item \texttt{The Facebook wifi still not support for 5G guest.}
+		\item \texttt{IPTV feature still not support for it needs to adjust the ethernet driver.}
+		\item \texttt{Wireless log still not support.}
+            \end{enumerate}
+
+\section{Firmware V1.0.0.8}
+
+\tlabel{sec:1-0-1}
+\subsection{Repository}
+\begin{itemize}
+	\item GIT Repository dniserver//scm/dnigit/openwrt-buildroot.git/torby.tong/r7500-buildroot.git
+	\begin{enumerate}
+		\item Branch: \texttt{R7500-qt-br-IPQ806X-QTP840}
+                \item Tag: \texttt{R7500-FW-V1.0.0.8}
+	\end{enumerate}
+\end{itemize}
+
+    \subsection{Fixed Bugs}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{TD63,Internet Qos: Attach device empty,no device show.}
+		\item \texttt{TD66,Internet Qos: disconnect the client , but still can display the device.}
+		\item \texttt{TD80,Internet QoS: sometimes detect Hulu plus as RTMPE app.}
+		\item \texttt{TD81,Internet QoS: Cannot detect CinemaNow.}
+		\item \texttt{TD82,Internet QoS: HTC One Youtube cannot be detect.}
+		\item \texttt{TD84,Internet QoS: Detect NTV300 Multimedia Linux base device as Andriod device.}
+		\item \texttt{TD85,Internet QoS: Video streaming priority rule is not working when BT download in background.}
+		\item \texttt{Import QTN V36.5.0.11 for 5G.}
+		\item \texttt{Add QCA patch for fixing 10.2.138 crash issue.}
+		\item \texttt{Add 5G led control function.}
+		\item \texttt{SQA2083,Can't change language by GUI when not in dnshijack mode.}
+		\item \texttt{SQA2106,The Power LED is OFF when the DUT is on the recovery mode, please refer to the screenshot for more details.}
+		\item \texttt{SQA2075,The 5G LED is ON when truning OFF wireless radio by pressing the hardware button.}
+		\item \texttt{SQA2022,5G LED didn't blinking when there's traffic on 5G session.}
+		\item \texttt{SQA2023,5G LED didn't turn OFF when disable 5G Wi-Fi radio.}
+		\item \texttt{SQA2078,Auto FW Upgrade Test failed when DUT not in dnishjack mode.}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Steps to burn boot loader and firmware}
+    \begin{itemize}
+    \item As below:
+            \begin{enumerate}
+	    	\item \texttt{Please burn different u-boot for different boards, as we have alpha-2(256MB flash + 512MB SDRAM, use dni1-V0.9.2) and alpha-3 boards(128MB flash + 256MB SDRAM use dni1-V1.2), and change the u-boot name to u-boot.bin}
+		\item \texttt{Set up a tftp server on your PC, its ip address is 192.168.1.10.}
+		\item \texttt{Entering into boot loader}
+		\item \texttt{(IPQ) \# setenv serverip 192.168.1.10}
+		\item \texttt{(IPQ) \# setenv ipaddr 192.168.1.1}
+		\item \texttt{(IPQ) \# tftpboot 0x41000000 u-boot.bin}
+		\item \texttt{(IPQ) \# crc32 0x41000000 \$\{filesize\}}
+		\item \texttt{(IPQ) \# ipq\_nand sbl \&\& nand erase 0x00c80000 0x00680000 \&\& imgaddr=0x41000000 \&\& source \$imgaddr:script}
+		\item \texttt{(IPQ) \# reset}
+		\item \texttt{Entering into boot loader again}
+		\item \texttt{(IPQ) \# bootm}
+		\item \texttt{Then the device should be in tftp recovery mode. Please run the command "tftp -i 192.168.1.1 put R7500-V1.0.0.8.img" on MS-DOS of your PC.}
+            \end{enumerate}
+    \end{itemize}
+
+\subsection{Known issues}
+            \begin{enumerate}
+		\item \texttt{The Facebook wifi still not support for 5G guest.}
+		\item \texttt{IPTV feature still not support for it needs to adjust the ethernet driver.}
+		\item \texttt{Wireless log for 5G still not support.}
+            \end{enumerate}
+\section{Firmware V1.0.0.16}
+
+\tlabel{sec:1-0-1}
+\subsection{Repository}
+\begin{itemize}
+	\item GIT Repository dniserver//scm/dnigit/openwrt-buildroot.git/torby.tong/r7500-buildroot.git
+	\begin{enumerate}
+		\item Branch: \texttt{R7500-qt-br-IPQ806X-QTP840}
+                \item Tag: \texttt{R7500-FW-V1.0.0.16}
+	\end{enumerate}
+\end{itemize}
+
+    \subsection{Fixed Bugs}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{TD15,The primary function of remote app. pairing does not work properly. It makes all iOS smartphone cannot use the iTune server.}
+		\item \texttt{TD17,The DLNA can only index least number of media files (22 files) after the indexing overnight test (16hrs) with the large media HDD (80000 media files).}
+		\item \texttt{TD18,The Android samba client (AndSMB V2.0) cannot access the Readyshare Storage.}
+		\item \texttt{TD20,GUEST client can edit the router settings,2.4G fixed.}
+		\item \texttt{TD24,The DUT will crash when the iTune and DLNA indexing the testing media HDD.}
+		\item \texttt{TD26,The iTune server and DUT will crash when indexing the 100K media files HDD.}
+		\item \texttt{TD30,Guest Network,the IPv6 Guest wireless client can login GUI by domain(http://www.routerlogin.net) when enable IPv6,2.4G fixed.}
+		\item \texttt{TD31,5G WPS PIN fail.}
+		\item \texttt{TD39,USB issue-- if create or edit a new network folder, it can't access by smba and ftp.}
+		\item \texttt{TD40,usb storage still can be access after click "Safety Remove USB Device".}
+		\item \texttt{TD49,wireless IOT- the downlink for centrino 6300 and wna1000M is very low on 40M mode.}
+		\item \texttt{TD54,openVPN,The warning message always popup when click "apply" button or click "For windows", "For Non windows" button for download configure file in GUI.}
+		\item \texttt{TD69,SOAP API: new update api cannot work in v1.0.0.4.}
+		\item \texttt{TD73,AP mode , 2.4G client cannot connect to R7500 by WPS.}
+		\item \texttt{TD77,WAN detection - Router Genie does not prompt user with the AP/Router setup option page on ATT U-Verse DHCP, Comcast business class DHCP and TNCP DHCP}
+		\item \texttt{TD87,R7500 always hang or kernel pannic.}
+		\item \texttt{TD88,LED control: wireless LED still blinking after select disable blinking internet LED}
+		\item \texttt{TD89,LED control: select "turn off LEDS except Power LED" , wireless LED still turn on and blinking}
+		\item \texttt{TD91,Internet QoS - Device Priority is not functioning.}
+		\item \texttt{TD93,5G status always display "Link Down".}
+		\item \texttt{TD94,SOAP API bugs.}
+		\item \texttt{TD96,Quality of Service not functioning when first time enable the function}
+		\item \texttt{TD98,change "wireless" page Region,it don't take effect.}
+		\item \texttt{TD99,when block a pc,pc access website ,can't pop up the block window.}
+		\item \texttt{TD100,hen wireless client disconnect to DUT,access control offline device connection type display "Wired"}
+		\item \texttt{TD102,WPS disable PIN function fail}
+		\item \texttt{TD103,WPS not have warning message}
+		\item \texttt{TD105,WPS auto lock-down protection not work,2.4G fixed.}
+		\item \texttt{TD106,Show statistics lan port secuence not correct.}
+		\item \texttt{TD107,NA region default channel not 153.}
+		\item \texttt{TD108,5G channel set fail new board.}
+		\item \texttt{TD110,disable "NO-IP" DDNS ,then enable it again,prompt "No update is needed"}
+		\item \texttt{TD112,IPv6 client(disable IPv4) get ipv6 address , can't ping Ipv6 DNS (daisy.ipv6.com) in WAN side successfully when IPv4 WAN is PPPoE(make sure to access internet) and IPv6 WAN is dhcp.}
+		\item \texttt{TD115,DUT fail to get IPv6 IP address from Comcast cable internet when IPv6 internet detection type is set to "Auto Detect"}
+		\item \texttt{TD117,The DLNA server will crash after indexed with the user-file media HDD.}
+		\item \texttt{TD118,The function of blocked site cannot block keyword in upper case.}
+		\item \texttt{TD120,PSP cannot connect to R7500}
+		\item \texttt{TD130,Bridge/AP mode: half of the ping result is time out}
+		\item \texttt{TD131,Bridege: bridge cnanot connect to router with 2.4G}
+		\item \texttt{TD132,New Test Case,The iTune home-sharing and Airplay cannot function properly when it's connected behind the client bridge via ethernet.}
+		\item \texttt{TD133,QoS: no confirm window to warning use to apply the bandwidth}
+		\item \texttt{TD134,Internet Qos,When click the Speed test button , found the console of R7500 output of log of log, and cannot stop to print the log.}
+		\item \texttt{TD135,DUT should reboot,otherwise win7 pc can't discover DUT by pnpx}
+		\item \texttt{TD136,Network Map display has some problem.}
+		\item \texttt{TD137,NMRP server can't find DUT after DUT reboot.}
+		\item \texttt{TD139,Internet QoS: device name error when edit the device info.}
+		\item \texttt{TD141,Block service: Ip arrange caused the http cannot access}
+		\item \texttt{TD143,Access control, There is not the message This device is blocked by Access Control in the router, in browser after blocked device access web site using broswer.}
+		\item \texttt{TD144, VPN connectio-Auto is failed using R7500 sample(enable openVPN server) in USA(William setup). OpenVPN client can't connect DUT(OpenVPN server) when VPN connectio-Auto .}
+		\item \texttt{TD146,5G Wireless channe should not have DFS channel.}
+		\item \texttt{SQA2003,The RST\_statistic.htm page can't display the statistics information and status information correctly.}
+		\item \texttt{SQA2022,5G LED didn't blinking when there's traffic on 5G session.}
+		\item \texttt{SQA2023,5G LED didn't turn OFF when disable 5G Wi-Fi radio .}
+		\item \texttt{SQA1073,Click send log button on the Logs page will clean the log entries.}
+		\item \texttt{SQA1074,There is no log option of VPN Service on the Logs page.}
+		\item \texttt{SQA1079,The DUT often cannot show AP mode detected page when the CD-less process is going.}
+		\item \texttt{SQA1082,The DUT will pass the register user page during the CD-Less installation process. }
+		\item \texttt{SQA1083,The VPN client can access Internet directly when VPN service option "Clients will use this VPN connection to access" is configured to "Auto" and the WAN IP address is configured to network segment of NA or Europe.}
+		\item \texttt{SQA1084,VPN Service Enable Issue.}
+		\item \texttt{SQA1085,The QoS priority cannot be configured successfully on the Attached Devices page when QoS is enabled.}
+		\item \texttt{SQA2032,Wired External Registrar can't work correctly with WPS PIN mehtod.(Vista and Win7)}
+		\item \texttt{SQA2033,Wireless External Registrar can't work correctly with WPS PIN mehtod.(Vista and Win7)}
+		\item \texttt{SQA1086,Sometimes, DUT cannot detect Device Name and displays \&It;Unknow\&gt; on the Attached Devices page when QoS is enabled.}
+		\item \texttt{SQA2108,The information of associated devices connected via WPS can't be displayed correctly. Please refer to the screenshots for more details.}
+		\item \texttt{SQA2109,On Guest Network, the WPA/WPA2 Enterprise security option didn't be removed. Please refer to the screenshot and attached file for more details.}
+		\item \texttt{SQA2110,On Guest Network, the WiFi certificate new rule mentions that the WPA TKIP shall be removed, please refer to the attached files for more details.}
+		\item \texttt{SQA2111,The WiFi certificate new rule mentions that the WPA-PSK TKIP shall be removed, please refer to the attached files for more details.}
+		\item \texttt{SQA2117,Under AP mode, the WLAN a/n/ac field can't display 5G connections status and statistics correctly.}
+		\item \texttt{SQA2119,When 2.4G raido is OFF and 5G radio is ON, the WiFi ON/OFF LED and WPS LED are OFF.}
+		\item \texttt{SQA2121,The DUT will not reset to factory default when we finished NMRP upgrade.}
+		\item \texttt{SQA2122,It's fail to do NMRP upgrade when DUT connects to Gigabit NIC/Switch.}
+		\item \texttt{SQA2124,Take 2pcs R7500, R7500\#1 as AP mode and R7500\#2 as Bridge mode, run Chariot performance test on Up to 1733 mode.}
+		\item \texttt{SQA2125,On 5G band, when not tick Keep Existing Wireless Settings, can't generate the SSID and Network key automatically with WPS PBC method.}
+		\item \texttt{SQA2130,Readyshare Print is fail.}
+		\item \texttt{SQA2133,Remote APP does not work.}
+		\item \texttt{SQA2135,The wireless clients which connect to the guest network still can ping to the DUT successful, even the option Allow Guest to Access MY Local Network is unchecked, 2.4G fixed.}
+		\item \texttt{SQA2138,IE, Safari and Firefox does not hijack Facebook page when we enable Facebook WiFi function.}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Upgrade Quanteena mini u-boot v36.6.0.1}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{quantenna \# ifconfig br0:1 192.168.1.8}
+		\item \texttt{quantenna \# cd /tmp}
+		\item \texttt{quantenna \# tftp -g -r u-boot-mini-piggy-pcie-v36.6.0.1.bin 192.168.1.10}
+		\item \texttt{quantenna \# flash\_eraseall /dev/mtd0}
+		\item \texttt{quantenna \# cat u-boot-mini-piggy-pcie-v36.6.0.1.bin > /dev/mtd0}
+		\item \texttt{quantenna \# sync}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Steps to burn boot loader and firmware}
+    \begin{itemize}
+    \item As below:
+            \begin{enumerate}
+	    	\item \texttt{Please burn different u-boot for different boards, as we have alpha-2(256MB flash + 512MB SDRAM, use dni1-V0.9.2) and beta boards(128MB flash + 256MB SDRAM use dni1-V1.9), and change the u-boot name to u-boot.bin}
+		\item \texttt{Set up a tftp server on your PC, its ip address is 192.168.1.10.}
+		\item \texttt{Entering into boot loader}
+		\item \texttt{(IPQ) \# setenv serverip 192.168.1.10}
+		\item \texttt{(IPQ) \# setenv ipaddr 192.168.1.1}
+		\item \texttt{(IPQ) \# tftpboot 0x41000000 u-boot.bin}
+		\item \texttt{(IPQ) \# crc32 0x41000000 \$\{filesize\}}
+		\item \texttt{(IPQ) \# ipq\_nand sbl \&\& nand erase 0x00c80000 0x00580000 \&\& imgaddr=0x41000000 \&\& source \$imgaddr:script}
+		\item \texttt{(IPQ) \# reset}
+		\item \texttt{Entering into boot loader again}
+		\item \texttt{(IPQ) \# bootm}
+		\item \texttt{Then the device should be in tftp recovery mode. Please run the command "tftp -i 192.168.1.1 put R7500-V1.0.0.16.img" on MS-DOS of your PC.}
+            \end{enumerate}
+    \end{itemize}
+
+\subsection{Known issues}
+            \begin{enumerate}
+		\item \texttt{The Facebook wifi still not support for 5G guest.}
+		\item \texttt{IPTV feature still not support for it needs to adjust the ethernet driver.}
+		\item \texttt{Wireless log for 5G still not support.}
+            \end{enumerate}
+
+\section{Firmware V1.0.0.20}
+
+\tlabel{sec:1-0-1}
+\subsection{Repository}
+\begin{itemize}
+	\item GIT Repository dniserver//scm/dnigit/openwrt-buildroot.git/torby.tong/r7500-buildroot.git
+	\begin{enumerate}
+		\item Branch: \texttt{R7500-qt-br-IPQ806X-QTP840}
+                \item Tag: \texttt{R7500-FW-V1.0.0.20}
+	\end{enumerate}
+\end{itemize}
+
+    \subsection{Fixed Bugs}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{TD58,Log--There are no log when an external IP accesses the internal IP.}
+		\item \texttt{TD71,multilanguage GUI issue,only one string "Please choose a device" has not translation.}
+		\item \texttt{TD97,Quality of Service: Attached device sorting and default sorting does not implemneted, now the sorting is supported, but ascending and descending is not meet the spec.}
+		\item \texttt{TD98,change "wireless" page Region,it don't take effect,per NTGR's requirement,when the wireless region changed, we'll reboot DUT.}
+		\item \texttt{TD101,Under Windows 8 and 8.1, after completion of router Genie internet setup, select Next button on "Congratulations" page will always redirect to the product "success" web page instead of the "System to install" page.}
+		\item \texttt{TD105,WPS auto lock-down protection not work.}
+		\item \texttt{TD113,Multi PPPoE not work in JP language.}
+		\item \texttt{TD119,UPnP Microsoft Test Tool Auto Test Fail.}
+		\item \texttt{TD142, The traffic counters can't be reset per schedule via Genie tool(Windows/Mac/android/IOS Genie).}
+		\item \texttt{TD150,Internet QoS: duplicate device in Attach device page.}
+		\item \texttt{Use Third party Kcode's driver for both readyshare printer and Bonjour printer.}
+		\item \texttt{Use Third party QTN's new code for V36.6.07-NSS which support power table.}
+		\item \texttt{Use Third party QCA Stephen's patch to modify 3 functions in skbuff.c.}
+		\item \texttt{Disable NSS in pptp and l2tp mode for it still not suppor in QSDK 1.0.2FC release.}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Upgrade Quanteena mini u-boot v36.6.0.1}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{quantenna \# ifconfig br0:1 192.168.1.8}
+		\item \texttt{quantenna \# cd /tmp}
+		\item \texttt{quantenna \# tftp -g -r u-boot-mini-piggy-pcie-v36.6.0.1.bin 192.168.1.10}
+		\item \texttt{quantenna \# flash\_eraseall /dev/mtd0}
+		\item \texttt{quantenna \# cat u-boot-mini-piggy-pcie-v36.6.0.1.bin > /dev/mtd0}
+		\item \texttt{quantenna \# sync}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Steps to burn boot loader and firmware}
+    \begin{itemize}
+    \item As below:
+            \begin{enumerate}
+	    	\item \texttt{Please burn different u-boot for different boards, as we have alpha-2(256MB flash + 512MB SDRAM, use dni1-V0.9.2) and beta boards(128MB flash + 256MB SDRAM use dni1-V1.9), and change the u-boot name to u-boot.bin}
+		\item \texttt{Set up a tftp server on your PC, its ip address is 192.168.1.10.}
+		\item \texttt{Entering into boot loader}
+		\item \texttt{(IPQ) \# setenv serverip 192.168.1.10}
+		\item \texttt{(IPQ) \# setenv ipaddr 192.168.1.1}
+		\item \texttt{(IPQ) \# tftpboot 0x41000000 u-boot.bin}
+		\item \texttt{(IPQ) \# crc32 0x41000000 \$\{filesize\}}
+		\item \texttt{(IPQ) \# ipq\_nand sbl \&\& nand erase 0x00c80000 0x00580000 \&\& imgaddr=0x41000000 \&\& source \$imgaddr:script}
+		\item \texttt{(IPQ) \# reset}
+		\item \texttt{Entering into boot loader again}
+		\item \texttt{(IPQ) \# bootm}
+		\item \texttt{Then the device should be in tftp recovery mode. Please run the command "tftp -i 192.168.1.1 put R7500-V1.0.0.20.img" on MS-DOS of your PC.}
+            \end{enumerate}
+    \end{itemize}
+
+\subsection{Known issues}
+            \begin{enumerate}
+		\item \texttt{The Facebook wifi still not support for 5G guest.}
+		\item \texttt{IPTV feature still not support for it needs to adjust the ethernet driver.}
+		\item \texttt{Wireless log for 5G still not support.}
+            \end{enumerate}
+
+\section{Firmware V1.0.0.26}
+
+\tlabel{sec:1-0-1}
+\subsection{Repository}
+\begin{itemize}
+	\item GIT Repository dniserver//scm/dnigit/openwrt-buildroot.git/torby.tong/r7500-buildroot.git
+	\begin{enumerate}
+		\item Branch: \texttt{R7500-qt-br-IPQ806X-QTP840}
+                \item Tag: \texttt{R7500-FW-V1.0.0.26}
+	\end{enumerate}
+\end{itemize}
+
+    \subsection{Fixed Bugs}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{Note:This is a special firmware which DNI factory can NOT use it for production.}
+		\item \texttt{Bug 48478,Netgear TD-54,when openvpn is enable,change ddns from NO-IP to NETGEAR DDNS,click vpn page,it always popup a dialog.}
+		\item \texttt{Bug 47329,Netgear TD-112,Can't ping Ipv6 DNS (daisy.ipv6.com) in WAN side successfully.}
+		\item \texttt{Bug 48397, Netgear TD-152,P1,AP mode: client cannot get IP address from router .}
+		\item \texttt{Bug 48399, Netgear TD-154,AP mode: should change the router image in AP mode page.}
+		\item \texttt{Bug 48407, Netgear TD-155,no statistics data in "show statistics" page when a guest connect to the dut.}
+		\item \texttt{Bug 48446, Netgear TD-157,all the device can be selected at the same time. }
+		\item \texttt{Bug 48477, Netgear TD-160,can't enable DUT's parent control function.}
+		\item \texttt{Bug 48480, Netgear TD-163, there is no help content for facebook Wi-Fi page.}
+		\item \texttt{Bug 48578, Netgear TD-167,there is no my facebook page pop up after I connect to facebook WiFi network.}
+		\item \texttt{Bug 48636,SQA-2148, The DUT will reboot automatically after region changed then apply setting under "Advanced Wireless Setting" page.}
+		\item \texttt{Bug 48537,SQA1123,DUT will reboot when we unplug and plug Wan of DUT on PPTP and L2TP mode.}
+		\item \texttt{Bug 48621, SQA-1112,There is no "Next or Apply" button and "Cancel" button on PPPoE mode.}
+		\item \texttt{Bug 48638,SQA-1124,WMM button of 5G cannot enable after we disable before.}
+		\item \texttt{Bug 48644,SQA-2153,The wireless client cannot get a valid IP address when we configure the "Security Options" as "WEP 64-bit Automatic" with ASCII (5 values) encryption key.}
+		\item \texttt{Bug 48646, SQA-2155,The wireless signal of 5G Hz will turn off automatically after we configured the "Security Options" as "WEP 128-bit Automatic" with ASCII (13 values) encryption key.}
+		\item \texttt{Bug 48648, SQA-2156,The wireless connection of 5G Hz band cannot establish when we configure the "Security Options" as "WPA2-PSK AES" with 64 lengths of passphrase.}
+		\item \texttt{Bug 48649, SQA-2157,The wireless connection of 5G Hz band cannot establish when we configure the "Security Options" as "Mix Mode" with 64 lengths of passphrase.}
+		\item \texttt{Bug 48671,SQA-2173,The DUT still in auto lock down state after reboot.}
+		\item \texttt{Bug 47642, SQA-1084,VPN Service Enable Issue.}
+		\item \texttt{Bug 48328,SQA-2143,The DUT cannot get a valid IP address form DHCP server during AP mode.}
+		\item \texttt{Bug 48610, SQA-1107,DUT cannot forward the DNS request to OpenDNS website and block the websites which are configured by users.}
+		\item \texttt{After DUT boot done, we'll change the hardware id from 29764730 to 29764841, and in this FW we'll not do hardware id check by GUI.}
+		\item \texttt{Implement the new changes from NTGR Karen for UI change on supporting two opt-in mechanism for auto-update}
+		\item \texttt{Modified the cd-less flow to meet NTGR's requirement to not show success page with new page, and remove the registration page.}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Upgrade Quanteena mini u-boot v36.6.0.1}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{quantenna \# ifconfig br0:1 192.168.1.8}
+		\item \texttt{quantenna \# cd /tmp}
+		\item \texttt{quantenna \# tftp -g -r u-boot-mini-piggy-pcie-v36.6.0.1.bin 192.168.1.10}
+		\item \texttt{quantenna \# flash\_eraseall /dev/mtd0}
+		\item \texttt{quantenna \# cat u-boot-mini-piggy-pcie-v36.6.0.1.bin > /dev/mtd0}
+		\item \texttt{quantenna \# sync}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Steps to burn boot loader and firmware}
+    \begin{itemize}
+    \item As below:
+            \begin{enumerate}
+	    	\item \texttt{Please burn different u-boot for different boards, as we have alpha-2(256MB flash + 512MB SDRAM, use dni1-V0.9.2) and beta boards(128MB flash + 256MB SDRAM use dni1-V2.0), and change the u-boot name to u-boot.bin}
+		\item \texttt{Set up a tftp server on your PC, its ip address is 192.168.1.10.}
+		\item \texttt{Entering into boot loader}
+		\item \texttt{(IPQ) \# setenv serverip 192.168.1.10}
+		\item \texttt{(IPQ) \# setenv ipaddr 192.168.1.1}
+		\item \texttt{(IPQ) \# tftpboot 0x41000000 u-boot.bin}
+		\item \texttt{(IPQ) \# crc32 0x41000000 \$\{filesize\}}
+		\item \texttt{(IPQ) \# ipq\_nand sbl \&\& nand erase 0x00c80000 0x00580000 \&\& imgaddr=0x41000000 \&\& source \$imgaddr:script}
+		\item \texttt{(IPQ) \# reset}
+		\item \texttt{Entering into boot loader again}
+		\item \texttt{(IPQ) \# bootm}
+		\item \texttt{Then the device should be in tftp recovery mode. Please run the command "tftp -i 192.168.1.1 put R7500-V1.0.0.26.img" on MS-DOS of your PC.}
+            \end{enumerate}
+    \end{itemize}
+
+\subsection{Known issues}
+            \begin{enumerate}
+		\item \texttt{The Facebook wifi still not support for 5G guest.}
+		\item \texttt{IPTV feature still not support for it needs to adjust the ethernet driver.}
+		\item \texttt{Wireless log for 5G still not support.}
+            \end{enumerate}
+
+\section{Firmware V1.0.0.28}
+
+\tlabel{sec:1-0-1}
+\subsection{Repository}
+\begin{itemize}
+	\item GIT Repository dniserver//scm/dnigit/openwrt-buildroot.git/torby.tong/r7500-buildroot.git
+	\begin{enumerate}
+		\item Branch: \texttt{R7500-qt-br-IPQ806X-QTP840}
+                \item Tag: \texttt{R7500-FW-V1.0.0.28}
+	\end{enumerate}
+\end{itemize}
+
+    \subsection{Fixed Bugs}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{Note:This is a special firmware which DNI factory can NOT use it for production.}
+		\item \texttt{Per NTGR's requirement, upgrade QTN code from V36.6.0.7 to V36.6.0.11 for it has passed NTGR test.}
+		\item \texttt{Bug 49026,IR047,Spelling Error for "Chromecast".}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Upgrade Quanteena mini u-boot v36.6.0.1}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{quantenna \# ifconfig br0:1 192.168.1.8}
+		\item \texttt{quantenna \# cd /tmp}
+		\item \texttt{quantenna \# tftp -g -r u-boot-mini-piggy-pcie-v36.6.0.1.bin 192.168.1.10}
+		\item \texttt{quantenna \# flash\_eraseall /dev/mtd0}
+		\item \texttt{quantenna \# cat u-boot-mini-piggy-pcie-v36.6.0.1.bin > /dev/mtd0}
+		\item \texttt{quantenna \# sync}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Steps to burn boot loader and firmware}
+    \begin{itemize}
+    \item As below:
+            \begin{enumerate}
+	    	\item \texttt{Please burn different u-boot for different boards, as we have alpha-2(256MB flash + 512MB SDRAM, use dni1-V0.9.2) and beta boards(128MB flash + 256MB SDRAM use dni1-V2.0), and change the u-boot name to u-boot.bin}
+		\item \texttt{Set up a tftp server on your PC, its ip address is 192.168.1.10.}
+		\item \texttt{Entering into boot loader}
+		\item \texttt{(IPQ) \# setenv serverip 192.168.1.10}
+		\item \texttt{(IPQ) \# setenv ipaddr 192.168.1.1}
+		\item \texttt{(IPQ) \# tftpboot 0x41000000 u-boot.bin}
+		\item \texttt{(IPQ) \# crc32 0x41000000 \$\{filesize\}}
+		\item \texttt{(IPQ) \# ipq\_nand sbl \&\& nand erase 0x00c80000 0x00580000 \&\& imgaddr=0x41000000 \&\& source \$imgaddr:script}
+		\item \texttt{(IPQ) \# reset}
+		\item \texttt{Entering into boot loader again}
+		\item \texttt{(IPQ) \# bootm}
+		\item \texttt{Then the device should be in tftp recovery mode. Please run the command "tftp -i 192.168.1.1 put R7500-V1.0.0.28.img" on MS-DOS of your PC.}
+            \end{enumerate}
+    \end{itemize}
+
+\subsection{Known issues}
+            \begin{enumerate}
+		\item \texttt{The Facebook wifi still not support for 5G guest.}
+		\item \texttt{IPTV feature still not support for it needs to adjust the ethernet driver.}
+		\item \texttt{Wireless log for 5G still not support.}
+            \end{enumerate}
+
+\section{Firmware V1.0.0.30}
+
+\tlabel{sec:1-0-1}
+\subsection{Repository}
+\begin{itemize}
+	\item GIT Repository dniserver//scm/dnigit/openwrt-buildroot.git/torby.tong/r7500-buildroot.git
+	\begin{enumerate}
+		\item Branch: \texttt{R7500-qt-br-IPQ806X-QTP840}
+                \item Tag: \texttt{R7500-FW-V1.0.0.30}
+	\end{enumerate}
+\end{itemize}
+
+    \subsection{Fixed Bugs}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{Upgrade the QSDK from 1.0.2fc to 1.0.2CS.}
+		\item \texttt{Upgrade the streamboost from 2.0.254 to 2.0.501}
+		\item \texttt{Added new SOAP API function GetCurrentDeviceBandwidth}
+		\item \texttt{Removed QTN rts threshold setting for TP result}
+		\item \texttt{Changed the hardware id from 29764743 to 29764841 and do hardware id check by GUI during FW upgrade.}
+		\item \texttt{Bug 49066/IR-074,ReadyShare GUI error.}
+		\item \texttt{Bug 49136/IR-095,gui layout doesn't match in German language for LED Control Settings}
+		\item \texttt{Bug 49138/IR-098,Missing translations}
+		\item \texttt{Bug 49149/IR-118,Dynamic DNS on polish.}
+		\item \texttt{Bug 49173/IR-137,Can not update QoS database.}
+		\item \texttt{Bug 49135/IR-196/IR-94,NTGR requirement,remove the underline for string "RedySHARE Storage" by GUI}
+		\item \texttt{Bug 49168/IR-200,Web GUI for Qos layout abnormal in Russian GUI}
+		\item \texttt{Bug 49167/IR-210,QoS Status void in BASIC page of GUI in Russian}
+		\item \texttt{beta issue,Reduce the ppp detection time during CD-LESS}
+		\item \texttt{Bug 49070/LED control setting,The LED control string should include "USB LED and eSATA LED"}
+		\item \texttt{Bug 49134,NTGR requirement,Remove 3 items for 5G in the wireless advance settings page}
+		\item \texttt{Bug 49162,in ap mode/bridge mode the "Quality of Service" in Basic Tab should be grayed out and disabled.}
+		\item \texttt{Bug 48635,GUI display abnormally when we enable Access Control function.}
+		\item \texttt{Bug 49072,Wireless setting,Please wait page display abnormal characters after click apply}
+		\item \texttt{Per NTGR's requirement, we change overcommit\_memory back to 2 as WNDR4700 doing.}
+		\item \texttt{Per NTGR's requirement to remove USB/eSATA HDD power save mode}
+		\item \texttt{Per QCA's suggestion to set the drop\_caches to 3 before inserting wlan modules for USB disk can't mount and wireless can't work}
+		\item \texttt{Add QCA solution for Kinston DataTraveler Elite 3.0 USB disk can't be detected during reboot DUT}
+		\item \texttt{Per QCA's suggestion to change min\_free\_kbytes from 4096 to 16384}
+		\item \texttt{Per QCA's suggestion: Smart antenna is a flag that you could disable during the compile. Just make UNIFIED\_SMARTANTENNA=0}
+		\item \texttt{Add lock down for wlan up and down script to ensure just one wlan script can be execute at same time}
+		\item \texttt{add the QCA's patch which released by today to fix the null point issue. this issue cause R7500 unexpected reboot.}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Upgrade Quanteena mini u-boot v36.6.0.1}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{quantenna \# ifconfig br0:1 192.168.1.8}
+		\item \texttt{quantenna \# cd /tmp}
+		\item \texttt{quantenna \# tftp -g -r u-boot-mini-piggy-pcie-v36.6.0.1.bin 192.168.1.10}
+		\item \texttt{quantenna \# flash\_eraseall /dev/mtd0}
+		\item \texttt{quantenna \# cat u-boot-mini-piggy-pcie-v36.6.0.1.bin > /dev/mtd0}
+		\item \texttt{quantenna \# sync}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Steps to burn boot loader and firmware}
+    \begin{itemize}
+    \item As below:
+            \begin{enumerate}
+	    	\item \texttt{Please burn different u-boot for different boards, as we have alpha-2(256MB flash + 512MB SDRAM, use dni1-V0.9.2) and beta boards(128MB flash + 256MB SDRAM use dni1-V2.1), and change the u-boot name to u-boot.bin}
+		\item \texttt{Set up a tftp server on your PC, its ip address is 192.168.1.10.}
+		\item \texttt{Entering into boot loader}
+		\item \texttt{(IPQ) \# setenv serverip 192.168.1.10}
+		\item \texttt{(IPQ) \# setenv ipaddr 192.168.1.1}
+		\item \texttt{(IPQ) \# tftpboot 0x41000000 u-boot.bin}
+		\item \texttt{(IPQ) \# crc32 0x41000000 \$\{filesize\}}
+		\item \texttt{(IPQ) \# ipq\_nand sbl \&\& nand erase 0x00c80000 0x00580000 \&\& imgaddr=0x41000000 \&\& source \$imgaddr:script}
+		\item \texttt{(IPQ) \# reset}
+		\item \texttt{Entering into boot loader again}
+		\item \texttt{(IPQ) \# bootm}
+		\item \texttt{Then the device should be in tftp recovery mode. Please run the command "tftp -i 192.168.1.1 put R7500-V1.0.0.30.img" on MS-DOS of your PC.}
+            \end{enumerate}
+    \end{itemize}
+
+\subsection{Known issues}
+            \begin{enumerate}
+		\item \texttt{The Facebook wifi still not support for 5G guest.}
+		\item \texttt{IPTV feature still not support for it needs to adjust the ethernet driver.}
+		\item \texttt{Wireless log for 5G still not support.}
+            \end{enumerate}
+
+\section{Firmware V1.0.0.34}
+
+\tlabel{sec:1-0-1}
+\subsection{Repository}
+\begin{itemize}
+	\item GIT Repository dniserver//scm/dnigit/openwrt-buildroot.git/torby.tong/r7500-buildroot.git
+	\begin{enumerate}
+		\item Branch: \texttt{R7500-qt-br-IPQ806X-QTP840}
+                \item Tag: \texttt{R7500-FW-V1.0.0.34}
+	\end{enumerate}
+\end{itemize}
+
+    \subsection{Fixed Bugs}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{Add quanteena solution for fixing 5g ssid broadcast issue during DUT reboot.}
+		\item \texttt{Hfsplus file system support reboot and unsafely removed.}
+		\item \texttt{Fixed console always print out saving data log during wireless client try to connect to DUT issue.}
+		\item \texttt{bug 49358/netgear,Found an issue in the UI that tries to start Streamboost with no bandwidth settings, which causes Streamboost to crash on startup.}
+		\item \texttt{bug49351/netgear,Bandwidth - Manual input: GUI pop-up warning message that displays abnormally.}
+		\item \texttt{Upgrade streamboost from V2.0.501 to V2.0.519.}
+		\item \texttt{Import QCA wireless driver to V10.2.2.39.1 for QSDK 1.0.3-CS}
+		\item \texttt{Import the QSDK 1.0.3 CS.}
+		\item \texttt{bug49370/Netgear TD-183/IR-291,In FW 1.0.0.30 (Russia) is broke Wizard Setup.}
+		\item \texttt{bug49075/IR-033,in wireless bridge mode, some grayed out features still can be clicked.}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Upgrade Quanteena mini u-boot v36.6.0.1}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{quantenna \# ifconfig br0:1 192.168.1.8}
+		\item \texttt{quantenna \# cd /tmp}
+		\item \texttt{quantenna \# tftp -g -r u-boot-mini-piggy-pcie-v36.6.0.1.bin 192.168.1.10}
+		\item \texttt{quantenna \# flash\_eraseall /dev/mtd0}
+		\item \texttt{quantenna \# cat u-boot-mini-piggy-pcie-v36.6.0.1.bin > /dev/mtd0}
+		\item \texttt{quantenna \# sync}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Steps to burn boot loader and firmware}
+    \begin{itemize}
+    \item As below:
+            \begin{enumerate}
+	    	\item \texttt{Please burn different u-boot for different boards, as we have alpha-2(256MB flash + 512MB SDRAM, use dni1-V0.9.2) and beta boards(128MB flash + 256MB SDRAM use dni1-V2.1), and change the u-boot name to u-boot.bin}
+		\item \texttt{Set up a tftp server on your PC, its ip address is 192.168.1.10.}
+		\item \texttt{Entering into boot loader}
+		\item \texttt{(IPQ) \# setenv serverip 192.168.1.10}
+		\item \texttt{(IPQ) \# setenv ipaddr 192.168.1.1}
+		\item \texttt{(IPQ) \# tftpboot 0x41000000 u-boot.bin}
+		\item \texttt{(IPQ) \# crc32 0x41000000 \$\{filesize\}}
+		\item \texttt{(IPQ) \# ipq\_nand sbl \&\& nand erase 0x00c80000 0x00580000 \&\& imgaddr=0x41000000 \&\& source \$imgaddr:script}
+		\item \texttt{(IPQ) \# reset}
+		\item \texttt{Entering into boot loader again}
+		\item \texttt{(IPQ) \# bootm}
+		\item \texttt{Then the device should be in tftp recovery mode. Please run the command "tftp -i 192.168.1.1 put R7500-V1.0.0.34.img" on MS-DOS of your PC.}
+            \end{enumerate}
+    \end{itemize}
+
+\subsection{Known issues}
+            \begin{enumerate}
+		\item \texttt{The Facebook wifi still not support for 5G guest.}
+		\item \texttt{IPTV feature still not support for it needs to adjust the ethernet driver.}
+		\item \texttt{Wireless log for 5G still not support.}
+            \end{enumerate}
+
+\section{Firmware V1.0.0.36}
+
+\tlabel{sec:1-0-1}
+\subsection{Repository}
+\begin{itemize}
+	\item GIT Repository dniserver//scm/dnigit/openwrt-buildroot.git/torby.tong/r7500-buildroot.git
+	\begin{enumerate}
+		\item Branch: \texttt{R7500-qt-br-IPQ806X-QTP840}
+                \item Tag: \texttt{R7500-FW-V1.0.0.36}
+	\end{enumerate}
+\end{itemize}
+
+    \subsection{Fixed Bugs}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{Changed QTN FW to V36.6.0.14.}
+		\item \texttt{Bug49029/IR-050,Cancelling A Speed Test Is Ignored}
+		\item \texttt{Bug49211/IR-195,Send logs to E-Mail (Russian).}
+		\item \texttt{Bug49378/Netgear TD-179/CD\_LESS/setup wizard,The readyshare vault /genie download page and upgrade check page disappear in IE11}
+		\item \texttt{Bug48683/TD-180/SQA-2185,Suggest to modify description Turn the Internet LED to flashing "green/amber" to "white/amber".}
+		\item \texttt{Fix problem in SOAP API GetCurrentAPPBandwidthbyMAC.}
+		\item \texttt{Streamboost: fix problem that up\_bytes/down\_bytes is 0}
+		\item \texttt{Streamboost: chamge the "iPad mini" to "iPad Mini".}
+		\item \texttt{Streamboost: debug.htm can work}
+		\item \texttt{2.4G: disable 256QAM support for BRCM IOT issue}
+
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Upgrade Quanteena mini u-boot v36.6.0.1}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{quantenna \# ifconfig br0:1 192.168.1.8}
+		\item \texttt{quantenna \# cd /tmp}
+		\item \texttt{quantenna \# tftp -g -r u-boot-mini-piggy-pcie-v36.6.0.1.bin 192.168.1.10}
+		\item \texttt{quantenna \# flash\_eraseall /dev/mtd0}
+		\item \texttt{quantenna \# cat u-boot-mini-piggy-pcie-v36.6.0.1.bin > /dev/mtd0}
+		\item \texttt{quantenna \# sync}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Steps to burn boot loader and firmware}
+    \begin{itemize}
+    \item As below:
+            \begin{enumerate}
+	    	\item \texttt{Please burn different u-boot for different boards, as we have alpha-2(256MB flash + 512MB SDRAM, use dni1-V0.9.2) and beta boards(128MB flash + 256MB SDRAM use dni1-V2.2), and change the u-boot name to u-boot.bin}
+		\item \texttt{Set up a tftp server on your PC, its ip address is 192.168.1.10.}
+		\item \texttt{Entering into boot loader}
+		\item \texttt{(IPQ) \# setenv serverip 192.168.1.10}
+		\item \texttt{(IPQ) \# setenv ipaddr 192.168.1.1}
+		\item \texttt{(IPQ) \# tftpboot 0x41000000 u-boot.bin}
+		\item \texttt{(IPQ) \# crc32 0x41000000 \$\{filesize\}}
+		\item \texttt{(IPQ) \# ipq\_nand sbl \&\& nand erase 0x00c80000 0x00580000 \&\& imgaddr=0x41000000 \&\& source \$imgaddr:script}
+		\item \texttt{(IPQ) \# reset}
+		\item \texttt{Entering into boot loader again}
+		\item \texttt{(IPQ) \# bootm}
+		\item \texttt{Then the device should be in tftp recovery mode. Please run the command "tftp -i 192.168.1.1 put R7500-V1.0.0.36.img" on MS-DOS of your PC.}
+            \end{enumerate}
+    \end{itemize}
+
+\subsection{Known issues}
+            \begin{enumerate}
+		\item \texttt{The Facebook wifi still not support for 5G guest.}
+		\item \texttt{IPTV feature still not support for it needs to adjust the ethernet driver.}
+		\item \texttt{Wireless log for 5G still not support.}
+            \end{enumerate}
+
+\section{Firmware V1.0.0.38}
+
+\tlabel{sec:1-0-1}
+\subsection{Repository}
+\begin{itemize}
+	\item GIT Repository dniserver//scm/dnigit/openwrt-buildroot.git/torby.tong/r7500-buildroot.git
+	\begin{enumerate}
+		\item Branch: \texttt{R7500-qt-br-IPQ806X-QTP840}
+                \item Tag: \texttt{R7500-FW-V1.0.0.38}
+	\end{enumerate}
+\end{itemize}
+
+    \subsection{Fixed Bugs}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{Changed QTN FW to V36.6.0.18.}
+		\item \texttt{Bug49506,2.4G wireless disappear after do some operation on Advanced Setup->Wireless Settings page.}
+		\item \texttt{Bug49482/IR-323,RU GUI (VPN) not work.}
+		\item \texttt{Disable QTN NSS when enable ap mode.}
+		\item \texttt{Bug49470/IR-288,DDNS failures and success/}
+		\item \texttt{Bug49099/IR-082,NETGEAR Dynamic DNS not working.}
+		\item \texttt{IR300,In AP mode, when selecting DHCP for devices address, Internet led is "white".When selecting custom fixed IP address, Internet led is "orange"}
+		\item \texttt{IR229/IR-259,The device description in the UPNP broadcast information which appears in Network Neighborhood is not up-to-date: it says "N900 Media Storage Router".}
+		\item \texttt{IR018,ports 21 still open after remove USB storage.}
+		\item \texttt{Bug49103/IR-086,Ready Share FTP Server not starting after a router reboot}
+		\item \texttt{Bug49399/Netgear TD-181/Ipad/Tablet,There is no scroll bar in the help.}
+		\item \texttt{Bug49255/IR-063/IR-264, 2.4GHz LED turns on again if making some changes for wireless settings and apply, when all LEDs are turned off in GUI.}
+		\item \texttt{Bug49102/IR-084/IR-248,WI-FI networks uptime in statistics is always zero.}
+		\item \texttt{Bug49568/IR-225,In ap mode set static ip address 192.x, when reboot DUT, dut will change ip to 10.x.}
+		\item \texttt{PPP enhancement,record ppp session info for PPP stop abnormally,after PPP start again, PPP will send PADT to this session before send PADI.}
+		\item \texttt{PPP enhancement,pull low 10 seconds before ppp connection in boot state automatically.}
+
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Upgrade Quanteena mini u-boot v36.6.0.1}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{quantenna \# ifconfig br0:1 192.168.1.8}
+		\item \texttt{quantenna \# cd /tmp}
+		\item \texttt{quantenna \# tftp -g -r u-boot-mini-piggy-pcie-v36.6.0.1.bin 192.168.1.10}
+		\item \texttt{quantenna \# flash\_eraseall /dev/mtd0}
+		\item \texttt{quantenna \# cat u-boot-mini-piggy-pcie-v36.6.0.1.bin > /dev/mtd0}
+		\item \texttt{quantenna \# sync}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Steps to burn boot loader and firmware}
+    \begin{itemize}
+    \item As below:
+            \begin{enumerate}
+	    	\item \texttt{Please burn different u-boot for different boards, as we have alpha-2(256MB flash + 512MB SDRAM, use dni1-V0.9.2) and beta boards(128MB flash + 256MB SDRAM use dni1-V2.2), and change the u-boot name to u-boot.bin}
+		\item \texttt{Set up a tftp server on your PC, its ip address is 192.168.1.10.}
+		\item \texttt{Entering into boot loader}
+		\item \texttt{(IPQ) \# setenv serverip 192.168.1.10}
+		\item \texttt{(IPQ) \# setenv ipaddr 192.168.1.1}
+		\item \texttt{(IPQ) \# tftpboot 0x41000000 u-boot.bin}
+		\item \texttt{(IPQ) \# crc32 0x41000000 \$\{filesize\}}
+		\item \texttt{(IPQ) \# ipq\_nand sbl \&\& nand erase 0x00c80000 0x00580000 \&\& imgaddr=0x41000000 \&\& source \$imgaddr:script}
+		\item \texttt{(IPQ) \# reset}
+		\item \texttt{Entering into boot loader again}
+		\item \texttt{(IPQ) \# bootm}
+		\item \texttt{Then the device should be in tftp recovery mode. Please run the command "tftp -i 192.168.1.1 put R7500-V1.0.0.36.img" on MS-DOS of your PC.}
+            \end{enumerate}
+    \end{itemize}
+
+\subsection{Known issues}
+            \begin{enumerate}
+		\item \texttt{The Facebook wifi still not support for 5G guest.}
+		\item \texttt{IPTV feature still not support for it needs to adjust the ethernet driver.}
+		\item \texttt{Wireless log for 5G still not support.}
+            \end{enumerate}
+
+\section{Firmware V1.0.0.42}
+
+\tlabel{sec:1-0-1}
+\subsection{Repository}
+\begin{itemize}
+	\item GIT Repository dniserver//scm/dnigit/openwrt-buildroot.git/torby.tong/r7500-buildroot.git
+	\begin{enumerate}
+		\item Branch: \texttt{R7500-qt-br-IPQ806X-QTP840}
+                \item Tag: \texttt{R7500-FW-V1.0.0.42}
+	\end{enumerate}
+\end{itemize}
+
+    \subsection{Fixed Bugs}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{Bug 46838/Netgear TD-30,[Guest Network]the IPv6 Guest wireless client can login GUI by domain.}
+		\item \texttt{Bug 48580/Netgear TD-168,5G guest network can't do isolation}
+		\item \texttt{Netgear TD172 P2 issue, The iTune server cannot function properly after changing the media server name via the admin.webpage.}
+		\item \texttt{Bug 49600/Netgear TD-185,WPS function behavior error }
+		\item \texttt{Bug 49584/Netgear TD-186,WAN Detection - On DHCP internet connection, Genie may frequently return error message:Network Connection}
+		\item \texttt{Bug 49604/Netgear TD-188 requirement,Region is NA and wireless region is "North America",we should change the "NewRegion" value to "United States"}
+		\item \texttt{Bug 49559/Netgear TD-189, it can't set the Traffic Meter restart time as 'Last' day via windows Genie and MAC Genie}
+		\item \texttt{Bug 49564/Netgear TD-190,Internet Qos: when Qos disabled, edit device page should not show priority item in attach device page}
+		\item \texttt{Bug 49601/Netgear TD-191,Internet Qos: In Basic page click "Quality of Service ON/OFF" should link to QoS page.}
+		\item \texttt{Bug 49576/Netgear TD-197,Multi Language issue}
+		\item \texttt{TD204,The QoS device priority settings are not reset if resetting R7500 to default via GUI}
+		\item \texttt{Bug 49028/IR-049/IR-251,Unable to turn off Wifi on a schedule }
+		\item \texttt{Bug 49032/IR-053,Turn off wireless signal by schedule not working (Firefox Only) }
+		\item \texttt{Bug 49033/IR-054,'Turn off wireless signal by schedule' have some problems }
+		\item \texttt{Bug 49214,/IR199,NETGEAR DDNS (RU GUI) display issue.}
+		\item \texttt{[IR246], 5G LED behavior issue.}
+		\item \texttt{Bug49514/IR-301, Distorted Genie graphics around tabs}
+		\item \texttt{Bug 49536/IR-311,Change Network/Device Name}
+		\item \texttt{Bug 49507/IR-330, Cannot change wireless setting after a wireless client connect to 2.4G usingHW WPS button}
+		\item \texttt{Bug 49592/IR-354,user can set WEP on both main wireless and guest network }
+		\item \texttt{[IR-356], WPS LED does not stop blinking}
+		\item \texttt{Bug49168/IR-371/IR-200, Web GUI for Qos layout abnormal in Russian GUI}
+		\item \texttt{[Internet Qos] Fixed the bug that sometimes device bandwidth is very high}
+		\item \texttt{[Internet Qos] Update the database versio for GUI displaying.}
+		\item \texttt{Bug 49637,Change "Edit Device" page according NETGEAR request}
+		\item \texttt{Change QTN FW to fix broadcast ssid "quanteena" and 5G wifi disappear issue }
+		\item \texttt{Bug 49653, telnet,Disable router debugging mode for PR sku or WW sku + Chinese language}
+		\item \texttt{Fixed QCA 7 seconds wifi security bug.}
+		\item \texttt{Add R6100 Bitcomet issue solution.}
+		\item \texttt{[Internet Qos] Update Device Types list.}
+		\item \texttt{Fixed ssmtp will save all the failed email logs to dead.letter.}
+
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Upgrade Quanteena mini u-boot v36.6.0.1}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{quantenna \# ifconfig br0:1 192.168.1.8}
+		\item \texttt{quantenna \# cd /tmp}
+		\item \texttt{quantenna \# tftp -g -r u-boot-mini-piggy-pcie-v36.6.0.1.bin 192.168.1.10}
+		\item \texttt{quantenna \# flash\_eraseall /dev/mtd0}
+		\item \texttt{quantenna \# cat u-boot-mini-piggy-pcie-v36.6.0.1.bin > /dev/mtd0}
+		\item \texttt{quantenna \# sync}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Steps to burn boot loader and firmware}
+    \begin{itemize}
+    \item As below:
+            \begin{enumerate}
+	    	\item \texttt{Please burn different u-boot for different boards, as we have alpha-2(256MB flash + 512MB SDRAM, use dni1-V0.9.2) and beta boards(128MB flash + 256MB SDRAM use dni1-V2.2), and change the u-boot name to u-boot.bin}
+		\item \texttt{Set up a tftp server on your PC, its ip address is 192.168.1.10.}
+		\item \texttt{Entering into boot loader}
+		\item \texttt{(IPQ) \# setenv serverip 192.168.1.10}
+		\item \texttt{(IPQ) \# setenv ipaddr 192.168.1.1}
+		\item \texttt{(IPQ) \# tftpboot 0x41000000 u-boot.bin}
+		\item \texttt{(IPQ) \# crc32 0x41000000 \$\{filesize\}}
+		\item \texttt{(IPQ) \# ipq\_nand sbl \&\& nand erase 0x00c80000 0x00580000 \&\& imgaddr=0x41000000 \&\& source \$imgaddr:script}
+		\item \texttt{(IPQ) \# reset}
+		\item \texttt{Entering into boot loader again}
+		\item \texttt{(IPQ) \# bootm}
+		\item \texttt{Then the device should be in tftp recovery mode. Please run the command "tftp -i 192.168.1.1 put R7500-V1.0.0.42.img" on MS-DOS of your PC.}
+            \end{enumerate}
+    \end{itemize}
+
+\subsection{Known issues}
+            \begin{enumerate}
+		\item \texttt{The Facebook wifi still not support for 5G guest.}
+		\item \texttt{IPTV feature still not support for it needs to adjust the ethernet driver.}
+		\item \texttt{Wireless log for 5G still not support.}
+            \end{enumerate}
+
+\section{Firmware V1.0.0.44}
+
+\tlabel{sec:1-0-1}
+\subsection{Repository}
+\begin{itemize}
+	\item GIT Repository dniserver//scm/dnigit/openwrt-buildroot.git/torby.tong/r7500-buildroot.git
+	\begin{enumerate}
+		\item Branch: \texttt{R7500-qt-br-IPQ806X-QTP840}
+                \item Tag: \texttt{R7500-FW-V1.0.0.44}
+	\end{enumerate}
+\end{itemize}
+
+    \subsection{Fixed Bugs}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{Disable IPTV feature by GUI.}
+		\item \texttt{Disable facebookwifi feature by GUI.}
+		\item \texttt{Support XFS file system.}
+		\item \texttt{Remove R6100 Bitcomet issue solution.}
+		\item \texttt{Enable USB/eSATA HDD power save mode again on R7500.}
+		\item \texttt{Bug 46838 [Netgear TD-30][Guest Network]the IPv6 Guest wireless client can login GUI by domain.}
+		\item \texttt{Bug 47329 [Netgear TD-112]Can't ping Ipv6 DNS (daisy.ipv6.com) in WAN side successfully.}
+		\item \texttt{Bug 48453 [Netgear TD-159]can't use IPv6 Secondary DNS.}
+		\item \texttt{Bug 48593 [Netgear TD-173]allow more than one user to management the dut without warning message.}
+		\item \texttt{Bug 49582 [Netgear TD-177]IPv6 on Comcast - IPv6 detection failure on Arris and CMD31T cable modem.}
+		\item \texttt{Bug 49433 [Netgear TD-182][genie]Show all the wireless connected devices as wired on Network Map.}
+		\item \texttt{Bug 49771 [Netgear TD-187][Genie Upgrade] it can't detect the new version via Genie.}
+		\item \texttt{Bug 49571 [Netgear TD-193]on bridge mode ,some GUI page display has problem.}
+		\item \texttt{Bug 49576 [Netgear TD-197]Multi Language issue.}
+		\item \texttt{Bug 49936 [Netgear TD-208]Error page show when run AP-CD-LESS.}
+		\item \texttt{Bug 49949 [Netgear TD-209]when apply on the "internet setup",the NO-IP ddns function seems disabled.}
+		\item \texttt{Bug 49969 [Netgear TD-211]'Next' button not work in CD\_LESS processing.}
+		\item \texttt{Bug 50010 [Netgear TD-215]Error page when enable AP mode.}
+		\item \texttt{Bug 49901 [Netgear]change the banner logo model name from "R7500" to 'Nighthawk X4 R7500" at all pages for the wizard and the normal GUI.}
+		\item \texttt{Bug 49645 [SQA-1132]When users change other language in the CD-Less process, the GUI still displays English on install app and frmware upgrade assisant page.}
+		\item \texttt{Bug 49646 [SQA-1135]The GUI could not change to El (Greek), no matter auto or manually change the language.}
+		\item \texttt{Bug 50031 Per Netgear's requirement to change something translation and behavior in CD LESS flow even something show English.}
+		\item \texttt{Bug 49906 [QoS] add a new device Chromcast Streamboost can detect.}
+		\item \texttt{Bug 50032 [QoS] GUI show app as generic\_terdo.}
+		\item \texttt{Bug 50033 [QoS] add a new device named "Netgear NeoTV" Streamboost can detect.}
+		\item \texttt{Add QCA solution for PS3 and XBOX connection issue.}
+		\item \texttt{Changed QTN FW from V36.6.0.18 to V36.6.0.20.}
+		\item \texttt{Implement mirror WAN port to LAN port which is near WAN port,it's closed by default, and we can open it just by flag.}
+
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Upgrade Quanteena mini u-boot v36.6.0.1}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{quantenna \# ifconfig br0:1 192.168.1.8}
+		\item \texttt{quantenna \# cd /tmp}
+		\item \texttt{quantenna \# tftp -g -r u-boot-mini-piggy-pcie-v36.6.0.1.bin 192.168.1.10}
+		\item \texttt{quantenna \# flash\_eraseall /dev/mtd0}
+		\item \texttt{quantenna \# cat u-boot-mini-piggy-pcie-v36.6.0.1.bin > /dev/mtd0}
+		\item \texttt{quantenna \# sync}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Steps to burn boot loader and firmware}
+    \begin{itemize}
+    \item As below:
+            \begin{enumerate}
+	    	\item \texttt{Please burn different u-boot for different boards, as we have alpha-2(256MB flash + 512MB SDRAM, use dni1-V0.9.2) and beta boards(128MB flash + 256MB SDRAM use dni1-V2.2), and change the u-boot name to u-boot.bin}
+		\item \texttt{Set up a tftp server on your PC, its ip address is 192.168.1.10.}
+		\item \texttt{Entering into boot loader}
+		\item \texttt{(IPQ) \# setenv serverip 192.168.1.10}
+		\item \texttt{(IPQ) \# setenv ipaddr 192.168.1.1}
+		\item \texttt{(IPQ) \# tftpboot 0x41000000 u-boot.bin}
+		\item \texttt{(IPQ) \# crc32 0x41000000 \$\{filesize\}}
+		\item \texttt{(IPQ) \# ipq\_nand sbl \&\& nand erase 0x00c80000 0x00580000 \&\& imgaddr=0x41000000 \&\& source \$imgaddr:script}
+		\item \texttt{(IPQ) \# reset}
+		\item \texttt{Entering into boot loader again}
+		\item \texttt{(IPQ) \# bootm}
+		\item \texttt{Then the device should be in tftp recovery mode. Please run the command "tftp -i 192.168.1.1 put R7500-V1.0.0.44.img" on MS-DOS of your PC.}
+            \end{enumerate}
+    \end{itemize}
+
+\subsection{Known issues}
+            \begin{enumerate}
+		\item \texttt{Wireless log for 5G still not support.}
+            \end{enumerate}
+
+\section{Firmware V1.0.0.46}
+
+\tlabel{sec:1-0-1}
+\subsection{Repository}
+\begin{itemize}
+	\item GIT Repository dniserver//scm/dnigit/openwrt-buildroot.git/torby.tong/r7500-buildroot.git
+	\begin{enumerate}
+		\item Branch: \texttt{R7500-qt-br-IPQ806X-QTP840}
+                \item Tag: \texttt{R7500-FW-V1.0.0.46}
+	\end{enumerate}
+\end{itemize}
+
+    \subsection{Fixed Bugs}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{Bug 46903,[Netgear TD-61]Device icon is not correct}
+		\item \texttt{Bug 49582,[Netgear TD-177]IPv6 on Comcast - IPv6 detection failure on Arris and CMD31T cable modem .}
+		\item \texttt{Bug 46586,[Netgear TD-216]The DLNA cannot index the large number of media files (80000 files) after the indexing overnight test (16hrs) with the large media HDD.}
+		\item \texttt{Bug 50053,[Netgear TD-217]it can't show out the current version and new version correctly.}
+		\item \texttt{Bug 50055,[Netgear TD-218]it should not show 'Readyshare Vault app' when downloading Genie app in MAC OS.}
+		\item \texttt{Bug 50059,[Netgear TD-220]Bridge mode Can't loging GUI.}
+		\item \texttt{Bug 50057,[Netgear TD-221]It takes long time to get connected to root AP.}
+		\item \texttt{Bug 50075,[Netgear TD-223][IPv6-WAN-auto detect]WAN can obtain mutil- ipv6 address when run 3 time auto dectect and WAN connect DHCPv6 server.}
+		\item \texttt{Bug 50074,[Netgear TD-224]Valid Gateway IP Address issue.}
+		\item \texttt{Bug 50077,[Netgear TD-225]The bridge status is not right , SSID and Link rate.}
+		\item \texttt{Bug 50094,[Netgear TD-226]Ap mode and router mode , the system install page is not consistent.}
+		\item \texttt{Bug 50064,[Netgear]add the Beam-Forming enable/disable option under the Advanced Wireless Settings page and enabled it by default.}
+		\item \texttt{Bug 49838,[Netgear] Readyshare and Remote management does not resolve to dynamic DNS name.}
+		\item \texttt{Bug 50081,[GUI][QOS]Change the button at the bottom of the pop up window to "Submit", instead of "Yes".}
+		\item \texttt{Bug 50048,[GUI][QoS]Should add two statement according the newest Spec. --- Netgear Quality of Service Design Spec\_2.0-20140714.docx.}
+		\item \texttt{Bug 50049,[GUI][QoS]Popup message for auto-update and user analytics collection, need to be a window pop up from GUI.}
+		\item \texttt{Bug 50050,[GUI][QoS] Replace all strings that contain the term "Quality of Service" by "Dynamic QoS".}
+		\item \texttt{Bug 50114,[QoS] add some new devices Streamboost can recognize.}
+		\item \texttt{Bug 50063,[Netgear]in cd-less app install page, it should not be "System will install",It should be "Download the following router apps:"}.
+		\item \texttt{Bug 50010,[Netgear new requirement]remove the AP mode detection function from the v1.0.0.46.}
+		\item \texttt{Bug 50113,[Netgear]when BEAMFORMING is enabled or wireless region is "China", we should hide 5G transmit power control setting}
+		\item \texttt{Bug 50121,[Netgear][QoS]Streamboost start issue.}
+		\item \texttt{TD166,Removed the patches for XFS file system for if we need to support it, we need Kcode provided new driver base on our latest source code.}
+		\item \texttt{Enable QTN nss while disable ap mode.}
+		\item \texttt{Changed QTN FW from V36.6.0.20 to V36.6.0.23.}
+		\item \texttt{Update to language translation FW\_CD-less\_v4\_0+Router\_v2\_42+DSL\_v3\_6+3G\_v1\_7.}
+
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Upgrade Quanteena mini u-boot v36.6.0.1}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{quantenna \# ifconfig br0:1 192.168.1.8}
+		\item \texttt{quantenna \# cd /tmp}
+		\item \texttt{quantenna \# tftp -g -r u-boot-mini-piggy-pcie-v36.6.0.1.bin 192.168.1.10}
+		\item \texttt{quantenna \# flash\_eraseall /dev/mtd0}
+		\item \texttt{quantenna \# cat u-boot-mini-piggy-pcie-v36.6.0.1.bin > /dev/mtd0}
+		\item \texttt{quantenna \# sync}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Steps to burn boot loader and firmware}
+    \begin{itemize}
+    \item As below:
+            \begin{enumerate}
+	    	\item \texttt{Please burn different u-boot for different boards, as we have alpha-2(256MB flash + 512MB SDRAM, use dni1-V0.9.2) and beta boards(128MB flash + 256MB SDRAM use dni1-V2.2), and change the u-boot name to u-boot.bin}
+		\item \texttt{Set up a tftp server on your PC, its ip address is 192.168.1.10.}
+		\item \texttt{Entering into boot loader}
+		\item \texttt{(IPQ) \# setenv serverip 192.168.1.10}
+		\item \texttt{(IPQ) \# setenv ipaddr 192.168.1.1}
+		\item \texttt{(IPQ) \# tftpboot 0x41000000 u-boot.bin}
+		\item \texttt{(IPQ) \# crc32 0x41000000 \$\{filesize\}}
+		\item \texttt{(IPQ) \# ipq\_nand sbl \&\& nand erase 0x00c80000 0x00580000 \&\& imgaddr=0x41000000 \&\& source \$imgaddr:script}
+		\item \texttt{(IPQ) \# reset}
+		\item \texttt{Entering into boot loader again}
+		\item \texttt{(IPQ) \# bootm}
+		\item \texttt{Then the device should be in tftp recovery mode. Please run the command "tftp -i 192.168.1.1 put R7500-V1.0.0.46.img" on MS-DOS of your PC.}
+            \end{enumerate}
+    \end{itemize}
+
+\subsection{Known issues}
+            \begin{enumerate}
+		\item \texttt{Wireless log for 5G still not support.}
+            \end{enumerate}
+
+\section{Firmware V1.0.0.48}
+
+\tlabel{sec:1-0-1}
+\subsection{Repository}
+\begin{itemize}
+	\item GIT Repository dniserver//scm/dnigit/openwrt-buildroot.git/torby.tong/r7500-buildroot.git
+	\begin{enumerate}
+		\item Branch: \texttt{R7500-qt-br-IPQ806X-QTP840}
+                \item Tag: \texttt{R7500-FW-V1.0.0.48}
+	\end{enumerate}
+\end{itemize}
+
+    \subsection{Fixed Bugs}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{Bug 49838,[Netgear] Readyshare and Remote management does not resolve to dynamic DNS name.}
+		\item \texttt{Bug 50220,[SQA-1147]The description is displayed "dataand" after we enable "Help improve the Quality of Service feature by sharing analytcs with NETGEAR".}
+		\item \texttt{Update QTN FW from V36.6.0.23 to 36.6.0.25.}
+		\item \texttt{Use an endless loop to check RX gain every minute and change it back to 0x28 if this setting is not 0x28.}
+		\item \texttt{Add 5G log feature.}
+		\item \texttt{Add Legal Statement algorithm for popup on enabling "auto-update" for streamboost.}
+		\item \texttt{Fix string overlapping issue on CD-LESS page.}
+		\item \texttt{Fix issue that NSS is disabled after enable QoS then disable QoS.}
+
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Upgrade Quanteena mini u-boot v36.6.0.1}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{quantenna \# ifconfig br0:1 192.168.1.8}
+		\item \texttt{quantenna \# cd /tmp}
+		\item \texttt{quantenna \# tftp -g -r u-boot-mini-piggy-pcie-v36.6.0.1.bin 192.168.1.10}
+		\item \texttt{quantenna \# flash\_eraseall /dev/mtd0}
+		\item \texttt{quantenna \# cat u-boot-mini-piggy-pcie-v36.6.0.1.bin > /dev/mtd0}
+		\item \texttt{quantenna \# sync}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Steps to burn boot loader and firmware}
+    \begin{itemize}
+    \item As below:
+            \begin{enumerate}
+	    	\item \texttt{Please burn different u-boot for different boards, as we have alpha-2(256MB flash + 512MB SDRAM, use dni1-V0.9.2) and beta boards(128MB flash + 256MB SDRAM use dni1-V2.2), and change the u-boot name to u-boot.bin}
+		\item \texttt{Set up a tftp server on your PC, its ip address is 192.168.1.10.}
+		\item \texttt{Entering into boot loader}
+		\item \texttt{(IPQ) \# setenv serverip 192.168.1.10}
+		\item \texttt{(IPQ) \# setenv ipaddr 192.168.1.1}
+		\item \texttt{(IPQ) \# tftpboot 0x41000000 u-boot.bin}
+		\item \texttt{(IPQ) \# crc32 0x41000000 \$\{filesize\}}
+		\item \texttt{(IPQ) \# ipq\_nand sbl \&\& nand erase 0x00c80000 0x00580000 \&\& imgaddr=0x41000000 \&\& source \$imgaddr:script}
+		\item \texttt{(IPQ) \# reset}
+		\item \texttt{Entering into boot loader again}
+		\item \texttt{(IPQ) \# bootm}
+		\item \texttt{Then the device should be in tftp recovery mode. Please run the command "tftp -i 192.168.1.1 put R7500-V1.0.0.48.img" on MS-DOS of your PC.}
+            \end{enumerate}
+    \end{itemize}
+
+\section{Firmware V1.0.0.50}
+
+\tlabel{sec:1-0-1}
+\subsection{Repository}
+\begin{itemize}
+	\item GIT Repository dniserver//scm/dnigit/openwrt-buildroot.git/torby.tong/r7500-buildroot.git
+	\begin{enumerate}
+		\item Branch: \texttt{R7500-qt-br-IPQ806X-QTP840}
+                \item Tag: \texttt{R7500-FW-V1.0.0.50}
+	\end{enumerate}
+\end{itemize}
+
+    \subsection{Fixed Bugs}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{Bug 50384,[Netgear]Remove Time Machine sentence in cd-less flow.}
+		\item \texttt{Bug 50520,[Netgear][QOS]replace GUI string "Current Performance Optimization Database on Router".}
+		\item \texttt{Bug 50398,[IR-034]AP mode and Bridge Mode can be both enabled.}
+		\item \texttt{Bug 50491,[FAI issues][LED]The two USB LEDs have some abnormal phenomenon.}
+		\item \texttt{Bug 50244,[SQA-2194] hide the wireless channel 60 and 64 in web GUI when user configures the 5G Hz band of DUT as HT80 under Taiwan region.}
+		\item \texttt{Bug 50529,[QOS] speedtest GUI polling check result.}
+		\item \texttt{Bug 50530,[SQA-1149][QOS]"http://support.netgear.com/" link can not jump.}
+		\item \texttt{Bug 50531,[QoS][soap] add a linkspeed in api GetattachDevice2.}
+		\item \texttt{Bug 50532,[Netgear TD-231][QoS]Genie Can't accept "1000" and "0.1" as manul input.}
+		\item \texttt{Update QTN FW from V36.6.0.25 to 36.6.0.27.}
+		\item \texttt{Per QTN's suggestion to change the NA power table from 2 lines to 5 lines.}
+
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Upgrade Quanteena mini u-boot v36.6.0.1}
+    \begin{itemize}
+    \item As below:
+    	\begin{enumerate}
+		\item \texttt{quantenna \# ifconfig br0:1 192.168.1.8}
+		\item \texttt{quantenna \# cd /tmp}
+		\item \texttt{quantenna \# tftp -g -r u-boot-mini-piggy-pcie-v36.6.0.1.bin 192.168.1.10}
+		\item \texttt{quantenna \# flash\_eraseall /dev/mtd0}
+		\item \texttt{quantenna \# cat u-boot-mini-piggy-pcie-v36.6.0.1.bin > /dev/mtd0}
+		\item \texttt{quantenna \# sync}
+    	\end{enumerate}
+    \end{itemize}
+
+    \subsection{Steps to burn boot loader and firmware}
+    \begin{itemize}
+    \item As below:
+            \begin{enumerate}
+	    	\item \texttt{Please burn different u-boot for different boards, as we have alpha-2(256MB flash + 512MB SDRAM, use dni1-V0.9.2) and beta boards(128MB flash + 256MB SDRAM use dni1-V2.2), and change the u-boot name to u-boot.bin}
+		\item \texttt{Set up a tftp server on your PC, its ip address is 192.168.1.10.}
+		\item \texttt{Entering into boot loader}
+		\item \texttt{(IPQ) \# setenv serverip 192.168.1.10}
+		\item \texttt{(IPQ) \# setenv ipaddr 192.168.1.1}
+		\item \texttt{(IPQ) \# tftpboot 0x41000000 u-boot.bin}
+		\item \texttt{(IPQ) \# crc32 0x41000000 \$\{filesize\}}
+		\item \texttt{(IPQ) \# ipq\_nand sbl \&\& nand erase 0x00c80000 0x00580000 \&\& imgaddr=0x41000000 \&\& source \$imgaddr:script}
+		\item \texttt{(IPQ) \# reset}
+		\item \texttt{Entering into boot loader again}
+		\item \texttt{(IPQ) \# bootm}
+		\item \texttt{Then the device should be in tftp recovery mode. Please run the command "tftp -i 192.168.1.1 put R7500-V1.0.0.50.img" on MS-DOS of your PC.}
+            \end{enumerate}
+    \end{itemize}
+\end{document} 

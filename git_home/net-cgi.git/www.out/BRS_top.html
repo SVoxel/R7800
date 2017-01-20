@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/top_style.css" />
+
+</head>
+
+<body>
+
+<div id="header_top">
+		
+	<div class="top_name">
+		<div class="title_div"></div>
+		<% cd_less_top_hardware_version() %>
+	</div>
+	
+	<div id="firmware_version" class="firmware_version_div" style="display:none">
+		<div align="right">Router Firmware Version:</div>
+		<div align="right"><% cat_file("/firmware_version") %><% get_firmware_region("single_blank", "ww_blank") %></div>
+	</div>
+	
+</div>
+
+</body>
+
+</html>

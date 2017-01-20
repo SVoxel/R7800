@@ -1,0 +1,293 @@
+#! /bin/sh
+
+TMP_UMOUNT_TABLE=/tmp/umounting_table_fgd456
+TMP_DEVICE_NAME=/tmp/mounting_divice_name
+TMP_DATA_XYZ=/tmp/proc_partition_dev
+DISK_FIND_TABLE=/tmp/find_disk_abcxzy
+UPDATE_NAME=/tmp/update_name
+
+dev_inproc(){
+	rm -f $TMP_DATA_XYZ
+	cat /proc/partitions | awk '{print $4}' | grep sd >$TMP_DATA_XYZ
+	while read LINE
+	do
+		dev=`echo "$1" | cut -c 10-`
+		if [ "$LINE" = "$dev" ]; then
+			return 0
+			break
+		fi
+	done<$TMP_DATA_XYZ
+	return 1
+}
+
+# $1--->umounting dir
+isdafake(){
+	
+	mount | awk '{print $1}' | grep ^/dev/sd | cut -c 6->$TMP_DEVICE_NAME
+	divnam=`echo "$1" | awk -F/ '{print $NF}'`
+	sleep 1
+	while read LINE
+	do
+		if [ "$LINE" = "$divnam" ]; then
+			return 1
+			break
+		fi
+	done<$TMP_DEVICE_NAME
+	return 0
+}
+
+# $---> sda1
+print_log()
+{
+        if [ `length $1` != '4' ]; then
+                return
+        fi
+
+	sata_disk_name=`/bin/config get sata_diskname`
+
+        device_name=`cat $DISK_FIND_TABLE | grep $1 | awk -F* '{print $2}'`
+	volume_name=`cat $DISK_FIND_TABLE | grep $1 | awk -F* '{{{i=NF-3; a="*";while(i!=0) {printf $(NF-i); if(i!=1) printf a; i--}}}}'`
+
+	if [ "x$sata_disk_name" = "x$1" ]; then
+		logger "[External disk detached] The External disk $deivce_name($volume_name) is removed from the router"
+		return
+	else
+		logger "[USB device detached] The USB storage device $device_name($volume_name) is removed from the router"
+		return
+	fi
+
+	volume_name=`/usr/sbin/vol_id -L /dev/$1`
+	if [ ! -n "$volume_name" ]; then
+	       volume_name=$1
+	fi
+	logger "[USB device detached] The USB storage device $1($volume_name) is removed from the router"
+	return
+}
+
+
+# $1--->upper dir (/tmp/mnt or /tmp/ftpgust/shares)
+umount_all()
+{
+	umount_flag=0
+	RESULT=/tmp/umount_result
+
+	sync
+	sync
+	
+	rm -f $RESULT
+
+	upper_dir="$1"
+	
+	cd $upper_dir
+	if [ $? -ne 0 ]; then
+		return
+	fi
+	
+	for i in * ; do
+		if [ "$i" = "*" ]; then
+			# if there are no sub folders in the cur folder,"i" var would be '*',
+			# and ignore it and jump over
+			continue
+		fi
+
+		c=0
+		while [ $c -le 3 ]; do
+			/usr/sbin/detach_afp_shares
+			sync
+			umount $upper_dir/"$i"
+			if [ $? -eq 0 ]; then
+				[ $upper_dir = "/tmp/mnt" ] && print_log $1
+				break;
+			fi
+			let c=$c+1
+		done
+		umount_path="$upper_dir/$i"
+		if [ $c -eq 4 ]; then
+			if dev_inproc "$umount_path"
+			then
+				umount_flag=1
+				#echo 1 > $RESULT
+				#exit 1
+				continue
+			else
+				umount "$upper_dir" -f
+				if [ $? -eq 0 ]; then
+					[ $upper_dir = "/tmp/mnt" ] && print_log $1
+				fi
+			fi
+		fi
+		rmdir "$i"
+	done	
+	# when there are NOT any disks, we should set 0 to /tmp/umount_result
+	if [ "x$(/bin/df | grep sd)" != "x"  -a $umount_flag -eq 1 ]; then
+		echo 1 > $RESULT
+	else
+		echo 0 > $RESULT
+		ledcontrol -n sata -c green -s off
+		ledcontrol -n usb1 -c green -s off
+		ledcontrol -n usb3 -c green -s off
+	fi
+}
+
+umount_part()
+{
+ # call from hotplug2
+	RESULT=/tmp/umount_result
+	
+	sync
+	sync
+
+	rm -f $RESULT
+	
+	umount_dir="$1"
+
+	if isdafake "$umount_dir"
+	then
+		return
+	fi
+
+	c=0
+	while [ $c -le 3 ]; do
+		sync
+		/usr/sbin/detach_afp_shares "$umount_dir"
+		sync
+		umount "$umount_dir"
+		if [ $? -eq 0 ]; then
+			break
+		fi
+		let c=$c+1
+	done
+	if [ $c -eq 4 ]; then
+		# only when disk is also in /proc/partition file,
+		# in other words,the disk is not unpluged ,exit directly
+		if dev_inproc "$umount_dir"
+		then
+			echo 1 > $RESULT
+			exit 1
+		else
+			umount "$umount_dir" -f
+		fi
+	fi
+	rmdir "$umount_dir"
+	if [ $? -ne 0 ]; then
+			# kill some possible tasks who is accessing usb disk to block umount command
+			#/etc/init.d/samba stop; FIXME: commented by ASL
+			kill -9 `pidof minidlna`
+			sleep 1
+			/usr/sbin/detach_afp_shares "$umount_dir"
+			sync
+			umount "$umount_dir"
+			rmdir "$umount_dir"
+	fi
+
+}
+
+check_umount_disk_led()
+{
+	# USB disk
+	disk_name=`echo $1 | sed 's/[0-9]//g'`
+	ls -l /sys/block | grep sd | awk '{print $9}' > /tmp/disk_rm
+	while read LINE
+	do
+		#cd /sys/block/sda; ls -l
+		#../../devices/platform/ipq-dwc3.0/dwc3.0/xhci-hcd.0/usb1/1-1/1-1:1.0/host4/target4:0:0/4:0:0:0
+		#../../devices/platform/ipq-dwc3.1/dwc3.1/xhci-hcd.1/usb3/4-1/4-1:1.0/host3/target3:0:0/3:0:0:0
+		# To get usb1 or usb3
+		#usb_port=$(ls -l /sys/block/$LINE | grep usb | awk '{print $11}' | awk -F/ '{print $8}')
+		#usb_name=`echo $usb_port | sed 's/[0-9]//g'`
+		#usb_num=`echo $usb_port | cut -c 4-`
+		if [ "x$LINE" = "x$disk_name" ]; then
+			usb_interface=$(ls -l /sys/block/$LINE | grep usb | awk '{print $11}' | awk -F/ '{print $6}')
+			if [ "x$usb_interface" != "x" ]; then
+				if [ "$usb_interface" = "dwc3.0" ]; then
+					ledcontrol -n usb1 -c green -s off
+				elif [ "$usb_interface" = "dwc3.1" ]; then
+					ledcontrol -n usb3 -c green -s off
+				fi
+			fi
+		fi
+	done</tmp/disk_rm
+	rm /tmp/disk_rm
+
+	#eSATA disk.
+	sata_disk_name=`/bin/config get sata_diskname`
+	if [ "x$sata_disk_name" = "x$disk_name" ]; then
+		ledcontrol -n sata -c green -s off
+	fi
+
+}
+
+# $1--->device name(sda1 or sdb3 or sdc3)
+# $2--->upper dir for ftp(ftpadmin or ftpguest)
+umount_part_ftp()
+{
+	devnam=$1
+	up_dir=$2
+	
+	mount | grep '^/dev/$devnam\>' | awk '{print $3}' | grep ^/tmp/$up_dir | sed -e 's/\\040/ /g'>$TMP_UMOUNT_TABLE
+	while read LINE
+	
+	do
+		umount_part "$LINE"
+	done<$TMP_UMOUNT_TABLE
+
+}
+
+ftp_down_upload()
+{
+       RESULT=/tmp/umount_result
+       LOAD=/tmp/ftp_load
+       rm $LOAD
+       ftp_load=0
+       /usr/sbin/ftpload
+       if [ -f $LOAD ]; then
+		ftp_load=`cat $LOAD`
+		if [ $ftp_load -gt 0 ]; then
+			echo 1 >$RESULT
+			exit 1
+		fi	
+       fi
+}
+
+service_stop()
+{
+	killall minidlna
+	killall -9 smbd
+}
+
+service_stop
+
+if [ $# -eq 0 ]; then
+	echo "Stop greendownload..." > /dev/console
+	green_download.sh stop
+	ftp_down_upload
+	umount_all "/tmp/ftpadmin/shares"
+#	umount_all "/tmp/ftpguest/shares"
+	umount_all "/tmp/mnt"
+#	logger "[USB device detached] ALL USB storage device is removed from the router"
+else
+	echo "Detect if need to stop greendownload..." > /dev/console
+	green_download.sh stop $1
+	ftp_down_upload
+	umount_part_ftp "$1" "ftpadmin"
+#	umount_part_ftp "$1" "ftpguest"
+	umount_part "/tmp/mnt/$1"
+	sleep 2
+	check_umount_disk_led $1
+	print_log $1
+fi
+
+echo `date` stop smbd at hotplug2.umount >> /tmp/debug_smb
+/usr/sbin/update_smb
+/usr/sbin/update_afp
+/sbin/cmdftp start
+/sbin/cmddlna start
+# in order to run this after run update_smb, moved it here
+test -f $RESULT || echo 0 > $RESULT
+
+df |grep sd |awk '{print $1}' |cut -c 6- >$UPDATE_NAME
+while read LINE
+do
+	update_smb $LINE
+	sleep 1
+done<$UPDATE_NAME

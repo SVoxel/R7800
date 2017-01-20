@@ -1,0 +1,39 @@
+--
+-- KEYS: list of keys containing events
+-- ARGV[1]: start timestamp
+-- ARGV[2]: end timestamp
+-- ARGV[3]: first index in the list to look
+-- ARGV[3]: last index in the list to look at
+-- returns: json-formatted event items that occurred between
+--	    the given timestamps.  Note that the items are simply
+--          printed one per line, and not as a json list.
+--
+m4_include(`codec.lua')
+
+-- our encoder/decoder object
+-- decode_from_db: converts a single event in db storage format (currently csv)
+--		   into a lua table
+-- encode_to_json: converts a lua table containing a list of events into json
+local xlate = { decode_from_db = csv_to_table,
+		encode_to_json = table_to_json }
+
+local ret = {}
+local begintime = tonumber(ARGV[1])
+local endtime = tonumber(ARGV[2])
+local beginentry = tonumber(ARGV[3])
+local endentry = tonumber(ARGV[4])
+for i2,key in ipairs(KEYS) do
+	local events = redis.call('lrange', key, beginentry, endentry)
+	if #events == 0 then return { ok='done' } end
+	for i,e in ipairs(events) do
+		local event = xlate.decode_from_db(e)
+		if event and event['time'] then
+			local time = tonumber(event['time'])
+			if time >= begintime and time <= endtime then
+				ret[#ret+1] = xlate.encode_to_json(event)
+			end
+		end
+	end
+end
+
+if #ret == 0 then return { ok='' } else return ret end

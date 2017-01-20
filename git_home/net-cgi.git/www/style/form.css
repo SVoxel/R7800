@@ -1,0 +1,264 @@
+P {
+	LIST-STYLE-POSITION: outside; FONT-SIZE: 12px; FONT-FAMILY: Arial, Helvetica, Geneva, Swiss, SunSans-Regular, sans-serif
+}
+H1 {
+	FONT-WEIGHT: bold; FONT-SIZE: 16px; COLOR: #9d98ff; FONT-FAMILY: Arial, Helvetica, Geneva, Swiss, SunSans-Regular, sans-serif
+}
+H2 {
+	FONT-WEIGHT: bold; FONT-SIZE: 14px; BACKGROUND: white; COLOR: #09c; FONT-FAMILY: Arial, Helvetica, Geneva, Swiss, SunSans-Regular, sans-serif
+}
+BODY {
+	FONT-SIZE: 12px; FONT-FAMILY: Arial, Helvetica, Geneva, Swiss, SunSans-Regular, sans-serif; background-color: #ffffff; WIDTH: 100%; margin-left: 0; margin-right: 0;
+}
+TD {
+	FONT-SIZE: 12px; FONT-FAMILY: Arial, Helvetica, Geneva, Swiss, SunSans-Regular, sans-serif
+}
+A {
+	COLOR: black; TEXT-DECORATION: none
+}
+pre{
+white-space:pre-wrap;
+word-wrap:keep-all;
+}
+
+.blue_a A{ COLOR: blue; TEXT-DECORATION: underline;}
+.grey_a A{ COLOR: grey; TEXT-DECORATION: underline;}
+.black_a{ COLOR: black; TEXT-DECORATION: underline;}
+.thead {
+	FONT-WEIGHT: bold; FONT-SIZE: 12px; FONT-FAMILY: Arial, Helvetica, Geneva, Swiss, SunSans-Regular, sans-serif; TEXT-ALIGN: center
+}
+.thead1{
+	text-align:left
+}
+.ttext {
+	FONT-SIZE: 12px; FONT-FAMILY: Arial, Helvetica, Geneva, Swiss, SunSans-Regular, sans-serif; TEXT-ALIGN: center
+}
+.subhead {
+	FONT-WEIGHT: bold; FONT-SIZE: 12px; FONT-FAMILY: Arial, Helvetica, Geneva, Swiss, SunSans-Regular, sans-serif
+}
+.subhead_acc_control {
+	cursor:pointer; FONT-WEIGHT: bold; FONT-SIZE: 12px; FONT-FAMILY: Arial, Helvetica, Geneva, Swiss, SunSans-Regular, sans-serif;
+	COLOR: white; TEXT-DECORATION: underline;
+}
+.subhead_blue {
+        FONT-WEIGHT: bold; FONT-SIZE: 12px; COLOR: #09c; FONT-FAMILY: Arial, Helvetica, Geneva, Swiss, SunSans-Regular, sans-serif
+	}
+
+.num {
+	FONT: 10pt "Courier New",Courier,serif; COLOR: black
+}
+.bar { position: absolute; top: 0; left: 0; width:0%; height: 100%; background: url(../image/oneline.gif) 0 -2px repeat-x; }
+.prgbar1 { width: 200px; height: 20px; font-weight: bolder; font-size: 10pt; border: 1px solid; border-color: #09c; color: #0000FF; position: relative;}
+.prgbar { 
+	font-family:Arial; padding:0px; height: 20px; width: 200px; font-weight: bolder; font-size: 10pt; border: 1px solid; border-color: #09c; color: #0000FF}
+.rebootbar { 
+	font-family:Arial; padding:0px; height: 20px; width: 370px; font-weight: bolder; font-size: 10pt; border: 1px solid; border-color: #09c; color: #0000FF}
+.reboot1bar { 
+	font-family:Arial; padding:0px; height: 20px; width: 320px; font-weight: bolder; font-size: 10pt; border: 1px solid; border-color: #09c; color: #0000FF}
+.checkbar {
+	font-family:Arial; padding:0px; height: 15px; width: 155px; font-weight: bolder; font-size: 10pt; border: 1px solid; border-color: #09c; color: #0000FF}
+.linktype  {     color:  blue;   text-decoration:   underline}
+
+#content_icons { width: 690px; _height: 800px; overflow-y: auto; position: absolute; top: 0; left: 0; bottom: 0; }
+.page_title{width: 100%; height: 20px; font: bold 17px arial; color: #9d98ff; position: absolute; top: 0px; left: 0px;}
+.main_bas {width: 100%; background-color: #ffffff; overflow: auto; position: absolute; top: 135px; left: 0px; bottom: 30px;}
+.main_bas_dsl {width: 100%; background-color: #ffffff; overflow: auto; position: absolute; top: 60px; left: 0px; bottom: 30px;}
+.main_top_button{ width: 100%; overflow: auto; position: absolute; top: 50px; left: 0px; bottom: 30px;}
+.main{ width: 100%; overflow: auto; position: absolute; top: 20px; left: 0px; bottom: 30px;}
+#bas_top { width: 100%; height: 85px; background-color: #ffffff; position: absolute; top: 50px; left: 0px; }
+.no_ip_logo{width:100px; height: 50px; background: url(../image/powerd-by-logo.png); position:absolute; top:0px; right:20px;}
+
+#help{ width:100%; position: absolute; bottom: 30px; left: 0px; }
+#help #helpframe{width:100%; height: 120px; }
+#help_switch{ width:100%; height: 30px; background-color: #e5e5e5; position: absolute; bottom: 0px; left: 0px;}
+.help_switch_img { width: 100%; height: 100%; position: relative; }
+#help_switch #help_space{ height: 22px; width: 30px; background: url(../image/buttons.gif) no-repeat -438px 0; background-repeat: no-repeat; cursor:pointer; position: absolute; z-index: 2; top: 4px; left: 5px; }
+
+#help_switch #help_center{ width: 180px; color: white; font-family: Arial; font-weight: Bold; font-size: 15px; line-height: 30px; position: absolute; z-index: 2; top: 0; left: 35px; }
+
+#help_switch #help_show_hidden { width: 270px; font-family: Arial; color: white; font-size: 12px; font-style: italic; text-align: right; line-height: 30px; position: absolute; z-index: 2; top: 0; right: 5px; }
+#help_switch #help_show_hidden a{ color:white; background-color: transparent;  position: relative; top: -2px; text-decoration:underline;}
+
+.close_help #help_button{ width: 45px; height: 12px; background: url(../image/buttons.gif) no-repeat -390px 0; cursor:pointer; position: absolute; z-index: 1; top: 8px; right: 50%; }
+
+.open_help  #help_button{ width: 46px; height: 13px; background: url(../image/buttons.gif) no-repeat -390px -14px;  cursor:pointer; position: absolute; z-index: 1; top: 8px; right: 50%;}
+
+.button{ float: left; width: 600px; height: 42px; }
+.fix_button{width: 100%; height: 30px; position: absolute; top: 20px; left: 0px; background: url(../image/oneline.gif)0 -40px repeat-x;}
+
+.apply_bt, .middle_apply_bt, .apply_media, .cancel_bt, .long_add_bt, .middle_add_bt, .add_bt, .middle_edit_bt, .edit_bt,.long_edit_bt, .short_edit_bt, .long_delete_bt, .middle_delete_bt, .delete_bt, .common_bt, .common_big_bt, .long_common_bt, .short_common_bt, .short_refresh_bt, .common_key_bt, .speedtest_bt, .window_bt, .non_window_bt{ height: 22px; color: #f2f2f2; font-family: Arial; font-weight: Bold; font-size: 14px; background-color: transparent; border: none; cursor: pointer; padding-bottom: 2px;}
+.middle_common_bt, .common_show_stat_bt{ height: 22px; color: #f2f2f2; font-family: Arial; font-weight: Bold; font-size: 12px; background-color: transparent; border: none; cursor: pointer; padding-bottom: 2px;}
+.common_el_bt, .middle_common_el_bt, .long_common_el_bt{height: 22px; color: #f2f2f2; font-family: Arial;font-size: 9px; background-color: transparent; border: none; cursor: pointer; padding-bottom: 2px}
+.common_hu_bt, .middle_common_hu_bt, .long_common_hu_bt{height: 22px; color: #f2f2f2; font-family: Arial; font-weight: Bold; font-size: 11px; background-color: transparent; border: none; cursor: pointer; padding-bottom: 2px}
+.edit_bt_little, .delete_bt_little , .long_add_bt_little{ height: 22px; color: #f2f2f2; font-family: Arial; font-weight: Bold; font-size: 12px; background-color: transparent; border: none; cursor: pointer; padding-bottom:2px; padding-left:17px;}
+.apply_bt{width: 128px; background: url(../image/buttons.gif) no-repeat top left}
+.middle_apply_bt{width: 219px; background: url(../image/buttons.gif) no-repeat -230px -264px}
+.apply_media{width: 360px; background: url(../image/buttons.gif) no-repeat 0 -286px}
+.cancel_bt{width: 128px; background: url(../image/buttons.gif) no-repeat 0 -22px }
+.speedtest_bt{width: 128px; background: url(../image/buttons.gif) no-repeat 0 -44px}
+.add_bt{ width:135px; background: url(../image/buttons.gif) no-repeat 0 -110px}
+.long_add_bt{ width: 280px; background: url(../image/buttons.gif) no-repeat 0 -154px}
+.middle_add_bt{ width: 206px; background: url(../image/buttons.gif) no-repeat 0 -308px}
+.long_add_bt_little{ width: 280px; background: url(../image/buttons.gif) no-repeat 0 -154px}
+.edit_bt{width:200px; background: url(../image/buttons.gif) no-repeat 0 -66px}
+.short_edit_bt{width:150px; background: url(../image/buttons.gif) no-repeat -300px -66px}
+.middle_edit_bt{width:220px; background: url(../image/buttons.gif) no-repeat -230px -242px}
+.long_edit_bt{width:320px; background: url(../image/buttons.gif) no-repeat 0 -374px}
+.edit_bt_little{width:200px; background: url(../image/buttons.gif) no-repeat 0 -66px}
+.delete_bt{width:180px; background: url(../image/buttons.gif) no-repeat -128px 0}
+.middle_delete_bt{width:209px; background: url(../image/buttons.gif) no-repeat -206px -308px}
+.long_delete_bt{width:258px; background: url(../image/buttons.gif) no-repeat -192px -352px}
+.delete_bt_little{width:180px; background: url(../image/buttons.gif) no-repeat -128px 0}
+.common_bt, .common_show_stat_bt, .common_el_bt, .common_hu_bt, .window_bt{width:147px; background: url(../image/buttons.gif) no-repeat -135px -110px}
+.long_common_hu_bt{width:188px; background: url(../image/buttons.gif) no-repeat 0 -418px}
+.long_common_el_bt{width:188px; background: url(../image/buttons.gif) no-repeat 0 -418px}
+.non_window_bt{width:180px; background: url(../image/buttons.gif) no-repeat -128px -44px}
+.common_big_bt{width:230px; background: url(../image/buttons.gif) no-repeat 0 -242px}
+.long_common_bt{width:320px; background: url(../image/buttons.gif) no-repeat 0 -198px}
+.short_common_bt{width:100px; background: url(../image/buttons.gif) no-repeat -200px -66px}
+.middle_common_bt, .middle_common_el_bt, .short_refresh_bt, .middle_common_hu_bt{width:128px; background: url(../image/buttons.gif) no-repeat 0 -44px}
+.common_key_bt{width:192px; background: url(../image/buttons.gif) no-repeat 0 -330px}
+
+.remind_font, .success_font, .choice_font, .success_font_normal, .app_header_font{color:#000000; font-family:Verdana; }
+.success_font{font-size:14px; font-weight: bold;}
+.remind_font{font-size:16px; font-weight: bold;}
+.choice_font{font-size:12px; font-weight: bold;}
+.gray_choice_font{color:gray; font-family:Verdana;font-size:12px; font-weight: bold;}
+.success_font_normal{font-size:14px;}
+.app_header_font{ font-size:12px;}
+.app_con_font{padding-left:20px; color:#000000; font-family:Verdana;  font-size:10px;}
+.app_con_dig{ color:#000000; font-family:Verdana;  font-size:10px;}
+.case_green_font, .case_green_big{color:#006400; font-family:Verdana; font-weight: bold;}
+.case_green_font{ font-size:12px; padding-left:28px;}
+.case_green_big{font-size:14px;}
+.case_red_font, .case_red_big{color:#ff0000; font-family:Verdana;   font-weight: bold; }
+.case_red_font{font-size:12px; padding-left:28px;}
+.case_red_big{font-size:14px; }
+.st_header_font { color:#000000; font-family:Verdana; font-size:14px; font-weight: bold;}
+
+
+.edit1_bt, .add1_bt, .middle_delete1_bt, .common1_key_bt, .apply1_media, .delete1_bt, .short_common1_bt, .reboot1, .apply1_bt, .cancel1_bt, .common1_bt, .long_add_gray_bt, .add_gray_bt, .edit_gray_bt, .long_edit_gray_bt, .delete_gray_bt ,.long_delete_gray_bt, .long_common_gray_bt, .common_gray_bt, .common_big_gray_bt, .short_common_gr_bt, .common_key_gray_bt{ height: 22px; color:#808080; font-family: Arial; font-weight: Bold; font-size: 14px; background-color: transparent; border: none; cursor: pointer; padding-bottom: 2px;}
+.add1_bt{ width:135px; background: url(../image/buttons.gif) no-repeat 0 -132px}
+.edit1_bt{width:200px; background: url(../image/buttons.gif) no-repeat 0 -88px}
+.common1_key_bt{width:192px; background: url(../image/buttons.gif) no-repeat 0 -352px}
+.apply1_media{width: 360px; background: url(../image/buttons1.gif) no-repeat 0 -374px}
+.short_common1_bt{width:100px; background: url(../image/buttons.gif) no-repeat -200px -88px}
+.delete1_bt{width:180px; background: url(../image/buttons.gif) no-repeat -128px -22px}
+.middle_delete1_bt{width:209px; background: url(../image/buttons1.gif) no-repeat -0px -418px}
+.reboot1{position: relative; margin: 9px 57px; width: 180px; background:url(../image/buttons1.gif)  no-repeat 0 -352px}
+.apply1_bt{width: 128px; background: url(../image/buttons1.gif) no-repeat -192px -330px}
+.cancel1_bt{width: 128px; background: url(../image/buttons1.gif) no-repeat -320px -330px}
+.common1_bt{width:147px; background: url(../image/buttons.gif) no-repeat -135px -132px}
+.long_add_gray_bt{ width: 280px; background: url(../image/buttons.gif) no-repeat 0 -176px}
+.add_gray_bt{ width:135px; background: url(../image/buttons.gif) no-repeat 0 -132px}
+.edit_gray_bt{width:200px; background: url(../image/buttons.gif) no-repeat 0 -88px}
+.long_edit_gray_bt{width:320px; background: url(../image/buttons.gif) no-repeat 0 -396px}
+.delete_gray_bt{width:180px; background: url(../image/buttons.gif) no-repeat -128px -22px}
+.long_delete_gray_bt{width:258px; background: url(../image/buttons.gif) no-repeat -192px -330px}
+.long_common_gray_bt{width:320px; background: url(../image/buttons.gif) no-repeat 0 -220px}
+.common_gray_bt{width:147px; background: url(../image/buttons.gif) no-repeat -135px -132px}
+.common_big_gray_bt{width:230px; background: url(../image/buttons.gif) no-repeat 0 -264px}
+.short_common_gr_bt{width:100px; background: url(../image/buttons.gif) no-repeat -200px -88px}
+.common_key_gray_bt{width:192px; background: url(../image/buttons.gif) no-repeat 0 -352px}
+
+
+.tables{
+        font-family: Arial;
+        font-size: 12px;
+}
+
+.table_header{
+        color: #ffffff;
+        font-weight: Bold;
+        background-color: #767676;
+}
+
+.even_line{
+        background-color: #e5e5e5;
+}
+
+.odd_line{
+        background-color: white;
+}
+
+.divselect{ 
+height:20px; 
+width:150px; 
+}  
+.divSlt{  
+position:absolute; 
+font-size:12px; 
+ 
+background-color:#cccccc;
+} 
+.divSlt span{ 
+display:block; 
+width:100%; 
+border:1px solid #999999; 
+background:url(selects.gif) no-repeat right center; 
+text-indent:6px; 
+cursor:pointer; 
+} 
+.divSlt ul{ 
+display:block; 
+background-color:#FFFFFF; 
+width:100%; 
+border:1px solid #999999; 
+border-top:0px; 
+margin:0px; 
+padding:0px; 
+list-style:none; 
+} 
+.divSlt ul li{ 
+text-indent:5px; 
+height:20px; 
+line-height:20px; 
+cursor:pointer; 
+}
+
+#select_div{ position:relative; width:100%; z-index:1;}
+.enable_select { color:#000000;}
+.disable_select { color:gray;}
+#select_title{ position:absolute; top:3px; left:20px; width:325px; z-index:9;}
+#select_content{ position:absolute; top:0px; left:345px; z-index:9; width: 90px;}
+#select_content span{ position:absolute; width: 90px; height:18px; cursor: default; line-height:18px;}
+.enable_span { color:#000000; background-image:url(../selects.gif); background-position:right; background-repeat:no-repeat; border:1px solid #b8c6eb; }
+/*.disable_span { color:gray; background-image:url(../selects_disabled.gif); background-position:right; background-repeat:no-repeat; border:1px solid #e5e5e5; } */
+#select_content #auto_conn_time_show { position:absolute; width: 100%; z-index:9;}
+#select_content #auto_conn_time{ position:absolute; top:19px; left:0; width: 90px; z-index:99; height:200px; overflow-x: hidden; overflow-y:scroll; border:1px solid #b8c6eb; list-style:none; cursor: default;}
+#auto_conn_time li { height: 20px; width: 75px; margin: 0; background: #FFFFFF; list-style:outside none; line-height: 18px;}
+
+.ap_css{float:left; margin-left: 5px; width: 623px; height: 401px; background-image: url(../image/AP_mode.jpg); background-repeat: no-repeat;}
+
+
+.download_type{width: 100%; height: 120px; background-color: #ffffff; overflow: auto; position: absolute; top: 50px; left: 0px; }
+.download_add{width: 100%; height: 130px; background-color: #ffffff; overflow: auto; position: absolute; top: 150px; left: 0px; }
+.download_http{width: 100%; height: 270px; background-color: #ffffff; overflow: auto; position: absolute; top: 50px; left: 0px;}
+.download_show{width: 100%; height: 100%; position: absolute; top: 0px; left: 0px; overflow: auto;}
+
+.liteblue{width:100%; height: 12px; background: url(../image/oneline.gif) 0 -43px repeat-x;}
+
+/* WPS_status & WPS_client_status */
+#bar_td { width: 400px; margin:auto;position: relative; height:35px;}
+.pic_on{  background:url(/image/buttons.gif) -350px 0 no-repeat; width:27px; height:27px;position:relative; float:left; }
+.pic_off{ background:url(/image/buttons.gif) -308px 0 no-repeat; width:27px; height:27px;position:relative; float:left; }
+#wps_bar {width: 350px; float: right; }
+.prgbar2 { width: 350px; height: 20px; font-weight: bolder; font-size: 10pt; border: 1px solid; border-color: #09c; color: #0000FF; position: relative; float: right;}
+.rebootbar1{ width: 350px; height: 20px; font-weight: bolder; font-size: 10pt; border: 1px solid; border-color: #09c; color: #0000FF; position: relative;} 
+.vlan_port4, .vlan_port3, .vlan_port2, .vlan_port1, .vlan_internet {width: 51px; height: 85px;}
+.vlan_bgn_wlan, .vlan_bgn_guest, .vlan_an_wlan, .vlan_an_guest{width: 70px; height:85px;}
+.vlan_port4{ background: url() no-repeat -36px 0}
+.vlan_port3{ background: url() no-repeat -87px 0}
+.vlan_port2{ background: url() no-repeat -138px 0}
+.vlan_port1{ background: url() no-repeat -189px 0}
+.vlan_internet{ background: url() no-repeat -240px 0}
+.vlan_bgn_wlan{background: url() no-repeat -300px 0}
+.vlan_bgn_guest{background: url() no-repeat -370px 0}
+.vlan_an_wlan{background: url() no-repeat -440px 0}
+.vlan_an_guest{background: url() no-repeat -510px 0}
+.pop_box{-webkit-box-shadow: 0px 0 0px #ffffff,10px 0 10px #77787A,0 0px 0px #ffffff,0 10px 10px #77787A; -moz-box-shadow: 0px 0 0px #ffffff,10px 0 10px #77787A,0 0px 0px #ffffff,0 10px 10px #77787A; box-shadow: 0px 0 0px #ffffff,10px 0 10px #77787A,0 0px 0px #ffffff,0 10px 10px #77787A;;margin-left:30px;padding-top:20px; overflow:auto;  border-top:12px solid #5bb6e5; border-left:1px solid #c9c9ca; border-right:1px solid #c9c9ca; border-bottom:1px solid #c9c9ca; background-color: #ffffff; }
+
+.type-file-file{position:absolute; left:-150px; opacity:0; filter:alpha(opacity=0); z-index: 2; font-size:100px; width:450px; height:20px; padding-top:4px}
+
+.msg_nousb{ float:left; height:22px; line-height:22px; margin-left: 5px; color:#FF0000;}
+.download_bts{float:right; text-align:left; width:65%}

@@ -1,0 +1,102 @@
+BODY {FONT-SIZE: 12px; FONT-FAMILY: Arial, Helvetica, Geneva, Swiss, SunSans-Regular, sans-serif; background-color: #ffffff; WIDTH: 100%; margin: 0; color:#646466}
+A {COLOR: #646466; TEXT-DECORATION: none}
+
+.page_title{width: 300px; height: 20px; font: bold 17px arial; color: black; position: absolute; top: 40px; left: 30px; }
+.page-line{width:80%; padding-left: 50%; position: absolute; top:80px; left: -40%;}
+
+.main_top_button{ width: 100%; overflow: auto; position: absolute; top: 100px; left: 0px; bottom: 30px;}
+.main{ width: 100%; overflow: auto;  position: absolute; top: 190px; left: 0px; bottom: 30px;}
+
+.fix_adv_button{width: 100%; height: 100px; position: absolute; top: 40px; left: 0px; background-image: url(../image/topline.gif); background-repeat: no-repeat; background-position: 50% 80%;}
+.fix_button{width: 100%; height: 80px; position: absolute; top: 40px; left: 0px; background-image: url(../image/topline.gif); background-repeat: no-repeat; background-position: 50% 80%;}
+.new_cancel_bt, .new_apply_bt{ height: 22px; width: 130px; color: #f2f2f2; font-family: Arial; font-weight: Bold; font-size: 14px;  border: none; cursor: pointer; padding-bottom: 2px;}
+.new_apply_bt{ background-color: #702b86; margin-left: 10px;}
+.new_apply_bt2{ height: 22px; width: auto; color: #f2f2f2; font-family: Arial; font-weight: Bold; font-size: 14px;  border: none; cursor: pointer; padding: 2px 15px; background-color: #702b86; margin-left: 10px;}
+.new_edit_bt{ height: 22px; color: #f2f2f2; font-family: Arial; font-weight: Bold; font-size: 14px;  border: none; cursor: pointer; padding-bottom: 2px; background-color: #702b86; margin-left: 10px; padding-left: 10px; padding-right: 10px;}
+.new_cancel_bt{ background-color: #5bb6e5;}
+.wireless_bt{height: 22px; width: 170px; color: #f2f2f2; font-family: Arial; font-weight: Bold; font-size: 14px;  border: none; cursor: pointer; padding-bottom: 2px; background-color: #702b86; margin-left: 10px;}
+.wireless_bt2{height: 22px; width: auto; color: #f2f2f2; font-family: Arial; font-weight: Bold; font-size: 14px;  border: none; cursor: pointer; padding: 2px 15px;  background-color: #702b86; margin-left: 10px;}
+.eth, .wifi, .contype{width:120px; height: 40px; position: relative; top:20px; left: -20px; float: left;  font-weight: bold;}
+.eth{background-image: url(../image/eth.gif); background-repeat: no-repeat; background-position: 100% 0%; }
+.wifi{background-image: url(../image/wifi.png); background-repeat: no-repeat; background-position: 100% 0%; }
+.contype {background-image: url(../image/vpn.gif); background-repeat: no-repeat; background-position: 100% 0%; }
+
+#help{ width:100%; position: absolute; bottom: 30px; left: 0px; }
+#help #helpframe{width:100%; height: 120px; }
+#help_switch{ width:100%; height: 30px; background-color: #e5e5e5; position: absolute; bottom: 0px; left: 0px;}
+.help_switch_img { width: 100%; height: 100%; position: relative; }
+#help_switch #help_space{ height: 22px; width: 30px; background: url(../image/buttons.gif) no-repeat -438px 0; background-repeat: no-repeat; cursor:pointer; position: absolute; z-index: 2; top: 4px; left: 5px; }
+#help_switch #help_center{ width: 180px; color: white; font-family: Arial; font-weight: Bold; font-size: 15px; line-height: 30px; position: absolute; z-index: 2; top: 0; left: 35px; }
+#help_switch #help_show_hidden { width: 270px; font-family: Arial; color: white; font-size: 12px; font-style: italic; text-align: right; line-height: 30px; position: absolute; z-index: 2; top: 0; right: 5px; }
+#help_switch #help_show_hidden a{ color:white; background-color: transparent;  position: relative; top: -2px; text-decoration:underline;}
+.close_help #help_button{ width: 45px; height: 12px; background: url(../image/buttons.gif) no-repeat -390px 0; cursor:pointer; position: absolute; z-index: 1; top: 8px; right: 50%; }
+.open_help  #help_button{ width: 46px; height: 13px; background: url(../image/buttons.gif) no-repeat -390px -14px;  cursor:pointer; position: absolute; z-index: 1; top: 8px; right: 50%;}
+
+#content1{ width: 58%; height: auto; position: relative; left: 5%; float:left; background-image: url(../image/v_middleline.gif); background-repeat: repeat-y; background-position: 100% 0%;}
+#content3{ width: 25%; height: auto; position: relative; left: 5%; float: left;}
+
+.pop_box{-webkit-box-shadow: 0px 0 0px #ffffff,10px 0 10px #77787A,0 0px 0px #ffffff,0 10px 10px #77787A; -moz-box-shadow: 0px 0 0px #ffffff,10px 0 10px #77787A,0 0px 0px #ffffff,0 10px 10px #77787A; box-shadow: 0px 0 0px #ffffff,10px 0 10px #77787A,0 0px 0px #ffffff,0 10px 10px #77787A;;margin-left:30px;padding-top:20px; overflow:auto;  border-top:12px solid #5bb6e5; border-left:1px solid #c9c9ca; border-right:1px solid #c9c9ca; border-bottom:1px solid #c9c9ca; background-color: #ffffff; }
+.foot{ width: 600px; height: 300px; color: #ffffff; float: left; position:relative; left:50px;}
+.apfoot{ width: 100%; height: 100%; background: url(../image/ap_map_800.gif) no-repeat; }
+.iptable{background: url(../image/ap_map_700.gif) no-repeat;}
+.ipaddres{ width: 50%; height: 50%; position:absolute; left:5%; top:320px;  z-index:3;}
+.devname{ width: 53%; height: 42%; position:absolute; left:5%; top:320px;  z-index:2; background: url(../image/ap_map_device.gif) no-repeat;}
+.wizard_words_div1{ width:90%; padding:0 6% 0 4%;z-index:2;}
+.helpChoice_divs { height:20px; width:100%; margin:30px auto 0px auto; }
+
+.footer_double{ width: 100%; height: 86px; color: #ffffff; position:absolute; left: 0; bottom:0; }
+.footer_img { width: 100%; height: 100%; }
+.footer b, .footer_double b{font: bold 16px arial;}
+.footer a, .footer_double a{ color: #ffffff; font: normal 11px arial; text-decoration: none;}
+
+.footer #support{ float:left; line-height: 42px; position: absolute; left: 10px; top: 0; }
+.footer_double #support{ line-height: 42px; position: absolute; left: 10px; top: 0;}
+.footer #search{float: right; position: absolute; top: 10px; right: 10px;}
+.footer_double #search{ float: right; position: absolute; bottom: 10px; right: 10px;}
+
+/* Corner radius */
+.ui-corner-all, .ui-corner-left{-moz-border-radius-topleft:3px;-webkit-border-top-left-radius:3px;-khtml-border-top-left-radius:3px;border-top-left-radius:3px;}
+.ui-corner-all, .ui-corner-right{-moz-border-radius-topright:3px;-webkit-border-top-right-radius:3px;-khtml-border-top-right-radius:3px;border-top-right-radius:3px;}
+.ui-corner-all, .ui-corner-left{-moz-border-radius-bottomleft:3px;-webkit-border-bottom-left-radius:3px;-khtml-border-bottom-left-radius:3px;border-bottom-left-radius:3px;}
+.ui-corner-all, .ui-corner-right{-moz-border-radius-bottomright:3px;-webkit-border-bottom-right-radius:3px;-khtml-border-bottom-right-radius:3px;border-bottom-right-radius:3px;}
+/* big corner */
+.big-corner-all, .big-corner-left{-moz-border-radius-topleft:7px;-webkit-border-top-left-radius:7px;-khtml-border-top-left-radius:7px;border-top-left-radius:7px;}
+.big-corner-all, .big-corner-right{-moz-border-radius-topright:7px;-webkit-border-top-right-radius:7px;-khtml-border-top-right-radius:7px;border-top-right-radius:7px;}
+.big-corner-all, .big-corner-left{-moz-border-radius-bottomleft:7px;-webkit-border-bottom-left-radius:7px;-khtml-border-bottom-left-radius:7px;border-bottom-left-radius:7px;}
+.big-corner-all, .big-corner-right{-moz-border-radius-bottomright:7px;-webkit-border-bottom-right-radius:7px;-khtml-border-bottom-right-radius:7px;border-bottom-right-radius:7px;}
+
+.spliteline{width:100%; height:2px; background: url(../image/middleline.gif) 0 0 repeat-x;}
+.qospage_title{width: 100%; height: 20px; font: bold 17px arial; color: #9d98ff; position: absolute; top: 0px; left: 0px;}
+.new_speed_test{ height: 22px; width: 165px; color: #f2f2f2; font-family: Arial; font-weight: Bold; font-size: 14px;  border: none; cursor: pointer; padding-bottom: 2px; background-color: #702b86; margin-left: 9px;}
+.new_greyspeed_test{ height: 22px; width: 158px; color: #f2f2f2; font-family: Arial; font-weight: Bold; font-size: 14px;  border: none; cursor: pointer; padding-bottom: 2px; background-color: #B5B5B5; margin-left: 9px;}
+.new_greycancel_bt, .new_greyapply_bt{ height: 22px; width: 100px; color: #f2f2f2; font-family: Arial; font-weight: Bold; font-size: 14px;  border: none; cursor: pointer; padding-bottom: 2px;}
+.new_greyapply_bt{ background-color: #B5B5B5; margin-left: 10px;}
+.new_greycancel_bt{ background-color: #B5B5B5;}
+.linktype {color:  #5bb6e5; text-decoration:   underline  }
+.linkbold {font-weight: Bold;}
+.table_header{
+        color: #ffffff;
+        font-weight: Bold;
+        background-color: #767676;
+}
+
+#streamboost_qos{margin-left: 5px;}
+.label_click b, .label_unclick b { line-height: 30px }
+.label_click{width: auto; height: 30px; float:left; text-align: center; font-family: Arial; font-size: 17px; font-weight: Bold; margin-right: 3px; }
+.label_unclick{ width: auto; height: 30px; float:left; text-align: center; font-family: Arial; font-size: 17px; font-weight: Bold; cursor:pointer; margin-right: 3px; }
+.label_click .label_left { width: 15px; height: 30px; background: url(../image/tops.gif) no-repeat 0 -23px; float: left; position: relative }
+.label_click .label_leftw { width: 30px; height: 30px; background: url(../image/tops.gif) no-repeat 0 -23px; float: left; position: relative }
+.label_click .label_middle { width: auto; height: 30px; background: url(../image/qos_click_part.gif) repeat-x; float: left; position: relative }
+.label_click .label_rightw { width: 30px; height: 30px; background: url(../image/tops.gif) no-repeat -210px -23px;  float: left; position: relative }
+.label_click .label_right { width: 15px; height: 30px; background: url(../image/tops.gif) no-repeat -210px -23px;  float: left; position: relative }
+.label_unclick .label_left { width: 15px; height: 30px; background: url(../image/tops.gif) no-repeat -225px -23px; float: left; position: relative }
+.label_unclick .label_leftw { width: 30px; height: 30px; background: url(../image/tops.gif) no-repeat -225px -23px; float: left; position: relative }
+.label_unclick .label_middle { width: auto; height: 30px; background: url(../image/qos_unclick_part.gif) repeat-x; float: left; position: relative }
+.label_unclick .label_right { width: 15px; height: 30px; background: url(../image/tops.gif) no-repeat -435px -23px;  float: left; position: relative }
+.label_unclick .label_rightw { width: 30px; height: 30px; background: url(../image/tops.gif) no-repeat -435px -23px;  float: left; position: relative }
+
+.qos_link a{color: #5bb6e5;  text-decoration: none}
+.icon {color:#4A708B;}
+.icon img {background-color: #4A708B;}
+.icon_active {color: green;}
+.icon_active img {background-color: green;}

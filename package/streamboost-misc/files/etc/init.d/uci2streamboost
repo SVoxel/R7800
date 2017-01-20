@@ -1,0 +1,9 @@
+#!/bin/sh /etc/rc.common
+# Copy UCI values to /var/run/appflow/streamboost.user.conf at boot time
+[ -f ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow ] && . ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+START=97
+
+start() {
+	"$STREAMBOOSTCONF_MAKER" $STREAMBOOST_USER_CFG
+}

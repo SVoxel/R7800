@@ -1,0 +1,26 @@
+--- a/clients.c
++++ b/clients.c
+@@ -67,9 +67,10 @@
+ 
+ 	/* User-Agent: DLNADOC/1.50 SEC_HHP_[TV]UE40D7000/1.0 */
+ 	/* User-Agent: DLNADOC/1.50 SEC_HHP_ Family TV/1.0 */
++	/* USER-AGENT: DLNADOC/1.50 SEC_HHP_[TV] UE65JU7000/1.0 UPnP/1.0 */
+ 	{ ESamsungSeriesCDE,
+-	  FLAG_SAMSUNG | FLAG_DLNA | FLAG_NO_RESIZE | FLAG_SAMSUNG_DCM10,
+-	  "Samsung Series [CDEF]",
++	  FLAG_SAMSUNG | FLAG_DLNA | FLAG_NO_RESIZE | FLAG_SAMSUNG_DCM10 | FLAG_CAPTION_RES,
++	  "Samsung Series [CDEFJ]",
+ 	  "SEC_HHP_",
+ 	  EUserAgent
+ 	},
+--- a/upnpsoap.c
++++ b/upnpsoap.c
+@@ -1064,7 +1064,7 @@
+ 									     "http://%s:%d/Captions/%s.srt"
+ 									   "&lt;/res&gt;",
+ 									   lan_addr[passed_args->iface].str, runtime_vars.port, detailID);
+-						else if( passed_args->filter & FILTER_SEC_CAPTION_INFO_EX )
++						if( passed_args->filter & FILTER_SEC_CAPTION_INFO_EX )
+ 							ret = strcatf(str, "&lt;sec:CaptionInfoEx sec:type=\"srt\"&gt;"
+ 							                     "http://%s:%d/Captions/%s.srt"
+ 							                   "&lt;/sec:CaptionInfoEx&gt;",

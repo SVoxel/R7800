@@ -1,0 +1,171 @@
+#!/bin/sh /etc/rc.common
+#
+# Copyright (c) 2013 Qualcomm Atheros, Inc..
+#
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary.
+#
+
+# We don't want to start ART2 automatically at boot time as we want the
+# default to be a working user configuration.
+# At the end of the boot process, the user can start art using:
+# /etc/init.d/art start
+START=
+SERVICE_DAEMONIZE=1
+SERVICE_WRITE_PID=1
+
+#wlan_dir is for ath10K platform
+wlan_dir=/sys/class/net/wlan
+wifi_dir=/sys/class/net/wifi
+arm_platform=`uname -m | grep arm`
+mips_platform=`uname -m | grep mips`
+
+MTD_ART_PART_NAME="art"
+
+unload_modules() {
+	for mod in $(cat /lib/wifi/33-qca-wifi* | sed '1!G;h;$!d'); do
+		[ -d /sys/module/${mod} ] && rmmod ${mod}
+	done
+}
+
+load_modules() {
+	local umac_args
+
+	config_load wireless
+	append umac_args "testmode=1 ahbskip=1"
+	config_get otp_mod_param qcawifi otp_mod_param
+	[ -n "$otp_mod_param" ] && append umac_args "otp_mod_param=$otp_mod_param"
+
+	for mod in $(cat /lib/wifi/33-qca-wifi*) ; do
+		case ${mod} in
+			umac) [ -d /sys/module/${mod} ] || { \
+
+				# Read the caldata to before loading umac
+				if [ -f "/lib/read_caldata_to_fs.sh" ]; then
+					. /lib/read_caldata_to_fs.sh
+					do_load_ipq4019_board_bin
+				fi
+				insmod ${mod} ${umac_args}
+			};;
+
+			*) [ -d /sys/module/${mod} ] || insmod ${mod};;
+		esac
+	done
+}
+
+is_qcmbr_runnable() {
+	# First argument represents wifi_dir/wlan_dir
+	# Second argument represents wifi index/wlan index
+	if [ -e "$1$2/device/device" ]; then
+		read dev_id < "$1$2/device/device"
+		case "$dev_id" in
+			"0x0040")
+				return 1
+				;;
+			"0x0050")
+				return 1
+				;;
+			"0x0046")
+				return 1
+				;;
+			"0x0056")
+				return 1
+				;;
+			*)
+				return 0
+				;;
+		esac
+	fi
+	return 1
+}
+start_qcmbr() {
+	# First argument represents the wifi directory name/wlan directory name to be use
+	# Second argument represents the wifi index/wlan index to be use
+	local wifi_index=$2
+
+	is_qcmbr_runnable $1 $wifi_index && return
+
+	if [ -n "$mips_platform" ]; then
+		SERVICE_PID_FILE=/var/run/qcmbr${3}.pid
+		service_start /usr/sbin/Qcmbr -instance $3 -pcie ${wifi_index} -console
+	else
+		SERVICE_PID_FILE=/var/run/qcmbr${wifi_index}.pid
+		service_start /usr/sbin/Qcmbr -instance ${wifi_index} -pcie ${wifi_index} -console
+	fi
+}
+
+stop_qcmbr() {
+	# First argument represents the wifi directory name/wlan directory name to be use
+	# Second argument represents the wifi index/wlan index to be use
+	local wifi_index=$2
+
+	is_qcmbr_runnable $1 $wifi_index && return
+
+	if [ -n "$mips_platform" ]; then
+		SERVICE_PID_FILE=/var/run/Qcmbr${3}.pid
+		service_stop /usr/sbin/Qcmbr -instance $3 -pcie ${wifi_index} -console
+	else
+		SERVICE_PID_FILE=/var/run/Qcmbr${wifi_index}.pid
+		service_stop /usr/sbin/Qcmbr -instance ${wifi_index} -pcie ${wifi_index} -console
+	fi
+}
+
+start() {
+	local nor_flash=""
+	local inst=0
+
+	mtd_name=$(grep -i ${MTD_ART_PART_NAME} /proc/mtd |grep -v ART.bak | cut -f1 -d:)
+	nor_flash=`find /sys/bus/spi/devices/*/mtd -name ${mtd_name}`
+
+	if [ -n "$nor_flash" -a -n "$arm_platform" ]; then
+		[ -L /dev/caldata ] || \
+			ln -s /dev/${mtd_name} /dev/caldata
+	else
+		[ -L /dev/caldata ] || \
+			ln -s /dev/`echo ${mtd_name} | sed -e 's/mtd/mtdblock/g'` /dev/caldata
+	fi
+
+	load_modules
+
+# Start the daemon
+# Check for ath10K driver
+# If ath10K driver installed, use wlan_dir instead of wifi_dir to check for device existence
+# and launch qcmbr application accordingly
+	if [ -n "`lsmod | grep ath10k`" ] ; then
+		for dir in /sys/class/net/wlan*; do
+			[ -d "$dir" ] || continue
+			inst=`expr $inst + 1`
+			start_qcmbr $wlan_dir "${dir#"$wlan_dir"}" $inst
+		done
+	fi
+	for dir in /sys/class/net/wifi*; do
+		[ -d "$dir" ] || continue
+		inst=`expr $inst + 1`
+		start_qcmbr $wifi_dir "${dir#"$wifi_dir"}" $inst
+	done
+}
+
+stop() {
+	# Stop the daemon
+	local inst=0
+
+# Check for ath10K driver
+# If ath10K driver installed, use wlan_dir instead of wifi_dir to check for device existence
+# and stop qcmbr application accordingly
+	if [ -n "`lsmod | grep ath10k`" ] ; then
+		for dir in /sys/class/net/wlan*; do
+			[ -d "$dir" ] || continue
+			inst=`expr $inst + 1`
+			stop_qcmbr $wlan_dir "${dir#"$wlan_dir"}" $inst
+		done
+	fi
+	for dir in /sys/class/net/wifi*; do
+		[ -d "$dir" ] || continue
+		inst=`expr $inst+1`
+		stop_qcmbr $wifi_dir "${dir#"$wifi_dir"}" $inst
+	done
+
+	unload_modules
+
+	[ -L /dev/caldata ] && rm /dev/caldata
+}

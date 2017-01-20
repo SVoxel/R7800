@@ -1,0 +1,159 @@
+<!--% http_header("style/form.css", "/funcs.js") % -->
+<!--% nobody_header("Thermal_FAN.htm", "fan_range") % -->
+<html>
+<head>
+<!--META http-equiv="refresh" content="20; url=BRS_hdd_formt_wait.htm"/-->
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/form.css" />
+<script language="javascript" type="text/javascript" src="/funcs.js"></script>
+<!--META http-equiv="refresh" content="10; url=Thermal_FAN.htm"-->
+<script>
+var fan_timereset="<% cfg_sed_xss("fan_timereset") %>";
+
+if (fan_timereset == "")
+	fan_timereset="30";
+
+if( fan_timereset != "0")
+	document.write('<META http-equiv="refresh" content="'+fan_timereset+'; url=Thermal_FAN.htm">');
+</script>
+</head>
+<body onload="loadvalue();">
+<script language="javascript" type="text/javascript">
+var ts = "<% hijack_get_timestamp("fan_range") %>";
+
+<% save_timestamp("fan_range","timeset_fan") %>
+
+function loadvalue()
+{
+	cf=document.forms[0];
+var fan_level_dgi = "<% cfg_get("fan_level") %>";
+
+	if(fan_level_dgi == 1)
+		cf.fan_level[1].checked = true;
+        else if(fan_level_dgi == 2)
+                cf.fan_level[2].checked = true;
+	 else if(fan_level_dgi == 3)
+                cf.fan_level[3].checked = true;
+	else if(fan_level_dgi == 4)
+                cf.fan_level[4].checked = true;
+	else if(fan_level_dgi == 5)
+                cf.fan_level[5].checked = true;
+	else
+                cf.fan_level[0].checked = true;
+}
+
+document.write('<form method="post" action="/apply.cgi?/Thermal_FAN.htm timestamp='+ts+'">');
+</script>
+<!--form method="post" action="/apply.cgi?/RST_statistic.htm timestamp='+ts+'"-->
+<input type="hidden" name="submit_flag" value="fan_range" />
+
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+$bluebar
+<TR><TD nowrap colspan=2>Current thermal sensor temperature:  
+<script>
+var fan_temper= "<% fan_cur_tem() %>";
+//var fan_temper= "0x4d";
+var hex_fan;
+var hex_to_deg;
+
+ hex_fan = fan_temper.substring(2);
+ 
+ hex_to_deg = parseInt(hex_fan, 16) 
+ document.write( hex_to_deg+"C.");
+
+</script>
+</TD></TR>
+<TR>
+	<TD nowrap><B>Refresh time Interval :</B>
+<script>
+if (fan_timereset != "0")
+	document.write("<input TYPE=TEXT NAME=timeset SIZE=5 MAXLENGTH=5 VALUE="+fan_timereset+" onKeyPress=\"return getkey('num',event)\"> (secs)");
+else
+	document.write("<input TYPE=TEXT NAME=timeset SIZE=5 MAXLENGTH=5 VALUE='' onKeyPress=\"return getkey('num', event)\"> (secs)");
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('&nbsp;&nbsp;<input class="common_bt" TYPE="button" NAME="settime" VALUE="Set Interval" WIDTH="80" onClick="reset_time();"></TD>');
+else
+	document.write('&nbsp;&nbsp;<input class="common1_bt" TYPE="button" NAME="settime" VALUE="Set Interval" WIDTH="80" disabled></TD>');
+</script>
+	
+</TR>
+
+<TR><TD nowrap colspan=2>&nbsp;</TD></TR>
+
+<TR><TD nowrap colspan=2 >You can choose below radio to apply to set the temperate range:</TD></TR>
+<TR><TD nowrap colspan=2>
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR>
+	<TD nowrap width=80px align=center><input type="radio" name="fan_level" value="0">
+	</TD>
+	<TD nowrap>auto (Select suitable FAN speed level by router automatically)
+	</TD>
+</TR>
+<TR>
+	<TD nowrap width=80px align=center><input type="radio" name="fan_level" value="1">
+	</TD>
+	<TD nowrap> under 65C. (Level 1 FAN speed, minimum)
+	</TD>
+</TR>
+<TR>
+	<TD nowrap width=80px align=center><input type="radio" name="fan_level" value="2">
+	</TD>
+	<TD nowrap>between 65C ~ 67C. (Level 2 FAN speed)
+	</TD>
+</TR>
+<TR>
+	<TD nowrap width=80px align=center><input type="radio" name="fan_level" value="3">
+	</TD>
+	<TD nowrap>between 68C ~ 71C. (Level 3 FAN speed)
+	</TD>
+</TR>
+<TR>
+	<TD nowrap width=80px align=center><input type="radio" name="fan_level" value="4">
+	</TD>
+	<TD nowrap> between 72C ~ 75C. (Level 4 FAN speed)
+	</TD>
+</TR>
+<TR>
+	<TD nowrap width=80px align=center><input type="radio" name="fan_level" value="5">
+	</TD>
+	<TD nowrap>over 75C. (Level 5 FAN speed, maximum)
+	</TD>
+</TR>
+</TABLE>
+</TD></TR>
+<script>
+if( master == "admin" )
+	document.write('<TR><TD nowrap colspan=2 align=center>	<input class="apply_bt" type="button" name="Apply" value="$apply_mark" onClick="return fan_apply(document.forms[0])"></TD></TR>');
+else
+	document.write('<TR><TD nowrap colspan=2 align=center>	<input class="apply1_bt" type="button" name="Apply" value="$apply_mark" disabled></TD></TR>');
+</script>
+
+</TABLE>
+<script>
+function reset_time()
+{
+	cf=document.forms[0];
+	cf.submit_flag.value="timeset_fan";
+	if( cf.timeset.value == "")
+	{
+		cf.timeset.value = "30";
+	}
+	var fan_timereset=cf.timeset.value;
+	if(!(fan_timereset > 4 && fan_timereset < 86401))
+	{
+		alert("The valid range of Poll Interval is between 5 and 86400 seconds. ");
+		return false;
+	}
+	cf.submit();
+}
+
+function fan_apply()
+{
+	cf=document.forms[0];
+	cf.submit();
+}
+</script>
+</FORM>
+</BODY>
+</HTML>

@@ -1,0 +1,9 @@
+#
+# offload configuration
+#
+config NET_OFFLOAD
+	bool "Network offload support"
+	help
+	  Enables QoS based netfilters to provide hooks for re-marking
+	  to other system-wide netfilters. Allows for the registration
+	  of both DSCP and VLAN re-mark function based on a conntrak.

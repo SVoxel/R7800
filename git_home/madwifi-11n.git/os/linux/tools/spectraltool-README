@@ -1,0 +1,79 @@
+#
+# Copyright (c) 2013 Qualcomm Atheros, Inc.
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary.
+#
+
+=======================
+SPECTRALTOOL-README
+=======================
+
+spectraltool is a command line tool that can be used to configure spectral parameters, turn on and off debug messages and start and stop spectral scan.
+
+Usage: spectraltool [cmd] [cmd_parameter]
+
+spectraltool can also be used without specifying any commands / command parameters. 
+How to use - "spectraltool"
+This will display the current spectral configuration as follows 
+
+SPECTRAL PARAMS
+Spectral scan is enabled
+Spectral scan is inactive
+fft_period:  8
+ss_period: 18
+ss_count: 128
+short report: yes
+
+spectraltool commands -
+General Usage: spectraltool [cmd] [cmd_parameter]
+
+[1] fftperiod 
+Use the fftperiod command to configure the skip interval for FFT reports. The PHY will pass FFT reports to the MAC once every ((fftperiod+1)*4) microseconds. 
+How to use - "spectraltool fftperiod x"
+Minimum value of x =  0
+Maximum value of x =8
+Default value of x =  8
+
+[2] period 
+Use the period command to configure the time duration between successive spectral scan mode entry points.
+How to use - "spectraltool period x"
+Minimum value of x =  0
+Maximum value of x =255
+Default value of x =  18
+
+[3] count
+Use the count command to configure the number of times the chip will enter spectral scan mode before self clearing the active bit. If count is set to 128, spectral scan will continue till software explicitly clears the active bit.
+How to use - "spectraltool count x"
+Minimum value of x =  0
+Maximum value of x =128
+Default value of x =  128
+
+[4] short
+Use the short command to configure the amount of time chip stays in spectral scan mode. If set to 0, spectral scan mode will last 204us, if set to 1 spectral scan mode lasts for 4us.
+How to use - "spectraltool short x"
+Minimum value of x =  0
+Maximum value of x =1
+Default value of x =  1
+
+[5] startscan
+Use the "startscan" command to start a spectral scan with the configured spectral parameters.This command will explicitly set the active bit in the chip.
+How to use - "spectraltool startscan"
+
+[6] stopscan
+Use the "stopscan" command to stop the current spectral scan. This command will explicitly clear the active bit in the chip.
+How to use - "spectraltool stopscan"
+
+[7] startclassifyscan
+Use the "startclassifyscan" command to start a spectral scan with the configured spectral parameters.This command will explicitly set the active bit in the chip. Spectral data will be fed to the in-driver classifier and interference detected will be reported by printing to the serial console.
+How to use - "spectraltool startclassifyscan"
+
+[8] debug
+Use the "debug" command to set the debug level for messages printed by the spectral module. 
+0 = minimum debug messages printed
+1 = more verbose than level 0
+2 = more verbose than level 1
+3 = maximum debug messages printed, very verbose.
+How to use - "spectraltool debug x"
+Minimum value of x =  0
+Maximum value of x =3
+Default value of x =  0

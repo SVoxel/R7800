@@ -1,0 +1,215 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% top_body_header("hidden_RIP.htm", "hidden_rip") %>
+<div class="page_title">$rip_setup_wan</div>
+<div class="fix_button">
+<table width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if(master == "admin")
+	document.write('<tr><td nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" value="$cancel_mark" onClick="location.reload(); returen false;"> &nbsp;&nbsp;<input class="apply_bt" type="submit" name="Apply" value="$apply_mark" onClick="return check_rip();"></td></tr>');
+else 
+	document.write('<tr><td nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" value="$cancel_mark" disabled> &nbsp;$nbsp;<input class="apply1_bt" type="submit" name="Apply" value="$apply_mark" disabled></td></tr>');
+</script>
+</table>
+</div>
+
+<script>
+var wan_dir = "<% cfg_get("rip_wan_direction") %>";
+var rip_ver = "<% cfg_get("rip_wan_version") %>";
+var auth_enable = "<% cfg_get("rip_enable_authentic") %>";
+var rip_auth = "<% cfg_get("rip_auth") %>";
+var rip_md5 = "<% cfg_get("rip_md5") %>";
+var rip_key = "<% cfg_get("rip_key") %>";
+var rip_key0 = "<% cfg_get("rip_key0") %>";
+var rip_key1 = "<% cfg_get("rip_key1") %>";
+var ripng_enable = "<% cfg_get("rip_enable_ripng") %>";
+
+function loadvalue()
+{
+	var cf = document.forms[0];
+
+	if(wan_dir == 0)
+		cf.wan_direction.value="Both";
+	else if(wan_dir == 1)
+		cf.wan_direction.value="In only";
+	else if(wan_dir == 2)
+		cf.wan_direction.value="Out only";
+
+	if(rip_ver == 0)
+		cf.rip_version.value="Disabled";
+	else if(rip_ver == 1)
+		cf.rip_version.value="RIP_1";
+	else if(rip_ver == 2)
+		cf.rip_version.value="RIP_2B";
+	else if(rip_ver == 3)
+		cf.rip_version.value="RIP_2M";
+
+	if(auth_enable == 1)
+		cf.enable_authentic.checked = true;
+	else
+		cf.enable_authentic.checked = false;
+	if(rip_auth == 0)
+		cf.authentication[0].checked = true;
+	else
+		cf.authentication[1].checked = true;
+	if(rip_md5 == 0)
+		cf.md5_key[0].checked = true;
+	else
+		cf.md5_key[1].checked = true;
+	if(ripng_enable == 1)
+		cf.enable_ripng.checked = true;
+	else
+		cf.enable_ripng.checked = false;
+	cf.text_key_txt.value = rip_key;
+	cf.md5_key0_txt.value = rip_key0;
+	cf.md5_key1_txt.value = rip_key1;
+
+	set_authentic();
+}
+function set_authentic()
+{
+	var cf = document.forms[0];
+
+	setDisabled(!cf.enable_authentic.checked, cf.authentication[0], cf.authentication[1], cf.md5_key[0], cf.md5_key[1], cf.text_key_txt, cf.md5_key0_txt, cf.md5_key1_txt);
+	if(cf.enable_authentic.checked)
+	{
+		setDisabled(!cf.authentication[0].checked, cf.text_key_txt);
+		setDisabled(!cf.authentication[1].checked, cf.md5_key[0], cf.md5_key[1], cf.md5_key0_txt, cf.md5_key1_txt);
+		if(cf.authentication[1].checked)
+		{
+			setDisabled(!cf.md5_key[0].checked, cf.md5_key0_txt);
+			setDisabled(!cf.md5_key[1].checked, cf.md5_key1_txt);
+		}
+	}
+	if(cf.rip_version.value == "RIP_1")
+		setDisabled(1, cf.authentication[1], cf.md5_key[0], cf.md5_key[1]), cf.md5_key0_txt, cf.md5_key1_txt;
+}
+function check_rip()
+{
+	var cf = document.forms[0];
+	var dir1, ver, dir11, ver1;
+
+	dir1=cf.wan_direction.value;
+	if(dir1 == "Both")
+		dir11="0";
+	else if(dir1 == "In only")
+		dir11 = "1";
+	else if(dir1 == "Out only")
+		dir11 = "2";
+	cf.hidden_wan_dir.value = dir11;
+
+	ver=cf.rip_version.value;
+	if(ver == "Disabled")
+		ver1 = "0";
+	else if(ver == "RIP_1")
+		ver1 = "1";
+	else if(ver == "RIP_2B")
+		ver1 = "2";
+	else if(ver == "RIP_2M")
+		ver1 = "3";
+	cf.hidden_rip_ver.value = ver1;
+
+	if(cf.enable_authentic.checked)
+		cf.hidden_enable_auth.value = "1";
+	else
+		cf.hidden_enable_auth.value = "0";
+	if(cf.authentication[0].checked)
+		cf.hidden_rip_auth.value = "0";
+	else
+		cf.hidden_rip_auth.value = "1";
+	if(cf.md5_key[0].checked)
+		cf.hidden_rip_md5.value = "0";
+	else
+		cf.hidden_rip_md5.value = "1";
+	if(cf.enable_ripng.checked)
+		cf.hidden_enable_ripng.value = "1";
+	else
+		cf.hidden_enable_ripng.value = "0";
+}
+</script>
+
+<div id="main" class="main_top_button">
+<input type="hidden" name="hidden_wan_dir">
+<input type="hidden" name="hidden_rip_ver">
+<input type="hidden" name="hidden_enable_auth">
+<input type="hidden" name="hidden_rip_auth">
+<input type="hidden" name="hidden_rip_md5">
+<input type="hidden" name="hidden_enable_ripng">
+
+<table width=100% border=0 cellpadding=0 cellspacing=2>
+<tr> 
+	<td nowrap>
+	<a tabindex=-1 href=""><b>$rip_v1_v2</b></a>
+	</td>
+</tr>
+<tr>
+	<td nowrap>$rip_dir</td>
+	<td nowrap align="right">$wan_interface&nbsp;
+	<select name="wan_direction">
+		<option value="Both">$rip_both</option>
+		<option value="In only">$rip_in</option>
+		<option value="Out only">$rip_out</option>
+	</select>
+	</td>
+</tr>
+<tr><td><br/></td></tr>
+<tr>
+	<td nowrap>$rip_ver</td>
+	<td nowrap align="right">
+	<select name="rip_version" onChange="set_authentic();">
+		<option value="Disabled">$rip_disable</option>
+		<option value="RIP_1">$rip1</option>
+		<option value="RIP_2B">$rip2b</option>
+		<option value="RIP_2M">$rip2m</option>
+	</select>
+	</td>
+</tr>
+<tr>
+	<td nowrap><input type="checkbox" name="enable_authentic" onClick="set_authentic();">$enable_authentic</td>
+</tr>
+<tr>
+	<td nowrap>
+		<img src=/spacer.gif width=20 height=12 border=0>
+		<input type="radio" name="authentication" onClick="set_authentic();">$text_mark
+	</td>
+</tr>
+<tr>
+	<td nowrap><img src=/spacer.gif width=50 height=12 border=0>$rip_key
+		<input type="text" name="text_key_txt" size="20" maxlength="64">
+	</td>
+</tr>
+<tr>
+	<td nowrap>
+		<img src=/spacer.gif width=20 height=12 border=0>
+		<input type="radio" name="authentication" onClick="set_authentic();">$md5_mark
+	</td>
+</tr>
+<tr>
+	<td nowrap>
+		<img src=/spacer.gif width=40 height=12 border=0>
+		<input type="radio" name="md5_key" onClick="set_authentic();">$rip_key0
+		<input type="text" name="md5_key0_txt" size="20" maxlength="64">
+	</td>
+</tr>
+<tr>
+	<td nowrap>
+		<img src=/spacer.gif width=40 height=12 border=0>
+		<input type="radio" name="md5_key" onClick="set_authentic();">$rip_key1
+		<input type="text" name="md5_key1_txt" size="20" maxlength="64">
+	</td>
+</tr>
+<tr><td><br/></td></tr>
+<tr><td><br/></td></tr>
+$bluebar
+<tr>
+	<td nowrap><a tabindex="-1" href=""><b>$ripng</b></a></td>
+</tr>
+<tr>
+	<td nowrap><input type="checkbox" name="enable_ripng">$rip_enable $ripng</td>
+</tr>
+$bluebar
+</table>
+</div>
+</form>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<% http_header("style/form.css") %>
+
+<body>
+<div class="page_title">$mobile_conn_status</div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+</table>
+
+<% mobile_conn_status() %>
+
+<% table_header() %>
+$bluebar
+<tr>
+	<td nowrap colspan=2  align=center>
+		<input  class="common_key_bt" type=button name="close" value="$close_win_mark" onclick="self.close();">
+	</td>
+</tr>
+</table>
+</div>
+</body>
+</html>

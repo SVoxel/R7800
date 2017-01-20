@@ -1,0 +1,39 @@
+From d058f7962a76450f028d52e0ed1a7f733a9587c7 Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Fri, 7 Jun 2013 11:19:08 -0500
+Subject: [ag71xx] DMA unmap FROM_DEVICE no-op for our arch
+
+The invalidate for FROM_DEVICE map/unmap pairs is done in the map.
+The unmap is a no-op, but there is a cost for accessing that no-op
+function through the large number of indirection layers presented
+by the MIPS linux dma_ops.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+index 5616f05..919e6e0 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+@@ -924,8 +924,14 @@ static int ag71xx_rx_packets(struct ag71xx *ag, struct net_device *dev, int limi
+ 		pktlen = desc_ctrl & DESC_PKTLEN_M;
+ 		pktlen -= ETH_FCS_LEN;
+ 
+-		dma_unmap_single(&dev->dev, curr->dma_addr, pktlen,
+-				 DMA_FROM_DEVICE);
++		/*
++		 * This is where we'd unmap our buffer from the GMAC in a
++		 * general use of the DMA API.  On a MIPS platform this would
++		 * be a complete no-op so we don't bother:
++		 *
++		 * dma_unmap_single(&dev->dev, curr->dma_addr,
++		 *		    rx_buf_size, DMA_FROM_DEVICE);
++		 */
+ 
+ 		dev->last_rx = jiffies;
+ 		dev->stats.rx_packets++;
+-- 
+1.8.1.2
+

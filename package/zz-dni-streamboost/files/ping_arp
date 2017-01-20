@@ -1,0 +1,26 @@
+#/bin/sh
+
+INTERFACE=br0
+OUTPUT=/tmp/netscan/ping_arp_output
+QUANTENER=1.1.1.2
+INTERVAL=30
+DEPENT_PROG=soap_flowman_nodes
+detect(){
+	grep $INTERFACE /proc/net/arp |grep -v $QUANTENER | awk '{print $1 "\t" $4}' | while read IP MAC; do
+		ping -q -c 1 $IP >/dev/null
+		if [ $? = "0" ]; then
+			echo "$MAC"
+		else
+			arping -q -c 1 -i $INTERFACE $IP >/dev/null
+			[ $? = "0" ] && echo "$MAC"
+		fi
+	done
+}
+run_loop(){
+	while `ps | grep -v grep | grep $DEPENT_PROG>/dev/null`; do
+		detect >"$OUTPUT.tmp"
+		cat "$OUTPUT.tmp" >"$OUTPUT"
+		sleep $INTERVAL
+	done
+}
+run_loop

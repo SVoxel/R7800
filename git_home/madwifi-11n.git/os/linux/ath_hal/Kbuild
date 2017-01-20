@@ -1,0 +1,57 @@
+# $Id: //depot/sw/qca_main/drivers/wlan_modules/os/linux/ath_hal/Makefile#4 $
+
+#
+# Makefile for the Atheros HAL Module.
+#
+# NB: we can't support MODVERSIONS because it requires building
+#     from source which may not be available
+#
+ifeq ($(obj),)
+obj := .
+endif
+
+ifeq ($(TARGET),ANDROID)
+PWD=$(shell 'pwd')
+$(warning "$(PWD)  copy hal.o ../vendor/$(ATH_VENDOR_DIR)/drivers/wlan_modules/hal/linux/hal.o ../vendor/$(ATH_VENDOR_DIR)/drivers/wlan_modules/os/linux/ath_hal/")
+Objpath = ../vendor/$(ATH_VENDOR_DIR)/drivers/wlan_modules
+$(shell cp $(Objpath)/hal/linux/hal.o $(Objpath)/os/linux/ath_hal/)
+endif
+
+DEPTH := ../../..
+ADF := ${obj}/${DEPTH}/adf
+ASF := ${obj}/${DEPTH}/asf
+
+obj-m		+= ath_hal.o
+ath_hal-objs	:= ah_adf.o hal.o
+
+ifeq ($(findstring 2.6,$(KERNELRELEASE)),)
+export-objs	:= ah_adf.o
+list-multi	:= ath_hal.o
+endif
+
+# If building into kernel
+
+ifneq ($(MAKING_MODULES),1)
+obj-$(CONFIG_ATHEROS_HAL) := ah_adf.o hal.o
+ifeq ($(findstring 2.6,$(KERNELRELEASE)),)
+O_TARGET	:= ath_hal.o
+endif
+endif
+
+include $(obj)/${DEPTH}/os/linux/Makefile.inc
+
+UUDECODE?=uudecode
+
+ifeq ($(ATH_SUPPORT_HTC),1)
+INCS=	-I${HAL} -I${HAL}/${OS} -I${obj}/${ATH_HAL} -I${obj}/${DEPTH} -I${COMMON} -I${ATH_RATE} -I${ATH}
+else
+INCS+=	-I${HAL} -I${HAL}/${OS} -I${obj}/${ATH_HAL} -I${obj}/${DEPTH} -I${COMMON} -I${ATH_RATE} -I${ATH}
+endif
+# -I${WLAN} 
+INCS+=  -I${obj}/$(DEPTH)/include
+INCS+=  -I$(ADF)/include/os -I$(ADF)/include/nbuf -I$(ADF)/include/net
+INCS+=  -I$(ADF)/os/linux -I$(ADF)/nbuf/linux -I$(ADF)/net/linux
+INCS+=  -I$(ASF)/include
+
+EXTRA_CFLAGS+= ${INCS} ${COPTS} -DBUILD_HAL
+

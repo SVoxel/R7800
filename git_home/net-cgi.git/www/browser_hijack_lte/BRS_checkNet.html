@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<% hijack_language() %>
+<script language="javascript" type="text/javascript">
+var hijack_process = "<% cfg_get("hijack_process") %>";
+var ping_result = "none";
+var ap_mode = "<% cfg_get("ap_mode") %>";
+</script>
+</head>
+
+<body onLoad="loadvalue();">
+<% form_submit("apply", "BRS_success.html", "hijack_success")  %>
+
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+		<div class="waiting_connect_div" align="center">
+			<h1>
+			<script>document.write(bh_internet_checking);</script>
+			</h1>
+		</div>
+		
+		<div class="waiting_img_div" align="center">
+			<img src="image/wait30.gif" />
+		</div>
+	
+	</div>
+
+</div>
+<script>
+function loadvalue()
+{
+	var cf = document.forms[0];
+	var finish=0;
+
+	if(ping_result == "failed")     //failed
+		this.location.href="BRS_check_signal.html";
+	else if(ping_result == "success") //success
+	{
+		if(hijack_process == 2)
+			cf.submit();
+		else
+			this.location.href = "BRS_success.html";
+	}
+	else
+		setTimeout("loadvalue();", 1000);
+}
+
+</script>
+
+<iframe name="ping_result_frame" src="BRS_ping_result.html" allowtransparency="true" scrolling="no" frameborder="0" ></iframe>
+</form>
+</body>
+
+</html>

@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# Copyright (c) 2013 The Linux Foundation. All rights reserved.
+#
+
+uci set system.@system[-1].log_size=128
+uci commit system
+
+exit 0

@@ -1,0 +1,69 @@
+			DNI Linux Kernel proc entries
+
+This document records all proc entry interface about DNI Linux Kernel.
+Project Leader should reference this document to enable or disable features add by DNI.
+
+
+/proc/sys/net/dni/dod_skip_control_packet
+
+    Symptom:
+	When PPP dial on demand, ppp will skip control packets by:
+	# echo "1" > /proc/sys/net/dni/dod_skip_control_packet
+
+    Default:
+	PPP works as original Linux code by:
+	# echo "0" > /proc/sys/net/dni/dod_skip_control_packet
+
+/proc/sys/net/ipv4/bridge_max_fdb_entry
+
+    This new version adds Atheros's patch (received at Oct 7 07:52 2009)
+    along with proc interface is also added. In order to enable this new
+    feature, use the following command to set max number of bridge fdb
+    entries:
+
+    Symptom:
+	echo "1024" > /proc/sys/net/ipv4/bridge_max_fdb_entry
+	Then maybe run
+	# cat /proc/sys/net/ipv4/bridge_max_fdb_entry
+	to verify the set value.
+
+    Default:
+	If not set,
+	# cat /proc/sys/net/ipv4/bridge_max_fdb_entry
+	show 0, which means there is no upper limit on the number of bridge fdb
+	entries.
+
+
+/proc/sys/net/ipv4/ip_option_rr_ssrr_lsrr_pass_through
+
+    Symptom:
+	    For IP options Record Route (7), Strict Source Route (9),
+	    and Loose Source Route (3) pass through without changing anything by:
+	    # echo "1" > /proc/sys/net/ipv4/ip_option_rr_ssrr_lsrr_pass_through
+
+    Default:
+	    IP options works as normal Linux code by:
+	    # echo "0" > /proc/sys/net/ipv4/ip_option_rr_ssrr_lsrr_pass_through
+
+
+/proc/sys/net/ipv4/ipfrag_overlap_drop
+
+    Symptom:
+	    Dropping detecting of these attack packets can be enabled by:
+	    # echo "1" > /proc/sys/net/ipv4/ipfrag_overlap_drop
+
+    Default:
+	    Dropping detecting of these attack packets can be disabled by:
+	    # echo "0" > /proc/sys/net/ipv4/ipfrag_overlap_drop
+
+
+/proc/sys/net/ipv4/udp_ssdp_deliver_all
+
+    Symptom:
+            Sending SSDP UDP port 1900 packets to all UPnP related sockets, for
+	    miniupnpd and wps share the same binding port 1900 by:
+	    # echo "1" > /proc/sys/net/ipv4/udp_ssdp_deliver_all
+
+    Default:
+	    UDP port 1900 works as normal Linux code by:
+	    # echo "0" > /proc/sys/net/ipv4/udp_ssdp_deliver_all

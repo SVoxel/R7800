@@ -1,0 +1,14 @@
+<% help_head() %>
+</HEAD>
+<script language="javascript" type="text/javascript">
+var tivo_flag=parent.tivo_flag;
+
+var gui_region="<% cfg_get("GUI_Region") %>";
+var netgear_region=top.netgear_region;
+var is_jp_version=((gui_region == "Japanese" && (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "JP")? 1 : 0;
+if(tivo_flag == 1 && is_jp_version == 0)
+	document.write("$h_UPNP_media_tivo");
+else
+	document.write("$h_UPNP_media");
+</script>
+</HTML>

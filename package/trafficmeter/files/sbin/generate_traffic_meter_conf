@@ -1,0 +1,58 @@
+#!/bin/sh
+config="/bin/config"
+wan_proto="$($config get wan_proto)"
+
+TRAFFIC_STATUS=/tmp/traffic_meter/traffic_meter.conf
+if [ "$wan_proto" = "pppoe" ] || [ "$wan_proto" = "pptp" ] ;then
+	connection_type=0
+else
+	connection_type=1
+fi
+endis_traffic_meter="$($config get endis_traffic)"
+control_type="$($config get ctrl_volumn_time)"
+volume_control_type="$($config get limit)"
+monthly_volume_limit="$($config get mon_volumn_limit)"
+round_up_data="$($config get round_up)"
+monthly_time_limit="$($config get mon_time_limit)" 
+restart_day="$($config get traffic_restart_day)"
+restart_time_hour="$($config get restart_counter_time | awk -F: '{print $1}')"
+restart_time_min="$($config get restart_counter_time | awk -F: '{print $2}')"
+traffic_led="$($config get traffic_led)"
+traffic_block="$($config get traffic_block_all)"
+if [ -f /tmp/traffic_meter/last_conn_time ] ;then
+last_conn_time=`cat /tmp/traffic_meter/last_conn_time | awk -F. '{print $1}'`
+else
+last_conn_time=0
+fi
+if [ -f /tmp/traffic_meter/last_stop_time ] ;then
+last_stop_time=`cat /tmp/traffic_meter/last_stop_time | awk -F. '{print $1}'`
+else
+last_stop_time=0
+fi
+left_volume_time="$($config get left_time_volumn)"
+
+GUI_Region="$($config get GUI_Region)"
+echo "connection_type="$connection_type > $TRAFFIC_STATUS
+echo "endis_traffic_meter="$endis_traffic_meter >> $TRAFFIC_STATUS
+echo "control_type="$control_type >> $TRAFFIC_STATUS
+echo "volume_control_type="$volume_control_type >> $TRAFFIC_STATUS
+echo "monthly_volume_limit="$monthly_volume_limit >> $TRAFFIC_STATUS
+echo "round_up_data="$round_up_data >> $TRAFFIC_STATUS
+echo "monthly_time_limit="$monthly_time_limit >> $TRAFFIC_STATUS
+echo "restart_day="$restart_day >> $TRAFFIC_STATUS
+echo "restart_time_hour="$restart_time_hour >> $TRAFFIC_STATUS
+echo "restart_time_min="$restart_time_min >> $TRAFFIC_STATUS
+echo "traffic_led="$traffic_led >> $TRAFFIC_STATUS
+echo "traffic_block="$traffic_block >> $TRAFFIC_STATUS
+echo "last_conn_time="$last_conn_time >> $TRAFFIC_STATUS
+echo "last_stop_time="$last_stop_time >> $TRAFFIC_STATUS
+echo "left_volume_time="$left_volume_time >> $TRAFFIC_STATUS
+
+# please keep "GUI_Region" in the last line.
+if [ "$GUI_Region" != "German" ]; then
+	region=0
+else
+	region=1
+fi
+echo "GUI_Region="$region >> $TRAFFIC_STATUS
+

@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_success.css" />
+<link rel="stylesheet" type="text/css" href="style/form.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_hijack_success.js"></script>
+<% hijack_language() %>
+<% hijack_success_page() %>
+</head>
+
+<% wizlog_congratulations_ck15() %>
+<% wan1_and_wan2_configed() %>
+<body>
+<form action="NETGEAR_WNDR3700.cfg" method="post" enctype="multipart/form-data">
+<input type="hidden" name="submit_flag" value="hijack_success" />
+<input type="hidden" name="click_flag" value="0" />
+<script language="javascript" type="text/javascript">
+var ts = "<% hijack_get_timestamp("hijack_success") %>";
+var have_click_take_me_to_internet = "<% cfg_get("have_click_take_me_to_internet") %>";
+<% cd_less_flag() %>
+var an_router_flag = "<% get_an_router_flag() %>";
+<% cfg_set("wiz_success", "1") %>
+//fix bug 29052
+var wl_sectype="<% cfg_get("wl_sectype") %>";
+var wla_sectype="<% cfg_get("wla_sectype") %>";
+var wl_passphrase="<% passphrase_bg_msg() %>";
+var wla_passphrase="<% passphrase_ag_msg() %>";
+var wl_tooltip1=0;
+var wla_tooltip1=0;
+var netgear_region="<% get_firmware_region() %>"
+var gui_region = "<% cfg_get("GUI_Region") %>";
+var browser_lang="<% get_browser_language() %>";
+var is_Mac_Win = detectOS();
+var have_wifi_flag = "<% get_have_wifi_flag() %>";
+if(have_wifi_flag != "0" && have_wifi_flag != "1")
+	have_wifi_flag = "1";
+
+function to_success()
+{
+	top.location="to_internet_no_auth.htm"
+}
+
+function location_to_OS()
+{
+	if(is_Mac_Win == "Mac" || is_Mac_Win.indexOf("Win") != -1)
+		location.href="BRS_hdd_download.htm";
+	else
+		to_success();
+}
+</script>
+
+<div class="wizard_content_div">
+
+	<div id="words_div_success" class="wizard_words_div">
+		
+		<h2 id="message"><!--congratulations--></h2>
+		
+		<p><!--connect_success_1--></p>
+		
+		<p>
+			<script language="javascript" type="text/javascript">
+		if(have_wifi_flag == "1")
+		{
+			if(an_router_flag == "0")
+			{
+				if(wl_sectype == 1)
+				{
+					document.write(bh_success_no_wireless_security_1);				
+					document.write("<font id=\"a\" onclick=\"click_here();\" >"+bh_success_no_wireless_security_2+"</font>");
+					document.write(bh_success_no_wireless_security_3);
+				}
+				else
+				{
+					document.write(bh_connect_success_2);
+					if(wl_sectype == 4)
+					{
+						wl_tooltip1 = 1;
+						document.write('<u id="key_tooltip_1">'+bh_network_key+'</u>');
+					}
+					else
+						document.write(bh_network_key);
+				}
+			}
+			else
+			{
+				if(wl_sectype == 1 && wla_sectype == 1)
+				{
+					document.write(bh_success_no_wireless_security_1);				
+					document.write("<font id=\"a\" onclick=\"click_here();\" >"+bh_success_no_wireless_security_2+"</font>");
+					document.write(bh_success_no_wireless_security_3);
+				}					
+				else
+				{
+					document.write(bh_connect_success_2);
+					if(wl_sectype == 4 && wla_sectype == 4)
+					{
+						wla_tooltip1 = 1;
+						document.write('<u id="key_tooltip_1">'+bh_network_key+'</u>');
+					}
+					else
+						document.write(bh_network_key);
+				}
+			}
+		}
+			</script>
+		</p>
+		
+		<script>
+		if(an_router_flag == "0")
+			document.write('<div id="info_div_24">');
+		else
+			document.write('<div id="info_div">');
+		
+		var wl_info_div = (an_router_flag=="1") ? document.getElementById("info_div") : document.getElementById("info_div_24");
+		if(have_wifi_flag == "0")
+			wl_info_div.style.display = "none";
+		else
+			wl_info_div.style.display = "";
+		</script>
+			<div id="network_name" class="left_div"><!--wirless_name--></div>
+			<div class="right_div"><% cfg_get_ssid_html("wl_ssid") %></div>
+
+			<div id="div_5G">
+			<div id="network_name_5G" class="left_div"><!--wirless_name--></div>
+			<div class="right_div"><% cfg_get_ssid_html("wla_ssid") %></div>
+			</div>
+			
+			<div id="passpharse" class="left_div">
+			<script language="javascript" type="text/javascript">
+				if(an_router_flag == "0" || (wl_sectype == wla_sectype && wl_passphrase == wla_passphrase))
+					document.write(bh_wireless +" ");
+				else
+					document.write("2.4GHz " + bh_wireless +" ");
+				if(wl_tooltip1 == 1 || wla_tooltip1 == 1)
+					document.write('<u id="key_tooltip_2">'+bh_wpa_wpa2_passpharse+'</u>');
+				else
+					document.write(bh_wpa_wpa2_passpharse);
+			</script>
+			</div>
+			<div class="right_div"><% passphrase_bg_msg() %>
+			</div>
+			
+			<div id="passwd_5G">
+			<div id="passpharse_5G" class="left_div">
+			<script language="javascript" type="text/javascript">
+				document.write("5GHz " + bh_wireless + " ");
+				if(wla_tooltip1 == 1)
+					document.write('<u id="key_tooltip_3">'+bh_wpa_wpa2_passpharse+'</u>');
+				else
+					document.write(bh_wpa_wpa2_passpharse);
+			</script>
+			</div>
+			<div class="right_div"><% passphrase_ag_msg() %></div>
+			</div>
+			
+			<div style="clear:both"></div>
+		</div>
+
+		<div id="admin_passwd">
+			<div class="left_div"><span style="font-weight:bold; text-decoration:underline;"><script>document.write(bh_router_admin)</script></span></div>
+			<div class="right_div"></div>
+			<div class="left_div"><script>document.write(bh_admin_user_name)</script></div>
+			<div class="right_div"><% cfg_get("http_username") %></div>
+			<div class="left_div"><script>document.write(bh_new_admin_passwd)</script></div>
+			<div class="right_div"><% cfg_get("http_passwd") %></div>
+		</div>
+
+	</div>
+	
+	<div id="buttons_div_02" class="wizard_buttons_div" align="center">
+		<TABLE width="90%" align=center>
+			<TR><TD align="left">
+			<script>
+			document.write('<input class="short_common_hdd" type="button" name="Exit" id="exit" value="'+bh_exit_mark+'" onClick="to_success()"></TD>');
+			</script>
+			<TD align="right">
+			<script>
+			document.write('<input class="short_common_hdd" type="button" name="Next" id="next" value="'+bh_next_mark+'" onClick="location_to_OS()"></TD>');
+			</script>
+
+		</TABLE>
+	</div>
+
+</div>
+
+</form>
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+		DNI Netfilter configure options and proc entries
+
+This document records all configure options proc entry interface about
+DNI Netfilter. Project Leader should reference this document to enable
+or disable features add by DNI.
+
+configure options
+=================
+
+NF_CONNTRACK_POORMAN_TCP_WINDOW_CHECKING
+
+    When set to y, TCP window checking ported from linux v2.4.27 will
+    be used. Otherwise, original TCP window checking of v2.6.x will be
+    used.
+
+/proc entries
+=============
+
+/proc/sys/dni_netfilter/conntrack_refresh_support
+
+    Symptom:
+	Refresh the timer of the FTP control session when the FTP data
+	session is keeping transmitting data (It is all TCP protocol) by:
+	# echo "1" > /proc/sys/dni_netfilter/conntrack_refresh_support
+
+    Default:
+	Disable this feature and work just like original Linux netfilter by:
+	# echo "0" > /proc/sys/dni_netfilter/conntrack_refresh_support
+
+/proc/sys/dni_netfilter/conntrack_refresh_outbound_only
+
+    Symptom:
+	Supporting established TCP NAT Outbound & UDP NAT Outbound
+	refresh feature by:
+	# echo "1" > /proc/sys/dni_netfilter/conntrack_refresh_outbound_only
+
+    Default:
+	Disable this feature and work just like original Linux netfilter by:
+	# echo "0" > /proc/sys/dni_netfilter/conntrack_refresh_outbound_only

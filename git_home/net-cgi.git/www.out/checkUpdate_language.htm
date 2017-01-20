@@ -1,0 +1,40 @@
+<% http_header("style/form.css", "/funcs.js", "/upgrade.js") %>
+<% func_header("", "lang_search.htm", "download_language_confile") %>
+<div class="page_title">$ch_lang_head_update</div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+
+<input type=hidden name="dis_crl" value='1'>
+<input type=hidden name=hidden_lang_avi>
+</TABLE>
+<script>
+var language_list="<% cfg_get("lang_available") %>";
+var dis_lang_crl="<% cfg_get("Enable_GUIStringTable") %>";
+var gui_region="<% cfg_get("GUI_Region") %>";
+
+function loadvalue()
+{
+
+}
+</script>
+	
+	<a tabindex=-1 href="javascript:loadhelp('_upgrade','check')"><b>$upgrade_new_version</b></a>
+	<br><br>
+	<center>
+	<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if( master == "admin" )
+		document.write('<input class="common_bt" type="submit" name="check" value="$check_mark">');
+	else
+		document.write('<input class="common1_bt" type="submit" name="check" disabled>');
+	</script>
+	
+	</center>
+
+</div>
+</FORM>
+</BODY>
+</HTML>
+
+

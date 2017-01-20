@@ -1,0 +1,150 @@
+#! /bin/sh
+
+DISK_FIND_TABLE=/tmp/find_disk_abcxzy
+download_state="$(/bin/config get green_download_enable)"
+download_start() {
+	sleep 2
+	green_download=`ps -w| grep -v grep |grep -c green_download.sh`
+	download_entry=`ps -w| grep -v grep |grep -c greendownload`
+	[ "x$green_download" != "x0" ] && return
+	[ "x$download_entry" != "x0" ] && return
+	[ "x$download_state" == "x1" ] && echo "hotplug starting green_download ........" > /dev/console && /usr/sbin/green_download.sh start
+}
+
+# $---> sda1
+print_log()
+{
+	if [ `length $1` != '4' ]; then
+		return
+	fi
+
+	sata_disk_name=`/bin/config get sata_diskname`
+
+	device_name=`cat $DISK_FIND_TABLE | grep $1 | awk -F* '{print $2}'`
+	volume_name=`cat $DISK_FIND_TABLE | grep $1 | awk -F* '{{{i=NF-3; a="*";while(i!=0) {printf $(NF-i); if(i!=1) printf a; i--}}}}'`
+
+	if [ "x$sata_disk_name" = "x$1" ]; then
+		logger "[External disk attached] The External disk attached $device_name($volume_name) is attached to the router"
+		return
+	else
+		logger "[USB device attached] The USB storage device $device_name($volume_name) is attached to the router"
+		return
+	fi
+
+	volume_name=`/usr/sbin/vol_id -L /dev/$1`
+	if [ ! -n "$volume_name" ]; then
+		volume_name=$1
+	fi
+	logger "[USB device attached] The USB storage device $1($volume_name) is attached to the router"
+}
+
+if [ $# -eq 0 ]; then
+	echo "Must run with devicename."
+	exit 1
+fi
+
+fs_type=$(vol_id /dev/$1 | grep ID_FS_TYPE | awk -F= '{print $2}')
+if [ "x$fs_type" = "x" ]; then
+	fs_type=$(parted -s /dev/$1 print | sed -n '/Number/{n;p}' | awk '{print $5}')
+fi
+echo This partition type is $fs_type !
+
+partition_label=$(vol_id /dev/$1 | grep ID_FS_LABEL_SAFE | awk -F= '{print $2}')
+if [ -z "$partition_label" ]; then
+	diskname=$1
+else 
+	diskname=$partition_label
+
+	if [ -e /mnt/$1 ]; then
+		rm -f /mnt/$1
+	fi
+
+	if [ -d /mnt/$1 ]; then
+		rmdir /mnt/$1
+	fi
+
+	ln -sf $diskname /mnt/$1
+
+	if [ -d /mnt/$diskname ]; then
+		rmdir /mnt/$diskname
+	fi
+
+	if [ -d /mnt/$diskname ]; then
+		diskname=$1
+		rm -f /mnt/$1
+	fi
+
+	if [ -f /root/.nolabel ]; then
+		diskname=$1
+		rm -f /mnt/$1
+	fi
+fi
+
+partition_tb=$(parted -s /dev/`echo $1 | sed 's/[0-9]//g'` print | grep "Partition Table" | awk '{print $3}')
+if [ "x$(parted -s /dev/`echo $1 | sed 's/[0-9]//g'` print noshare | grep $1)" = "x" -o "x$partition_tb" = "xloop" ]; then
+	mkdir /mnt/$diskname
+	case "$fs_type" in
+		"ntfs")
+			mount -t ufsd -o nls=utf8,rw,nodev,noatime,uid=0,gid=0,fmask=0,dmask=0 --force /dev/$1 /mnt/$diskname
+		;;
+		"ext4")
+			mount -t ext4 -o nodev,barrier=1,data=writeback /dev/$1 /mnt/$diskname
+		;;
+		"ext3")
+			mount -t ext3 -o nodev,barrier=1,data=writeback /dev/$1 /mnt/$diskname
+			if [ $? -ne 0 ]; then
+				mount -t ext4 -o nodev,barrier=1,data=writeback /dev/$1 /mnt/$diskname
+			fi
+		;;
+		"ext2")
+			mount -t ext2 -o nodev,noatime  /dev/$1 /mnt/$diskname
+		;;
+		"hfs")
+			mount -t hfs -o nodev,noatime /dev/$1 /mnt/$diskname
+		;;
+		"hfsplus")
+			mount -t hfsplus -o nodev --force /dev/$1 /mnt/$diskname
+		;;
+		"vfat")
+			mount -o usefree,utf8=yes,fmask=0000,dmask=0000 /dev/$1 /mnt/$diskname
+		;;
+		*)
+		mount  /dev/$1 /mnt/$diskname
+		if [ $? -ne 0 ]; then
+			rmdir /mnt/$diskname
+		else
+			echo "mount /mnt/$diskname success"
+		fi
+		return
+		;;
+	esac
+fi
+
+if [ -x /mnt/$diskname/autorun/scripts/post-mount.sh ]; then
+	/mnt/$diskname/autorun/scripts/post-mount.sh $diskname &
+fi
+
+diskname=$(echo $1 | sed 's/[0-9].*//')
+lastpartition=$(cat /proc/partitions | grep $diskname | awk '{print $4}' | tail -1)
+echo "disk name is $diskname last partition is $lastpartition"
+
+if [ $1 = $lastpartition ]; then
+	echo noop > /sys/block/$diskname/queue/scheduler
+	echo 1024 > /sys/block/$diskname/queue/nr_requests
+
+	/usr/sbin/detectSATA start
+	if [ "x$(pidof update_smb)" != "x" ]; then
+		echo "update_smb is running, sleep 2" > /dev/console
+		sleep 2
+	fi
+	update_smb $diskname
+	/usr/sbin/update_afp $diskname
+	#/usr/sbin/usb_cfg approve $1
+	/sbin/cmdftp restart
+	/sbin/cmddlna restart &
+	#if download is enabled start download
+	download_start
+fi
+
+print_log $1
+rm /tmp/umount_result

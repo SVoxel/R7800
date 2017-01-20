@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_03A_wanInput_reenter.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/funcs.js"></script>
+<% hijack_language() %>
+<% deleteFiles("/tmp/ping_result_error", "/tmp/ping_ip_result_error", "/tmp/ping_gateway_result_error")%>
+<% deleteFiles("/tmp/ping_result", "/tmp/wget_file_result") %>
+<% cfg_set("form_set2","") %>
+<script>
+var display_iptv2 = "<% cfg_get("wan2_active") %>";
+var enable_iptv = "<% cfg_get("dsl_wan_video_enable") %>";
+var hijack_process="<% cfg_get("hijack_process") %>";
+function initPage()
+{
+	var head_tag = document.getElementsByTagName("h1");
+	var head_text = document.createTextNode(bh_ISP_namePasswd_error);
+	head_tag[0].appendChild(head_text);
+	
+	
+	var paragraph = document.getElementsByTagName("p");
+	var paragraph_text = document.createTextNode(bh_enter_info_again);
+	paragraph[0].appendChild(paragraph_text);
+	
+	
+	var login_name = document.getElementById("loginName");
+	var login_text = document.createTextNode(bh_pppoe_login_name);
+	login_name.appendChild(login_text);
+
+	var passwd = document.getElementById("passwd");
+	var passwd_text = document.createTextNode(bh_ddns_passwd);
+	passwd.appendChild(passwd_text);
+
+	
+	//set event action
+	var name_input = document.getElementById("inputName");
+	name_input.onkeypress = ssidKeyCode;
+
+	var passwd_input = document.getElementById("inputPasswd");
+	passwd_input.onkeypress = ssidKeyCode;
+	
+	var btns_div1 = document.getElementById("btnsContainer_div1");
+	if( master == "admin" )
+	{
+		btns_div1.onclick = function()
+		{
+			return manuallyConfig();
+		}
+	}
+	
+	cf=document.forms[0];
+	cf.pppoa_name.value="";
+	cf.pppoa_passwd.value="";	
+	var btn = btns_div1.getElementsByTagName("div");
+	var btn_text = document.createTextNode(bh_manual_config_connection);
+	btn[0].appendChild(btn_text);
+
+	var btns_div2 = document.getElementById("btnsContainer_div2");
+	if( master == "admin" )
+	 btns_div2.onclick = function()
+	  {
+		return checkPPPoA();
+	 }
+	
+	btn = btns_div2.getElementsByTagName("div");
+	btn_text = document.createTextNode(bh_try_again);
+	btn[0].appendChild(btn_text);
+	cf=document.forms[0];
+	
+	if(display_iptv2 == "1"){
+		document.getElementById("iptv").style.display="";
+		if(enable_iptv == "1")
+			cf.use_iptv.checked = true;
+		else
+			cf.use_iptv.checked = false;
+	}
+	else
+		document.getElementById("iptv").style.display="none";
+
+	//show firmware version
+        showFirmVersion("");
+}
+
+addLoadEvent(initPage);
+
+function checkPPPoA()
+{
+	var forms = document.getElementsByTagName("form");
+        var cf = forms[0];
+	
+	var pppoa_name = document.getElementById("inputName");
+	var pppoa_passwd = document.getElementById("inputPasswd");
+
+	if(pppoa_name.value == "")
+	{
+		alert(bh_login_name_null);
+		return false;
+	}
+
+	var i;
+	for(i=0;i<pppoa_passwd.value.length;i++)
+	{
+		if(isValidChar(pppoa_passwd.value.charCodeAt(i))==false)
+		{
+			alert(bh_password_error);
+			return false;
+		}
+	}
+	if(cf.use_iptv.checked == true)
+			cf.hid_use_iptv.value = "1";
+		else
+			cf.hid_use_iptv.value = "0";
+	cf.submit();
+
+	return true;
+}
+</script>
+</head>
+
+<body>
+<% form_submit("apply", "BRS_log12_incorrect_try_again.html", "hijack_pppoa") %>
+<input type="hidden" name="hid_use_iptv" />
+<!--bug 22145 add hijack_toBasic-->
+<% save_timestamp("hijack_pppoa", "hijack_toBasic") %>
+<script language="javascript" type="text/javascript">var ts="<% cfg_get("hijack_toBasic") %>";</script>
+
+<input type="hidden" name="WANAssign" value="0" />
+
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+			<h1 class="h1_red"><!--pppoe_connection--></h1>
+			<p><!--enter_info_below--></p>
+			
+			<div class="wanInput_content_div">
+				
+				<div id="loginName" class="wanInput_left_div" align="left">
+					<!--pppoe_login_name-->
+				</div>
+				<div class="wanInput_Img_div">
+					<img src="image/ca_text_pic.gif" />
+					<input type="text" id="inputName" maxlength="64" align="left" name="pppoa_name" autocomplete="off" />
+				</div>
+				
+				<div id="passwd" class="wanInput_left_div" align="left">
+					<!--ddns_passwd-->
+				</div>
+				<div class="wanInput_Img_div">
+					<img src="image/ca_text_pic.gif" />
+					<input type="password" id="inputPasswd" maxlength="16" align="left" name="pppoa_passwd" autocomplete="off" />
+				</div>
+				<div id="iptv" class="wanInput_left_divip" align="left">
+					<input type="checkbox" name="use_iptv" value="1">
+					<script>document.write(bh_eanble_iptv)</script>
+				</div>
+				<div style="clear:both"></div>
+			</div>
+		
+	</div>
+	
+	<div id="allBtns_div" class="wizard_buttons_div" align="right">
+
+		<div id="btnsContainer_div1" class="buttons_img_div" align="center">
+			<script>
+			var master="<% cfg_get("http_loginname") %>";
+			if( master == "admin" )
+				document.write('<img src="image/ca_purple_long_button.gif" />');
+			else
+				document.write('<img src="image/ca-little-grey-button.png" />');
+			</script>
+			<div class="buttons_words_div"><!--manual_config_connection--></div>
+		</div>
+
+		<div id="btnsContainer_div2" class="buttons_img_div" align="center">
+			<script>
+		if( master == "admin" )
+				document.write('<img src="image/ca-little-purple-button.gif" />');
+		else
+				document.write('<img src="image/ca-little-grey-button.png" />');
+			
+		</script>
+			<div class="buttons_words_div"><!--try_again--></div>
+		</div>
+
+	</div>
+	
+
+</div>
+
+</form>
+</body>
+
+</html>

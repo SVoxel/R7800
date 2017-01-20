@@ -1,0 +1,41 @@
+--- a/arch/mips/ath79/dev-wmac.c
++++ b/arch/mips/ath79/dev-wmac.c
+@@ -23,6 +23,10 @@
+ #include <asm/mach-ath79/ar71xx_regs.h>
+ #include "dev-wmac.h"
+ 
++#ifdef CONFIG_OF
++#include <linux/of_platform.h>
++#endif
++
+ static u8 ath79_wmac_mac[ETH_ALEN];
+ 
+ struct ath9k_platform_data ath79_wmac_data = {
+@@ -325,6 +329,17 @@
+ 	}
+ }
+ 
++#ifdef CONFIG_OF
++void ath79_wmac_dt_fixup(void *auxdata)
++{
++	struct of_dev_auxdata *of_auxdata = (struct of_dev_auxdata *)auxdata;
++	of_auxdata->name = (char *)ath79_wmac_device.name;
++	of_auxdata->phys_addr = ath79_wmac_resources[0].start;
++}
++#else
++void ath79_wmac_dt_fixup(void *auxdata) {}
++#endif
++
+ void __init ath79_register_wmac(u8 *cal_data, u8 *mac_addr)
+ {
+ 	ath79_init_wmac_pdata(cal_data, mac_addr);
+--- a/arch/mips/ath79/dev-wmac.h
++++ b/arch/mips/ath79/dev-wmac.h
+@@ -17,6 +17,7 @@
+ extern struct ath9k_platform_data ath79_wmac_data;
+ 
+ void ath79_init_wmac_pdata(u8 *cal_data, u8 *mac_addr);
++void ath79_wmac_dt_fixup(void *auxdata);
+ void ath79_register_wmac(u8 *cal_data, u8 *mac_addr);
+ void ath79_wmac_disable_2ghz(void);
+ void ath79_wmac_disable_5ghz(void);

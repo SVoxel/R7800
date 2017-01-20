@@ -1,0 +1,24 @@
+diff --git a/zebra/rt_netlink.c b/zebra/rt_netlink.c
+index bc26570..ccf2c54 100644
+--- a/zebra/rt_netlink.c
++++ b/zebra/rt_netlink.c
+@@ -781,7 +781,8 @@ netlink_link_change (struct sockaddr_nl *snl, struct nlmsghdr *h)
+ 
+ 	  ifp->ifindex = ifi->ifi_index;
+ 	  ifp->flags = ifi->ifi_flags & 0x0000fffff;
+-	  ifp->mtu = *(int *)RTA_DATA (tb[IFLA_MTU]);
++	  if (tb[IFLA_MTU])
++		ifp->mtu = *(int *)RTA_DATA (tb[IFLA_MTU]);
+ 	  ifp->metric = 1;
+ 
+ 	  /* If new link is added. */
+@@ -791,7 +792,8 @@ netlink_link_change (struct sockaddr_nl *snl, struct nlmsghdr *h)
+ 	{
+ 	  /* Interface status change. */
+ 	  ifp->ifindex = ifi->ifi_index;
+-	  ifp->mtu = *(int *)RTA_DATA (tb[IFLA_MTU]);
++	  if (tb[IFLA_MTU])
++		ifp->mtu = *(int *)RTA_DATA (tb[IFLA_MTU]);
+ 	  ifp->metric = 1;
+ 
+ 	  if (if_is_up (ifp))

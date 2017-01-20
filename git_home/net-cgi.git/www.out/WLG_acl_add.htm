@@ -1,0 +1,172 @@
+<% http_header("style/form.css", "/funcs.js", "/wlacl.js") %>
+<% noload_header("_WLG_acl_add", "WLG_acl.htm", "wlacl_add") %>
+<div class="page_title">$adva_wlan_acl_add</div>
+<div id="main" class="main"> 
+<% table_header() %>
+$bluebar
+
+<script>
+<% wlacl_items_xss() %>
+</script>
+
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_WLG_acl_add','card')"><B>$adva_wlan_acl_cards</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2 align=center>
+	<TABLE class=tables border=0 cellpadding=2 cellspacing=0 width=100%>
+	<TR class=table_header>
+		<TD nowrap>&nbsp; </TD>
+		<TD nowrap align=center><span class="subhead">$lan_mark_name</span></TD>
+		<TD nowrap align=center><span class="subhead">$info_mark_mac</span></TD>
+	</TR>
+<script>
+var stalist="<% wl_stalist("bgn") %>";
+var sta_array=stalist.split(' #@#');
+var sta_mac_array = new Array();
+var sta_name_array = new Array();
+var q=1;
+
+var attach_device_list="<% echo_file("/tmp/netscan/attach_device") %>";
+var attach_array=attach_device_list.split(' @#$$&*! ');
+var attach_mac_array = new Array();
+var attach_name_array = new Array();
+var attach_ip_array = new Array();
+var p=0;
+<% list_attach_name() %>
+if(attach_device_list != "")
+        for(i=0;i<attach_array.length;i++)
+        {
+                var each_info=attach_array[i].split(' ');
+                if(each_info.length>2)
+                {
+                        attach_ip_array[p]=each_info[0];
+                        attach_mac_array[p]=each_info[1];
+                        if (each_info[2].length>0)
+                                attach_name_array[p]=each_info[2];
+                        else
+                                attach_name_array[p]="----";
+                }
+                else
+                {
+                        attach_ip_array[p]=each_info[0];
+                        attach_mac_array[p]=each_info[1];
+                        attach_name_array[p]="----";
+                }
+                if(attach_ip_array[p] == "<unknown>")
+                        attach_ip_array[p]="&lt;unknown&gt;"
+                if(attach_mac_array[p] == "<unknown>")
+                        attach_mac_array[p]="&lt;unknown&gt;"
+                if(attach_name_array[p] == "<unknown>" || attach_name_array[p] == "&lt;unknown&gt;" || attach_name_array[p] == "----"){
+                        for( t=0; t<deviceIP_name_num; t++){
+                                var dev_name = eval ( 'deviceIP_name' + t );
+                                var dev_name_array = dev_name.split(' ');
+                                if( attach_ip_array[p] == dev_name_array[0] )
+                                        attach_name_array[p] = dev_name_array[1];
+
+                        }
+                }
+
+                if( attach_mac_array[p].toUpperCase() == "<% cfg_sed_xss("macAddr") %>".toUpperCase().replace(/-/g,":") 
+                        && (attach_name_array[p] == "<unknown>" || attach_name_array[p] == "&lt;unknown&gt;" || attach_name_array[p] == "----" ) )
+                {
+                        attach_name_array[p] = "<% cfg_sed_xss("client_name") %>";
+                }
+
+                if(attach_name_array[p] == "<unknown>")
+                        attach_name_array[p]="&lt;unknown&gt;"
+
+                p++;
+        }
+
+if(stalist != "")
+{
+	for(i=1;i<sta_array.length-1;i++)
+	{
+		var each_info=sta_array[i].split(' ');
+		if(each_info[1]!="UAPSD")
+		{
+			sta_mac_array[q]=each_info[1];
+			q++;
+		}
+	}
+	for ( i=1;i<sta_mac_array.length;i++ )
+	{
+		var flag = 0;
+		for(j=0;j<attach_array.length;j++)
+		{
+			var each_info_attach = attach_array[j].split(' ');			
+			if( sta_mac_array[i].toUpperCase() == attach_mac_array[j].toUpperCase() )		
+			{
+				flag = flag + 1;
+				sta_name_array[i] = attach_name_array[j];
+			}	
+		}
+		if ( flag == 0 )
+			sta_name_array[i] = "&lt;$unknown_mark&gt;";		
+	}
+}
+
+if (stalist != "")
+{
+	for(i=1;i<sta_mac_array.length;i++)
+		if(sta_name_array[i].toLowerCase()!="<unknown>")
+		{
+		      if( i%2== 0 )
+                    document.write("<TR class=\"even_line\">");
+               else
+                    document.write("<TR class=\"odd_line\">");
+			document.write('<TD nowrap align=center><input type="radio" name="MacSelect" value="'+i+'" onclick="mac_data_select('+i+')"></TD><TD nowrap align=center>&nbsp;'+sta_name_array[i]+'&nbsp;</TD><TD nowrap align=center>'+sta_mac_array[i].toUpperCase()+'</TD></TR>');
+		}
+		else
+		{
+		       if( i%2== 0 )
+                    document.write("<TR class=\"even_line\">");
+               else
+                    document.write("<TR class=\"odd_line\">");
+			document.write('<TD nowrap align=center><input type="radio" name="MacSelect" value="'+i+'" onclick="mac_data_select('+i+')"></TD><TD nowrap align=center>&nbsp;&lt;$unknown_mark&gt;&nbsp;</TD><TD nowrap align=center>'+sta_mac_array[i]+'</TD></TR>');
+		}
+}
+</script>
+	</TABLE>
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_WLG_acl','entry')"><B>$adva_wlan_acl_entry</B></A>
+	</TD>
+</TR>	
+<TR>
+	<TD nowrap>$lan_mark_name</TD>
+	<TD nowrap>
+	<input type="text" name="device" maxLength="20" size="20" onKeyPress="return getkey('ssid', event)">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$info_mark_mac</TD>
+	<TD nowrap>
+	<input type="text" value="" name="adr" maxlength="17" size="20" onKeyPress="return getkey('mac',event)">
+	</TD>
+</TR>
+$bluebar
+<TR>
+<TD nowrap colspan=2 align=center>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<input class="add_bt"  type="submit" value="$add_mark" name="Add" onClick="return check_wlacl_add(document.forms[0],\'add\')">&nbsp;&nbsp;<input class="cancel_bt" type="button" value="$cancel_mark" name="Cancel" onClick="location.href=\'WLG_acl.htm\';">&nbsp;&nbsp;');
+else
+	document.write('<input class="add1_bt"  type="submit" value="$add_mark" name="Add" disabled>&nbsp;&nbsp;<input class="cancel1_bt" type="button" value="$cancel_mark" name="Cancel" disabled>&nbsp;&nbsp;');
+</script>	
+	<input class="common_bt" type='button' value='$refresh_mark' name="Refresh" onClick='location.href="WLG_acl_wait.htm";'>
+	</TD>
+</TR>  
+</TABLE>
+</div>
+<% help_box("1","_WLG_acl_add") %>
+</FORM>
+</BODY>
+</HTML>

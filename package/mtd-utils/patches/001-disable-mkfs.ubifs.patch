@@ -1,0 +1,11 @@
+--- mtd-utils-1.5.0/Makefile.orig	2014-01-27 16:59:07.207319544 +0800
++++ mtd-utils-1.5.0/Makefile	2014-01-27 16:59:49.787319565 +0800
+@@ -30,7 +30,7 @@
+ 	ubidetach ubinize ubiformat ubirename mtdinfo ubirsvol
+ 
+ BINS = $(MTD_BINS)
+-BINS += mkfs.ubifs/mkfs.ubifs
++#BINS += mkfs.ubifs/mkfs.ubifs
+ BINS += $(addprefix ubi-utils/,$(UBI_BINS))
+ SCRIPTS = flash_eraseall
+ 

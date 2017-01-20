@@ -1,0 +1,124 @@
+<% http_header("style/form.css", "/funcs.js", "/upnp.js") %>
+<% body_header("_upnp", "UPNP_upnp.htm", "upnp") %>
+<div class="page_title">$upnp_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+        <TD nowrap align=center>
+	<input class="common_bt" type='button' name='Refresh' id="refresh" value='$refresh_mark' onClick='location.href="UPNP_upnp.htm";'>
+	<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if( master == "admin" )
+		document.write('<input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'UPNP_upnp.htm\';"><input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onClick="return checkupnp(document.forms[0]);">');
+	else
+		document.write('<input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled><input class="apply1_bt" type="button" name="Apply" id="apply" value="$apply_mark" disabled>');
+	</script>
+		</TD>
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<script>
+var upnp_onoff='<% cfg_get("upnp_enable") %>';
+var AdverTime='<% cfg_sed_xss("upnp_AdverTime") %>';
+var TimeToLive='<% cfg_sed_xss("upnp_TimeToLive") %>';
+
+var wps_alert="<% cfg_get("wps_alert") %>";
+<% cfg_set("wps_alert", "0") %>
+
+function loadvalue()
+{
+	var cf=document.forms[0];
+	if(upnp_onoff == '1')
+		cf.UpnP.checked =true;
+	else
+		cf.UpnP.checked =false;
+	click_upnp(AdverTime,TimeToLive);
+
+	showWps_alert();
+}
+</script>
+<input type="hidden" name="upnp_onoff">
+<input type="hidden" name="changetime">
+<input type="hidden" name="hidden_advertime" value="">
+<input type="hidden" name="hidden_timetolive" value="">
+<TR>
+	<TD nowrap colspan=2>
+	<script>document.write('<input type="checkbox" name="UpnP" id="upnp" value="UPnP" onClick="click_upnp('+AdverTime+','+TimeToLive+');">')</script>
+	<A tabindex=-1 href="javascript:loadhelp('_upnp','turnon')"><B>$adva_upnp_on</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_upnp','adv')"><B>$adva_upnp_advertime</B></A>$adva_upnp_min
+	</TD>
+	<TD nowrap>
+	<input type="text" name="AdverTime" id="adver_time" size="8" maxlength="4" onKeyPress="return getkey('num', event)">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_upnp','live')"><B>$adva_upnp_timetolive</B></A>$adva_upnp_hops
+	</TD>
+	<TD nowrap>
+	<input type="text" name="TimeToLive" id="time_to_live" size="8" maxlength="3" onKeyPress="return getkey('num', event)">
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_upnp','table')"><B>$adva_upnp_table</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<TABLE class=tables name=Active id=upnp_portmap  border=0 cellpadding=2 cellspacing=0 width=100%>
+	<TR class=table_header>
+	<TD nowrap align=center><span class="subhead">$adva_upnp_act</span></TD>
+	<TD nowrap align=center><span class="subhead">$adva_upnp_pro</span></TD>
+	<TD nowrap align=center><span class="subhead">$adva_upnp_int</span></TD>
+	<TD nowrap align=center><span class="subhead">$adva_upnp_ext</span></TD>
+	<TD nowrap align=center><span class="subhead">$adva_upnp_ip</span></TD>
+	</TR>
+<script>
+	var upnp_list_array = new Array();  
+	var upnp_list="<% echo_file("/tmp/upnp_pmlist") %>";
+	var upnp_list_array=upnp_list.split('@#$$&*! ');
+	var upnp_active_array = new Array();  
+	var upnp_protocal_array = new Array(); 
+	var upnp_int_array = new Array(); 
+	var upnp_ext_array = new Array(); 	
+	var upnp_ip_array = new Array(); 	
+	var p=0;
+	if(upnp_list != "")
+	for(i=0;i<upnp_list_array.length;i++)
+	{
+		var each_info=upnp_list_array[i].split(';');
+		upnp_active_array[p]=each_info[0];
+		upnp_protocal_array[p]=each_info[1];
+		upnp_int_array[p]=each_info[2];
+		upnp_ext_array[p]=each_info[3];
+		upnp_ip_array[p]=each_info[4];		
+		p++;
+	}		
+	if( upnp_list != "" )	
+	for(i=0;i<upnp_list_array.length;i++)
+	{
+	    if( i%2== 0 )
+		document.write('<TR class=\"even_line\"><TD nowrap align=center>'+upnp_active_array[i]+'</TD><TD nowrap align=center>'+upnp_protocal_array[i]+'</TD><TD nowrap align=center>'+upnp_int_array[i]+'</TD><TD nowrap align=center>'+upnp_ext_array[i]+'</TD><TD nowrap align=center>'+upnp_ip_array[i]+'</TD></TR>');
+		else
+		document.write('<TR class=\"odd_line\"><TD nowrap align=center>'+upnp_active_array[i]+'</TD><TD nowrap align=center>'+upnp_protocal_array[i]+'</TD><TD nowrap align=center>'+upnp_int_array[i]+'</TD><TD nowrap align=center>'+upnp_ext_array[i]+'</TD><TD nowrap align=center>'+upnp_ip_array[i]+'</TD></TR>');
+	}
+</script>
+	</TABLE>
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_upnp") %>
+</FORM>
+</BODY>
+</HTML>

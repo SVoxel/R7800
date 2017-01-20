@@ -1,0 +1,11 @@
+diff --git a/etc/afpd/afp_dsi.c b/etc/afpd/afp_dsi.c
+--- a/etc/afpd/afp_dsi.c
++++ b/etc/afpd/afp_dsi.c
+@@ -567,6 +567,7 @@ void afp_over_dsi(AFPObj *obj)
+         case DSIFUNC_CLOSE:
+             LOG(log_debug, logtype_afpd, "DSI: close session request");
+             afp_dsi_close(obj);
++            system("sync");
+             LOG(log_note, logtype_afpd, "done");
+             exit(0);
+ 

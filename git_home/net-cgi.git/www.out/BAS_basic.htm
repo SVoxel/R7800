@@ -1,0 +1,54 @@
+<% cfg_set("after_welcome", "0") %>
+
+<% http_header("style/form.css") %>
+
+<script>
+var select_basic="<% cfg_get("internet_type") %>";
+var select_type="<% cfg_get("internet_ppp_type") %>";
+var gui_region="<% cfg_get("GUI_Region") %>";
+var jp_multiPPPoE="<% cfg_get("jp_multiPPPoE") %>";
+var netgear_region=top.netgear_region;
+//var have_l2tp=( (gui_region == "Russian" && top.l2tp_flag == 1 && (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "RU") ? 1 : 0 ;
+var have_l2tp = (top.l2tp_flag == 1) ? 1 : 0;
+var support_broadband = (top.have_broadband ==1 && (top.is_ru_version==1 || top.is_pr_version==1)) ? 1 : 0;
+
+function loadvalue()
+{
+	top.broadband_mode = "<% cfg_get("dango_det_wan_type") %>";
+
+	if( top.location.href.indexOf("adv_index.htm") == -1 && support_broadband == 1 ){
+		top.enabledItemsClass_basic();
+		top.basic_menu_color_change('ethernet');
+	}
+
+	if(top.to_multipppoe == 1)
+	{
+		this.location.href = "BAS_mulpppoe.htm";
+		top.to_multipppoe = 0;
+	}
+	else if( select_basic == 1 )
+                this.location.href="BAS_ether.htm";
+        else
+        {
+		if(((jp_multiPPPoE == 1 && gui_region != "Japanese" ) || ( select_type > 0 && gui_region == "Japanese") ) && (netgear_region == "" || netgear_region.toUpperCase() == "WW"))
+                        this.location.href = "BAS_mulpppoe.htm";
+		else if(((jp_multiPPPoE == 1 && gui_region != "Japanese" ) ||  select_type > 0 ) && netgear_region.toUpperCase() == "JP" )
+			this.location.href = "BAS_mulpppoe_ww.htm";
+                else if( select_type == 0 )
+                        this.location.href="BAS_pppoe.htm";
+                else if(select_type == 1 )
+                        this.location.href="BAS_pptp.htm";
+		else if( select_type == 4 && have_l2tp == 1 )
+			this.location.href="BAS_l2tp.htm";
+		else
+			this.location.href="BAS_pppoe.htm";
+		
+        }
+
+}
+
+</script>
+<BODY onLoad="loadvalue();">
+</BODY>
+
+</HTML>

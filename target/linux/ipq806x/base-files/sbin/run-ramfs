@@ -1,0 +1,80 @@
+#!/bin/sh
+
+RAM_ROOT=/tmp/root
+
+ldd() { LD_TRACE_LOADED_OBJECTS=1 $*; }
+libs() { ldd $* | awk '{print $3}'; }
+
+install_file() { # <file> [ <file> ... ]
+	for file in "$@"; do
+		dest="$RAM_ROOT/$file"
+		[ -f $file -a ! -f $dest ] && {
+			dir="$(dirname $dest)"
+			mkdir -p "$dir"
+			cp $file $dest
+		}
+	done
+}
+
+install_bin() { # <file> [ <symlink> ... ]
+	src=$1
+	files=$1
+	[ -x "$src" ] && files="$src $(libs $src)"
+	install_file $files
+	shift
+	for link in "$@"; do {
+		dest="$RAM_ROOT/$link"
+		dir="$(dirname $dest)"
+		mkdir -p "$dir"
+		[ -f "$dest" ] || ln -s $src $dest
+	}; done
+}
+
+pivot() { # <new_root> <old_root>
+	mount | grep "on $1 type" 2>&- 1>&- || mount -o bind $1 $1 && \
+	mkdir -p $1$2 $1/proc $1/dev $1/tmp && \
+	mount -o move /dev $1/dev && \
+	mount -o move /proc $1/proc && \
+	pivot_root $1 $1$2 || {
+		umount $1 $1
+		return 1
+	}
+	mount -o move $2/tmp /tmp
+	#mount -o move $2/jffs /jffs 2>&-
+	return 0
+}
+
+run_ramfs() { # <command> [...]
+	killall smbd proftpd afpd minidlna luns_scan.sh detcable send_wol check_time_machine
+	sync
+	sleep 4
+	alldir=`cat /proc/mounts | grep sd | awk '{print $2}'`
+	for dir in $alldir; do
+		umount $dir
+	done
+	dd if=/dev/zero of=/tmp/tmp11 bs=20M count=1
+	rm /tmp/tmp11 -rf
+	install_bin /bin/busybox /bin/ash /bin/sh /bin/mount /bin/umount /sbin/pivot_root /sbin/reboot /bin/sync /bin/sleep /bin/cat /bin/echo /sbin/ifconfig
+	install_bin /sbin/artmtd
+	install_bin /usr/sbin/nandwrite
+	install_bin /usr/sbin/net-cgi
+	install_file /www/languages-en.js
+	install_file /www/languages-gr.js
+	install_file /www/languages-pt.js
+	install_file /www/languages-ru.js
+	install_file /www/liteblue.gif /www/style/form.css /www/pls_wait.html /www/help.css /www/help.htm /www/upload.gif /www/funcs.js /www/UPG_process.htm /www/upg_get_status.htm /www/spacer.gif /www/menublue.gif /www/rbullet.gif /www/MNU_menu.htm /www/MNU_menu_nolink.htm /www/MNU_menu_wds.htm /www/MNU_menu_wds_nolink.htm /www/AUTO_upgrade_process.htm
+	install_file /etc/resolv.conf
+	install_file /lib/libcrypt.so.0 /lib/libgcc_s.so.1 /lib/libc.so.0 /lib/ld-uClibc.so.0 /lib/libcrypt-0.9.30.1.so /lib/libuClibc-0.9.30.1.so /lib/ld-uClibc-0.9.30.1.so /lib/libm-0.9.30.1.so /lib/libpthread-0.9.30.1.so /lib/libpthread.so.0 /usr/lib/libiconv.so.2.4.0 /usr/lib/libiconv.so /usr/lib/libiconv.so.2 /usr/lib/libconfig.so
+
+	pivot $RAM_ROOT /mnt || {
+		echo "Failed to switch over to ramfs. Please reboot."
+		exit 1
+	}
+
+	# spawn a new shell from ramdisk to reduce the probability of cache issues
+	exec /bin/busybox ash -c "$*"
+
+}
+
+run_ramfs
+

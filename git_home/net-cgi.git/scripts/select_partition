@@ -1,0 +1,29 @@
+#!/bin/sh
+#   script function: choose the correct partitions from the "df" table 
+	# file for storage of selected item.
+	DF_TABLE=/tmp/df_table.a
+	
+	# the existed partitions table for verifing the "df" table
+	ture_partitions=`cat /proc/partitions | awk {'print$4'} | grep ^sd*` 
+	
+	# the candidate partitions table for selecting
+	candidate_partitions=`df -m | awk {'print$1'} | grep ^/dev/sd* | sed 's/\/dev\//''/'`
+	
+	# initiate file df_table.a
+	rm -f $DF_TABLE
+	
+	for one_partition in $candidate_partitions
+	do
+		
+		for exist_partition in $ture_partitions
+		do
+			
+			if [ $one_partition = $exist_partition ];then
+				echo `df -m | grep ^/dev/${one_partition}`>>$DF_TABLE
+			fi
+			
+		done
+		
+	done
+	
+	

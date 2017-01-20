@@ -1,0 +1,15 @@
+#btnsContainer_div1 { width:35%; float:left; }
+
+#btnsContainer_div2 { width:35%; float:left; }
+
+#allBtns_div { width:35%; }
+
+#center_buttons { width: 100%; height: 50px; text-align: center; }
+.wizard_buttons_div { height:50px; width:90%; line-height:50px; padding:0; margin:50px auto; text-align: left;}
+
+
+
+.nowanChoice_divs { width:80%; padding:0px 10% 0px 10%; font-family:Arial; font-size:10pt; font-weight:normal; color:#404040; }
+.nowanChoice_divs1 { width:80%; padding:1% 10% 0px 10%; font-family:Arial; font-size:10pt; font-weight:normal; color:#404040; }
+.nowanChoice_divs .apradio_div{ height:20px; margin:3px 0 auto 0; line-height:20px; }
+.nowanChoice_divs .apradio_div .apradio_doc{ height:30px; margin:3px 0 auto 0; line-height:20px; padding-left:25px }

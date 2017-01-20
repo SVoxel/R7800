@@ -1,0 +1,118 @@
+diff -Nur old/etc/afpd/directory.c new/etc/afpd/directory.c
+--- old/etc/afpd/directory.c	2012-08-28 16:33:28.000000000 +0800
++++ new/etc/afpd/directory.c	2012-08-28 16:39:31.000000000 +0800
+@@ -55,6 +55,7 @@
+  ******************************************************************************************/
+ 
+ int         afp_errno;
++int	    bands_offcnt = 0;
+ /* As long as directory.c hasn't got its own init call, this get initialized in dircache_init */
+ struct dir rootParent  = {
+     NULL, NULL, NULL, NULL,          /* path, d_m_name, d_u_name, d_m_name_ucs2 */
+@@ -1480,6 +1481,7 @@
+     cnid_t              pdid;
+     struct stat *st = &s_path->st;
+     char *upath = s_path->u_name;
++    static int count_times;
+
+     if ((bitmap & ((1 << DIRPBIT_ATTR)  |
+                    (1 << DIRPBIT_CDATE) |
+@@ -1608,9 +1610,18 @@
+             if (diroffcnt(dir, st)) {
+                 ashort = (dir->d_offcnt > 0xffff)?0xffff:dir->d_offcnt;
+             }
++	    else if((count_times >= 1)  && (!(strcmp("bands",cfrombstr(curdir->d_u_name))))){
++	    	ret = bands_offcnt;
++		setdiroffcnt(dir, st,  ret);
++		ashort = (dir->d_offcnt > 0xffff)?0xffff:dir->d_offcnt;
++	    }
+             else if ((ret = for_each_dirent(vol, upath, NULL,NULL)) >= 0) {
+                 setdiroffcnt(dir, st,  ret);
+                 ashort = (dir->d_offcnt > 0xffff)?0xffff:dir->d_offcnt;
++                if(!(strcmp("bands",cfrombstr(curdir->d_u_name)))){
++                       count_times++;
++                       bands_offcnt = ret;
++               }
+             }
+             ashort = htons( ashort );
+             memcpy( data, &ashort, sizeof( ashort ));
+@@ -2259,6 +2266,9 @@
+     }
+ 
+     curdir->d_offcnt++;
++    if(!(strcmp("bands",cfrombstr(curdir->d_u_name)))){
++    	bands_offcnt++;
++    }
+ 
+     if ((dir = dir_add(vol, curdir, s_path, strlen(s_path->u_name))) == NULL) {
+         return AFPERR_MISC;
+diff -Nur old/etc/afpd/file.c new/etc/afpd/file.c
+--- old/etc/afpd/file.c	2012-08-28 16:33:28.000000000 +0800
++++ new/etc/afpd/file.c	2012-08-28 16:33:37.000000000 +0800
+@@ -49,6 +49,8 @@
+ #include "filedir.h"
+ #include "unix.h"
+ 
++#define cfrombstr(b) ((char *)((b)->data))
++extern int bands_offcnt;
+ /* the format for the finderinfo fields (from IM: Toolbox Essentials):
+  * field         bytes        subfield    bytes
+  * 
+@@ -779,6 +781,9 @@
+ 
+ createfile_done:
+     curdir->d_offcnt++;
++    if(!(strcmp("bands",cfrombstr(curdir->d_u_name)))){
++        bands_offcnt++;
++    }
+ 
+ #ifdef DROPKLUDGE
+     if (vol->v_flags & AFPVOL_DROPBOX) {
+@@ -1376,7 +1381,9 @@
+         goto copy_exit;
+     }
+     curdir->d_offcnt++;
+-
++    if(!(strcmp("bands",cfrombstr(dir->d_u_name)))){
++        bands_offcnt++;
++    }
+ #ifdef DROPKLUDGE
+     if (vol->v_flags & AFPVOL_DROPBOX) {
+         retvalue=matchfile2dirperms(upath, vol, ddid); /* FIXME sdir or ddid */
+diff -Nur old/etc/afpd/filedir.c new/etc/afpd/filedir.c
+--- old/etc/afpd/filedir.c	2012-08-28 16:33:28.000000000 +0800
++++ new/etc/afpd/filedir.c	2012-08-28 16:33:37.000000000 +0800
+@@ -52,6 +52,8 @@
+ #include "filedir.h"
+ #include "unix.h"
+ 
++extern int bands_offcnt;
++
+ #ifdef DROPKLUDGE
+ int matchfile2dirperms(
+ /* Since it's kinda' big; I decided against an
+@@ -640,6 +642,9 @@
+     }
+     if ( rc == AFP_OK ) {
+         curdir->d_offcnt--;
++	if(!(strcmp("bands",cfrombstr(curdir->d_u_name)))){
++        	bands_offcnt--;
++    	}
+         setvoltime(obj, vol );
+     }
+ 
+@@ -781,7 +786,14 @@
+             goto exit;
+         }
+         curdir->d_offcnt++;
++       if(!(strcmp("bands",cfrombstr(curdir->d_u_name)))){
++               bands_offcnt++;
++       }
+         sdir->d_offcnt--;
++        if(!(strcmp("bands",cfrombstr(sdir->d_u_name)))){
++                bands_offcnt--;
++        }
++
+ #ifdef DROPKLUDGE
+         if (vol->v_flags & AFPVOL_DROPBOX) {
+             /* FIXME did is not always the source id */

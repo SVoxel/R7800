@@ -1,0 +1,43 @@
+<% http_header() %>
+<BODY>
+<style type="text/css">
+H1 { font-size:32px; color:#000000;}
+h4 { font-size:16px; color:#000000;}
+</style>
+<script>
+<% show_usb_fileder_items() %>
+var show_enableFvia="<% cfg_get("usb_enableFvia") %>";
+var show_FTP_via_port="<% cfg_sed_xss("usb_FTP_via_port") %>";
+var old_endis_ddns="<% cfg_get("endis_ddns") %>";
+if(old_endis_ddns == "1")
+	var old_sysDNSHost="<% cfg_sed("sysDNSHost") %>";
+else
+	var old_sysDNSHost="<% wan_ip() %>";
+if (show_enableFvia=="0")
+{
+        if( show_FTP_via_port =="21" )
+        {
+                
+		if(list_disk_num == 0 || not_shared_number == folder_number )
+			document.write('<H1>'+old_sysDNSHost+' - /</H1>');
+		else
+			window.location.href="ftp://"+old_sysDNSHost+"/shares";
+        }
+        else
+        {
+		if(list_disk_num == 0 || not_shared_number == folder_number )
+                	document.write('<H1>'+old_sysDNSHost+':'+show_FTP_via_port+' - /</H1>');
+		else
+			window.location.href="ftp://"+old_sysDNSHost+":"+show_FTP_via_port+"/shares";
+        }
+}
+else
+{
+        document.write('<H1>$not_found</H1>');
+}
+</script>
+<HR><PRE><h4><b>$no_shares_available</b></h4><BR></PRE><HR>
+</BODY>
+</HTML>
+
+

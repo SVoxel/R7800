@@ -1,0 +1,189 @@
+<% http_header("style/form.css", "/funcs.js", "/reservation.js") %>
+<% noload_header("_lan", "LAN_lan.htm", "reservation_add") %>
+<div class="page_title">$reservation_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TR><TD nowrap colspan=2 align=center><input class="common_bt" type="button" name="Refresh" id="refresh" value="$refresh_mark" onClick="location.href=\'reservation_add_wait.htm\';">&nbsp;<input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'LAN_lan.htm\';">&nbsp;<input class="apply_bt" type="button" name="Add" id="add" value="$add_mark" onClick="return check_reservation_add(document.forms[0],\'add\')"></TD></TR>');
+else
+	document.write('<TR><TD nowrap colspan=2 align=center><input class="common1_bt" type="button" name="Refresh" id="refresh" value="$refresh_mark" disabled>&nbsp;<input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;<input class="apply1_bt" type="button" name="Add" id="add" value="$add_mark" disabled></TD></TR>');
+
+</script>
+</TABLE>
+</div>
+<div id="main" class="main_top_button">
+<% table_header() %>
+
+<script>
+<% reservation_items_xss() %>
+var lanip="<% cfg_get("lan_ipaddr") %>";
+var lanmask="<% cfg_get("lan_netmask") %>";
+var startip="<% cfg_get("dhcp_start") %>";
+var endip="<% cfg_get("dhcp_end") %>";
+var show_list="<% echo_file("/tmp/netscan/attach_device") %>";
+
+var have_ipmac_flag=parent.have_ipmac_flag;
+var ipmac_binding_flag="<% cfg_get("ipmac_binding_on")%>";
+var is_ipmac=(have_ipmac_flag == 1 && ipmac_binding_flag == 1 && (parent.is_ru_version == 1 || parent.is_pr_version == 1)) ? 1 : 0;
+var lanip_array=lanip.split(".");
+</script>
+
+<input type="hidden" name="reservation_ipaddr">  
+<input type="hidden" name="duplicated_reservation">
+<input type="hidden" name="duplicated_num" value=0>
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_lan','reserved')"><B>$reservation_show</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><div align=center>
+	<TABLE name="address_reser_table" class=tables border=0 cellpadding=2 cellspacing=0 width=100%>
+	<TR class=table_header>
+		<TD nowrap align=center>&nbsp;</TD>
+		<TD nowrap align=center><span class="subhead">#</span></TD>
+		<TD nowrap align=center><span class="subhead">$info_mark_ip</span></TD>
+		<TD nowrap align=center><span class="subhead">$lan_mark_name</span></TD>
+		<TD nowrap align=center><span class="subhead">$info_mark_mac</span></TD>
+	</TR>
+<script>
+var attach_array=show_list.split(' @#$$&*! ');
+var show_ip_array = new Array();
+var show_mac_array = new Array();  
+var show_name_array = new Array(); 
+var p=0;
+<% list_attach_device_fun()  %>
+<% list_attach_name() %>
+if(show_list != "")
+	for(i=0;i<attach_array.length;i++)
+	{
+		var each_info=attach_array[i].split(' ');
+		if(each_info.length>2)
+		{
+			show_ip_array[p]=each_info[0];
+			show_mac_array[p]=each_info[1];
+			if (each_info[2].length>0)
+				show_name_array[p]=each_info[2];
+			else
+				show_name_array[p]="----";
+		}
+		else
+		{
+			show_ip_array[p]=each_info[0];
+			show_mac_array[p]=each_info[1];
+			show_name_array[p]="----";
+		}
+
+                if(show_name_array[p] == "<unknown>" || show_name_array[p] == "&lt;unknown&gt;" || show_name_array[p] == "----" ){
+                        for( t=0; t<deviceIP_name_num; t++){
+                                var dev_name = eval ( 'deviceIP_name' + t );
+                                var dev_name_array = dev_name.split(' ');
+                                if( show_ip_array[p] == dev_name_array[0] && dev_name_array[1]!="")
+                                        show_name_array[p] = dev_name_array[1];
+
+                        }
+                }
+
+                if( show_mac_array[p].toUpperCase() == "<% cfg_sed_xss("macAddr") %>".toUpperCase().replace(/-/g,":") 
+                        && (show_name_array[p] == "<unknown>" || show_name_array[p] == "&lt;unknown&gt;" || show_name_array[p] == "----" ) )
+                {
+                        show_name_array[p] = "<% cfg_sed_xss("client_name") %>";
+                }
+
+
+		p++;
+	}	
+
+/*Don't need this code
+if(attach_dev_num > 0)
+	for(i=0;i<attach_dev_num;i++)
+	{
+		show_ip_array[p]=" . . .";
+		show_mac_array[p]=eval("attach_dev_mac"+i);
+		show_name_array[p]="<unknown>";
+		p++;
+	}
+*/
+if(show_list != "" )	
+	for(i=0;i<attach_array.length;i++)
+	{
+	          if( i%2== 0 )
+                  document.write("<TR class=\"odd_line\">");
+              else
+                  document.write("<TR class=\"even_line\">");	    
+		document.write('<TD nowrap><input type="radio" name="MacSelect" id="mac_select'+(i+1)+'" value="'+i+'" onclick="data_select('+i+');"></TD><TD nowrap align=center><span class="subhead">'+eval(i+1)+'</span></TD>');
+		if(show_ip_array[i] == "<unknown>" || show_ip_array[i] == "&lt;unknown&gt;" )
+			document.write('<TD nowrap align=center>&lt;$unknown_mark&gt;</TD>');
+		else
+			document.write('<TD nowrap align=center>'+show_ip_array[i]+'</TD>');
+		if(show_name_array[i] == "<unknown>" || show_name_array[i] == "&lt;unknown&gt;" )
+			document.write('<TD nowrap align=center>&lt;$unknown_mark&gt;</TD>');
+		else
+			document.write('<TD nowrap align=center>'+show_name_array[i]+'</TD>');
+		if(show_mac_array[i] == "<unknown>" || show_mac_array[i] == "&lt;unknown&gt;" )
+			document.write('<TD nowrap align=center>&lt;$unknown_mark&gt;</TD></tr>');
+		else
+			document.write('<TD nowrap align=center>'+show_mac_array[i]+'</TD></TR>');
+	}
+
+var same_flag=0;
+        for(j=0;j<attach_dev_num;j++){
+                same_flag = 0;
+                var mac = eval ( 'attach_dev_mac' + j );
+                        for(t=0; t<attach_array.length; t++)
+                                if( show_mac_array[t].toLowerCase() == mac.toLowerCase() )
+                                        same_flag = 1;
+                if( same_flag == 0 ){
+	                  if( i%2== 0 )
+                             document.write("<TR class=\"even_line\">");
+                      else
+                             document.write("<TR class=\"odd_line\">");				        
+                        document.write('<TD nowrap><input type="radio" name="MacSelect" value="'+i+'" onclick="data_select('+i+');"></TD><TD nowrap align=center><span class="subhead">'+eval(i+1)+'</span></TD><TD nowrap align=center>----</TD><TD nowrap align=center>&lt;$unknown_mark&gt;</TD><TD nowrap align=center>'+mac.toUpperCase()+'</TD></TR>');
+			show_name_array[i]="<unknown>";
+			show_mac_array[i]=mac.toUpperCase();
+			show_ip_array[i]="----";
+                        i++;
+                }
+        }
+
+</script>
+	</TABLE>
+	</div>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2 align=center></TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap>$info_mark_ip</TD>
+	<TD nowrap>
+	<script>
+		document.write('<input type="text" name="rsv_ip1" id="rsv_ipaddress1" maxLength="3" size="3" autocomplete="off" onFocus="this.select();" onkeydown="keydown(event,this);"	onKeyPress="return getkey(\'num\',event);" onkeyup="keyup(event,this);" value="'+lanip_array[0]+'">.');
+		document.write('<input type="text" name="rsv_ip2" id="rsv_ipaddress2" maxLength="3" size="3" autocomplete="off" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey(\'num\',event);" onkeyup="keyup(event,this);" value="'+lanip_array[1]+'">.');
+		document.write('<input type="text" name="rsv_ip3" id="rsv_ipaddress3" maxLength="3" size="3" autocomplete="off" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey(\'num\',event);" onkeyup="keyup(event,this);" value="'+lanip_array[2]+'">.');
+	</script>
+	<input type="text" name="rsv_ip4" id="rsv_ipaddress4" maxLength="3" size="3" autocomplete="off" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$info_mark_mac</TD>
+	<TD nowrap>
+	<input type="text" value="" name="rsv_mac" id="rsv_mac" maxlength="17" size="20" onKeyPress="return getkey('mac',event)">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$lan_mark_name</TD>
+	<TD nowrap>
+	<input type="text" name="dv_name" id="device_name" maxLength="20" size="16" onKeyPress="return getkey('ssid', event)">
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_lan") %>
+</FORM>
+</BODY>
+</HTML>

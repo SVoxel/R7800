@@ -1,0 +1,110 @@
+From 23d90fa5baf7b90253d8f53c3186c754f2e7ff6e Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Tue, 11 Jun 2013 16:15:52 -0500
+Subject: [ag71xx] allocate/position rings to avoid aliasing
+
+Using our current method of ring allocation, we get cache line aliasing
+effects on rx vs. tx.  This patch attempts to misalign these two rings
+to reduce this effect.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx.h      |  1 +
+ drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c | 34 +++++++++++++++++------
+ 2 files changed, 27 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+index 770d51e..ffbd692 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+@@ -187,6 +187,7 @@ struct ag71xx {
+ 	/*
+ 	 * From this point onwards we're not looking at per-packet fields.
+ 	 */
++	struct ag71xx_buf	*ring_bufs;
+ 	void __iomem		*mac_base;
+ 	u32			msg_enable;
+ 
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+index 6886fda..408b2dc 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+@@ -107,8 +107,6 @@ static inline void ag71xx_dump_intr(struct ag71xx *ag, char *label, u32 intr)
+ 
+ static void ag71xx_ring_free(struct ag71xx_ring *ring)
+ {
+-	kfree(ring->buf);
+-
+ 	if (ring->descs_cpu) {
+ 		if (ring->iomem) {
+ 			iounmap(ring->iomem);
+@@ -119,7 +117,8 @@ static void ag71xx_ring_free(struct ag71xx_ring *ring)
+ 	}
+ }
+ 
+-static int ag71xx_ring_alloc(struct ag71xx_ring *ring, unsigned int id)
++static int ag71xx_ring_alloc(struct ag71xx *ag, struct ag71xx_ring *ring,
++			     unsigned int id)
+ {
+ 	int i;
+ 
+@@ -157,9 +156,17 @@ static int ag71xx_ring_alloc(struct ag71xx_ring *ring, unsigned int id)
+ #ifdef CONFIG_AG71XX_SRAM_DESCRIPTORS
+ descs_allocated:
+ #endif /* CONFIG_AG71XX_SRAM_DESCRIPTORS */
+-	ring->buf = kzalloc(ring->size * sizeof(*ring->buf), GFP_KERNEL);
+-	if (!ring->buf) {
+-		return -ENOMEM;
++	/* The even numbered ring at the beginning, odd gets the end */
++	if ((id & 0x1) == 0) {
++		ring->buf = &ag->ring_bufs[0];
++	} else {
++		/*
++		 * This looks weird but tries very hard to avoid aliasing
++		 * problems in the D-cache.
++		 */
++		unsigned int rings_total;
++		rings_total = AG71XX_TX_RING_SIZE_MAX + AG71XX_RX_RING_SIZE_MAX;
++		ring->buf = &ag->ring_bufs[rings_total - ring->size];
+ 	}
+ 
+ 	for (i = 0; i < ring->size; i++) {
+@@ -306,15 +313,23 @@ static int ag71xx_ring_rx_init(struct ag71xx *ag)
+ 
+ static int ag71xx_rings_init(struct ag71xx *ag)
+ {
++	unsigned int rings_total;
+ 	int ret;
+ 
+-	ret = ag71xx_ring_alloc(&ag->tx_ring, (ag->gmac_num * 2));
++	rings_total = AG71XX_TX_RING_SIZE_MAX + AG71XX_RX_RING_SIZE_MAX;
++	ag->ring_bufs = kzalloc((rings_total * sizeof(struct ag71xx_buf)),
++				GFP_KERNEL);
++
++	if (!ag->ring_bufs)
++		return -ENOMEM;
++
++	ret = ag71xx_ring_alloc(ag, &ag->tx_ring, (ag->gmac_num * 2));
+ 	if (ret)
+ 		return ret;
+ 
+ 	ag71xx_ring_tx_init(ag);
+ 
+-	ret = ag71xx_ring_alloc(&ag->rx_ring, (ag->gmac_num * 2) + 1);
++	ret = ag71xx_ring_alloc(ag, &ag->rx_ring, (ag->gmac_num * 2) + 1);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -330,6 +345,9 @@ static void ag71xx_rings_cleanup(struct ag71xx *ag)
+ 	ag71xx_ring_tx_clean(ag);
+ 	netdev_reset_queue(ag->dev);
+ 	ag71xx_ring_free(&ag->tx_ring);
++
++	if (ag->ring_bufs)
++		kfree(ag->ring_bufs);
+ }
+ 
+ static unsigned char *ag71xx_speed_str(struct ag71xx *ag)
+-- 
+1.8.1.2
+

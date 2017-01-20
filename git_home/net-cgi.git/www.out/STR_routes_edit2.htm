@@ -1,0 +1,125 @@
+<% http_header("style/form.css", "/funcs.js", "/ipv6.js", "/str_router.js") %>
+<% body_header("_STR_routes", "STR_routes.htm", "st_router_edit2") %>
+<div class="page_title">$static_router_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master =="admin" )
+    document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel_bt" type="reset" name="Cancel" value="$cancel_mark" onClick="location.href=\'STR_routes.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="submit" name="Apply" value="$apply_mark" onClick="return check_router_add2(document.forms[0],\'edit\');"></TD></TR>');
+else
+	document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel1_bt" type="reset" name="Cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="button" name="Apply" value="$apply_mark" disabled></TD></TR>');
+</script>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+<% refresh_timestamp("st_router_editnum") %>
+<script>
+<% routes_items_xss() %>
+var select_editnum=<% cfg_get("router_ipv6_editnum") %>;
+
+function loadvalue()
+{
+	var cf=document.forms[0];
+	if(ipv6_array_num != 0)
+	{
+		var routerArray = eval ( 'ipv6_routerArray' + select_editnum ).replace(/&#92;/g, "\\").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&nbsp;/g, " ").replace(/&#38;/g,"&");
+		var each_info=routerArray.split(' ');
+		
+		//31091, if input "&nbsp;" as router name, page can't show "&nbsp;", it show " ". 
+		cf.route_name.value=each_info[0].replace(/&nbsp;/g, " ").replace(/&#38;/g,"&");
+
+		var active=each_info[1];
+		if( active == 1)
+			cf.SRouteActive.checked = true;
+		else	
+			cf.SRouteActive.checked = false;
+		var dest_array=each_info[2].split(':');
+		for(var i=0; i<dest_array.length; i++)
+		{
+			if(dest_array[i] == "" && each_info[2] != "")
+				cf.SRouteDestAddr[i].value = "0";
+			else
+				cf.SRouteDestAddr[i].value = dest_array[i];
+		}
+		if(each_info[3] == "" && each_info[2] != "")
+			cf.SRouteDestAddrPrefix.value = "0";
+		else
+			cf.SRouteDestAddrPrefix.value = each_info[3];
+
+		var gtw_array=each_info[4].split(':');
+		for(var i=0; i<dest_array.length; i++)
+		{
+			if(gtw_array[i] == "" && each_info[4] != "")
+				cf.SRouteGatewayAddr[i].value = "0";
+			else 
+				cf.SRouteGatewayAddr[i].value = gtw_array[i];
+		}
+		cf.route_metric.value=each_info[5];
+	}
+}
+
+</script>
+<input type="hidden" name="route_ac">
+<input type="hidden" name="route_dest">
+<input type="hidden" name="route_dest_pre">
+<input type="hidden" name="route_gtw">
+<input type="hidden" name="count">
+<TR>
+	<TD nowrap>$sta_routes_rtname</TD>
+	<TD nowrap>
+	<input type="text" name="route_name" size="16" maxlength="30">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="SRouteActive">$sta_routes_act
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$sta_routes_ipv6_destip</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=10 height=12 border=0>
+	<input type="text" name="SRouteDestAddr" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SRouteDestAddr" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SRouteDestAddr" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SRouteDestAddr" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SRouteDestAddr" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SRouteDestAddr" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SRouteDestAddr" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SRouteDestAddr" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">/
+	<input type="text" name="SRouteDestAddrPrefix" size="2" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num', event);" onkeyup="keyup_n(event,this,3);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$sta_routes_ipv6_gtwip</TD>
+</TR>
+<TR>
+	<TD nowrapi colspan=2><img src=/spacer.gif width=10 height=12 border=0>
+	<input type="text" name="SRouteGatewayAddr" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SRouteGatewayAddr" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SRouteGatewayAddr" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SRouteGatewayAddr" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SRouteGatewayAddr" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SRouteGatewayAddr" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SRouteGatewayAddr" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SRouteGatewayAddr" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$sta_routes_metric</TD>
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=10 height=12 border=0>
+	<input type="text" name="route_metric" size="3" maxlength="2" onKeyPress="return getkey('num',event);">
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_STR_routes") %>
+</FORM>
+</BODY>
+</HTML>

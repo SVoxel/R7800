@@ -1,0 +1,70 @@
+#!/bin/sh /etc/rc.common
+
+START=40
+STOP=90
+
+boot() {
+	setup_switch() { return 0; }
+
+	# Do not restart firewall inside tunnel cleanup during boot/reboot.
+	export restartTunnelFirewall=0
+
+	include /lib/network
+	setup_switch
+	export PATH=$PATH:/etc/ath
+	export WAN_IF=eth0
+	export LAN_IF=eth1
+	ifconfig $WAN_IF up
+	ifconfig $LAN_IF up
+	mknod /dev/caldata b 31 5
+	ln -s /usr/www/cgi-bin/cgiMain /bin/cfg
+	/bin/apup
+	scan_interfaces
+
+	local ifc
+	for ifc in $interfaces; do
+		local proto
+		config_get proto "$ifc" proto
+
+		local auto
+		config_get_bool auto "$ifc" auto 1
+
+		type "coldplug_interface_$proto" >/dev/null && [ "$auto" = 1 ] && \
+			coldplug_interface_$proto "$ifc"
+	done
+
+	[ -x "$(which wanmon)" ] && wanmon &
+	/etc/streamengine/na_restart l2switch &
+
+	/sbin/tunnellingscript start &
+}
+
+start() {
+	setup_switch() { return 0; }
+
+	# Restart firewall inside tunnel cleanup during start/restart network.
+	export restartTunnelFirewall=1
+
+	include /lib/network
+	setup_switch
+	ifup -a
+	/bin/apup
+
+	[ -x "$(which wanmon)" ] && wanmon &
+	/etc/streamengine/na_restart l2switch &
+
+	/sbin/tunnellingscript start &
+}
+
+stop() {
+	/sbin/tunnellingscript stop
+	/etc/streamengine/na_stop l2switch &
+	/bin/apdown
+	ifdown -a
+}
+
+restart() {
+	/sbin/tunnellingscript stop
+	/etc/streamengine/na_stop l2switch &
+	start
+}

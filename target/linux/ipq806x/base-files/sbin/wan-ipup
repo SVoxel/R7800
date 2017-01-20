@@ -1,0 +1,15 @@
+#!/bin/sh
+# This script should be called when wan interface up or renew ip.
+# And it should be used like: /bin/wan-ipup <new wan IP>
+
+flush_conntracks() {
+	echo "Flush conntrack table"
+	echo 1 > /proc/sys/dni_netfilter/flush_conntrack_table
+}
+
+show_new_wan_ip() {
+	echo "WAN new IP:" $1
+}
+
+flush_conntracks
+show_new_wan_ip $1

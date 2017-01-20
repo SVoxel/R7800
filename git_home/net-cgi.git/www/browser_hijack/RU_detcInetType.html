@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta http-equiv="refresh" content="40; url=RU_detcInetType.html" />
+<link rel="stylesheet" type="text/css" href="/style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="/script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="/script/ru_detcInetType.js"></script>
+<% hijack_language() %>
+<script language="javascript" type="text/javascript">
+var port_status = "<% cat_file("/tmp/port_status") %>";
+var checking_result = "<% detwan_status() %>";
+</script>
+</head>
+
+<body>
+
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+
+			<h1><!--detecting_connection--></h1>
+			<p><!--plz_wait_process--></p>
+
+		<div class="waiting_img_div" align="center">
+			<img src="image/wait30.gif" />
+		</div>
+
+	</div>
+
+</div>
+
+</body>
+
+</html>

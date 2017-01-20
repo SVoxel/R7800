@@ -1,0 +1,181 @@
+From 1243e65296e86dded2c3f7b489f508fd9f973c57 Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Tue, 11 Jun 2013 17:21:37 -0500
+Subject: [ag71xx] data prefetching and ordering
+
+Added several prefetch operations for soon-to-be accessed data, and
+move some of the next buffer calculations into the shadows of the known
+dcache misses.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c | 75 +++++++++++++----------
+ 1 file changed, 43 insertions(+), 32 deletions(-)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+index 57c6191..b4242e1 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+@@ -684,12 +684,12 @@ static netdev_tx_t ag71xx_hard_start_xmit(struct sk_buff *skb,
+ 		goto err_drop;
+ 	}
+ 
+-	dma_addr = dma_map_single(&dev->dev, skb->data, len, DMA_TO_DEVICE);
+-
+ 	netdev_sent_queue(dev, len);
+ 	curr->skb = skb;
+ 	curr->timestamp = jiffies;
+ 
++	dma_addr = dma_map_single(&dev->dev, skb->data, len, DMA_TO_DEVICE);
++
+ 	/* setup descriptor fields */
+ 	desc->data = (u32)dma_addr;
+ 	desc->ctrl = len & DESC_PKTLEN_M;
+@@ -830,11 +830,14 @@ static int ag71xx_tx_packets(struct ag71xx *ag, struct net_device *dev)
+ 	struct ag71xx_buf *dirty = ring->dirty;
+ 	struct ag71xx_desc *desc = dirty->desc;
+ 	unsigned int used = ring->used;
++	struct sk_buff *skb;
+ 
+ 	DBG("%s: processing TX ring\n", dev->name);
+ 
++	skb = dirty->skb;
++
+ 	while (used) {
+-		struct sk_buff *skb;
++		struct sk_buff *next_skb;
+ 
+ 		if (unlikely(!(desc->ctrl & DESC_EMPTY))) {
+ 			if (unlikely(pdata->is_ar7240)) {
+@@ -845,21 +848,29 @@ static int ag71xx_tx_packets(struct ag71xx *ag, struct net_device *dev)
+ 			break;
+ 		}
+ 
+-		ag71xx_wr_fast(ag->tx_status_reg, TX_STATUS_PS);
++		sent++;
++		bytes_compl += skb->len;
+ 
+-		skb = dirty->skb;
+ 		dirty->skb = NULL;
+-
+-		/* Move forward to the next descriptor */
+ 		dirty = dirty->next;
++		next_skb = dirty->skb;
+ 		desc = dirty->desc;
+ 
+-		/* Update stats and free the skb */
+-		bytes_compl += skb->len;
+-		sent++;
++		/*
++		 * There's a good chance that the next SKB may be cold in
++		 * the cache so try to give some help.
++		 */
++		if (likely(next_skb)) {
++			prefetch(skb_shinfo(next_skb));
++			prefetch(&next_skb->users);
++		}
++
++		ag71xx_wr_fast(ag->tx_status_reg, TX_STATUS_PS);
+ 
+ 		dev_kfree_skb(skb);
+ 
++		skb = next_skb;
++
+ 		used--;
+ 	}
+ 
+@@ -898,6 +909,7 @@ static int ag71xx_rx_packets(struct ag71xx *ag, struct net_device *dev, int limi
+ 	struct ag71xx_desc *desc = curr->desc;
+ 	unsigned int used = ring->used;
+ 	int done = 0;
++	struct sk_buff *skb;
+ 
+ 	DBG("%s: rx packets, limit=%d, curr=%u, dirty=%u\n",
+ 			dev->name, limit, curr, ring->dirty);
+@@ -909,12 +921,14 @@ static int ag71xx_rx_packets(struct ag71xx *ag, struct net_device *dev, int limi
+ 		limit = used;
+ 	}
+ 
++	skb = curr->skb;
++
+ 	/*
+ 	 * Process newly received packets.
+ 	 */
+ 	while (done < limit) {
+ 		u32 desc_ctrl;
+-		struct sk_buff *skb;
++		struct sk_buff *next_skb;
+ 		int pktlen;
+ 
+ 		/*
+@@ -925,7 +939,19 @@ static int ag71xx_rx_packets(struct ag71xx *ag, struct net_device *dev, int limi
+ 			break;
+ 		}
+ 
+-		ag71xx_wr_fast(ag->rx_status_reg, RX_STATUS_PR);
++		prefetch(skb->data);
++
++		curr->skb = NULL;
++		curr = curr->next;
++		next_skb = curr->skb;
++		desc = curr->desc;
++
++		if (likely(next_skb)) {
++			prefetch(&next_skb->tail);
++			prefetch(&next_skb->len);
++			prefetch(&next_skb->data);
++			prefetch(&next_skb->protocol);
++		}
+ 
+ 		pktlen = desc_ctrl & DESC_PKTLEN_M;
+ 		pktlen -= ETH_FCS_LEN;
+@@ -943,24 +969,10 @@ static int ag71xx_rx_packets(struct ag71xx *ag, struct net_device *dev, int limi
+ 		dev->stats.rx_packets++;
+ 		dev->stats.rx_bytes += pktlen;
+ 
+-		skb = curr->skb;
+-		curr->skb = NULL;
+-
+-		/*
+-		 * Move forward to the next descriptor.
+-		 */
+-		curr = curr->next;
+-		desc = curr->desc;
+-
+-		/*
+-		 * Set up the offset and length of the skb.
+-		 */
+-		__skb_put(skb, pktlen);
++		skb->tail += pktlen;
++		skb->len += pktlen;
+ 
+-		/*
+-		 * Speed up eth_type_trans() since it will inspect the packet payload.
+-		 */
+-		prefetch(skb->data);
++		ag71xx_wr_fast(ag->rx_status_reg, RX_STATUS_PR);
+ 
+ 		if (unlikely(ag71xx_has_ar8216(ag))) {
+ 			int err = ag71xx_remove_ar8216_header(ag, skb, pktlen);
+@@ -976,6 +988,7 @@ static int ag71xx_rx_packets(struct ag71xx *ag, struct net_device *dev, int limi
+ 		netif_receive_skb(skb);
+ 
+ next:
++		skb = next_skb;
+ 		done++;
+ 	}
+ 
+@@ -1000,9 +1013,7 @@ static int ag71xx_rx_packets_replenish(struct ag71xx *ag, struct net_device *dev
+ 
+ 		skb = dev_alloc_skb(rx_buf_size);
+ 		if (unlikely(!skb)) {
+-			ring->dirty = dirty;
+-			ring->used = used;
+-			return -ENOMEM;
++			break;
+ 		}
+ 
+ 		skb_reserve(skb, rx_buf_offset);
+-- 
+1.8.1.2
+

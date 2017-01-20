@@ -1,0 +1,188 @@
+<% http_header("style/basic.css", "funcs.js", "basic.js", "top.js" ) %>
+<body onload="loadvalue();" onResize="change_size(); setHeight_for_IE6();">
+<!--[if IE 6]>
+<script type="text/javascript">
+document.execCommand("BackgroundImageCache", false, true);
+</script>
+<![endif]-->
+<script>
+var timeoutfunc;
+var enable_action=1;
+var enabled_wds="<% wds_enable() %>";
+var enabled_wps="<% wps_menu() %>";
+var type="basic";
+var charcount=0;
+var file_version=0;
+var file_region="";
+var netgear_version=0;
+var netgear_region="<% get_firmware_region() %>"
+var help_info="_index";
+var wps_charcount=0;
+var wps_endis_configured=1;     // 1 for unconfigured, 5 for configured
+var wps_an_endis_configured=1;  // 1 for unconfigured, 5 for configured
+var folder_path="";     //save the browser's folder path, and show in USB creat/edit page
+var qos_check_time=0;
+var pin_refresh_time=0;
+var select_basic="<% cfg_get("internet_type") %>";
+var select_type="<% cfg_get("internet_ppp_type") %>";
+var endis_wl_radio='<% enable_ap_orNot("bgn") %>';
+var endis_wla_radio='<% enable_ap_orNot("an") %>';
+var wps_process=0;
+var enable_ap_flag="<% cfg_get("ap_mode") %>";//bug 24666 according to the page 128 of spec 2.0,add AP mode
+var enable_extender_flag="<% cfg_get("extender_mode") %>"; 
+var enable_bridge_flag="<% cfg_get("bridge_mode") %>";
+var ParentalControl = "<% cfg_get("ParentalControl") %>";
+var set_wireless_tag = "<% cfg_get("set_wireless_tag") %>";
+var run_green_time=0;
+var green_download_items;
+var green_refresh_time=0;
+var green_download_item_num=0;
+var green_downloading_item_num=0;
+var green_download_item_queuen_num=0;
+var jp_multiPPPoE = "<% cfg_get("jp_multiPPPoE") %>";
+var language_change_status="<% lang_change_status() %>";
+var to_multipppoe = 0;
+<% plc_devs_detection() %>
+<% web_flag() %>
+<% refresh_timestamp("wds") %>
+<% cfg_set("have_click_take_me_to_internet", "0") %>
+<% cfg_set("hijack_language", "0") %>
+<% hijack_success_page() %>
+<% lang_change_status_finish() %>
+
+var gui_region="<% cfg_get("GUI_Region") %>";
+var auto_change_lang = 0;//bug 28482
+<% cfg_set("show_ap", "0") %>
+<% cfg_set("show_bridge", "0") %>
+<% show_devices() %>
+
+var is_ru_version=(((netgear_region.toUpperCase() == "WW" || netgear_region == "") && gui_region == "Russian" ) || netgear_region.toUpperCase() == "RU") ? 1 : 0;
+var is_pr_version=(((netgear_region.toUpperCase() == "WW" || netgear_region == "") && gui_region == "Chinese" ) || netgear_region.toUpperCase() == "PR") ? 1 : 0;
+var is_gr_version=(((netgear_region.toUpperCase() == "WW" || netgear_region == "") && gui_region == "German" ) || netgear_region.toUpperCase() == "GR") ? 1 : 0;
+var is_jp_version=(((netgear_region.toUpperCase() == "WW" || netgear_region == "") && gui_region == "Japanese" ) || netgear_region.toUpperCase() == "JP") ? 1 : 0;
+
+//Failover & Loadbalance
+var multi_wan_mode="none";  // none, multi
+var multi_wan_mode_ether="0";//0:unconfigured, 1:configured
+var multi_wan_mode_mobile="0";//0:unconfigured, 1:configured
+
+var broadband_mode="<% cfg_get("dango_det_wan_type") %>";
+var old_div= "";
+var click_lte_sim=0;
+var download_type = "<% cfg_get("download_type") %>";
+var basic_dynamic_page = "<% cfg_get("basic_dynamic_page") %>";
+var enable_mapt="<% cfg_get("mapt_enable") %>";
+var qos_edit_mac = "";
+var qos_edit_ip = "";
+var qos_edit_name = "";
+var qos_priority = "";
+var pre_url = document.referrer;
+var access_guest_manage = "<% cfg_get("access_guest_manage") %>";
+<% cfg_set("access_guest_manage","0") %>;
+
+var master = "<% cfg_get("http_loginname") %>"
+var lang_select = "<% cfg_get("Language_Selection") %>";
+var browser_lang = "<% get_browser_language() %>";
+var bgn_pr_wds_support_wpa=0;
+var an_pr_wds_support_wpa=0;
+var old_wds_endis_fun="<% cfg_get("wds_endis_fun") %>";
+var security_mode="<% cfg_get("wl_sectype") %>";
+var old_wds_endis_fun_a="<% cfg_get("wla_wds_endis_fun") %>";
+var security_mode_a="<% cfg_get("wla_sectype") %>";
+var dis_lang_crl = "<% cfg_get("Enable_GUIStringTable") %>";
+var device_mode = "<% cfg_get("modem_mode") %>";
+if( wds_support_wpa == 1 && gui_region == "Chinese" && (netgear_region == "" || netgear_region.toUpperCase() == "WW"))
+{
+	if((security_mode=="3" ||  security_mode=="4" || security_mode == "5") && old_wds_endis_fun == "1")
+		bgn_pr_wds_support_wpa=1;
+
+	if(an_router_flag == 1 )
+	{
+		if( (security_mode_a == "3" || security_mode_a == "4" || security_mode_a == "5") && old_wds_endis_fun_a == "1" )
+			an_pr_wds_support_wpa=1;
+
+	}	
+}
+
+
+function loadvalue()
+{	
+	change_size();
+	
+	if(lang_select == "Auto" && browser_lang != gui_region)
+	{
+		if(bgn_pr_wds_support_wpa == 1 || an_pr_wds_support_wpa == 1 || dis_lang_crl == "0" )
+			auto_change_lang = 0;
+		else
+			auto_change_lang = 1;
+	}
+	if(pre_url.indexOf("GuestManage") != -1 && access_guest_manage == "1" )
+	{
+		basic_menu_color_change('guest');
+		goto_formframe('GuestManage_sub.htm');
+	
+	}
+	else if(set_wireless_tag == 1 )
+		click_action("wireless");
+	else if(jp_multiPPPoE=="1" && language_change_status=="1")/*Change language to JP fail should redirect to multi-pppoepage*/
+	{
+		to_multipppoe = 1;
+		click_action("internet");
+	}
+	else if( auto_change_lang == 0 )/* if auto_change_lang == 0, it will show basic home page, else it will go to lang_check.html */
+		click_action("home");
+	else if( master == "guest")
+		click_action("home");
+	if(window.location.href.indexOf("qq") != -1)
+		click_action("internet");
+	setHeight_for_IE6();
+}
+
+	
+</script>
+
+<div id="top">
+	<iframe name="topframe" id="topframe" src="top.html" allowtransparency="true" height="100%" width="100%" frameborder="0"></iframe>
+</div>
+
+<div id="container" class="container_center">
+
+<div id="middle">
+<div id="menu" class="menu_common_words"><!--fix bug 30075-->
+	<div id="home" class="basic_button_purple" onclick="click_action('home');"><b><span id="basic_home">$hom</span></b></div>
+	<% basic_menu_3g()%>
+	<% basic_menu_wifi() %>
+	<div id="attached" class="basic_button" onclick="click_action('attached');"><b><span id="basic_attached">$attach_device</span></b></div>
+	<% basic_menu() %>
+</div>
+<div id="formframe_div">
+		<iframe name="formframe" id="formframe" allowtransparency="true" height="100%" width="100%" scrolling="no" frameborder="0" style="display:none;">
+		</iframe>
+		<div id="formframe_wait_div" style="background-color:#fff; width:100%; height:100%;overflow:hidden;font-size:10pt;font-family: Arial;">
+			<div align="center"><br /><br /><b>$wizard_pls_wait</b><br /><br /></div>
+			<div align="center"><img src="image/wait30.gif" /></div>
+		</div>
+</div>
+
+<div id="footer" class="footer">
+	<img class="footer_img" src="image/footer.gif">
+<div id="support">
+	<b> $help_and_support</b> &nbsp;
+	<script>
+		if( is_jp_version == 1)
+			document.write("<a target=\"_blank\" href=\"http://www.netgear.jp/supportInfo/\">$docu_head</a> | <a target=\"_blank\" href=\"https://www.netgear.jp/supportInfo/Contact/\">$online_support</a> | <a target=\"_blank\" href=\"http://www.netgear.jp/supportInfo/\">$router_faq</a> |");
+		else
+			document.write("<a target=\"_blank\" href=\"http://downloadcenter.netgear.com/\">$docu_head</a> | <a target=\"_blank\" href=\"http://support.netgear.com\">$online_support</a> | <a target=\"_blank\" href=\"http://kb.netgear.com/app/answers/detail/a_id/12923\">$router_faq</a> |");
+	</script>
+		<a target="_blank" href="license.htm">GNU GPL</a>
+</div>
+<div id="search" align=right>
+	<b> $search_help </b>
+	<input type="text" name="search" value="$ent_srh_item" onkeypress="detectEnter('num',event);" onFocus="this.value='';" onblur="(this.value=='')?(this.value='$ent_srh_item'):''" />
+	<input id="search_button" class="search_button" type="button" name="dosearch" value="$go_mark" onClick="do_search();">
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

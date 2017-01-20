@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+# Copyright (c) 2013 The Linux Foundation. All rights reserved.
+# Copyright (C) 2011 OpenWrt.org
+#
+
+touch /etc/config/sound
+
+. /lib/functions/uci-defaults.sh
+. /lib/ar71xx.sh
+
+board=$(ar71xx_board_name)
+
+case "$board" in
+cus227*)
+	ucidef_set_snd_ctrl "card0" "Right Mixer" "unmute"
+	ucidef_set_snd_ctrl "card0" "Left Mixer" "unmute"
+	;;
+esac
+
+uci commit sound
+
+exit 0

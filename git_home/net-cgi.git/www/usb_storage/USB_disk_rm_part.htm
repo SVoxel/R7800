@@ -1,0 +1,114 @@
+<% http_header("style/form.css", "/funcs.js" , "/USB_NETStorage.js") %>
+<% nobody_header("USB_disk_rm.htm", "disk_remove") %>
+<div class="page_title">$safely_remove_device</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master=="admin" )
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" value=" $cancel_mark " onClick="close_window();"> &nbsp;&nbsp;<input class="apply_bt" type="button" name="apply" value=" $apply_mark " onClick="click_apply();"></TD>');
+else
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" value=" $cancel_mark " disabled> &nbsp;&nbsp;<input class="apply1_bt" type="button" name="apply" value=" $apply_mark " disabled></TD>');
+</script>
+</TR>
+</TABLE>
+
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<TR><TD colspan=2 nowrap>
+<b>$unmount_all</b>
+<input type="radio" name="choose_all" value="0" onClick='click_all(0);'>$yes_mark
+<input type="radio" name="choose_all" value="1" onClick='click_all(1);'>$no_mark
+</TD></TR>
+<input type="hidden" name="hidden_name">
+<script>
+<% show_devices() %>
+var radio_num=0;
+var device_array = new Array();
+var device_name_tmp = new Array();
+var device_vendor_tmp = new Array();
+var array_num=0;
+var getOpenerUrl=location.href.indexOf("opener=",0);
+var opener_len=location.href.length-getOpenerUrl-7;
+var opener_url=location.href.substr(getOpenerUrl+7,opener_len);
+var ts='<% cfg_get("disk_remove") %>'
+for(i=0;i<disk_num;i++)
+{
+	var str = eval('dev' + i );
+	var vol_name = eval('dev_vol' + i );
+	each_info = str.split('*');
+
+	if( each_info[1] == 0 ){ //first disk of a device
+		if( i > 0 )
+		{
+			device_array[array_num] = device_array[array_num] + ')';
+			array_num++;
+		}				
+		device_array[array_num] = each_info[2] + '('+each_info[3]+':'+vol_name;//change each_info[4] to vol_name;
+		device_name_tmp[array_num] = each_info[0];
+		device_vendor_tmp[array_num] = each_info[2];
+	}
+	else
+		device_array[array_num] = device_array[array_num] + ', ' + each_info[3]+':'+vol_name;
+	
+			
+}
+			device_array[array_num] = device_array[array_num] + ')';
+			array_num++;
+
+for(i=0; i<array_num; i++)
+{
+	document.write('<TR><TD><input type="checkbox" name="choose_dev"></TD><TD nowrap>'+device_array[i]+'</TD></TR>');
+	radio_num++;
+}
+
+</script>
+</TABLE>
+
+<script>
+document.forms[0].choose_all[0].checked=true;
+click_all(0);
+function click_all(num)
+{
+	form=document.forms[0];
+	if(num == 0)
+		for(i=0;i<radio_num;i++)
+			form.choose_dev[i].disabled=true;
+	else
+		for(i=0;i<radio_num;i++)
+			form.choose_dev[i].disabled=false;
+
+		
+}
+function click_apply()
+{
+	form=document.forms[0];
+	if(form.choose_all[0].checked == true){
+		form.hidden_name.value="***";
+		dev_value="***";
+	}
+	else
+	{
+		form.hidden_name.value="";
+		for(i=0;i<radio_num;i++)
+		{
+			if( form.choose_dev[i].checked == true){
+				form.hidden_name.value=form.hidden_name.value+device_name_tmp[i]+'*';
+				dev_value=device_vendor_tmp[i];
+			}
+		}
+	}
+
+	form.action="/apply.cgi?/USB_disk_rm.htm?opener="+opener_url+"&dev_name="+dev_value+" timestamp="+ts;
+	form.submit_flag.value="disk_remove";
+	form.submit();
+	opener.parent.formframe.location.href="USB_device_refresh.htm";
+}
+</script>
+</div>
+</Form>
+</BODY>
+</HTML>

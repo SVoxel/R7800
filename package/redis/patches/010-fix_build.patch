@@ -1,0 +1,65 @@
+--- a/deps/hiredis/Makefile
++++ b/deps/hiredis/Makefile
+@@ -15,8 +15,8 @@ CC:=$(shell sh -c 'type $(CC) >/dev/null
+ OPTIMIZATION?=-O3
+ WARNINGS=-Wall -W -Wstrict-prototypes -Wwrite-strings
+ DEBUG?= -g -ggdb
+-REAL_CFLAGS=$(OPTIMIZATION) -fPIC $(CFLAGS) $(WARNINGS) $(DEBUG) $(ARCH)
+-REAL_LDFLAGS=$(LDFLAGS) $(ARCH)
++REAL_CFLAGS=$(OPTIMIZATION) -fPIC $(CFLAGS) $(WARNINGS) $(DEBUG)
++REAL_LDFLAGS=$(LDFLAGS)
+ 
+ DYLIBSUFFIX=so
+ STLIBSUFFIX=a
+@@ -25,7 +25,7 @@ DYLIB_MAJOR_NAME=$(LIBNAME).$(DYLIBSUFFI
+ DYLIBNAME=$(LIBNAME).$(DYLIBSUFFIX)
+ DYLIB_MAKE_CMD=$(CC) -shared -Wl,-soname,$(DYLIB_MINOR_NAME) -o $(DYLIBNAME) $(LDFLAGS)
+ STLIBNAME=$(LIBNAME).$(STLIBSUFFIX)
+-STLIB_MAKE_CMD=ar rcs $(STLIBNAME)
++STLIB_MAKE_CMD=$(AR) rcs $(STLIBNAME)
+ 
+ # Platform-specific overrides
+ uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
+--- a/deps/lua/src/Makefile
++++ b/deps/lua/src/Makefile
+@@ -9,7 +9,7 @@ PLAT= none
+ 
+ CC= gcc
+ CFLAGS= -O2 -Wall $(MYCFLAGS)
+-AR= ar rcu
++AR= ar
+ RANLIB= ranlib
+ RM= rm -f
+ LIBS= -lm $(MYLIBS)
+@@ -48,7 +48,7 @@ o:	$(ALL_O)
+ a:	$(ALL_A)
+ 
+ $(LUA_A): $(CORE_O) $(LIB_O)
+-	$(AR) $@ $(CORE_O) $(LIB_O)	# DLL needs all object files
++	$(AR) rcu $@ $(CORE_O) $(LIB_O)	# DLL needs all object files
+ 	$(RANLIB) $@
+ 
+ $(LUA_T): $(LUA_O) $(LUA_A)
+--- a/src/config.h
++++ b/src/config.h
+@@ -54,9 +54,6 @@
+ #endif
+ 
+ /* Test for backtrace() */
+-#if defined(__APPLE__) || defined(__linux__)
+-#define HAVE_BACKTRACE 1
+-#endif
+ 
+ /* Test for polling API */
+ #ifdef __linux__
+--- a/deps/Makefile
++++ b/deps/Makefile
+@@ -72,7 +72,7 @@ JEMALLOC_LDFLAGS= $(LDFLAGS)
+ 
+ jemalloc: .make-prerequisites
+ 	@printf '%b %b\n' $(MAKECOLOR)MAKE$(ENDCOLOR) $(BINCOLOR)$@$(ENDCOLOR)
+-	cd jemalloc && ./configure --with-jemalloc-prefix=je_ --enable-cc-silence CFLAGS="$(JEMALLOC_CFLAGS)" LDFLAGS="$(JEMALLOC_LDFLAGS)"
++	cd jemalloc && ./configure --with-jemalloc-prefix=je_ --enable-cc-silence CFLAGS="$(JEMALLOC_CFLAGS)" LDFLAGS="$(JEMALLOC_LDFLAGS)" $(CONFIGURE_ARGS)
+ 	cd jemalloc && $(MAKE) CFLAGS="$(JEMALLOC_CFLAGS)" LDFLAGS="$(JEMALLOC_LDFLAGS)" lib/libjemalloc.a
+ 
+ .PHONY: jemalloc

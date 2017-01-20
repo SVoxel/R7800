@@ -1,0 +1,1453 @@
+<% http_header("style/form2.css", "style/attach_device2.css", "/funcs.js", "/jquery-1.7.2.min.js", "/streamboost.js") %>
+<% body_header("_new_attach_device", "QOS_edit_devices.htm", "select_qos_edit") %>
+
+<script language="javascript" type="text/javascript">
+
+var ts='<% cfg_get("select_qos_edit") %>';
+var enable_block_device="<% cfg_get("enable_block_device") %>";
+var bandwidth_type="<% cfg_get("bandwidth_type") %>";
+
+var wl_ssid="<% cfg_get_ssid_html("wl_ssid") %>";
+var wlg1_ssid="<% cfg_get_ssid_html("wlg1_ssid") %>";
+var wla_ssid="<% cfg_get_ssid_html("wla_ssid") %>";
+var wla1_ssid="<% cfg_get_ssid_html("wla1_ssid") %>";
+
+var uplimit="<% cfg_get("uplimit") %>";
+var downlimit="<% cfg_get("downlimit") %>";
+var ookla_uplimit="<% cfg_get("ookla_uplimit") %>";
+var ookla_downlimit="<% cfg_get("ookla_downlimit") %>";
+var show_uplimit="";
+var show_downlimit="";
+var enable_bridge_flag="<% cfg_get("bridge_mode") %>";
+var enable_dev_auto_refresh="<% cfg_get("enable_dev_auto_refresh") %>";
+var priority_zone_enable="1";
+var zone_num=0;
+<% save_timestamp("select_qos_edit", "auto_refresh_value") %>
+
+<% show_applicationNames() %>
+<% get_priority_zone_list() %>
+var applicationNames=appNameJson.flows;
+
+if(bandwidth_type == "0") {
+	show_uplimit=ookla_uplimit;
+	show_downlimit=ookla_downlimit;
+} else {
+	show_uplimit=uplimit;
+	show_downlimit=downlimit;
+}
+
+var uplink_value=show_uplimit*8/1000000;
+if(uplink_value==0)
+	uplink_value=1000.00;
+
+var downlink_value=show_downlimit*8/1000000;
+if(downlink_value==0)
+	downlink_value=1000.00;
+
+var mac_addr=new Array();
+var ip_addr=new Array();
+var name_addr=new Array();
+var prio_addr=new Array();
+
+var xmlHttp;
+
+var byMacDevs={};
+var devList=[];
+var dln=0;
+var byUidFlows={};
+var byNameApps={};
+var appList=[];
+var aln=0;
+var byNameFlows={};
+var byMacFlows={};
+var byZoneNameDevices={};
+var zoneList=[];
+var outZoneDeviceList=[];
+
+var listBydevice=1;
+var listBySort=1;
+var mouseon=false;
+
+
+
+function listContains(list, obj)
+{
+	for(var i in list)
+	{
+		if(list[i] === obj)
+			return true;
+	}
+	
+	return false;
+}
+
+$$.fn.band_width = function(name, options, totle, color) {
+	var settings=options;
+	if( this === undefined)
+		return;
+	if( color === undefined )
+		color="#00f";
+	var container = jQuery(this);
+	var study_voteCount=0;
+	study_voteCount = parseFloat(totle).toFixed(2);
+
+	var averageData = parseFloat(settings[0].data).toFixed(2);
+	var study_votestr="";
+	var studyplay_present=(averageData/study_voteCount*100).toFixed(2);
+	if(studyplay_present>100.00)
+		studyplay_present=100.00;
+	
+	if(studyplay_present < 0 )
+		studyplay_present=0.00;
+		
+	//if(studyplay_present>90.00)
+		//color="#f00";
+
+	study_votestr += '<div class="outbar"><div class="inbar" style="width:'+studyplay_present+'%;background:'+color+';"></div></div><div class="fl">&nbsp;&nbsp;&nbsp;&nbsp;'+averageData+'Mbps</div>';
+	container.html(study_votestr);
+}
+
+function band_width_html(data, totle, color)
+{
+	if( color === undefined )
+		color="#00f";
+
+	var study_voteCount=0;
+	study_voteCount = parseFloat(totle).toFixed(2);
+
+	var averageData = parseFloat(data).toFixed(2);
+	var studyplay_present=(averageData/study_voteCount*100).toFixed(2);
+	if(studyplay_present>100.00)
+		studyplay_present=100.00;
+	
+	if(studyplay_present < 0 )
+		studyplay_present=0.00;
+	if( averageData > 0 && studyplay_present < 0.5 )
+		studyplay_present = 0.5;
+
+	//if(studyplay_present>=90.00)
+		//color="#f00";
+		
+
+	var study_votestr = '<div class="outbar"><div class="inbar" style="width:'+studyplay_present+'%;background:'+color+';"></div></div><div class="fl">&nbsp;&nbsp;&nbsp;&nbsp;'+averageData+'Mbps</div>';
+
+	return study_votestr;
+}
+
+function goto_url()
+{
+	location.href="access_control.htm";
+}
+
+function show_wlan_ssid(name)
+{
+	var wlan_ssid="";
+	if(name=="wired")
+		wlan_ssid="";
+	else if(name=="primary")
+		wlan_ssid=" $wlan_guest_ssid: "+wl_ssid;
+	else if(name=="guest")
+		wlan_ssid=" $wlan_guest_ssid: "+wlg1_ssid;
+	else if(name=="primary_an")
+		wlan_ssid=" $wlan_guest_ssid: "+wla_ssid;
+	else if(name=="guest_an")
+		wlan_ssid=" $wlan_guest_ssid: "+wla1_ssid;
+	else
+		wlan_ssid="";
+	return wlan_ssid;
+}
+
+var TableSorter1 = new TSorter(0);
+function loadvalue()
+{
+	var dvo = { device:[ <% json_device_info("json") %> ]}
+	if(parent.priority_zone_flag == "1"){
+		$$(".zone").css("display", "");
+		$$("#listByZone").css("display", "");
+		//$$(".refresh").css("display", "none");
+	}
+	else{
+		$$(".zone").css("display", "none");
+		$$("#listByZone").css("display", "none");
+	}
+		
+	if(priority_zone_enable == "1")
+		initiatePriorityList();
+	updateDevice(dvo);
+	show_all();
+	if(enable_dev_auto_refresh == 1)
+	{
+		document.forms[0].enable_auto_refresh.checked =true;
+		document.forms[0].refresh.style.display = "none";
+	}
+	getDevices(); //debug hidden
+	getTraffic(); //debug hidden
+	please_wait(false);
+	main_resize();
+}
+
+function initiatePriorityList()
+{
+	for(var i = 0; i < zone_num; i++)
+	{
+		var tmp_zone = eval("priority_zone"+i);
+		var tmp_zone_info = tmp_zone.split("\t");
+		var zone_name = tmp_zone_info[0];
+		zoneList[i] = new priority_zone(tmp_zone_info[0], tmp_zone_info[1], tmp_zone_info[2], tmp_zone_info[3], tmp_zone_info[4]);
+		if(!byZoneNameDevices[zone_name])
+			byZoneNameDevices[zone_name] = new Array;
+		var j=5;
+		while(tmp_zone_info[j])
+		{
+			var device_info = tmp_zone_info[j].split("*");
+			var tmp_device = new device(device_info[0], device_info[1], device_info[2], device_info[3], device_info[4], device_info[5], device_info[6]);
+	
+			byZoneNameDevices[zone_name].push(tmp_device);
+			j++;
+		}
+		
+		
+	}
+}
+
+function priority_zone(name, download_percent, upload_percent, download_bandwidth, upload_bandwidth)
+{
+	this.name = name;
+	this.download_percent = download_percent;
+	this.upload_percent = upload_percent;
+	this.down_rate = download_bandwidth;
+	this.up_rate = upload_bandwidth;
+		
+}
+
+function flow(uid, mac, name, epoch, down_bytes, up_bytes)
+{
+	this.uid = uid;
+	this.mac = mac;
+	this.name = name;
+	this.epoch = epoch;
+	this.down_bytes = down_bytes;
+	this.up_bytes = up_bytes;
+	this.down_rate=0.00;
+	this.up_rate=0.00;
+	this.update_flow=update_flow;
+	//average
+	this.pastNum=0;
+	this.pastDownRate=[0,0,0,0,0,0];
+	this.pastUpRate=[0,0,0,0,0,0];
+	this.not_update=0;
+	this.zero_times=0; // if > 3 times, ignore this item.
+	this.keep_zero = keep_zero;
+	
+	function keep_zero()
+	{
+			this.pastDownRate[this.pastNum%6] = 0.00;
+			this.pastUpRate[this.pastNum%6] = 0.00;
+			this.pastNum++;
+			this.down_rate=averageData(this.pastDownRate);
+			this.up_rate=averageData(this.pastUpRate);
+			if(this.down_rate > 0 || this.up_rate > 0 )
+				this.zero_times=0;
+			else
+				this.zero_times++;
+	}
+	
+	function averageData( list)
+	{
+		var sumData=0;
+		var aver=0;
+		for(var i in list)
+			sumData = (parseFloat(sumData)+parseFloat(list[i])).toFixed(2);
+
+		if(this.pastNum<6)
+			aver = sumData/this.pastNum;
+		else
+			aver = sumData/6;
+
+		return aver.toFixed(2);
+	}
+
+	function update_flow(mac, name, epoch, down_bytes, up_bytes)
+	{
+		var dtime = parseFloat(epoch) - parseFloat(this.epoch)
+		if(dtime != 0 )
+		{
+			var upRate=0.0, downRate=0.0;
+			downRate = (((parseFloat(down_bytes) - parseFloat(this.down_bytes))/dtime)*8/1000000).toFixed(6);
+			upRate = (((parseFloat(up_bytes) - parseFloat(this.up_bytes))/dtime)*8/1000000).toFixed(6);
+			this.pastDownRate[this.pastNum%6] = (((parseFloat(down_bytes) - parseFloat(this.down_bytes))/dtime)*8/1000000).toFixed(2);
+			this.pastUpRate[this.pastNum%6] = (((parseFloat(up_bytes) - parseFloat(this.up_bytes))/dtime)*8/1000000).toFixed(2);
+			this.pastNum++;
+			this.down_rate=averageData(this.pastDownRate);
+			this.up_rate=averageData(this.pastUpRate);
+			
+		//	if(this.down_rate > 0 || this.up_rate > 0 )
+			if(downRate > 0 || upRate > 0 )
+				this.zero_times=0;
+			else
+				this.zero_times++;
+		}
+		this.mac = mac;
+		this.name = name;
+		this.epoch = epoch;
+		this.down_bytes = down_bytes;
+		this.up_bytes = up_bytes;
+	}
+}
+
+function sum_rate( e, d_rate, u_rate) 
+{
+	if(e.down_rate != undefined && e.up_rate != undefined)
+	{
+		e.down_rate = parseFloat(e.down_rate)+parseFloat(d_rate)
+		e.up_rate = parseFloat(e.up_rate)+parseFloat(u_rate)
+	}
+}
+
+function device(mac, ip, name, devtype, contype, priority, access_control)
+{
+	this.mac = mac;
+	this.ip = ip;
+	this.name = name.replace(/[ ]/g, "&nbsp;");
+	this.devtype = devtype;
+	this.contype = contype;
+	this.priority = priority;
+	this.down_rate=0.00;
+	this.up_rate=0.00;
+	this.up_show_sub=0;
+	this.down_show_sub=0
+	this.clear_rate = clear_rate;
+	this.update_rate = update_rate;
+	this.set_show_sub = set_show_sub;
+	this.update_device = update_device;
+	this.access_control = access_control;
+	this.setInZoneFlag = setInZoneFlag;
+	this.offline=0;
+	this.offlineNum=0;
+	this.inZoneFlag=0;
+	this.onLine=0;
+	
+	if( this.ip == "")
+		this.ip = "-";
+	if( this.name == "")
+		this.name = "-";
+
+	function update_device(ip, name, devtype, contype, priority, access_control)
+	{
+		this.ip = ip;
+		this.name = name.replace(/[ ]/g, "&nbsp;");
+		this.devtype = devtype;
+		this.contype = contype;
+		this.priority = priority;
+		this.access_control = access_control;
+	}
+	
+	function clear_rate()
+	{
+		this.down_rate=0.00;
+		this.up_rate=0.00		
+	}
+	
+	function update_rate(d_rate, u_rate)
+	{
+		sum_rate(this, d_rate, u_rate);
+	}
+	
+	function setInZoneFlag(value)
+	{
+		this.inZoneFlag = value;
+	}
+	
+	function set_show_sub(value)
+	{
+		//this.show_sub=value;
+	}
+}
+
+function application(name)
+{
+	this.name = name;
+	this.down_rate = 0.00;
+	this.up_rate = 0.00;
+	this.up_show_sub=0;
+	this.down_show_sub=0;
+	this.update_rate = update_rate;
+	this.set_show_sub = set_show_sub;
+	this.clear_rate=clear_rate;
+	//appList[aln++]=this;
+
+	function update_rate(d_rate, u_rate)
+	{
+		sum_rate(this, d_rate, u_rate);
+	}
+	
+	function clear_rate()
+	{
+		this.down_rate=0.00;
+		this.up_rate=0.00		
+	}
+	
+	function set_show_sub(value)
+	{
+		//this.show_sub=value;
+	}
+}
+
+function getDevices()
+{
+	xmlHttp = createXMLHttpRequest();
+	
+	var url = "QOS_device_info.htm?ts=" + new Date().getTime();
+	xmlHttp.open("GET",url,true);
+	xmlHttp.send(null);
+	xmlHttp.onreadystatechange = function()
+	{
+		if(xmlHttp.readyState == 4 && xmlHttp.status == 200)
+		{
+			var jobj = eval('('+xmlHttp.responseText+')');
+			updateDevice(jobj);
+//			updateInfomation(jobj.traffic);
+		}
+	}
+
+	//var url = "QOS_device_info.htm?ts=" + new Date().getTime();
+	//xmlHttp.open("GET",url,true);
+	//xmlHttp.send(null);
+	
+	if( enable_dev_auto_refresh == 1) 
+		setTimeout("getDevices()", 6000);
+}
+
+function updateDevice(jobj)
+{
+	if(jobj.device.length < 2)
+		return;
+
+	devList=[];
+	outZoneDeviceList=zoneList.concat();
+	dln=0;
+	outZone_dln=outZoneDeviceList.length;
+
+	for(var mac in byMacDevs)
+		byMacDevs[mac].offline = 1;
+
+	for(var i in jobj.device)
+	{
+		dev = jobj.device[i];
+		
+		if( dev.mac )
+		{
+			var mac = dev.mac.toLowerCase();
+			if( byMacDevs[mac] )
+				byMacDevs[mac].update_device(dev.ip, dev.name, dev.devtype, dev.contype, dev.priority, dev.access_control);
+			else
+				byMacDevs[mac] = new device(mac, dev.ip, dev.name, dev.devtype, dev.contype, dev.priority, dev.access_control);
+			byMacDevs[mac].offline=0;
+			byMacDevs[mac].offlineNum=0;
+		}
+	}
+	
+	
+	for(var mac in byMacDevs)
+	{
+		var dev = byMacDevs[mac];
+		if( dev.offline == 1 )
+		{
+			if(dev.offlineNum > 2)
+				continue;
+			dev.offlineNum++;
+		}
+		
+	}
+	
+	for(var name in byZoneNameDevices)
+	{
+		var tmp_dev_list = byZoneNameDevices[name];
+		for(var i in tmp_dev_list)
+		{
+			mac = tmp_dev_list[i].mac.toLowerCase();
+			if(byMacDevs[mac]){
+				if(byMacDevs[mac].inZoneFlag == 0)
+					byMacDevs[mac].setInZoneFlag(1);
+				tmp_dev_list[i] = byMacDevs[mac];
+			}
+		}
+	}
+	
+	for(var mac in byMacDevs)
+	{
+		var dev = byMacDevs[mac];
+		if( dev.offline == 1 )
+		{
+			if(dev.offlineNum > 2)
+				continue;
+			//dev.offlineNum++;
+		}
+		
+		devList[dln++]= byMacDevs[mac];
+		if(byMacDevs[mac].inZoneFlag == 0){
+			outZoneDeviceList[outZone_dln] = byMacDevs[mac];
+			outZone_dln++;
+		}
+	}
+	
+	
+	
+}
+var traffic_refresh_time=5000;
+var timecrc;
+function getTraffic()
+{
+	tHttp = createXMLHttpRequest();
+
+	var url = "/cgi-bin/ozker/api/flows?ts=" + new Date().getTime();
+	tHttp.open("GET",url,true);
+	tHttp.send(null);
+	tHttp.onreadystatechange = function()
+	{
+		if(tHttp.readyState == 4 && tHttp.status == 200)
+		{
+			var jobj = eval('('+tHttp.responseText+')');
+			updateInfomation(jobj);
+		}
+	}
+
+	//var url = "/cgi-bin/ozker/api/flows?ts=" + new Date().getTime();
+	//tHttp.open("GET",url,true);
+	//tHttp.send(null);
+	if( enable_dev_auto_refresh == 1)
+		timecrc = setTimeout("getTraffic()", traffic_refresh_time);
+}
+function update_relation(f)
+{
+		// check device exist or not
+		if(!byMacDevs[f.mac])
+			return;
+		if( ! listContains(devList, byMacDevs[f.mac]))
+			return;
+		//update device rate
+		byMacDevs[f.mac].update_rate(f.down_rate, f.up_rate);
+
+		//update application rate
+		if( ! byNameApps[f.name] )
+			byNameApps[f.name] = new application(f.name);
+		byNameApps[f.name].update_rate(f.down_rate, f.up_rate);
+		if( ! listContains(appList, byNameApps[f.name]))
+			appList[aln++]=byNameApps[f.name];		
+		
+		// save relationship
+		if( ! byMacFlows[f.mac] )
+			byMacFlows[f.mac] = new Array;
+		if( ! byNameFlows[f.name] )
+			byNameFlows[f.name] = new Array;
+		if( ! listContains(byMacFlows[f.mac], f))
+			byMacFlows[f.mac].push(f);
+		if( ! listContains(byNameFlows[f.name], f))
+			byNameFlows[f.name].push(f);
+}
+
+function updateInfomation(jobj)
+{
+	/* clear */
+	byMacFlows={};
+	byNameFlows={};
+	appList=[];
+	aln=0;
+	for(var mac in byMacDevs)
+		byMacDevs[mac].clear_rate();
+	for(var name in byNameApps)
+		byNameApps[name].clear_rate();
+	for(var uid in byUidFlows)
+		byUidFlows[uid].not_update = 1;
+
+	var debug_str="";
+	/* add new value in byMacFlows byNameFlows */
+	for(var i in jobj.flows)
+	{
+		data = jobj.flows[i];
+
+		var uid = data.uid;
+		if(data.group === undefined)
+			var name = data.name;
+		else
+			var name = data.group;
+		name=applicationNames[name];
+		if(name === undefined)
+			name=applicationNames["default"];
+		var mac = data.mac.toLowerCase();
+		
+		if( byUidFlows[uid] === undefined )
+			byUidFlows[uid] = new flow(data.uid, mac, name, data.epoch, data.down_bytes, data.up_bytes);
+		else
+			byUidFlows[uid].update_flow(mac, name, data.epoch, data.down_bytes, data.up_bytes);
+
+		var f = byUidFlows[uid];
+		f.not_update=0;
+		debug_str=debug_str+f.uid+" ";
+	}
+	debug_str=debug_str+'\n';
+	for(var uid in byUidFlows)
+	{
+		var f = byUidFlows[uid];
+		
+		//update the flows not in cgi-bin/ozker/api/flows
+		if( f.not_update == 1)
+		{
+			f.keep_zero();
+		}
+
+		//keep zero 3 times
+		if(f.zero_times > 3)
+			continue;
+
+		update_relation(f);
+	}
+
+	show_all();
+}
+
+function update_band_width()
+{
+	for( var uid in byUidFlows )
+	{
+		var f = byUidFlows[uid];
+
+		$$("div[name='d"+uid+"']").band_width("d"+uid,[{"data":f.down_rate}],downlink_value, "#5bb6e5");
+		$$("div[name='u"+uid+"']").band_width("u"+uid,[{"data":f.up_rate}],downlink_value, "#ababab");
+
+	}
+
+	if( listBydevice == 1 )
+	{
+		for( var mac in byMacDevs )
+		{
+			var d = byMacDevs[mac];
+			$$("div[name='d"+mac+"']").band_width("d"+mac,[{"data":d.down_rate}],downlink_value, "#5bb6e5");//#f89827
+			$$("div[name='u"+mac+"']").band_width("u"+mac,[{"data":d.up_rate}],downlink_value, "#ababab");
+		}
+	}
+	else
+	{
+		for( var name in byNameApps )
+		{
+			var a = byNameApps[name];
+			$$("div[name='d"+name+"']").band_width("d"+name,[{"data":a.down_rate}],downlink_value, "#5bb6e5");//#f89827
+			$$("div[name='u"+name+"']").band_width("u"+name,[{"data":a.up_rate}],downlink_value, "#ababab");
+		}
+	}
+}
+
+function show_up_sub(e, key)
+{
+	if( byMacDevs[key])
+		var item = byMacDevs[key];
+	else if( byNameApps[key])
+		var item = byNameApps[key];
+
+
+	if($$(e).attr("src").indexOf("image/dev_minus.gif") != -1 )
+	{
+		if( item)
+			item.up_show_sub=0;
+		$$(e).attr("src","image/dev_plus.gif");
+		$$(e).closest(".lineright").children("#up_subflow").hide();
+	}
+	else if($$(e).attr("src").indexOf("image/dev_plus.gif") != -1 )
+	{
+		if ( item )
+			item.up_show_sub=1;
+		$$(e).attr("src", "image/dev_minus.gif");
+		$$(e).closest(".lineright").children("#up_subflow").show();
+	}
+}
+
+function show_down_sub(e, key)
+{
+	if( byMacDevs[key])
+		var item = byMacDevs[key];
+	else if( byNameApps[key])
+		var item = byNameApps[key];
+
+	if($$(e).attr("src").indexOf("image/dev_minus.gif") != -1 )
+	{
+		if( item)
+			item.down_show_sub=0;
+		$$(e).attr("src","image/dev_plus.gif");
+		$$(e).closest(".lineright").children("#down_subflow").hide();
+	}
+	else if($$(e).attr("src").indexOf("image/dev_plus.gif") != -1 )
+	{
+		if ( item )
+			item.down_show_sub=1;
+		$$(e).attr("src", "image/dev_minus.gif");
+		$$(e).closest(".lineright").children("#down_subflow").show();
+	}
+}
+
+function zone_show_up_sub(e, key, zone_count)
+{
+	if( byMacDevs[key])
+		var item = byMacDevs[key];
+	else if( byNameApps[key])
+		var item = byNameApps[key];
+	var name_length = $$('#priority_zone'+zone_count+'_name').height();
+	var bracket_length = $$('#priority_zone_bracket'+zone_count).height();
+
+
+	if($$(e).attr("src").indexOf("image/dev_minus.gif") != -1 )
+	{
+		if( item)
+			item.up_show_sub=0;
+		$$(e).attr("src","image/dev_plus.gif");
+		bracket_length = bracket_length - $$(e).closest(".lineright").children("#up_subflow").height();
+		$$(e).closest(".lineright").children("#up_subflow").hide();
+		
+	}
+	else if($$(e).attr("src").indexOf("image/dev_plus.gif") != -1 )
+	{
+		if ( item )
+			item.up_show_sub=1;
+		$$(e).attr("src", "image/dev_minus.gif");
+		bracket_length = bracket_length + $$(e).closest(".lineright").children("#up_subflow").height();
+		$$(e).closest(".lineright").children("#up_subflow").show();
+	}
+	$$('#priority_zone'+zone_count+'_name').css("top", (bracket_length-name_length)/2+50);
+	$$('#priority_zone'+zone_count+'_bandwidth').css("top", bracket_length/2-17+50);
+}
+
+function zone_show_down_sub(e, key, zone_count)
+{
+	if( byMacDevs[key])
+		var item = byMacDevs[key];
+	else if( byNameApps[key])
+		var item = byNameApps[key];
+	var name_length = $$('#priority_zone'+zone_count+'_name').height();
+	var bracket_length = $$('#priority_zone_bracket'+zone_count).height();
+
+	if($$(e).attr("src").indexOf("image/dev_minus.gif") != -1 )
+	{
+		if( item)
+			item.down_show_sub=0;
+		$$(e).attr("src","image/dev_plus.gif");
+		bracket_length = bracket_length - $$(e).closest(".lineright").children("#up_subflow").height();
+		$$(e).closest(".lineright").children("#down_subflow").hide();
+	}
+	else if($$(e).attr("src").indexOf("image/dev_plus.gif") != -1 )
+	{
+		if ( item )
+			item.down_show_sub=1;
+		$$(e).attr("src", "image/dev_minus.gif");
+		bracket_length = bracket_length + $$(e).closest(".lineright").children("#up_subflow").height();
+		$$(e).closest(".lineright").children("#down_subflow").show();
+	}
+	$$('#priority_zone'+zone_count+'_name').css("top", (bracket_length-name_length)/2+50);
+	$$('#priority_zone'+zone_count+'_bandwidth').css("top", bracket_length/2-17+50);
+}
+
+function show_bandwidth(zone_count)
+{
+	document.getElementById("priority_zone"+zone_count+"_bandwidth").style.display="";
+	var length = $$('#priority_zone_bracket'+zone_count).height();
+	
+}
+
+function hide_bandwidth(zone_count)
+{
+	document.getElementById("priority_zone"+zone_count+"_bandwidth").style.display="none";
+	
+	
+}
+function show_all()
+{
+	var cf = document.forms[0];
+	var count = 0;
+	$$('#main').empty();
+
+	if(listBySort == 0 )
+		var sort_function = sort_bandwidth;
+	else if( listBySort == 2 && listBydevice == 1)
+		var sort_function = sort_con;
+	else
+		var sort_function =sort_alp;
+	
+	//dev.name.replace(/\\/g,"\\\\"); //Escape \ 'and'
+	//dev.name.replace(/&#39;/g,"\\&#39;");//Escape \ 'and'
+	
+	if( listBydevice == 1 )
+	{
+		if(devList.length) devList.sort(sort_function);
+
+		for( var i in devList )
+		{
+			var dev = devList[i];
+			var subList = byMacFlows[dev.mac];
+			var linehtml = "";
+
+			if ( subList && listBySort !=2 && subList.length ) subList.sort(sort_function);
+			if(dev.up_show_sub == 1 )
+			{
+				var up_ssrc = 'image/dev_minus.gif';
+				var up_sstyle= '';
+			}
+			else{
+				var up_ssrc = 'image/dev_plus.gif';
+				var up_sstyle = 'style="display:none"';
+			}
+			if(dev.down_show_sub == 1 )
+			{
+				var down_ssrc = 'image/dev_minus.gif';
+				var down_sstyle= '';
+			}
+			else{
+				var down_ssrc = 'image/dev_plus.gif';
+				var down_sstyle = 'style="display:none"';
+			}
+
+			linehtml='<div class="oneline">';
+			linehtml=linehtml+'<div class="lineleft"  >';
+			linehtml=linehtml+'<div class="devIcon big-corner-all" title="$qos_mac: '+dev.mac+'&#13$device_type: '+show_icon_name(dev.devtype)+show_wlan_ssid(dev.contype)+'"    onclick="edit_select_device(\''+dev.mac+'\',\''+dev.ip+'\',\''+dev.name.replace(/\\/g,"\\\\").replace(/&#39;/g,"\\&#39;")+'\', \''+dev.priority+'\', \''+dev.devtype+'\',\''+dev.contype+'\' );">';
+			linehtml=linehtml+device_icon(dev.devtype);
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'<div class="devType">';
+			linehtml=linehtml+show_type(dev.contype);
+			linehtml=linehtml+'</div>';
+			if(enable_block_device == "1")
+				linehtml=linehtml+'<div class="devName"><b>'+dev.name+'</b><br/><br/>'+dev.ip+'<br/>'+show_bora(dev.access_control)+'</div>';
+			else
+				linehtml=linehtml+'<div class="devName"><b>'+dev.name+'</b><br/><br/>'+dev.ip+'</div>';
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'<div class="lineright">';
+			linehtml=linehtml+'<div class="basicFlow">';
+			linehtml=linehtml+'<div class="flowline">';
+			if(subList) linehtml=linehtml+'<img class="down_showsub" onclick="show_down_sub(this, \''+dev.mac+'\')"  src='+down_ssrc+' >&nbsp;&nbsp;&nbsp; ';
+			linehtml=linehtml+'<div class="title">';
+			linehtml=linehtml+"$inter_down</div>";
+			linehtml=linehtml+'<div class="flowshow" name="d'+dev.mac+'">';
+				linehtml=linehtml+band_width_html(dev.down_rate,downlink_value, "#5bb6e5");
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'</div>';
+			var debug_down=dev.down_rate + " ";
+			var debug_up=dev.up_rate + " ";
+			var showList={};
+			
+			
+			for( var i in subList)
+			{
+				var f = subList[i];
+				var name = f.name;
+				if(showList[name])
+				{
+					showList[name].down_rate = (parseFloat(showList[name].down_rate) +  parseFloat(f.down_rate));
+					showList[name].up_rate = (parseFloat(showList[name].up_rate) +  parseFloat(f.up_rate));
+				}
+				else{
+					showList[name]={down_rate: f.down_rate,up_rate: f.up_rate};
+				}	
+			}
+			linehtml=linehtml+'<div class="subFlow" id="down_subflow" '+down_sstyle+'>';
+			for( var name in showList)
+			{
+				var f = showList[name];
+				linehtml=linehtml+'<div class="flowline">';
+				linehtml=linehtml+'<div class="title">'+name+'</div>';
+				linehtml=linehtml+'<div class="flowshow">';
+					linehtml=linehtml+band_width_html(f.down_rate,downlink_value, "#5bb6e5");
+					debug_down=debug_down+f.down_rate + " ";
+				linehtml=linehtml+'</div>';	
+				linehtml=linehtml+'</div>';
+			}
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'<div class="basicFlow">';
+			linehtml=linehtml+'<div class="flowline">';
+			if(subList) linehtml=linehtml+'<img class="showsub" onclick="show_up_sub(this, \''+dev.mac+'\')"  src='+up_ssrc+' >&nbsp;&nbsp;&nbsp; ';
+			linehtml=linehtml+'<div class="title">';
+			linehtml=linehtml+"$inter_up</div>";
+			linehtml=linehtml+'<div class="flowshow" name="u'+dev.mac+'">';
+				linehtml=linehtml+band_width_html(dev.up_rate,downlink_value, "#ababab");
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'<div class="subFlow" id="up_subflow"'+up_sstyle+'>';
+			for( var name in showList)
+			{
+				var f = showList[name];
+				linehtml=linehtml+'<div class="flowline">';
+				linehtml=linehtml+'<div class="title">'+name+'</div>';
+				linehtml=linehtml+'<div class="flowshow" >';
+					linehtml=linehtml+band_width_html(f.up_rate,downlink_value, "#ababab");
+					debug_up=debug_up+f.up_rate + " ";
+					
+				linehtml=linehtml+'</div>';
+				linehtml=linehtml+'</div>';
+			}
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'<div class="spliteline"></div>';
+			linehtml=linehtml+'</div>';
+		  $$('#main').append(linehtml);
+		}
+	}
+	else if(listBydevice == 0)
+	{
+		if(appList.length) appList.sort(sort_function);
+		for( var i in appList )
+		{
+			var a = appList[i];
+			var app_name = a.name;
+			var subList = byNameFlows[a.name];
+			var linehtml = "";			
+			if ( subList && subList.length) subList.sort(sort_function);
+			
+			if(a.up_show_sub == 1 )
+			{
+				
+				var up_ssrc = 'image/dev_minus.gif';
+				var up_sstyle= '';
+			}
+			else{
+				var up_ssrc = 'image/dev_plus.gif';
+				var up_sstyle = 'style="display:none"';
+			}
+
+			if(a.down_show_sub == 1 )
+			{
+				var down_ssrc = 'image/dev_minus.gif';
+				var down_sstyle= '';
+			}
+			else{
+				var down_ssrc = 'image/dev_plus.gif';
+				var down_sstyle = 'style="display:none"';
+			}
+			linehtml='<div class="oneline">';
+			linehtml=linehtml+'<div class="lineleft" >';
+			//linehtml=linehtml+'<div class="devIcon big-corner-all">';
+			//linehtml=linehtml+device_icon(dev.devtype);
+			//linehtml=linehtml+'</div>';
+			//linehtml=linehtml+'<div class="devType">';
+			//linehtml=linehtml+show_type(dev.contype);
+			//linehtml=linehtml+'</div>';
+			//linehtml=linehtml+'<div class="devName"><b>'+name+'</b></div>';
+			linehtml=linehtml+'<div class="appName"><div class="appdot"></div><b>'+app_name+'</b></div>';
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'<div class="lineright">';
+			linehtml=linehtml+'<div class="basicFlow">';
+			linehtml=linehtml+'<div class="flowline">';
+			if( subList) linehtml=linehtml+'<img class="down_showsub" onclick="show_down_sub(this, \''+app_name+'\')" src='+down_ssrc+' >&nbsp;&nbsp;&nbsp; ';
+			linehtml=linehtml+'<div class="title">';
+			linehtml=linehtml+"$inter_down</div>";
+			linehtml=linehtml+'<div class="flowshow" name="d'+app_name+'">';
+				linehtml=linehtml+band_width_html(a.down_rate,downlink_value, "#5bb6e5");
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'</div>';
+			var showList={};
+			for( var i in subList)
+			{
+				var f = subList[i];
+				var dev = byMacDevs[f.mac];
+				var name = dev.name;
+				if(showList[name])
+				{
+					showList[name].down_rate = (parseFloat(showList[name].down_rate) +  parseFloat(f.down_rate));
+					showList[name].up_rate = (parseFloat(showList[name].up_rate) +  parseFloat(f.up_rate));
+				}
+				else{
+					showList[name]={down_rate: f.down_rate,up_rate: f.up_rate};
+				}	
+			}
+			linehtml=linehtml+'<div class="subFlow" id="down_subflow" '+down_sstyle+'>';
+			for( var name in showList)
+			{
+				var f = showList[name];
+				linehtml=linehtml+'<div class="flowline">';
+				linehtml=linehtml+'<div class="title">'+name+'</div>';
+				linehtml=linehtml+'<div class="flowshow">';
+					linehtml=linehtml+band_width_html(f.down_rate,downlink_value, "#5bb6e5");
+				linehtml=linehtml+'</div>';
+				linehtml=linehtml+'</div>';
+				
+			}
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'<div class="basicFlow">';
+			linehtml=linehtml+'<div class="flowline">';
+			if( subList) linehtml=linehtml+'<img class="showsub" onclick="show_up_sub(this, \''+app_name+'\')" src='+up_ssrc+' >&nbsp;&nbsp;&nbsp; ';
+			linehtml=linehtml+'<div class="title">';
+			linehtml=linehtml+"$inter_up</div>";
+			linehtml=linehtml+'<div class="flowshow" name="u'+app_name+'">';
+				linehtml=linehtml+band_width_html(a.up_rate,downlink_value, "#ababab");
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'<div class="subFlow" id="up_subflow"'+up_sstyle+'>';
+			
+			for( var name in showList)
+			{
+				var f = showList[name];
+				linehtml=linehtml+'<div class="flowline">';
+				linehtml=linehtml+'<div class="title">'+name+'</div>';
+				linehtml=linehtml+'<div class="flowshow" >';
+					linehtml=linehtml+band_width_html(f.up_rate,downlink_value, "#ababab");
+				linehtml=linehtml+'</div>';
+				linehtml=linehtml+'</div>';
+	
+			}
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'<div class="spliteline"></div>';
+			linehtml=linehtml+'</div>';
+			$$('#main').append(linehtml);
+		}
+	}else if(listBydevice == 2){
+		
+		if(outZoneDeviceList.length) outZoneDeviceList.sort(sort_function);
+		//alert("outZoneDeviceList"+outZoneDeviceList.length);
+		for(var i in outZoneDeviceList){
+			if(!outZoneDeviceList[i].mac ){//priority zone
+				
+				var zone_name = outZoneDeviceList[i].name;
+				var zone_devlist = byZoneNameDevices[zone_name];
+				if(zone_devlist.length == 0)
+					continue;
+				for(var zone_count in zoneList)
+					if(zoneList[zone_count].name == zone_name)
+						break;
+				linehtml = '<div class="priority_zone" id="priority_zone'+zone_count+'">';
+				linehtml = linehtml + '<div class="zone_bracket"  id="priority_zone_bracket'+zone_count+'"></div>';
+				linehtml = linehtml + '<div class="zone_name" onmouseover="show_bandwidth('+zone_count+')" onmouseout="hide_bandwidth('+zone_count+')" id="priority_zone'+zone_count+'_name"><div style="width:1px">'+zone_name + '</div>';
+				
+				linehtml = linehtml + '</div>'
+				linehtml = linehtml + '<div class="zone_edit" id="zone_edit'+zone_count+'"><input type="button" name="edit" class="zone_edit_bt ui-corner-all" value="Edit" id="edit_bt" onclick="location.href=\'priority_zone.htm\'"></div>';
+				linehtml = linehtml + '<div class="zone_bandwidth ui-corner-all" id="priority_zone'+zone_count+'_bandwidth" ><span class="cusp01"><span class="cusp02"></span></span> '+outZoneDeviceList[i].up_rate+'Mbps</div>';
+				
+				
+				
+				//alert("zone_devlist"+zone_devlist.length);
+				for(var j in zone_devlist){
+					
+					var dev = zone_devlist[j];
+					var subList = byMacFlows[dev.mac];
+					//var linehtml = "";
+
+					if ( subList && listBySort !=2 && subList.length ) subList.sort(sort_function);
+					if(dev.up_show_sub == 1 )
+					{
+						var up_ssrc = 'image/dev_minus.gif';
+						var up_sstyle= '';
+					}
+					else{
+						var up_ssrc = 'image/dev_plus.gif';
+						var up_sstyle = 'style="display:none"';
+					}
+					if(dev.down_show_sub == 1 )
+					{
+						var down_ssrc = 'image/dev_minus.gif';
+						var down_sstyle= '';
+					}
+					else{
+						var down_ssrc = 'image/dev_plus.gif';
+						var down_sstyle = 'style="display:none"';
+					}
+
+					linehtml=linehtml+'<div class="oneline">';
+					linehtml=linehtml+'<div class="lineleft"  >';
+					var online_flag=0;
+					for(var i in devList)
+						if(devList[i].mac == dev.mac){
+							online_flag = 1;
+							break;
+						}
+					if(online_flag == 1)
+						linehtml=linehtml+'<div class="devIcon big-corner-all" title="$qos_mac: '+dev.mac+'&#13$device_type: '+show_icon_name(dev.devtype)+show_wlan_ssid(dev.contype)+'"    onclick="edit_select_device(\''+dev.mac+'\',\''+dev.ip+'\',\''+dev.name.replace(/\\/g,"\\\\").replace(/&#39;/g,"\\&#39;")+'\', \''+dev.priority+'\', \''+dev.devtype+'\',\''+dev.contype+'\' );">';
+					else
+						linehtml=linehtml+'<div class="devIcon big-corner-all" style="background-color:#949599" title="$qos_mac: '+dev.mac+'&#13$device_type: '+show_icon_name(dev.devtype)+show_wlan_ssid(dev.contype)+'"    onclick="edit_select_device(\''+dev.mac+'\',\''+dev.ip+'\',\''+dev.name.replace(/\\/g,"\\\\").replace(/&#39;/g,"\\&#39;")+'\', \''+dev.priority+'\', \''+dev.devtype+'\',\''+dev.contype+'\' );">';
+					linehtml=linehtml+device_icon(dev.devtype);
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'<div class="devType">';
+					linehtml=linehtml+show_type(dev.contype);
+					linehtml=linehtml+'</div>';
+					if(enable_block_device == "1")
+						linehtml=linehtml+'<div class="devName"><b>'+dev.name+'</b><br/><br/>'+dev.ip+'<br/>'+show_bora(dev.access_control)+'</div>';
+					else
+						linehtml=linehtml+'<div class="devName"><b>'+dev.name+'</b><br/><br/>'+dev.ip+'</div>';
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'<div class="lineright">';
+					linehtml=linehtml+'<div class="basicFlow">';
+					linehtml=linehtml+'<div class="flowline">';
+					if(subList) linehtml=linehtml+'<img class="down_showsub" onclick="zone_show_down_sub(this, \''+dev.mac+'\', \''+zone_count+'\')"  src='+down_ssrc+' >&nbsp;&nbsp;&nbsp; ';
+					linehtml=linehtml+'<div class="title">';
+					linehtml=linehtml+"$inter_down</div>";
+					linehtml=linehtml+'<div class="flowshow" name="d'+dev.mac+'">';
+					linehtml=linehtml+band_width_html(dev.down_rate,downlink_value, "#5bb6e5");
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'</div>';
+					var debug_down=dev.down_rate + " ";
+					var debug_up=dev.up_rate + " ";
+					var showList={};
+			
+			
+					for( var i in subList)
+					{
+						var f = subList[i];
+						var name = f.name;
+						if(showList[name])
+						{
+							showList[name].down_rate = (parseFloat(showList[name].down_rate) +  parseFloat(f.down_rate));
+							showList[name].up_rate = (parseFloat(showList[name].up_rate) +  parseFloat(f.up_rate));
+						}
+						else{
+							showList[name]={down_rate: f.down_rate,up_rate: f.up_rate};
+						}	
+					}
+					linehtml=linehtml+'<div class="subFlow" id="down_subflow" '+down_sstyle+'>';
+					for( var name in showList)
+					{
+						var f = showList[name];
+						linehtml=linehtml+'<div class="flowline">';
+						linehtml=linehtml+'<div class="title">'+name+'</div>';
+						linehtml=linehtml+'<div class="flowshow">';
+						linehtml=linehtml+band_width_html(f.down_rate,downlink_value, "#5bb6e5");
+						debug_down=debug_down+f.down_rate + " ";
+						linehtml=linehtml+'</div>';	
+						linehtml=linehtml+'</div>';
+					}
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'<div class="basicFlow">';
+					linehtml=linehtml+'<div class="flowline">';
+					if(subList) linehtml=linehtml+'<img class="showsub" onclick="zone_show_up_sub(this, \''+dev.mac+'\', \''+zone_count+'\')"  src='+up_ssrc+' >&nbsp;&nbsp;&nbsp; ';
+					linehtml=linehtml+'<div class="title">';
+					linehtml=linehtml+"$inter_up</div>";
+					linehtml=linehtml+'<div class="flowshow" name="u'+dev.mac+'">';
+					linehtml=linehtml+band_width_html(dev.up_rate,downlink_value, "#ababab");
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'<div class="subFlow" id="up_subflow"'+up_sstyle+'>';
+					for( var name in showList)
+					{
+						var f = showList[name];
+						linehtml=linehtml+'<div class="flowline">';
+						linehtml=linehtml+'<div class="title">'+name+'</div>';
+						linehtml=linehtml+'<div class="flowshow" >';
+						linehtml=linehtml+band_width_html(f.up_rate,downlink_value, "#ababab");
+						debug_up=debug_up+f.up_rate + " ";
+					
+						linehtml=linehtml+'</div>';
+						linehtml=linehtml+'</div>';
+					}
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'<div class="spliteline"></div>';
+					linehtml=linehtml+'</div>';
+					
+				}
+				linehtml = linehtml + '</div>';
+				$$('#main').append(linehtml);
+				var length = $$('#priority_zone'+zone_count).height()-170;
+				$$('#priority_zone_bracket'+zone_count).height(length);
+				//$$('#priority_zone'+zone_count+' .oneline').css("top", 0-length-19);
+				var height = $$('#priority_zone'+zone_count+'_name').height();
+				$$('#priority_zone'+zone_count+'_name').css("top", (length-height)/2+50);
+				$$('#priority_zone'+zone_count+'_bandwidth').css("top", length/2-17+50);
+				
+				
+				
+				
+			}else{
+					var dev = outZoneDeviceList[i];
+					var subList = byMacFlows[dev.mac];
+					var linehtml = "";
+
+					if ( subList && listBySort !=2 && subList.length ) subList.sort(sort_function);
+					if(dev.up_show_sub == 1 )
+					{
+						var up_ssrc = 'image/dev_minus.gif';
+						var up_sstyle= '';
+					}
+					else{
+						var up_ssrc = 'image/dev_plus.gif';
+						var up_sstyle = 'style="display:none"';
+					}
+					if(dev.down_show_sub == 1 )
+					{
+						var down_ssrc = 'image/dev_minus.gif';
+						var down_sstyle= '';
+					}
+					else{
+						var down_ssrc = 'image/dev_plus.gif';
+						var down_sstyle = 'style="display:none"';
+					}
+
+					linehtml=linehtml+'<div class="oneline">';
+					linehtml=linehtml+'<div class="lineleft"  >';
+					linehtml=linehtml+'<div class="devIcon big-corner-all" title="$qos_mac: '+dev.mac+'&#13$device_type: '+show_icon_name(dev.devtype)+show_wlan_ssid(dev.contype)+'"    onclick="edit_select_device(\''+dev.mac+'\',\''+dev.ip+'\',\''+dev.name.replace(/\\/g,"\\\\").replace(/&#39;/g,"\\&#39;")+'\', \''+dev.priority+'\', \''+dev.devtype+'\',\''+dev.contype+'\' );">';
+					linehtml=linehtml+device_icon(dev.devtype);
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'<div class="devType">';
+					linehtml=linehtml+show_type(dev.contype);
+					linehtml=linehtml+'</div>';
+					if(enable_block_device == "1")
+						linehtml=linehtml+'<div class="devName"><b>'+dev.name+'</b><br/><br/>'+dev.ip+'<br/>'+show_bora(dev.access_control)+'</div>';
+					else
+						linehtml=linehtml+'<div class="devName"><b>'+dev.name+'</b><br/><br/>'+dev.ip+'</div>';
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'<div class="lineright">';
+					linehtml=linehtml+'<div class="basicFlow">';
+					linehtml=linehtml+'<div class="flowline">';
+					if(subList) linehtml=linehtml+'<img class="down_showsub" onclick="show_down_sub(this, \''+dev.mac+'\')"  src='+down_ssrc+' >&nbsp;&nbsp;&nbsp; ';
+					linehtml=linehtml+'<div class="title">';
+					linehtml=linehtml+"$inter_down</div>";
+					linehtml=linehtml+'<div class="flowshow" name="d'+dev.mac+'">';
+					linehtml=linehtml+band_width_html(dev.down_rate,downlink_value, "#5bb6e5");
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'</div>';
+					var debug_down=dev.down_rate + " ";
+					var debug_up=dev.up_rate + " ";
+					var showList={};
+			
+			
+					for( var i in subList)
+					{
+						var f = subList[i];
+						var name = f.name;
+						if(showList[name])
+						{
+							showList[name].down_rate = (parseFloat(showList[name].down_rate) +  parseFloat(f.down_rate));
+							showList[name].up_rate = (parseFloat(showList[name].up_rate) +  parseFloat(f.up_rate));
+						}
+						else{
+							showList[name]={down_rate: f.down_rate,up_rate: f.up_rate};
+						}	
+					}
+					linehtml=linehtml+'<div class="subFlow" id="down_subflow" '+down_sstyle+'>';
+					for( var name in showList)
+					{
+						var f = showList[name];
+						linehtml=linehtml+'<div class="flowline">';
+						linehtml=linehtml+'<div class="title">'+name+'</div>';
+						linehtml=linehtml+'<div class="flowshow">';
+						linehtml=linehtml+band_width_html(f.down_rate,downlink_value, "#5bb6e5");
+						debug_down=debug_down+f.down_rate + " ";
+						linehtml=linehtml+'</div>';	
+						linehtml=linehtml+'</div>';
+					}
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'<div class="basicFlow">';
+					linehtml=linehtml+'<div class="flowline">';
+					if(subList) linehtml=linehtml+'<img class="showsub" onclick="show_up_sub(this, \''+dev.mac+'\')"  src='+up_ssrc+' >&nbsp;&nbsp;&nbsp; ';
+					linehtml=linehtml+'<div class="title">';
+					linehtml=linehtml+"$inter_up</div>";
+					linehtml=linehtml+'<div class="flowshow" name="u'+dev.mac+'">';
+					linehtml=linehtml+band_width_html(dev.up_rate,downlink_value, "#ababab");
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'<div class="subFlow" id="up_subflow"'+up_sstyle+'>';
+					for( var name in showList)
+					{
+						var f = showList[name];
+						linehtml=linehtml+'<div class="flowline">';
+						linehtml=linehtml+'<div class="title">'+name+'</div>';
+						linehtml=linehtml+'<div class="flowshow" >';
+						linehtml=linehtml+band_width_html(f.up_rate,downlink_value, "#ababab");
+						debug_up=debug_up+f.up_rate + " ";
+					
+						linehtml=linehtml+'</div>';
+						linehtml=linehtml+'</div>';
+					}
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'</div>';
+					linehtml=linehtml+'<div class="spliteline"></div>';
+					linehtml=linehtml+'</div>';
+					$$('#main').append(linehtml);
+			}
+			
+		}
+	
+	}
+
+	//update_band_width();
+}
+
+function change_list_type(type)
+{
+	if( listBydevice != type)
+	{
+		listBydevice = type;
+
+		if( listBydevice == 1 )
+		{
+			$$("#sortCon").show();
+			$$("#listByDevice").closest(".btc1").children(".btopen").removeClass("btopen").addClass("btclose");
+			$$("#listByDevice").removeClass("btclose").addClass("btopen");
+			
+			show_all();
+		}
+		else if( listBydevice == 0)
+		{
+			$$("#sortCon").hide();
+			$$("#listByApplication").closest(".btc1").children(".btopen").removeClass("btopen").addClass("btclose");
+			$$("#listByApplication").removeClass("btclose").addClass("btopen");
+			if( listBySort == 2 )
+				change_sort_type(1);
+			else
+				show_all();
+		}else{
+			$$("#sortCon").hide();
+			$$("#listByZone").closest(".btc1").children(".btopen").removeClass("btopen").addClass("btclose");
+			$$("#listByZone").removeClass("btclose").addClass("btopen");
+			if( listBySort == 2 )
+				change_sort_type(1);
+			else{
+				show_all();
+			}
+		}
+	}
+}
+
+function change_sort_type(type)
+{
+	if( listBySort != type)
+	{
+		listBySort = type;
+
+		if( type == 0 )
+		{
+			$$("#sortBand").closest(".btc1").children(".btopen").removeClass("btopen").addClass("btclose");
+			$$("#sortBand").removeClass("btclose").addClass("btopen");
+		}
+		else if( type == 1 )
+		{
+			$$("#sortAp").closest(".btc1").children(".btopen").removeClass("btopen").addClass("btclose");
+			$$("#sortAp").removeClass("btclose").addClass("btopen");
+		}
+		else
+		{
+			$$("#sortCon").closest(".btc1").children(".btopen").removeClass("btopen").addClass("btclose");
+			$$("#sortCon").removeClass("btclose").addClass("btopen");
+		}
+		show_all();
+	}
+}
+
+function refresh_device_info()
+{
+	getDevices();
+	getTraffic();
+}
+</script>
+<input type="hidden" name="hid_mac">
+<input type="hidden" name="hid_edit_mac">
+<input type="hidden" name="hid_dev_auto_refresh" value="0">
+<div id="top-banner">
+<div class="page_title">$attach_device</div>
+<div class="access">$access_control_url1
+<script>
+	if(enable_bridge_flag == "1")
+		document.write('<a href=# class="ui-corner-all"><font color=grey>&nbsp; $access_control_url2 &nbsp;</font></a>');
+	else
+		document.write('<a href=# onclick="goto_url(); return false;" class="ui-corner-all">&nbsp; $access_control_url2 &nbsp;</a>');
+
+	document.write('$access_control_url3<br/>');
+
+	var new_device_statue_by_default="<% cfg_get("new_device_statue_by_default") %>";
+
+	if( enable_block_device == "0" )
+	{
+		document.write("$acc_control: <b>$acc_turned_off</b>");
+	}
+	else
+	{
+		document.write("$acc_control: <b>$acc_turned_on</b>");
+		document.write("<br/>");
+		if( new_device_statue_by_default == "Block" )
+			document.write("$acc_general_rule: $block_connect");
+		else
+			document.write("$acc_general_rule: $allow_connect");
+	}
+</script>
+</div>
+<div class="zone">$access_control_url1
+<a href=# onclick="goto_url(); return false;" class="ui-corner-all">&nbsp; $priority_zone &nbsp;</a>
+$set_priority_zone<br/>
+<script>
+if(priority_zone_enable == "1")
+	document.write("$priority_zone: <b>$acc_turned_on</b>");
+else
+	document.write("$priority_zone: <b>$acc_turned_off</b>");
+</script>
+</div>
+<div class="top-settings">
+<table width="100%">
+<tr>
+<td><div class="total_bandwith">$total_band</div></td>
+<td>
+<div class="rates">
+<div class="down_rate"><div class="ratefont"><script>document.write(parseFloat(show_downlimit*8/1000000).toFixed(2)+" Mbps")</script></div></div>
+<div class="up_rate"><div class="ratefont"><script>document.write(parseFloat(show_uplimit*8/1000000).toFixed(2)+" Mbps")</script></div></div>
+</div></td>
+<td align="right">
+<div class="refresh">
+<input type="checkbox" value="0" name="enable_auto_refresh" onClick="show_or_hid_refresh(document.forms[0],'0');">$enable_auto_refresh &nbsp;
+<input class="new_apply_bt ui-corner-all" type='button' name='refresh' value='$refresh_mark' onClick='refresh_device_info()'>
+</div>
+</td>
+</tr>
+</table>
+<!--div style="width:200px; height:100px; position: absolute; top: 70px; right: 0px; ">
+<script>
+function change_time()
+{
+	var cf = document.forms[0];
+	var t = parseInt(cf.trt.value)
+	if(t == 0)
+		t=1;
+	traffic_refresh_time = t*1000;
+	
+	clearTimeout(timecrc);
+	getTraffic();
+}
+</script>
+<input name="trt" type=text value=1 > <input type=button value="Change Refresh time" onclick="change_time()">
+</div-->
+<div class="bt_contain" >
+<div class="btc1 ui-corner-all">
+$sort_by<div id="sortBand" class="btclose ui-corner-all" onclick="change_sort_type(0);">$band</div>&nbsp;&nbsp;<div id="sortAp" class="btopen ui-corner-all" onclick="change_sort_type(1);">$alp_ord</div>&nbsp;&nbsp;<div id="sortCon" class="btclose ui-corner-all" onclick="change_sort_type(2);">$con_tp</div>
+</div>
+<div class="btc1 ui-corner-all">
+$ls_by &nbsp;<div id="listByApplication" class="btclose ui-corner-all" onclick="change_list_type(0)">$app</div>&nbsp;&nbsp;<div  id="listByDevice" class="btopen ui-corner-all" onclick="change_list_type(1)">$dev</div>&nbsp;&nbsp;<div  id="listByZone" class="btclose ui-corner-all" onclick="change_list_type(2)">Zone</div>
+</div>
+</div>
+
+<div class="application_num">
+<table>
+<tr><td><input type="checkbox" name="limit_app_name" onclick="show_all()"></td>
+<td><b>$display_top_5_band</b></td>
+</tr>
+</table>
+</div>
+</div>
+
+<div class="page-line"><img src=image/topline.gif width=100%></div>
+</div>
+<div id="main" class="main">
+
+</div>
+<script>
+function main_resize() 
+{
+	var topHeight = $$('#top-banner').outerHeight();
+	$$('#main').css('top', topHeight);
+}
+$$(window).resize (function () {
+	 main_resize();
+});
+main_resize();
+</script>
+<% help_box("1","_new_attach_device") %>
+</form>
+</body>
+</html>
+

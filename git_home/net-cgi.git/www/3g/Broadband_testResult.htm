@@ -1,0 +1,30 @@
+<% http_header() %>
+<body onLoad="loadvalue();" bgcolor=#ffffff>
+<script>
+var ping_ethernet_result="<% cfg_get("ping_ethernet_result")%>";
+var ping_3g_result="<% cfg_get("ping_3g_result")%>";
+
+function loadvalue()
+{
+	if(ping_ethernet_result == "0")
+	{
+		alert("$failover_config_ethernet");
+		if(top.dsl_enable_flag == 0)
+		   location.href='BAS_basic.htm';
+		else
+		   location.href='BAS_basic_dsl.htm';
+	}
+	else if(ping_3g_result == "0")
+	{
+		alert("$failover_config_3g");
+		location.href="BAS_3g.htm";
+	}
+	else
+	{
+		alert("$failover_config_ether_3g");
+		location.href="BAS_broadband.htm";
+	}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,796 @@
+#!/bin/sh
+[ -f ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow ] && . ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+START=99
+STOP=10
+
+NAME="streamboost"
+DISPLAY_NAME="StreamBoost"
+
+INITDIR=${INITDIR:-"$CFGDIR/$NAME.d"}
+
+DEFAULT_ACTION=${DEFAULT_ACTION:-"status"}
+
+STREAMBOOST_TMPFILE=/tmp/streamboost.tmp
+
+#
+# Regarding the boot flags, we need to be able to distinguish whether
+# an ifup event is called before or after 'streamboost boot' to allow us
+# to ignore or process the event as appropriate.  We also need to keep
+# track of whether the boot has completed successfully so that we know
+# if 'streamboost start' should be converted into 'streamboost boot'.
+#
+# indicates that 'streamboost boot' has been called
+FIRSTBOOTFLAG=$RUNDIR/streamboost.firstboot.flag
+# indicates that 'streamboost boot' has completed successfully
+BOOTFLAG=$RUNDIR/streamboost.boot.flag
+
+APERTURE_NAME="$BINDIR/aperture.init"
+MEASUREFILE="$RUNDIR/aperture_last_measurement"
+
+LOGGER="logger -s -p daemon.info -t $NAME"
+AUTO_BOOT=yes
+
+# cloud-updatable files in alphabetical order
+CLOUD_PACKAGES="wopr-db policy-redis p0f-db macoui-db"
+
+SPINLOCK_TIMEOUT=7
+FSM_VAR="$RUNDIR/streamboost_fsm.state"
+FSM_LOCK="${FSM_VAR}.lck"
+FSM_stale_state=0
+
+FSM_ACTION_NONE=0
+FSM_ACTION_START=1
+FSM_ACTION_STOP=2
+FSM_ACTION_APPROVED=3
+
+FSM_STATE_STOPPED=1
+FSM_STATE_RUNNING=2
+FSM_STATE_MAXSTABLE=2
+FSM_STATE_STOPPING=3
+FSM_STATE_STARTING=4
+FSM_STATE_STOPPING_PENDING_START=5
+FSM_STATE_STARTING_PENDING_STOP=6
+FSM_STATE_STARTING_PENDING_RESTART=7
+FSM_state=0
+FSM_state_checked=0
+
+STATUS_ALL_DOWN=100
+STATUS_UNAVAILABLE=101
+
+CRON_LINE="*/3 * * * * /usr/sbin/streamboost_status_monit"
+
+# tests whether the ECM package is installed
+ecm_is_installed() {
+	opkg list | grep qca-nss-ecm >/dev/null 2>&1
+	[ "$?" = "0" ] || return 1
+}
+
+# this is the control file for the ecm nl classifier module that allows
+# us to disable and enable it by echoing 0 or 1 respectively
+ECM_NL_ENABLED=/sys/kernel/debug/ecm/ecm_classifier_nl/enabled
+
+# tests to see if ECM is up and ready to receive commands.
+# returns 0 if ECM is fully up and ready, else 1
+ecm_is_ready() {
+	[ ! -w ${ECM_NL_ENABLED} ] && {
+		return 1
+	}
+	return 0
+}
+
+# disable_ecm_nl
+# Disables the NSS ECM NL classifier module in runtime.
+disable_ecm_nl() {
+	ecm_is_installed || {
+		#echo "disable ecm: ecm not installed"
+		return
+	}
+	ecm_is_ready || {
+		#echo "disable ecm: ecm not ready"
+		return
+	}
+	[ -e ${ECM_NL_ENABLED} ] && {
+		echo 0 > ${ECM_NL_ENABLED}
+	}
+}
+
+# enable_ecm_nl
+# Enables the NSS ECM NL classifier module in runtime.
+enable_ecm_nl() {
+	ecm_is_installed || {
+		#echo "enable ecm: ecm not installed"
+		return
+	}
+	ecm_is_ready || {
+		#echo "enable ecm: ecm not ready"
+		return
+	}
+	[ -e ${ECM_NL_ENABLED} ] && {
+		echo 1 > ${ECM_NL_ENABLED}
+	}
+}
+
+# remove all connection marks from conntrack.
+#
+# the issue this solves is that during a streamboost restart, connections
+# maintain their existing marks.  for non-offloaded traffic this is
+# recoverable because streamboost immediately remarks everything, but for
+# offloaded traffic that spans the restart, streamboost won't be able to see
+# it for remarking, thus leaving some connections out of sync with the current
+# streamboost qdisc/flow state.
+clear_conmarks() {
+	$LOGGER "flushing conntrack"
+	echo f > /proc/net/nf_conntrack
+}
+
+# mark the current lock with our PID
+FSM_set_lock_PID() {
+	echo $$ >"$FSM_LOCK.pid"
+	trap '$LOGGER "Termination requested"; FSM_unlock; exit 1' SIGINT SIGTERM SIGEXIT
+	return 0
+}
+
+# try hard to get a lock for access to the state machine
+# note that this can fail, so the return code needs to be checked by the caller
+FSM_lock() {
+	local timeout="${1:-$SPINLOCK_TIMEOUT}"
+	local oldpid
+	FSM_stale_state=0
+	while [ $timeout -gt 0 ]; do
+		mkdir "$FSM_LOCK" 2>/dev/null && {
+			local state=$(cat "$FSM_VAR" 2>/dev/null || echo $FSM_STATE_STOPPED)
+			[ $state -gt $FSM_STATE_MAXSTABLE -a $FSM_state_checked -eq 0 ] && {
+				local instances=$(ps www | grep -v grep | grep $0 | wc -l)
+				[ $instances -lt 3 ] && {
+					$LOGGER Detected stale transitory state
+					FSM_stale_state=1
+				}
+			}
+			FSM_state_checked=1
+			FSM_set_lock_PID
+			return 0
+		}
+		oldpid=$(cat "$FSM_LOCK.pid" 2>/dev/null)
+		[ -e "/proc/$oldpid/maps" ] || {
+			$LOGGER "FSM lock: stale, $$ override attempt"
+			rmdir "$FSM_LOCK" 2>/dev/null
+			continue
+		}
+		let timeout--
+		sleep 1
+	done
+	$LOGGER "FSM: Acquiring lock timed out"
+	return 1
+}
+
+FSM_unlock() {
+	trap - SIGINT SIGTERM SIGEXIT
+	rm -f "$FSM_LOCK.pid" 2>/dev/null
+	rmdir "$FSM_LOCK" 2>/dev/null
+}
+
+# functions to look up the new state, based on the action and current state
+# this is a poor man's 2D array, as busybox doesn't even support 1D arrays
+FSM_transition_start() {
+	local state=$1
+	set -- $FSM_STATE_STARTING \
+		   $FSM_STATE_STOPPING_PENDING_START \
+		   $FSM_STATE_STOPPING_PENDING_START \
+		   $FSM_STATE_STARTING \
+		   $FSM_STATE_STOPPING_PENDING_START \
+		   $FSM_STATE_STARTING_PENDING_RESTART \
+		   $FSM_STATE_STARTING_PENDING_RESTART
+	eval echo '$'$state
+}
+FSM_transition_stop() {
+	local state=$1
+	set -- $FSM_STATE_STOPPED \
+		   $FSM_STATE_STOPPING \
+		   $FSM_STATE_STOPPING \
+		   $FSM_STATE_STARTING_PENDING_STOP \
+		   $FSM_STATE_STOPPING \
+		   $FSM_STATE_STARTING_PENDING_STOP \
+		   $FSM_STATE_STARTING_PENDING_STOP
+	eval echo '$'$state
+}
+FSM_transition_start_done() {
+	local state=$1
+	set -- $FSM_STATE_STOPPED \
+		   $FSM_STATE_RUNNING \
+		   $FSM_STATE_STOPPING \
+		   $FSM_STATE_RUNNING \
+		   $FSM_STATE_STOPPING_PENDING_START \
+		   $FSM_STATE_STOPPING \
+		   $FSM_STATE_STOPPING_PENDING_START
+	eval echo '$'$state
+}
+FSM_transition_start_fail() {
+	local state=$1
+	set -- $FSM_STATE_STOPPED \
+		   $FSM_STATE_RUNNING \
+		   $FSM_STATE_STOPPING \
+		   $FSM_STATE_STOPPING \
+		   $FSM_STATE_STOPPING_PENDING_START \
+		   $FSM_STATE_STOPPING \
+		   $FSM_STATE_STOPPING_PENDING_START
+	eval echo '$'$state
+}
+FSM_transition_stop_done() {
+	local state=$1
+	set -- $FSM_STATE_STOPPED \
+		   $FSM_STATE_RUNNING \
+		   $FSM_STATE_STOPPED \
+		   $FSM_STATE_STARTING \
+		   $FSM_STATE_STARTING \
+		   $FSM_STATE_STARTING_PENDING_STOP \
+		   $FSM_STATE_STARTING_PENDING_RESTART
+	eval echo '$'$state
+}
+
+FSM_state_name() {
+	case "$1" in
+		$FSM_STATE_STOPPED)
+			echo "stopped"
+			;;
+		$FSM_STATE_RUNNING)
+			echo "running"
+			;;
+		$FSM_STATE_STOPPING)
+			echo "stopping"
+			;;
+		$FSM_STATE_STARTING)
+			echo "starting"
+			;;
+		$FSM_STATE_STOPPING_PENDING_START)
+			echo "stopping pending start"
+			;;
+		$FSM_STATE_STARTING_PENDING_STOP)
+			echo "starting pending stop"
+			;;
+		$FSM_STATE_STARTING_PENDING_RESTART)
+			echo "starting pending restart"
+			;;
+		*)
+			echo "unknown"
+			;;
+	esac
+}
+
+# params: action to apply to the state machine
+#         supported actions are: start/boot/init, stop, start_done, start_fail, stop_done
+#         all other actions will be approved with no effect on the state machine
+# return values: 0 - take no action
+#                1 - initiate a start
+#                2 - initiate a stop
+#                3 - proceed with original action
+FSM_action() {
+	local action="$1"
+	local retval=$FSM_ACTION_NONE
+
+	[ "$action" = "boot" -o "$action" = "init" ] && action="start"
+	case "${action}" in
+		start|stop|start_done|start_fail|stop_done)
+			FSM_lock || return $FSM_ACTION_NONE
+			;;
+		*)
+			return $FSM_ACTION_APPROVED
+	esac
+
+	local state=$(cat "$FSM_VAR" 2>/dev/null || echo $FSM_STATE_STOPPED)
+	local new_state
+
+	if [ $FSM_stale_state -eq 0 ]; then
+		new_state=$(FSM_transition_$action $state)
+	else
+		state=$FSM_STATE_RUNNING
+		if [ $action = "start" ]; then
+			new_state=$FSM_STATE_STOPPING_PENDING_START
+		else
+			new_state=$FSM_STATE_STOPPING
+		fi
+	fi
+
+	[ $new_state -ne $state ] && {
+		if [ $new_state -eq $FSM_STATE_STOPPED ]; then
+			rm $FSM_VAR
+		else
+			echo $new_state >$FSM_VAR
+			if [ $new_state -eq $FSM_STATE_STARTING ]; then
+				retval=$FSM_ACTION_START
+			elif [ $new_state -eq $FSM_STATE_STOPPING -a $state -ne $FSM_STATE_STOPPING_PENDING_START ]; then
+				retval=$FSM_ACTION_STOP
+			elif [ $new_state -eq $FSM_STATE_STOPPING_PENDING_START -a $state -ne $FSM_STATE_STOPPING ]; then
+				retval=$FSM_ACTION_STOP
+			fi
+		fi
+	}
+
+	FSM_unlock
+	return $retval
+}
+
+sb_can_start() {
+	if ! is_interface_up lan; then
+		echo "refusing to start StreamBoost: LAN ($LAN_IFACE) is not up"
+		return 1
+	fi
+	if ! is_interface_up wan; then
+		echo "refusing to start StreamBoost: WAN ($WAN_IFACE) is not up"
+		return 2
+	fi
+	# it is not possible to check firewall status during a hotplug event
+	# because this function returns false until the event has completed.
+	# in other words if the streamboost script is being executed in the
+	# context of a hotplug firewall up event, is_firewall_up returns false.
+	# is_firewall_up || return 3
+	return 0
+}
+
+ifup() {
+	$LOGGER "Event ifup $@"
+	[ ! -e $FIRSTBOOTFLAG ] && AUTO_BOOT=no
+	apply_action start all
+}
+
+ifdn() {
+	$LOGGER "Event ifdn $@"
+	apply_action stop all
+}
+
+fwup() {
+	$LOGGER "Event fwup $@"
+	[ ! -e $FIRSTBOOTFLAG ] && AUTO_BOOT=no
+	apply_action start all
+}
+
+fwdn() {
+	$LOGGER "Event fwdn $@"
+	apply_action stop all
+}
+
+apply_action() {
+	local action=$1
+	local orig_action=$1
+	local target=$2
+	local retval=0
+	local ecm_action=""
+	local clear_marks=""
+	local status_all=""
+	local target_all=""
+	local fsm_reply=$FSM_ACTION_APPROVED
+	shift
+	shift
+
+	case "$orig_action" in
+		force_*)
+			action="${orig_action#force_}"
+			;;
+	esac
+
+	[ "$action" != "status" ] && $LOGGER "$DISPLAY_NAME: Executing $action $target"
+	[ "$target" = "all" ] && {
+		target_all="yes"
+
+		[ "$action" = "start" -o "$action" = "boot" ] && {
+			ecm_action="start"
+			enabled || {
+				$LOGGER Skipping $action action, global disable flag is in effect.
+				action=stop
+				orig_action=stop
+			}
+		}
+
+		# If we haven't booted yet, don't allow start.  e.g. hotplug
+		[ "$action" = "start" -a ! -e $BOOTFLAG ] && {
+			if [ "$AUTO_BOOT" = "yes" ]; then
+				$LOGGER streamboost boot has not been run yet, auto-booting...
+				action=boot
+			else
+				$LOGGER Skipping streamboost start until streamboost boot has been run.
+				exit 0
+			fi
+		}
+
+		# Set a boot flag when we first boot.
+		[ "$action" = "boot" ] && set_boot_flag=yes && preboot && auto_update
+
+		FSM_action "$orig_action"
+		fsm_reply=$?
+		# at this stage, we can get NONE, APPROVED or STOP (if the lock was stale)
+		[ "$fsm_reply" -eq $FSM_ACTION_NONE ] && return 0
+		[ "$fsm_reply" -eq $FSM_ACTION_STOP ] && action="stop"
+
+		if [ "$action" = "stop" ]; then
+			# the ecm nl module should be disabled if streamboost
+			# isn't running
+			ecm_action="stop"
+			# clear marks on shutdown.  it's better to do this on
+			# shutdown so that we don't leave connections with
+			# marks for non-existent qdiscs.
+			clear_marks="yes"
+			delete_sys_conf="yes"
+			target="$(ls -r $INITDIR/??_*)"
+		else
+			target="$(ls $INITDIR/??_*)"
+		fi
+
+		[ "$action" = "status" ] && {
+			status_all="yes"
+			FSM_lock && {
+				FSM_state=$(cat "$FSM_VAR" 2>/dev/null || echo $FSM_STATE_STOPPED)
+				FSM_unlock
+			}
+			if [ $FSM_state -ne $FSM_STATE_STOPPED -a $FSM_state -ne $FSM_STATE_RUNNING ]; then
+				echo "FSM state is $(FSM_state_name $FSM_state), please try again later"
+				return $STATUS_UNAVAILABLE
+			fi
+		}
+	}
+
+	[ "$ecm_action" = "start" ] && enable_ecm_nl
+	local status_retval=0
+	local status_upcount=0
+	for i in $target; do
+		service_name=$(basename $i)
+		if [ "$action" = "start" -o "$action" = "boot" ]; then
+			sb_can_start || {
+				retval=$?
+				exit $retval
+			}
+			$i status >/dev/null 2>&1 || $i $action "$@" >$STREAMBOOST_TMPFILE 2>&1
+		else
+			$i $action "$@" >$STREAMBOOST_TMPFILE 2>&1
+		fi
+		retval=$?
+		if [ "$action" = "status" ]; then
+			if [ $retval -eq 0 ]; then
+				echo -n " [  UP  ] "
+				let status_upcount++
+			else
+				echo -n " [ DOWN ] "
+				grep '^SB_NONCRITICAL=1$' $i >/dev/null || let status_retval++
+			fi
+			cat $STREAMBOOST_TMPFILE
+		else
+			if [ $retval -eq 0 ]; then
+				echo " [  OK  ] $service_name $action"
+				[ "$VERBOSE" = "yes" ] && cat $STREAMBOOST_TMPFILE
+			else
+				$LOGGER Action failed: $action $service_name
+				echo " [ FAIL ] $service_name $action"
+				cat $STREAMBOOST_TMPFILE
+				[ "$action" = "start" ] && break
+			fi
+		fi
+	done
+
+	[ "$target_all" = "yes" ] && {
+		[ "$action" = "stop" ] && {
+			FSM_action stop_done
+			fsm_reply=$?
+		}
+		[ "$action" = "start" ] && {
+			if [ $retval -eq 0 ]; then
+				FSM_action start_done
+			else
+				FSM_action start_fail
+			fi
+			fsm_reply=$?
+		}
+	}
+
+	[ "$ecm_action" = "stop" ] && disable_ecm_nl
+	[ "$clear_marks" = "yes" ] && clear_conmarks
+	[ "$set_boot_flag" = "yes" ] && postboot
+
+	# DON'T ADD STUFF AFTER THIS, as sourcing rc.appflow causes sys.conf to regenerate
+	[ "$delete_sys_conf" = "yes" ] && rm "$STREAMBOOST_SYS_CFG"
+
+	[ "$fsm_reply" -eq $FSM_ACTION_START ] && apply_action force_start all
+	[ "$fsm_reply" -eq $FSM_ACTION_STOP ] && apply_action force_stop all
+
+	[ "$status_all" = "yes" ] && {
+		retval=$status_retval
+		[ $status_retval -gt 0 -a $status_upcount -eq 0 ] && retval=$STATUS_ALL_DOWN
+	}
+	return $retval
+}
+
+# this will return 0 if Streamboost is up, or a positive number for the count of
+# daemons which are down (excluding non-critical ones), or a >=100 STATUS_* code
+status() {
+	apply_action status all
+}
+
+# this will return 0 for stable state, 1 if stop needed, >=2 if (re)start needed
+status_monit() {
+	local ALL_GOOD=0 NEED_STOP=1 NEED_START=2 NEED_RESTART=3
+	local statcount=0
+	local retval=$ALL_GOOD
+	status
+	statcount=$?
+	if [ $FSM_stale_state -eq 0 ]; then
+		[ "$statcount" -gt 0 -a "$statcount" -lt $STATUS_ALL_DOWN ] && {
+			# Streamboost is partially down
+			if [ $FSM_state -eq $FSM_STATE_STOPPED ]; then
+				retval=$NEED_STOP
+			else
+				retval=$NEED_START
+			fi
+		}
+	else
+		retval=$NEED_RESTART
+	fi
+	local msg="Streamboost: status=$statcount, FSM_state=$(FSM_state_name $FSM_state) ($FSM_state) stale=$FSM_stale_state"
+	echo "$msg"
+	[ "$SB_DISABLE_MONIT" = "yes" ] && retval=$ALL_GOOD
+	[ $retval -ne $ALL_GOOD ] && $LOGGER "$msg"
+	return $retval
+}
+
+restart() {
+	echo "$DISPLAY_NAME: Restarting"
+	apply_action start all "$@"
+}
+
+disable() {
+	daemon="$(basename $0)"
+
+	if [ -z "${START}" ]; then
+		echo "$0 has no START value"
+		return 1
+	fi
+
+	if [ -z "${STOP}" ]; then
+		echo "$0 has no STOP value"
+		return 2
+	fi
+
+	rm -f "${IPKG_INSTROOT}/etc/rc.d/S${START}${daemon}"
+	rm -f "${IPKG_INSTROOT}/etc/rc.d/K${STOP}${daemon}"
+	echo "$DISPLAY_NAME: Auto-Run At Boot Disabled"
+}
+
+enable() {
+	daemon="$(basename $0)"
+
+	if [ -z "${START}" ]; then
+		echo "$0 has no START value"
+		return 1
+	fi
+
+	if [ -z "${STOP}" ]; then
+		echo "$0 has no STOP value"
+		return 2
+	fi
+
+	ln -s "../init.d/${daemon}" "${IPKG_INSTROOT}/etc/rc.d/S${START}${daemon}"
+	ln -s "../init.d/${daemon}" "${IPKG_INSTROOT}/etc/rc.d/K${STOP}${daemon}"
+	echo "$DISPLAY_NAME: Auto-Run At Boot Enabled"
+}
+
+read_config() {
+	[ -f $STREAMBOOST_USER_CFG ] || {
+		$LOGGER "User config file $STREAMBOOST_USER_CFG does not exist, exiting"
+		echo >&2 "User config file $STREAMBOOST_USER_CFG does not exist, exiting"
+		return 1
+	}
+	. $STREAMBOOST_USER_CFG
+	ENABLE_GWCLIENT=$improve_streamboost
+	ENABLE_AUTO_BW=$auto_bandwidth
+	ENABLE_AUTO_UPDATE=$auto_update
+	ENABLE_AUTO_UPLOAD=$improve_streamboost
+	export ENABLE_GWCLIENT ENABLE_AUTO_BW ENABLE_AUTO_UPDATE ENABLE_AUTO_UPLOAD
+}
+
+measure() {
+	if apply_action measure $APERTURE_NAME "$MEASUREFILE"; then
+		sed -n 's/^Up /uplimit=/p;s/^Down /downlimit=/p' <$MEASUREFILE
+		echo 'Apply results with "streamboost applybw".'
+	else
+		return 3
+	fi
+}
+
+applybw() {
+	apply_action applybw $APERTURE_NAME "$MEASUREFILE"
+}
+
+preboot() {
+	# if this is our first boot, set a flag
+	[ ! -e $FIRSTBOOTFLAG ] && {
+		touch $FIRSTBOOTFLAG
+	}
+	# link all the updatable files from CFGDIR to RUNDIR
+	for f in $CLOUD_FILES
+	do
+		ln -sf "$CFGDIR/$f" "$RUNDIR/$f"
+	done
+
+	mkdir -p $STORAGEDIR
+}
+
+postboot() {
+	[ ! -e $BOOTFLAG ] && {
+		touch $BOOTFLAG
+		# this variable should be defined in streamboost.sys.conf
+		[ "$ENABLE_QUERY_UPLOAD_HOST_STATUS" = "yes" ] && {
+			query_upload_host_status
+		}
+		add_to_cron "${CRON_LINE}"
+	}
+}
+
+# Print the versions of all the cloud-updatable files/packages
+print_versions() {
+	[ -f "$STORAGEDIR/last_updated" ] && cat "$STORAGEDIR/last_updated" || echo "No updates installed."
+	for pkg in $CLOUD_PACKAGES; do
+		grep "Version:" "/usr/lib/opkg/info/$pkg.control" | awk -v "pkg=$pkg" '{print pkg " - " $2}'
+	done
+}
+
+auto_update() {
+	[ "$ENABLE_AUTO_UPDATE" = "yes" ] || {
+		$LOGGER "Automatic updates are disabled.  Using existing files."
+		return 10
+	}
+	update
+	return $?
+}
+
+update() {
+	$LOGGER "streamboost update $@"
+	UPDATE_STATUS=0
+	MACADDR=$(ifconfig $LAN_IFACE | awk '/HWaddr/ {print $5}')
+	if opkg -v >/dev/null 2>&1; then
+		# opkg-based system
+		SB_OPKG_CONF=/var/run/appflow/opkg.conf
+		UPGRADE_LOG=/var/run/appflow/upgrade.log
+		# Make our own opkg.conf with our repo src
+		if [ -f /etc/opkg.conf ]; then
+			grep -v "^src" /etc/opkg.conf > "$SB_OPKG_CONF"
+			sed s/%h/"$UPDATE_HOST"/g /etc/appflow/streamboost.opkg.conf >> "$SB_OPKG_CONF"
+			echo "option http_query macaddr=$MACADDR" >> "$SB_OPKG_CONF"
+		else
+			$LOGGER "[ FAIL ] Could not find /etc/opkg.conf."
+			return 20
+		fi
+		opkg -f "$SB_OPKG_CONF" update && opkg -f "$SB_OPKG_CONF" upgrade $CLOUD_PACKAGES | tee $UPGRADE_LOG
+		UPDATE_STATUS=$?
+		if [ $UPDATE_STATUS -eq 0 ]; then
+			if grep "Upgrading" $UPGRADE_LOG; then
+				echo "Last updated: $(date)" > "$STORAGEDIR/last_updated"
+				$LOGGER "[  OK  ] Update successful.  Run streamboost restart to use updated definitions."
+			else
+				$LOGGER "[  OK  ] Everything is up-to-date."
+				return 11
+			fi
+		else
+			$LOGGER "[ FAIL ] Update failed."
+		fi
+	else
+		$LOGGER "[ FAIL ] Could not run opkg."
+	fi
+
+	return $UPDATE_STATUS
+}
+
+auto_upload() {
+	[ "$ENABLE_AUTO_UPLOAD" = "yes" ] || {
+		$LOGGER "Automatic uploads are disabled.  Exiting."
+		return 0
+	}
+	upload
+	return $?
+}
+
+log_upload_status()
+{
+	local ret=0
+	if [ "$?" -eq 0 ]; then
+		$LOGGER "[  OK  ] Upload $1 successful."
+	else
+		$LOGGER "[ FAIL ] Upload $1 failed."
+		ret=$2
+	fi
+	echo $ret
+}
+
+upload() {
+	$LOGGER "streamboost upload $@"
+	UPLOAD_STATUS=0
+	RET=0
+
+	upload_events >/dev/null 2>&1
+	let RET+=$(log_upload_status events 1)
+
+	upload_stats >/dev/null 2>&1
+	let RET+=$(log_upload_status stats 4)
+
+	upload_bwestdata >/dev/null 2>&1
+	UPLOAD_STATUS=$?
+	if [ $UPLOAD_STATUS -eq 0 ]; then
+	    $LOGGER "[  OK  ] Upload bwestdata successful."
+	else
+	    $LOGGER "[ FAIL ] Upload bwestdata failed."
+	    RET=$(($RET + 8))
+	fi
+
+	return $RET
+}
+
+enabled() {
+	[ "$enable_streamboost" = "yes" ] || return 1
+}
+
+setbw() {
+	uplimit=$1
+	downlimit=$2
+	[ -n $downlimit -a -n uplimit -a $downlimit -eq $downlimit -a $uplimit -eq $uplimit ] && {
+		redis-cli set settings:bw:up $uplimit
+		redis-cli set settings:bw:down $downlimit
+		redis-cli publish bandwidth.events "$uplimit;$downlimit"
+	}
+}
+
+
+trap '$LOGGER "Manual unlock requested"; FSM_unlock' SIGHUP
+
+[ "$1" = "--verbose" ] && {
+	VERBOSE=yes
+	shift
+}
+target=all
+action=${1:-$DEFAULT_ACTION}
+shift
+[ -z "$IPKG_INSTROOT" ] && {
+	read_config || {
+		echo "Not executing ${action}, read_config failed"
+		exit 2
+	}
+}
+[ -f $INITDIR/??_$action ] && {
+	target=$INITDIR/??_$action
+	action=${1:-$DEFAULT_ACTION}
+	shift
+}
+
+case "${action}" in
+	# Global-only actions
+	enable|disable|ifup|ifdn|fwup|fwdn|measure|applybw|enabled|update|auto_update|upload|auto_upload|setbw|print_versions|status_monit)
+		if [ "$target" = "all" ]; then
+			${action} "$@"
+		else
+			echo "${action} is not supported for individual daemons"
+		fi
+		;;
+	restart|status)
+		if [ "$target" = "all" ]; then
+			${action}
+		else
+			apply_action $action "$target" "$@"
+		fi
+		;;
+	boot)
+		apply_action $action "$target" "$@"
+		;;
+	start|stop|reload)
+		apply_action $action "$target" "$@"
+		;;
+	flashything)
+		apply_action stop ${INITDIR}/??_bwcd
+		apply_action stop ${INITDIR}/??_p0f
+		rm ${STORAGEDIR}/bwcd_nodes.json
+		apply_action start ${INITDIR}/??_p0f
+		apply_action start ${INITDIR}/??_bwcd
+		;;
+	*)
+		echo "Unknown command: ${action}"
+		echo "Usage: $0 [--verbose] [daemon] start|stop|boot|reload|restart|status"
+		echo "       $0 [--verbose] measure|applybw|enabled|ifup|ifdn|fwup|fwdn"
+		echo "       $0 update|auto_update|upload|auto_upload"
+		echo "       $0 setbw <uplimit> <downlimit>"
+		exit 3
+esac
+exit $?

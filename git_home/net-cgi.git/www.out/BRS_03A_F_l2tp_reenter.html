@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_03A_C_pptp_reenter.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_genie_03A_F_l2tp_reenter.js"></script>
+<script language="javascript" type="text/javascript" src="script/funcs.js"></script>
+<% hijack_language() %>
+<% deleteFiles("/tmp/ping_result_error", "/tmp/ping_ip_result_error", "/tmp/ping_gateway_result_error")%>
+<% deleteFiles("/tmp/ping_result", "/tmp/wget_file_result") %>
+<script>
+var hijack_process="<% cfg_get("hijack_process") %>";
+</script>
+
+</head>
+
+<body>
+<% form_submit("apply", "BRS_log12_incorrect_try_again.html", "hijack_l2tp") %>
+
+<input type="hidden" name="WANAssign" value="0" />
+
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+			<h1 class="h1_red"><!--pptp_connection--></h1>
+			<p><!--enter_info_below--></p>
+			
+			<div id="mainContent_div">
+				
+				<div id="loginName" class="input_left_div" align="right">
+					<!--pptp_login_name-->
+				</div>
+				<div class="input_img_div">
+					<!--img src="image/ca_text_pic.gif" /-->
+					<input type="text" id="inputName" align="right" maxlength="60" name="login_name" class="input_text" />
+				</div>
+				
+				<div id="passwd" class="input_left_div" align="right">
+					<!--ddns_passwd-->
+				</div>
+				<div class="input_img_div">
+					<!--img src="image/ca_text_pic.gif" /-->
+					<input type="text" id="inputPasswd" align="right" maxlength="16" name="passwd" class="input_text" />
+				</div>
+
+				<div id="idleTimeout" class="input_left_div" align="right">
+					<!--basic_pppoe_idle-->
+				</div>
+				<div class="input_img_div">
+					<!--img src="image/ca_text_pic.gif" /-->
+					<input type="text" align="right" id="inputIdle" maxlength="5" name="idle_timeout" class="input_text" value="5"/>
+				</div>
+				
+				<div id="IP_addr" class="input_left_div" align="right">
+					<!--info_mark_ip-->
+				</div>
+				<div class="input_img_div">
+					<!--img src="image/ca_text_pic.gif" /-->
+					<input type="text" align="right" id="inputIPaddr" maxlength="15" name="ip_address" class="input_text" />
+				</div>
+				<div id="subnet_mask" class="input_left_div" align="right">
+					<!--bh_info_mark_mask-->
+				</div>
+				<div class="input_img_div">
+					<!--img src="image/ca_text_pic.gif" /-->
+					<input type="text" align="right" id="inputSubnetMask" name="subnet_mask" class="input_text" />
+				</div>	
+				<div id="serverIP" class="input_left_div" align="right">
+					<!--basic_pptp_servip-->
+				</div>
+				<div class="input_img_div">
+					<!--img src="image/ca_text_pic.gif" /-->
+					<input type="text" align="right" id="inputServerIP" name="serverip" class="input_text" />
+				</div>
+				
+				<div id="Gateway" class="input_left_div" align="right">
+					<!--constatus_defgtw-->
+				</div>
+				<div class="input_img_div">
+					<!--img src="image/ca_text_pic.gif" /-->
+					<input type="text" align="right" id="inputGateway" maxlength="15" name="gateway" class="input_text" />
+				</div>
+
+				<div style="clear:both"></div>
+			</div>
+		
+	</div>
+	
+	<div id="allBtns_div" class="wizard_buttons_div" align="right">
+                <div id="btnsContainer_div1" class="buttons_img_div" align="center">
+				<script>
+					var master="<% cfg_get("http_loginname") %>";
+					if( master == "admin" )
+						document.write('<img src="image/ca_purple_long_button.gif" />');
+					else
+						document.write('<img src="image/ca-little-grey-button.png" />');
+				</script>
+                        <div class="buttons_words_div"><!--manual_config_connection--></div>
+                </div>
+
+                <div id="btnsContainer_div2" class="buttons_img_div" align="center">
+				<script>
+					var master="<% cfg_get("http_loginname") %>";
+					if( master == "admin" )
+						document.write('<img src="image/ca-little-purple-button.gif" />');
+					else
+						document.write('<img src="image/ca-little-grey-button.png" />');
+                </script>
+                        <div class="buttons_words_div"><!--try_again--></div>
+                </div>
+
+	</div>
+	
+
+</div>
+
+</form>
+</body>
+
+</html>

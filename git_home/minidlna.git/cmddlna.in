@@ -1,0 +1,508 @@
+#!/bin/sh
+
+#
+# It seems that "/etc/init.d/AAA" can't start some application 
+# such as NTP etc by calling "/etc/init.d/BBB restart" ?_?
+#
+
+config=/bin/config
+media_server_enable=$($config get upnp_enableMedia)
+
+MINIDLNA_CONF=/tmp/etc/minidlna.conf
+MINIDLNA_DB=/tmp/minidlna
+MAX_FREE_SPACE=0
+
+DISK_FIND_TABLE=/tmp/find_disk_abcxzy
+TMP_DATA_XYZ=/tmp/tmp_data_xyz
+TMP_DEVICE_NAME=/tmp/tmp_device_name_xyz
+
+print_dlna_conf() {
+cat <<EOF
+port=8200
+network_interface=br0
+friendly_name=$3
+album_art_names=Cover.jpg/cover.jpg/AlbumArtSmall.jpg/albumartsmall.jpg/AlbumArt.jpg/albumart.jpg/Album.jpg/album.jpg/Folder.jpg/folder.jpg/Thumb.jpg/thumb.jpg
+inotify=yes
+enable_tivo=$4
+strict_dlna=yes
+presentation_url=http://www.routerlogin.net
+notify_interval=900
+serial=12345678
+model_number=1
+root_container=B
+EOF
+}
+ 
+mount1()
+{
+cat <<EOF
+media_dir=/tmp/mnt/$1$2
+EOF
+}
+
+print_db_dir()
+{
+cat <<EOF
+db_dir=$1
+log_dir=$1
+EOF
+}
+map_usb_to_dlna()
+{
+        case "$3" in
+                0 | 1)
+			dir_num=$(($dir_num+1))
+			FREE_SPACE=`df -m | grep /tmp/mnt/$1 | awk '{print $4}'`
+			if [ $FREE_SPACE -gt $MAX_FREE_SPACE ]; then
+				MAX_FREE_SPACE=$FREE_SPACE
+				[ -d $MINIDLNA_DB ] && rm -rf $MINIDLNA_DB
+				MINIDLNA_DB=/tmp/mnt/$1/.ReadyDLNA
+			fi
+			mount1 "$1" "$2"
+			;;
+                2)    echo "Admin folder cannot apply!";;
+                *);;
+        esac
+}
+
+isdafake(){
+
+	df | awk '{print $1}' | grep ^/dev/sd | cut -c 6->$TMP_DEVICE_NAME
+	while read LINE
+	do
+		if [ "$LINE" = "$1" ];then
+			return 1
+			break;
+		fi
+	done<$TMP_DEVICE_NAME
+	
+	return 0
+}
+
+isd_card()
+{
+	disk_name=`echo $1 | sed 's/[0-9]//g'`
+	if [ "x$disk_name" = "x$($config get sd_card_diskname)" ]; then
+		return 0
+	else	
+		return 1	
+	fi
+}
+
+isata()
+{
+	disk_name=`echo $1 | sed 's/[0-9]//g'`
+	if [ "x$disk_name" = "x$($config get sata_diskname)" ]; then
+		return 0
+	else	
+		return 1	
+	fi
+}
+
+Itoa_sd_card()
+{
+	array="0 1 2 3 4 5 6 7 8 9"
+	i=0
+	for ch in $array;do
+		if [ "$i" = "$1" ];then
+			echo "$ch"
+			break
+		fi
+		let i=$i+1
+	done
+}
+
+Itoa_sata()
+{
+	array="s r q p o n m l k j i h g f e d c b a"
+	i=0
+	for ch in $array;do
+		if [ "$i" = "$1" ];then
+			echo "$ch"
+			break
+		fi
+		let i=$i+1
+	done
+}
+
+Itoa_usb()
+{
+	array="U T S R Q P O N M L K J I H G F E D C B A"
+	i=0
+	for ch in $array;do
+		if [ "$i" = "$1" ];then
+			echo "$ch"
+			break
+		fi
+		let i=$i+1
+	done
+}
+
+isupper()
+{
+	supper=`echo "$1" | awk '{if($0~/^[A-Z]/) print "1"; else if($0~/^[a-z]/) print "0"}'`
+	echo "$supper"
+}
+
+get_vendor_from_disk()
+{
+	dev=`echo "$1" | cut -c 1-3`
+	vendor=`cat /sys/block/$dev/device/vendor`
+	model=`cat /sys/block/$dev/device/model`
+
+	vendor=$(echo ${vendor} | sed 's/[[:space:]]*$//')
+	model=$(echo ${model} | sed 's/[[:space:]]*$//')
+
+	device_vendor="$vendor $model"
+	device_vendor=`echo $device_vendor | sed 's/[[:space:]]*$//'` 
+	echo "$device_vendor"
+}
+
+
+construct_volume()
+{
+	tmp_capacity=$2
+	if [ $tmp_capacity -ge 1024 ] ;then
+		GByte=`expr $tmp_capacity / 1024`
+		left=`expr $tmp_capacity % 1024`
+		left=`expr $left \* 100`
+		left=`expr $left / 1024`
+
+		len=`echo ${left} | wc -L`
+		if [ $len -eq 1 -a $left -ne 0 ];then
+			left=0$left
+		fi
+
+		if [ $left -eq 0 ];then
+			format_capacity="$GByte GB"
+		else
+			format_capacity="$GByte.$left GB"
+		fi
+	else
+		format_capacity="$2 MB"
+	fi
+
+	tmp=`isupper $1`
+	if [ "$tmp" = "1" ]; then
+		echo "$1 Drive ($format_capacity)"
+	elif [ "$tmp" = "0" ]; then
+		echo "$1 External_Disk($format_capacity)"
+	else
+		echo "$1 Sd_Card ($format_capacity)"
+	fi
+}
+
+get_sata_serial_num()
+{
+	serial_num=`$config get sata_serial_no`
+	disk_num=`echo $1 | sed 's/[a-z]//g'`	
+	echo "$serial_num"_"$disk_num"
+}
+	
+get_usb_serial_num()
+{
+	disk_name=`echo $1 | sed 's/[0-9]//g'`
+	partition_num=`echo $1 | cut -c 4-`
+	if [ "x$partition_num" = "x" ]; then
+	#	partition_num=0
+		partition_num=`echo $1 | cut -c 3-`
+	fi
+	disk_scsi_id=`ls /sys/block/$disk_name/device/scsi_device* | awk -F: '{print $1}'`
+	cat /proc/scsi/usb-storage/$disk_scsi_id > /tmp/disk_scsi_info_dlna
+	while read LINE
+        do
+		tag=`echo $LINE | awk -F: '{print $1}'`
+                if [ "$tag" = "Serial Number" ];then
+                        serial_num=`echo $LINE | awk -F: '{print $2}' | sed 's/[[:space:]]*$//' | sed 's/^[[:space:]]*//'`
+                        break
+                fi
+        done</tmp/disk_scsi_info_dlna
+	echo "$serial_num"_"$partition_num"
+}
+
+get_sd_card_serial_num()
+{
+	partition_num=`echo $1 | cut -c 4-`
+	uuid=`/usr/sbin/vol_id -u /dev/$1`
+	if [ "x$uuid" = "x" ]; then
+		get_usb_serial_num $1
+	else
+		echo "$uuid"_"$partition_num"
+	fi
+}
+
+# parameters:
+#$1---> disk name"sda1 or sdb1 or sdc"
+#$2---> label "U T O P Q"
+#$3--->capacity "3.23GB  456MB"
+get_volume_from_disk()
+{
+	disk_name=`echo $1 | sed 's/[0-9]//g'`
+	partition_num=`echo $1 | cut -c 4-`
+	volume=`/usr/sbin/vol_id -L /dev/$1`
+	if [ "x$volume" = "x" ];then
+		volume=`echo $(/usr/sbin/parted -s /dev/$disk_name print | grep "Number" -A16 | sed -n '2,16p' | awk 'NF>=6{for(n=6;n<=NF;n++)printf $n" ";print     ""}' | sed -n $partition_num"p")`
+		if [ "x$volume" = "x" ];then
+			volume=`construct_volume "$2" "$3"`
+		fi
+	fi
+	echo "$volume"
+}
+
+check_approved_disk()
+{
+	if [ "$($config get usb_enableUSB)" = "0" ]; then
+		return 1;
+	fi
+
+	serial=`echo $1 | awk -F_ '{print $1}'`
+	num=1
+        while true
+        do
+		approved_device=`${config} get USB_approved_device$num`
+                if [ "x$approved_device" = "x" ];then
+                        break;
+		fi
+		approved_serial=`echo $approved_device | awk -F* '{print $NF}'`
+		if [ "x$approved_serial" = "x$serial" ]; then
+			return 1;
+		fi
+
+		let num=$num+1
+	done
+	return 0;
+	
+}
+
+scan_disk_entries()
+{
+	i=0
+	j=0
+	k=0
+	rm -f $DISK_FIND_TABLE
+	cat /proc/partitions | awk '{print $3,$4}' | grep sd >$TMP_DATA_XYZ
+	while read LINE
+	do
+		capacity=`echo $LINE | awk '{print $1}'`
+		M_capacity=`expr $capacity / 1024`
+
+		# It indicates that this partition should be an extended partition.
+		if [ "$M_capacity" = "0" ];then
+			continue
+		fi
+
+		part_name=`echo $LINE | awk '{print $2}'`
+
+		# ignore the dev like "sdb"
+		partition_tb=$(parted -s /dev/`echo $part_name | sed 's/[0-9]//g'` print | grep "Partition Table" | awk '{print $3}')
+		if [ "`echo ${#part_name}`" != "4"  -a "x$partition_tb" != "xloop" ];then
+			continue
+		fi
+
+		if [ "x$(parted -s /dev/`echo $part_name | sed 's/[0-9]//g'` print noshare | grep $part_name)" != "x"  -a "x$partition_tb" != "xloop" ]; then
+			continue
+		fi
+		
+		
+		if isata "$part_name"
+		then
+			label=`Itoa_sata "$j"`
+			if [ "x$label" = "x" ]; then
+				continue
+			fi
+
+			let j=$j+1
+
+			device_id=`get_sata_serial_num "$part_name"`
+		elif isd_card "$part_name"
+		then
+			label=`Itoa_sd_card "$k"`
+			if [ "x$label" = "x" ]; then
+				continue
+			fi
+
+			let k=$k+1
+
+			device_id=`get_sd_card_serial_num "$part_name"`
+		else
+			label=`Itoa_usb "$i"`
+			if [ "x$label" = "x" ]; then
+				continue
+			fi
+
+			let i=$i+1
+
+			device_id=`get_usb_serial_num "$part_name"`
+		fi
+
+		
+		if isdafake "$part_name"
+		then
+			continue
+		fi
+
+		vendor=`get_vendor_from_disk "$part_name"`
+		volume=`get_volume_from_disk "$part_name" "$label" "$M_capacity"`
+
+		if [ "x$vendor" = "x" -o "x$volume" = "x" ];then
+			continue
+		fi
+
+		if check_approved_disk "$device_id"; then
+			continue
+		fi
+
+		echo "$part_name*$vendor*$volume*$device_id">>$DISK_FIND_TABLE
+
+		if [ $i -ge 20 ];then
+			break
+		fi
+	done<$TMP_DATA_XYZ
+
+	rm -f $TMP_DATA_XYZ
+}
+
+get_devnam_fromlabel()
+{
+	if [ ! -f $DISK_FIND_TABLE ];then
+		return
+	fi
+
+	while read LINE
+	do
+		if [ "x$LINE" = "x" ];then
+			break
+		fi
+
+		dev_nam=`echo $LINE | awk -F* '{print $1}'`
+		vendor=`echo $LINE | awk -F* '{print $2}'`
+		volume=`echo $LINE | awk -F* '{{{i=NF-3; a="*";while(i!=0) {printf $(NF-i); if(i!=1) printf a; i--}}}}'`
+		serial=`echo $LINE | awk -F* '{print $NF}'`
+
+		# The USB Storage size may be difference when get usb storage by two methods, show as below:
+		# sda*Teclast CoolFlash USB3.0*U Drive (29.68 GB)*0220755879681518_0 && 
+		# shared_usb_folder0=USB_Storage*/*0*0*U Drive (29.67 GB)*Teclast  CoolFlash USB3.0*0220755879681518*0
+		# So in order to run minidlna success, we only comparing only the integer part of the usb storage size.
+		storage_size_1=`echo $volume | awk -F "(" '{print $NF}' | awk -F "." '{print $1}'`
+		storage_size_2=`echo $2 | awk -F "(" '{print $NF}' | awk -F "." '{print $1}'`
+
+		if [ "x$storage_size_1" != "x" -a "x$storage_size_2" != "x" ];then
+			if [ "$vendor" = "$1" -a "$storage_size_1" = "$storage_size_2" -a "$serial" = "$3" ];then
+				echo $dev_nam
+				break
+			fi
+		else 
+			if [ "$vendor" = "$1" -a "$volume" = "$2" -a "$serial" = "$3" ];then
+				echo $dev_nam
+				break
+			fi
+		fi
+
+	done<$DISK_FIND_TABLE
+}
+
+killall_minidlna()
+{
+	while [ -n "$(pidof minidlna)" ]; do
+		killall -9 minidlna
+		sleep 1
+	done
+}
+
+dlna_start() {
+	PID_file=/var/run/cmddlna.pid
+	test -f $PID_file && kill $(cat $PID_file)
+	echo "$$" > $PID_file
+	sleep 5
+
+	local name=$($config get upnp_serverName)
+	[ "x$name" = "x" ] && name=$($config get Device_name)
+	[ "x$name" = "x" ] && name="ReadyDLNA: $(cat /module_name)"
+	dir_num=0
+
+	[ -f $MINIDLNA_CONF ] && rm -f $MINIDLNA_CONF
+	[ ! -d /tmp/etc ] && mkdir /tmp/etc
+
+	print_dlna_conf "$($config get lan_ipaddr)" "$($config get lan_netmask)" "$name" "$($config get upnp_enable_tivo)" > $MINIDLNA_CONF
+
+	scan_disk_entries
+
+	j=0
+	while true
+	do
+		sharefolder_item=$($config get "shared_usb_folder$j")
+		if [ "x$sharefolder_item" = "x" ];then
+			break;
+		fi
+		
+		sharename=`echo "$sharefolder_item" | awk -F* '{print $1}'` 
+	    relative_path=`echo "$sharefolder_item" | awk -F* '{print $2}'`
+		 readable=`echo $sharefolder_item | awk -F* '{print $3}'`
+		 writable=`echo $sharefolder_item | awk -F* '{print $4}'`
+		   volume=`echo $sharefolder_item | awk -F* '{{{i=NF-7; a="*";while(i!=0) {printf $(NF-2-i); if(i!=1) printf a; i--}}}}'`
+		   vendor=`echo $sharefolder_item | awk -F* '{print $(NF-2)}' | sed 's/^[[:space:]]*//g'`
+               serial_num=`echo $sharefolder_item | awk -F* '{print $(NF-1)}'`
+	    partition_num=`echo $sharefolder_item | awk -F* '{print $NF}'`
+		   
+		   let access=$readable+$writable
+		
+		dev=`get_devnam_fromlabel "$vendor" "$volume" "$serial_num"_"$partition_num"`
+		if [ "x$dev" != "x" ];then
+			map_usb_to_dlna "$dev" "$relative_path" "$access" >> $MINIDLNA_CONF
+		fi
+		
+		let j=$j+1
+	done
+
+	if [ "$dir_num" -gt 0 ]; then
+		print_db_dir "$MINIDLNA_DB" >> $MINIDLNA_CONF
+		if [ -d $MINIDLNA_DB ]; then
+			rm -rf $MINIDLNA_DB
+		fi
+		echo "$MINIDLNA_DB/core-%e" > /proc/sys/kernel/core_pattern
+		killall_minidlna
+		rm -f /var/run/minidlna.pid
+		/usr/sbin/minidlna -f $MINIDLNA_CONF
+	fi
+
+	rm -f $PID_file
+}
+
+change_ip_restart() 
+{
+	if [ "$media_server_enable" = "1" -a -e "$MINIDLNA_CONF" -a "x$(grep db_dir $MINIDLNA_CONF)" != "x" ]; then
+		killall_minidlna
+		rm -f /var/run/minidlna.pid
+		/usr/sbin/minidlna -f $MINIDLNA_CONF
+	fi
+}
+
+echo "check minidlna ... " >/dev/console
+case "$1" in
+	stop)
+		killall_minidlna
+		kwilt stop
+		[ -n $(which ntgr_sw_api_event_notify) ] && \
+			ntgr_sw_api_event_notify event_notify dlna stopping
+	;;
+	start)
+		kwilt stop
+		killall_minidlna
+		[ "$media_server_enable" = "1" ] && dlna_start
+		kwilt start
+		[ -n $(which ntgr_sw_api_event_notify) ] && \
+			ntgr_sw_api_event_notify event_notify dlna starting
+	;;
+	restart)
+		kwilt stop
+		killall_minidlna
+		[ "$media_server_enable" = "1" ] && dlna_start
+		kwilt start
+	;;
+	ip_restart)
+		kwilt stop
+		killall_minidlna
+		change_ip_restart
+		kwilt start
+	;;
+esac

@@ -1,0 +1,26 @@
+#!/bin/sh
+
+. ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+# standard settings - accept overrides from the calling environment
+BINDIR="/usr/sbin"
+BINARY="jigglyp0f"
+DISPLAY_NAME="Jigglyp0f"
+export RUNDIR BINDIR BINARY
+
+LOGGER="logger -p daemon.info -t ${BINARY}"
+export LOGGER
+
+# controller arguments - exported, since the controller is a script
+# comment LOGDEST line to use stderr instead of syslog
+PIDFILE="${RUNDIR}/${BINARY}.pid"
+export PIDFILE
+
+start() {
+	# Jiggly creates a fifo for us
+	rm ${P0F_FIFO}
+	${BINARY} -d -f ${P0F_FIFO} -p $PIDFILE
+}
+
+action "$@"
+exit $?

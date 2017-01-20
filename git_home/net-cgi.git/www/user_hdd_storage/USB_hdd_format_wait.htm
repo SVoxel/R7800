@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<META http-equiv="refresh" content="20; url=USB_hdd_format_wait.htm"/>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<!--link rel="stylesheet" type="text/css" href="hdd_cd_less.css" /-->
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/form.css" />
+<script language="javascript" type="text/javascript" src="script/funcs.js"></script>
+</head>
+<body onLoad=loadvalue();>
+<script>
+<!--% format_hdd() %-->
+
+var form_flag = "<% cfg_get("sata_partition_count") %>";
+
+ //var delay_time=180000;  // msecs
+function loadvalue()
+{
+	if( top.disk_format_wait_flag == 1)
+		setTimeout( "set_disk_wait_flag();", 10000 );
+	else
+		if( form_flag != "0")
+			location.href="USB_hdd_formt_success.htm";
+}
+
+function set_disk_wait_flag()
+{
+	top.disk_format_wait_flag = 0;
+	location.href="USB_hdd_format_wait.htm";
+}
+
+</script>
+<form method="post" action="">
+<input type="hidden" name="submit_flag" value="" />
+
+
+<script language="javascript" type="text/javascript">var ts="";</script>
+<div class="wizard_content_div">
+	<!--div id="WLinfo" align=center style="width:80%"-->
+	<TABLE align=center width="640px"; style="border:0px solid #000000;">
+		<TR><TD  width=40px; height=40px;><img style="float:left;" width=40px; src="/image/hdd/confirmation.jpg"></TD>
+		<TD><p style="color:#000000; font-family:Arial; font-size:17px;">$wait_hdd_format </p></TD></TR>
+		<TR><TD>&nbsp;&nbsp;</TD><TD>&nbsp;&nbsp;</TD></TR>
+		<TR><TD>&nbsp;&nbsp;</TD><TD>&nbsp;&nbsp;</TD></TR>
+		<TR><TD>&nbsp;&nbsp;</TD><TD>&nbsp;&nbsp;</TD></TR>
+		<TR><TD></TD>
+		
+		<script>
+		document.write('<TD align=center><img src="../image/hdd/ajax-loader-login.gif" alt="waiting" /></TD>');
+		
+		</script>
+		</TR>
+		</TABLE>
+		</div>	
+		
+</form>
+</body>
+</html>

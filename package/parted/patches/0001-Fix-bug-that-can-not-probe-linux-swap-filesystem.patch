@@ -1,0 +1,116 @@
+diff --git a/libparted/fs/linux_swap/linux_swap.c b/libparted/fs/linux_swap/linux_swap.c
+index 070f51b..b28e572 100644
+--- a/libparted/fs/linux_swap/linux_swap.c
++++ b/libparted/fs/linux_swap/linux_swap.c
+@@ -79,7 +79,7 @@ static PedFileSystem* _swap_swsusp_open (PedGeometry* geom);
+ static int swap_close (PedFileSystem* fs);
+ 
+ static PedGeometry*
+-_generic_swap_probe (PedGeometry* geom, int kind)
++__generic_swap_probe (PedGeometry* geom, int kind)
+ {
+ 	PedFileSystem*	fs;
+ 	SwapSpecific*	fs_info;
+@@ -130,22 +130,42 @@ error:
+ 	return NULL;
+ }
+ 
++#define LARGEST_PAGESIZE			0x10000
++int page = 0x1000;
++
++static inline int
++_getpagesize()
++{
++	return page;
++}
++
++static PedGeometry*
++_generic_swap_probe (PedGeometry* geom, int kind)
++{
++	PedGeometry*	probed_geom;
++	for (page = 0x1000; page <= LARGEST_PAGESIZE; page <<= 1) {
++		probed_geom = __generic_swap_probe(geom, kind);
++		if (probed_geom)
++			return probed_geom;
++	}
++	return NULL;
++}
+ 
+ static int
+ swap_init (PedFileSystem* fs, int fresh)
+ {
+ 	SwapSpecific*	fs_info = SWAP_SPECIFIC (fs);
+ 
+-	fs_info->page_sectors = getpagesize () / 512;
++	fs_info->page_sectors = _getpagesize () / 512;
+ 	fs_info->page_count = fs->geom->length / fs_info->page_sectors;
+ 	fs_info->version = 1;
+-	fs_info->max_bad_pages = (getpagesize()
++	fs_info->max_bad_pages = (_getpagesize()
+ 					- sizeof (SwapNewHeader)) / 4;
+ 
+ 	if (fresh) {
+ 		uuid_t uuid_dat;
+ 
+-		memset (fs_info->header, 0, getpagesize());
++		memset (fs_info->header, 0, _getpagesize());
+ 
+ 		/* version is always 1 here */
+ 		uuid_generate (uuid_dat);
+@@ -174,12 +194,12 @@ swap_alloc (PedGeometry* geom)
+ 		goto error_free_fs;
+ 
+ 	fs_info = SWAP_SPECIFIC (fs);
+-	fs_info->header = ped_malloc (getpagesize());
++	fs_info->header = ped_malloc (_getpagesize());
+ 	if (!fs_info->header)
+ 		goto error_free_type_specific;
+ 
+ 	fs_info = SWAP_SPECIFIC (fs);
+-	fs_info->buffer_size = getpagesize() * BUFFER_SIZE;
++	fs_info->buffer_size = _getpagesize() * BUFFER_SIZE;
+ 	fs_info->buffer = ped_malloc (fs_info->buffer_size);
+ 	if (!fs_info->buffer)
+ 		goto error_free_header;
+@@ -232,12 +252,12 @@ _swap_v0_open (PedGeometry* geom)
+ 				fs_info->page_sectors))
+ 		goto error_free_fs;
+ 
+-	sig = ((char*) fs_info->header) + getpagesize() - 10;
++	sig = ((char*) fs_info->header) + _getpagesize() - 10;
+ 	if (strncmp (sig, "SWAP-SPACE", 10) == 0) {
+ 		fs_info->version = 0;
+ 		fs_info->page_count
+ 			= PED_MIN (fs->geom->length / fs_info->page_sectors,
+-				   8 * (getpagesize() - 10));
++				   8 * (_getpagesize() - 10));
+ 	} else {
+ 		char	_sig [11];
+ 
+@@ -277,10 +297,15 @@ _swap_v1_open (PedGeometry* geom)
+ 
+         fs_info = SWAP_SPECIFIC (fs);
+ 
+-	sig = ((char*) fs_info->header) + getpagesize() - 10;
++	sig = ((char*) fs_info->header) + _getpagesize() - 10;
+ 	if (strncmp (sig, "SWAPSPACE2", 10) == 0) {
+ 		fs_info->version = 1;
+-		fs_info->page_count = fs_info->header->new.last_page;
++		if (1 == fs_info->header->new.version)
++			fs_info->page_count = fs_info->header->new.last_page;
++		else if (1 == PED_LE32_TO_CPU(fs_info->header->new.version))
++			fs_info->page_count = PED_LE32_TO_CPU(fs_info->header->new.last_page);
++		else
++			goto error_free_fs;
+ 	} else {
+ 		char	_sig [11];
+ 
+@@ -318,7 +343,7 @@ _swap_swsusp_open (PedGeometry* geom)
+ 				fs_info->page_sectors))
+ 		goto error_free_fs;
+ 
+-	sig = ((char*) fs_info->header) + getpagesize() - 10;
++	sig = ((char*) fs_info->header) + _getpagesize() - 10;
+        	if (strncmp (sig, "S1SUSPEND", 9) == 0) {
+ 	        fs_info->version = -1;
+ 	} else {

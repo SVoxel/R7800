@@ -1,0 +1,25 @@
+--- a/process.c
++++ b/process.c
+@@ -741,6 +741,10 @@ abort_options:
+ static u32 get_flow_bucket(struct packet_data* pk) {
+ 
+   u32 bucket;
++  u32 sport;
++  u32 dport;
++
++  sport = dport = 0;
+ 
+   if (pk->ip_ver == IP_VER4) {
+     bucket = hash32(pk->src, 4, hash_seed) ^ hash32(pk->dst, 4, hash_seed);
+@@ -748,7 +752,10 @@ static u32 get_flow_bucket(struct packet
+     bucket = hash32(pk->src, 16, hash_seed) ^ hash32(pk->dst, 16, hash_seed);
+   }
+ 
+-  bucket = hash32(&pk->sport, 2, hash_seed) ^ hash32(&pk->dport, 2, hash_seed);
++  sport = pk->sport;
++  dport = pk->dport;
++
++  bucket ^= hash32(&sport, 4, hash_seed) ^ hash32(&dport, 4, hash_seed);
+ 
+   return bucket % FLOW_BUCKETS;
+ 

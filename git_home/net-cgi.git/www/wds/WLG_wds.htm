@@ -1,0 +1,454 @@
+<% http_header("style/form.css", "/funcs.js", "/wds.js", "/advanced.js") %>
+<% body_header("_wds", "WLG_wds.htm", "wds") %>
+<div class="page_title">$wds_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" type="reset" name="Cancel" value="$cancel_mark" onClick="location.href=\'WLG_wds.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="submit" name="Apply" value="$apply_mark" onClick="return check_wds(document.forms[0]);"></TD>');
+else
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel1_bt" type="reset" name="Cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit" name="Apply" value="$apply_mark" disabled></TD>');
+</script>		
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<script>
+var the_mac,the_mac1,the_mac2,the_mac3,the_mac4;
+var security_mode="<% cfg_get("wl_sectype") %>";
+var security_mode_a="<% cfg_get("wla_sectype") %>";
+var wl_channel="<% cfg_get("wl_hidden_channel") %>";
+var wla_channel="<% cfg_get("wla_hidden_channel") %>";
+var old_lanip="<% cfg_get("lan_ipaddr") %>";
+var lan_subnet="<% cfg_get("lan_netmask") %>";
+var old_wds_endis_fun="<% cfg_get("wds_endis_fun") %>";
+var old_wds_endis_fun_a="<% cfg_get("wla_wds_endis_fun") %>";
+var old_repeater_ip="<% cfg_get("repeater_ip") %>";
+var old_repeater_ip_a="<% cfg_get("repeater_ip") %>";
+var old_wds_repeater_basic="<% cfg_get("wds_repeater_basic") %>";
+var old_wds_repeater_basic_a="<% cfg_get("wds_repeater_basic_a") %>";
+var endis_wl_radio='<% enable_ap_orNot("bgn") %>';
+var endis_wla_radio='<% enable_ap_orNot("an") %>';
+var lan_mac="<% wds_mac("bgn") %>";
+var lan_mac_a="<% wds_mac("an") %>";
+var wan_mac="<% wan_mac() %>";
+var an_router_flag = parent.an_router_flag;
+var rep_old_lanip="<% cfg_get("old_lan_ipaddr") %>";
+
+var wds_support_wpa = top.wds_support_wpa;
+var gui_region="<% cfg_get("GUI_Region") %>"
+var netgear_region=top.netgear_region;
+var pr_flag = (( gui_region == "Chinese" && (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "PR") ? 1 : 0
+var pr_wds_support_wpa=( wds_support_wpa == 1  && pr_flag == 1) ? 1 : 0;
+
+var old_type_is_repeater="0";
+var new_type_is_repeater="0";
+var enable_ap_flag="<% cfg_get("ap_mode") %>"; //for bug 30286 add this
+
+var wps_alert="<% cfg_get("wps_alert") %>";
+var used_dfs="<% check_dfs() %>";
+<% cfg_set("wps_alert", "0") %>
+
+function change_web_format()
+{
+        if( an_router_flag == 1 ){
+        document.getElementById("wds_an").style.display="";
+		document.getElementById("mac_an").style.display="";
+		document.getElementById("mode_an").style.display="";
+		document.getElementById("repeater_an").style.display="";
+		document.getElementById("client_an").style.display="";
+		document.getElementById("base_an").style.display="";
+		document.getElementById("sta_mode_an").style.display="";
+		document.getElementById("pmp_sta_an").style.display="";
+		document.getElementById("mac1_an").style.display="";
+		document.getElementById("mac2_an").style.display="";
+		document.getElementById("mac3_an").style.display="";
+		document.getElementById("mac4_an").style.display="";
+		document.getElementById("blue_an").style.display="";
+	}
+        else{
+        document.getElementById("wds_an").style.display="none";
+		document.getElementById("mac_an").style.display="none";
+		document.getElementById("mode_an").style.display="none";
+		document.getElementById("repeater_an").style.display="none";
+		document.getElementById("client_an").style.display="none";
+		document.getElementById("base_an").style.display="none";
+		document.getElementById("sta_mode_an").style.display="none";
+		document.getElementById("pmp_sta_an").style.display="none";
+		document.getElementById("mac1_an").style.display="none";
+		document.getElementById("mac2_an").style.display="none";
+		document.getElementById("mac3_an").style.display="none";
+		document.getElementById("mac4_an").style.display="none";
+		document.getElementById("blue_an").style.display="none";
+	}
+}
+
+function loadvalue()
+{
+	var cf=document.forms[0];
+
+	top.enabled_wds="<% wds_enable() %>";
+	top.enabled_wps="<% wps_menu() %>";
+
+	/* bug23114: after set wireless, the wps button in menu maybe need change to grey, so , refresh the menu color */
+	menu_color_change('wds');
+
+	change_web_format();
+
+	if (old_wds_endis_fun == "1")
+	{
+		cf.wds_enable.checked = true;
+	}
+	else
+	{
+		cf.wds_enable.checked = false;
+		click_endis_wds();
+	}
+	cf.repeater_ip.value=old_repeater_ip;
+	if (old_repeater_ip != "" && old_repeater_ip != "0.0.0.0")
+	{
+		var repeater_ip=old_repeater_ip;
+		var ip_array=repeater_ip.split('.');
+		cf.sysLANIPAddr1.value=ip_array[0];
+		cf.sysLANIPAddr2.value=ip_array[1];
+		cf.sysLANIPAddr3.value=ip_array[2];
+		cf.sysLANIPAddr4.value=ip_array[3];
+	}
+	else
+	{
+		var repeater_ip=old_lanip;
+		var ip_array=repeater_ip.split('.');
+		cf.sysLANIPAddr1.value=ip_array[0];
+		cf.sysLANIPAddr2.value=ip_array[1];
+		cf.sysLANIPAddr3.value=ip_array[2];
+		cf.sysLANIPAddr4.value="";
+	}
+	cf.hidden_wds_mode.value=old_wds_repeater_basic;
+	if (old_wds_repeater_basic == "1" || enable_ap_flag == "1")
+		cf.wds_mode[1].checked=true;
+	else
+		cf.wds_mode[0].checked=true;
+	if ((old_wds_endis_fun == "1" && old_wds_repeater_basic == "0") || (old_wds_endis_fun_a == "1" && old_wds_repeater_basic_a == "0"))
+	{
+		old_type_is_repeater="1";	
+	}
+
+	var repeater_mac1="<% cfg_get("repeater_mac1") %>";
+	var repeater_mac2="<% cfg_get("repeater_mac2") %>";
+	var repeater_mac3="<% cfg_get("repeater_mac3") %>";
+	var repeater_mac4="<% cfg_get("repeater_mac4") %>";
+	var basic_station_mac="<% cfg_get("basic_station_mac") %>";
+	if (cf.wds_mode[0].checked == true)
+	{
+		if ("<% cfg_get("wds_endis_ip_client") %>" == "1")
+			cf.ptp_sta.checked = true;
+		else
+			cf.ptp_sta.checked = false;
+		if (basic_station_mac != "")
+		{
+			cf.ptp_mac.value=basic_station_mac;
+		}
+	}	
+	else if (cf.wds_mode[1].checked == true)
+	{
+		if ("<% cfg_get("wds_endis_mac_client") %>" == "1")
+			cf.pmp_sta.checked =true;
+		else
+			cf.pmp_sta.checked =false;
+		if (repeater_mac1!="")
+		{
+			cf.pmp_mac1.value=repeater_mac1;
+		}
+		if (repeater_mac2!="")
+		{
+			cf.pmp_mac2.value=repeater_mac2;
+		}
+		if (repeater_mac3!="")
+		{
+			cf.pmp_mac3.value=repeater_mac3;
+		}
+		if (repeater_mac4!="")
+		{
+			cf.pmp_mac4.value=repeater_mac4;
+		}
+	}
+	if (cf.wds_enable.checked)
+		click_repeater_basic();
+
+        //loadvalue for a/n
+        if (old_wds_endis_fun_a == "1")
+        {
+                cf.wds_enable_an.checked = true;
+        }
+        else
+        {
+                cf.wds_enable_an.checked = false;
+                click_endis_wds_a();
+        }
+        cf.repeater_ip_a.value=old_repeater_ip_a;
+        if (old_repeater_ip_a != "" && old_repeater_ip_a != "0.0.0.0")
+        {
+                var repeater_ip_a=old_repeater_ip_a;
+                var ip_array_a=repeater_ip_a.split('.');
+                cf.sysLANIPAddr1_an.value=ip_array_a[0];
+                cf.sysLANIPAddr2_an.value=ip_array_a[1];
+                cf.sysLANIPAddr3_an.value=ip_array_a[2];
+                cf.sysLANIPAddr4_an.value=ip_array_a[3];
+        }
+        else
+        {
+                var repeater_ip_a=old_lanip;
+                var ip_array_a=repeater_ip_a.split('.');
+                cf.sysLANIPAddr1_an.value=ip_array_a[0];
+                cf.sysLANIPAddr2_an.value=ip_array_a[1];
+                cf.sysLANIPAddr3_an.value=ip_array_a[2];
+                cf.sysLANIPAddr4_an.value="";
+        }
+        cf.hidden_wds_mode_a.value=old_wds_repeater_basic_a;
+        if (old_wds_repeater_basic_a == "1" || enable_ap_flag == "1")
+                cf.wds_mode_an[1].checked=true;
+        else
+                cf.wds_mode_an[0].checked=true;
+
+        var repeater_mac1_a="<% cfg_get("repeater_mac1_a") %>";
+        var repeater_mac2_a="<% cfg_get("repeater_mac2_a") %>";
+        var repeater_mac3_a="<% cfg_get("repeater_mac3_a") %>";
+        var repeater_mac4_a="<% cfg_get("repeater_mac4_a") %>";
+        var basic_station_mac_a="<% cfg_get("basic_station_mac_a") %>";
+        if (cf.wds_mode_an[0].checked == true)
+        {
+                if ("<% cfg_get("wds_endis_ip_client_a") %>" == "1")
+                        cf.ptp_sta_an.checked = true;
+                else
+                        cf.ptp_sta_an.checked = false;
+                if (basic_station_mac_a != "")
+                {
+                        cf.ptp_mac_1_an.value=basic_station_mac_a;
+                }
+        }
+        else if (cf.wds_mode_an[1].checked == true)
+        {
+                if ("<% cfg_get("wds_endis_mac_client_a") %>" == "1")
+                        cf.pmp_sta_an.checked =true;
+                else
+                        cf.pmp_sta_an.checked =false;
+                if (repeater_mac1_a!="")
+                {
+                        cf.pmp_mac1_1_an.value=repeater_mac1_a;
+                }
+                if (repeater_mac2_a!="")
+                {
+                        cf.pmp_mac2_1_an.value=repeater_mac2_a;
+                }
+                if (repeater_mac3_a!="")
+                {
+                        cf.pmp_mac3_1_an.value=repeater_mac3_a;
+                }
+                if (repeater_mac4_a!="")
+                {
+                        cf.pmp_mac4_1_an.value=repeater_mac4_a;
+                }
+        }
+        if (cf.wds_enable_an.checked)
+               click_repeater_basic_a();
+
+	showWps_alert();
+}
+</script>
+<input type="hidden" name="basic_station_mac">
+<input type="hidden" name="repeater_mac1">
+<input type="hidden" name="repeater_mac2">
+<input type="hidden" name="repeater_mac3">
+<input type="hidden" name="repeater_mac4">
+<input type="hidden" name="wds_endis_mac_client">
+<input type="hidden" name="wds_endis_ip_client">
+<input type="hidden" name="wds_endis_fun">
+<input type="hidden" name="change_ip_flag">
+<input type="hidden" name="repeater_ip">
+<input type="hidden" name="hidden_wds_mode">
+
+<input type="hidden" name="basic_station_mac_a">
+<input type="hidden" name="repeater_mac1_a">
+<input type="hidden" name="repeater_mac2_a">
+<input type="hidden" name="repeater_mac3_a">
+<input type="hidden" name="repeater_mac4_a">
+<input type="hidden" name="wds_endis_mac_client_a">
+<input type="hidden" name="wds_endis_ip_client_a">
+<input type="hidden" name="wds_endis_fun_a">
+<input type="hidden" name="change_ip_flag_a">
+<input type="hidden" name="repeater_ip_a">
+<input type="hidden" name="hidden_wds_mode_a">
+<input type="hidden" name="rep_old_lan_ipaddr">
+<input type="hidden" name="change_to_old_ip">
+<TR>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="wds_enable" value="1" onclick="click_endis_wds();wdsWaring();">
+	<A tabindex=-1 href="javascript:loadhelp('_wds','en_repeat')"><B>$wds_enable<script>if(an_router_flag == 1) document.write("(2.4GHz b/g/n)");</script></B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=20 height=12 border=0>$wds_mac : <% wds_mac("bgn") %></TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=20 height=12 border=0>
+	<input type="radio" name="wds_mode" value="0" onclick="click_repeater_basic();">
+	<A tabindex=-1 href="javascript:loadhelp('_wds','repeat')"><B>$wds_repeater</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=20 height=12 border=0><img src=/spacer.gif width=20 height=12 border=0>$wds_repeater_ip
+	</TD>
+	<TD nowrap align=right>
+	<input type="text" name="sysLANIPAddr1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="sysLANIPAddr2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="sysLANIPAddr3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="sysLANIPAddr4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=20 height=12 border=0><img src=/spacer.gif width=20 height=12 border=0>
+	<input type="checkbox" name="ptp_sta" value="1">$wds_dis_client
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=20 height=12 border=0><img src=/spacer.gif width=20 height=12 border=0><img src=/spacer.gif width=20 height=12 border=0>$wds_base_mac
+	</TD>
+	<TD nowrap align=right>
+	<input type="text" value="" name="ptp_mac" maxlength="17" size=16 onKeyPress="return getkey('mac',event)">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=20 height=12 border=0>
+	<input type="radio" name="wds_mode" value="1" onclick="click_repeater_basic();">
+	<A tabindex=-1 href="javascript:loadhelp('_wds','base')"><B>$wds_base_station</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=20 height=12 border=0><img src=/spacer.gif width=20 height=12 border=0>
+	<input type="checkbox" name="pmp_sta" value="1">$wds_dis_client
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=20 height=12 border=0><img src=/spacer.gif width=20 height=12 border=0>$wds_repeater_mac1
+	</TD>
+	<TD nowrap align=right>
+	<input type="text" value="" name="pmp_mac1" maxlength="17" size=16 onKeyPress="return getkey('mac',event)">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=20 height=12 border=0><img src=/spacer.gif width=20 height=12 border=0>$wds_repeater_mac2
+	</TD>
+	<TD nowrap align=right>
+	<input type="text" value="" name="pmp_mac2" maxlength="17" size=16 onKeyPress="return getkey('mac',event)">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=20 height=12 border=0><img src=/spacer.gif width=20 height=12 border=0>$wds_repeater_mac3
+	</TD>
+	<TD nowrap align=right>
+	<input type="text" value="" name="pmp_mac3" maxlength="17" size=16 onKeyPress="return getkey('mac',event)">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=20 height=12 border=0><img src=/spacer.gif width=20 height=12 border=0>$wds_repeater_mac4
+	</TD>
+	<TD nowrap align=right>
+	<input type="text" value="" name="pmp_mac4" maxlength="17" size=16 onKeyPress="return getkey('mac',event)">
+	</TD>
+</TR>
+$bluebar
+<!--for WDS a/n-->
+<TR id=wds_an>
+       <TD nowrap colspan=2>
+       <input type="checkbox" name="wds_enable_an" value="1" onclick="click_endis_wds_a();wdsWaring();">
+       <A tabindex=-1 href="javascript:loadhelp('_wds','en_repeat')"><B>
+	<script>
+		if(top.ac_router_flag == 1 )
+			document.write("$wds_enable (5GHz 802.11a/n/ac)")
+		else
+			document.write("$wds_enable (5GHz a/n)")
+	</script>
+	</B></A>
+       </TD>
+</TR>
+<TR id=mac_an>
+       <TD nowrap colspan=2><img src=/spacer.gif width=20 height=12 border=0>$wds_mac : <% wds_mac("an") %></TD>
+</TR>
+<TR id=mode_an>
+       <TD nowrap colspan=2><img src=/spacer.gif width=20 height=12 border=0>
+       <input type="radio" name="wds_mode_an" value="0" onclick="click_repeater_basic_a();">
+       <A tabindex=-1 href="javascript:loadhelp('_wds','repeat')"><B>$wds_repeater</B></A>
+       </TD>
+</TR>
+<TR id=repeater_an>
+       <TD nowrap><img src=/spacer.gif width=20 height=12 border=0><img src=/spacer.gif width=20 height=12 border=0>$wds_repeater_ip
+       </TD>
+       <TD nowrap align=right>
+       <input type="text" name="sysLANIPAddr1_an" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+       <input type="text" name="sysLANIPAddr2_an" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+       <input type="text" name="sysLANIPAddr3_an" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+       <input type="text" name="sysLANIPAddr4_an" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+       </TD>
+</TR>
+<TR id=client_an>
+       <TD nowrap colspan=2><img src=/spacer.gif width=20 height=12 border=0><img src=/spacer.gif width=20 height=12 border=0>
+       <input type="checkbox" name="ptp_sta_an" value="1">$wds_dis_client
+       </TD>
+</TR>
+<TR id=base_an>
+       <TD nowrap><img src=/spacer.gif width=20 height=12 border=0><img src=/spacer.gif width=20 height=12 border=0><img src=/spacer.gif width=20 height=12 border=0>$wds_base_mac
+       </TD>
+       <TD nowrap align=right>
+       <input type="text" value="" name="ptp_mac_1_an" maxlength="17" size=16 onKeyPress="return getkey('mac',event)">
+       </TD>
+</TR>
+<TR id=sta_mode_an>
+       <TD nowrap colspan=2><img src=/spacer.gif width=20 height=12 border=0>
+       <input type="radio" name="wds_mode_an" value="1" onclick="click_repeater_basic_a();">
+       <A tabindex=-1 href="javascript:loadhelp('_wds','base')"><B>$wds_base_station</B></A>
+       </TD>
+</TR>
+<TR id=pmp_sta_an>
+       <TD nowrap colspan=2><img src=/spacer.gif width=20 height=12 border=0><img src=/spacer.gif width=20 height=12 border=0>
+       <input type="checkbox" name="pmp_sta_an" value="1">$wds_dis_client
+       </TD>
+</TR>
+<TR id=mac1_an>
+       <TD nowrap><img src=/spacer.gif width=20 height=12 border=0><img src=/spacer.gif width=20 height=12 border=0>$wds_repeater_mac1
+       </TD>
+       <TD nowrap align=right>
+       <input type="text" value="" name="pmp_mac1_1_an" maxlength="17" size=16 onKeyPress="return getkey('mac',event)">
+       </TD>
+</TR>
+<TR id=mac2_an>
+       <TD nowrap><img src=/spacer.gif width=20 height=12 border=0><img src=/spacer.gif width=20 height=12 border=0>$wds_repeater_mac2
+       </TD>
+       <TD nowrap align=right>
+       <input type="text" value="" name="pmp_mac2_1_an" maxlength="17" size=16 onKeyPress="return getkey('mac',event)">
+       </TD>
+</TR>
+<TR id=mac3_an>
+       <TD nowrap><img src=/spacer.gif width=20 height=12 border=0><img src=/spacer.gif width=20 height=12 border=0>$wds_repeater_mac3
+       </TD>
+       <TD nowrap align=right>
+       <input type="text" value="" name="pmp_mac3_1_an" maxlength="17" size=16 onKeyPress="return getkey('mac',event)">
+       </TD>
+</TR>
+<TR id=mac4_an>
+       <TD nowrap><img src=/spacer.gif width=20 height=12 border=0><img src=/spacer.gif width=20 height=12 border=0>$wds_repeater_mac4
+       </TD>
+       <TD nowrap align=right>
+       <input type="text" value="" name="pmp_mac4_1_an" maxlength="17" size=16 onKeyPress="return getkey('mac',event)">
+       </TD>
+</TR>
+<TR id=blue_an><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+</TABLE>
+</div>
+<% help_box("0","_wds") %>
+</FORM>
+</BODY>
+</HTML>

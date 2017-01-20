@@ -1,0 +1,90 @@
+#!/bin/sh /etc/rc.common
+#START=80
+
+NET6CONF="/etc/net6conf/net6conf"
+
+start_netwall()
+{
+	/usr/sbin/net-wall -6 restart
+
+	local ip6_cmd="/usr/sbin/ip6tables"
+	#delete INPUT chain "IPv6-CONE"
+	local rules=`$ip6_cmd -vnL INPUT | sed '1,2d' | grep -n IPv6-CONE |awk  -F: '{print  $1}'`
+	$ip6_cmd -D INPUT $rules
+	#delete FORWARD chain "IPv6-CONE"
+	rules=`$ip6_cmd -vnL FORWARD | sed '1,2d' | grep -n IPv6-CONE |awk  -F: '{print  $1}'`
+	$ip6_cmd -D FORWARD $rules
+	#delete mangle table PREROUTING chain "IPv6-CONE"
+	rules=`$ip6_cmd -t mangle -vnL PREROUTING | sed '1,2d' | grep -n IPv6-CONE |awk  -F: '{print  $1}'`
+	$ip6_cmd -t mangle -D PREROUTING $rules
+}
+
+format_prefix() {
+        local lanip6=$1
+        local prelen=$2
+        local fields=$(($prelen / 16))
+
+        if [ "$(($prelen % 8))" != "0" ]; then
+                fields=$(($fields + 1))
+        fi
+        local i=1
+        while [ "$i" -le "$fields" ]; do
+                value=`echo $lanip6 | cut -f$i -d':'`
+                if [ "x$value" = "x" ]; then
+                        break
+                fi
+                printf "%s:" "$value"
+                i=$(($i + 1))
+        done
+        if [ "$i" -lt "8" ]; then
+                printf ":"
+        fi
+}
+
+start_radvd()
+{
+	local lanip6=`$CONFIG get ipv6_fixed_lan_ip`
+	local lanprelen=`$CONFIG get ipv6_fixed_lan_prefix_len`
+	local lanprefix=`format_prefix $lanip6 $lanprelen`
+
+	local wanip6=`$CONFIG get ipv6_fixed_wan_ip`
+	local wanprelen=`$CONFIG get ipv6_fixed_wan_prefix_len`
+	local wanprefix=`format_prefix $wanip6 $wanprelen`
+
+	if [ "$lanprefix" != "3ffe:501:ffff:100::" ]; then
+		sed -i '/3ffe:501:ffff:100::/ s/3ffe:501:ffff:100::/'${lanprefix}'/g' /tmp/radvd.conf
+	fi
+
+	if [ "$wanprefix" != "3ffe:501:ffff:101::" ]; then
+		sed -i '/3ffe:501:ffff:101::/ s/3ffe:501:ffff:101::/'${wanprefix}'/g' /tmp/radvd.conf
+	fi
+
+	radvd -C /tmp/radvd.conf
+}
+
+start() {
+	local wan6_type=`$CONFIG get ipv6_type`
+	local logo_test=`$CONFIG get endis_ipv6_logo_test`
+
+	# init the interface id old enable.
+	$CONFIG set ipv6_dhcps_interface_id_oldenable=0
+	if [ "`/bin/config get ipv6_type`" != "disabled" ]; then
+		if [ "x$logo_test" != "x1" -o "x$wan6_type" != "xfixed" ]; then
+			${NET6CONF} restart
+		else
+			/bin/cp /etc/radvd.conf /tmp/
+			start_netwall
+			start_radvd
+		fi
+	fi
+}
+
+stop() {
+	${NET6CONF} stop
+}
+
+restart() {
+	stop
+	sleep 3
+	start
+}

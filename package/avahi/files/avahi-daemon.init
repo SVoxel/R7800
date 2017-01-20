@@ -1,0 +1,58 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+#START=70
+
+BIN=avahi-daemon
+DEFAULT=/etc/default/$BIN
+OPTIONS="-D"
+RUN_D=/var/run/$BIN
+
+start() {
+    AVAHI_SERVICES_CONF_DIR=/tmp/avahi/services
+    mkdir -p $AVAHI_SERVICES_CONF_DIR
+    cp -f /usr/config/avahi/services/http.service $AVAHI_SERVICES_CONF_DIR/
+
+    [ -f $DEFAULT ] && . $DEFAULT
+    mkdir -p $RUN_D
+    #if [ -f /etc/passwd ]; then
+    #    /bin/grep '^alumnux:' /etc/passwd > /dev/null
+    #    if [ $? -ne 0 ]; then
+    #        echo "###### Adding alumnux to /etc/passwd ...." >> /tmp/__debug
+    #        echo 'alumnux:x:506:506::/home/alumnux:/bin/bash' >> /etc/passwd
+    #    fi
+    #else
+    #    echo "###### /etc/passwd not found" >> /tmp/__debug
+    #fi
+    #if [ -f /etc/shadow ]; then
+    #    /bin/grep '^alumnux:' /etc/shadow > /dev/null
+    #    if [ $? -ne 0 ]; then
+    #        echo "###### Adding alumnux to /etc/shadow ...." >> /tmp/__debug
+    #        echo 'alumnux:$1$REfEIP0A$kGlfiCJzsx6FKzZ6tk.Qm1:14841:0:99999:7:::' >> /etc/shadow
+    #    fi
+    #else
+    #    echo "###### /etc/shadow not found" >> /tmp/__debug
+    #fi
+    #if [ -f /etc/group ]; then
+    #    /bin/grep '^alumnux:' /etc/group > /dev/null
+    #    if [ $? -ne 0 ]; then
+    #        echo "###### Adding alumnux to /etc/group ...." >> /tmp/__debug
+    #        echo 'alumnux:x:506:' >> /etc/group
+    #    fi
+    #else
+    #    echo "###### /etc/group not found" >> /tmp/__debug
+    #fi
+    #mkdir -p /home/alumnux
+    #if [ ! -L /home/alumnux/TimeCapsule ]; then
+    #    ln -s /tmp/mnt/sda1 /home/alumnux/TimeCapsule > /dev/null 2>&1
+    #fi
+    $BIN -f /etc/avahi/avahi-daemon.conf $OPTIONS
+}
+
+stop() {
+    $BIN -k
+}
+
+reload() {
+    $BIN -r
+}
+

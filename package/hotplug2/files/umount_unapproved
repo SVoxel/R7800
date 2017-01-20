@@ -1,0 +1,19 @@
+#! /bin/sh
+FILE_PATH=/tmp/mnt/$1/.NETGEAR_disk_share_info
+if [ "$(config get usb_enableUSB)" = "1" ]; then
+	if [ ! -f /tmp/mnt/$1/.NETGEAR_disk_share_info ]; then  # if not find the file, umount
+		umount /tmp/mnt/$1
+	else
+		line_num=`awk "/\\[USB Settings\\]/ {print NR} " $FILE_PATH`
+		if [ $line_num ]; then
+			line=$(( $line_num + 1 ))
+			value=`awk 'NR == '$line' {print $1}' $FILE_PATH`
+			if [ "$value" != "approved" ]; then
+				umount /tmp/mnt/$1
+			fi
+		else
+			umount /tmp/mnt/$1	
+		fi
+	fi
+fi
+

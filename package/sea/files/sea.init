@@ -1,0 +1,61 @@
+#!/bin/sh
+
+. ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+#
+# Environment config
+#
+NAME="sead"
+DISPLAY_NAME=${NAME}
+
+# path to binary
+BINARY="${BINDIR}/${NAME}"
+
+# path to pid file
+PIDFILE="${RUNDIR}/${NAME}.pid"
+
+# Redis server
+REDIS_PORT=6379
+REDIS_UNIXSOCK=/var/run/appflow/redis.sock
+
+# Format the command line parameters
+CMDLINE_OPTS="\
+--daemon \
+--run-dir=${RUNDIR} \
+--pid-file=${PIDFILE} \
+--redis-unixsocket=${REDIS_UNIXSOCK} \
+--eventlog=eventdb:events \
+--eventlog-len=22500 \
+--connection-log=eventdb:connections \
+--connection-log-len=768 \
+--feature-discovery-log=eventdb:features \
+--feature-discovery-log-len=768 \
+"
+
+#
+# Functions
+#
+
+start() {
+	[ ! -d "${RUNDIR}" ] && {
+		mkdir ${RUNDIR}
+	}
+
+	[ -x ${BINARY} ] || {
+		echo "${NAME} not found: ${BINARY}"
+		exit 2
+	}
+
+	echo -n "Starting ${NAME}: "
+	${BINARY} ${CMDLINE_OPTS} "$@"
+	retval=$?
+	echo
+	return ${retval}
+}
+
+boot() {
+	start "$@"
+}
+
+action "$@"
+exit $?

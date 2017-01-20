@@ -1,0 +1,120 @@
+<% http_header("style/form.css", "/funcs.js", "/qos_prru.js") %>
+<% body_header("_qos", "QOS_prru_main.htm", "edit_qoslist") %>
+<div class="page_title">$qos_add_head</div>
+<div class="fix_button">
+<TABLE cellspacing=2 cellPadding=0 width=100% border=0>
+<TR>
+        <TD nowrap colspan=2 align=center>
+	<script>
+		var master="<% cfg_get("http_loginname") %>";
+		if( master=="admin" )
+			document.write('<input class="cancel_bt" type="button" name="Cancel" value="$cancel_mark" onClick="location.href=\'QOS_prru_main.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="submit" name="apply" value="$apply_mark" onClick="return check_qos_app(document.forms[0]);">');
+		else
+			document.write('<input class="cancel1_bt" type="button" name="Cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit" name="apply" value="$apply_mark" disabled>');
+	</script>
+        </TD>
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button">
+<% table_header() %>
+<% refresh_timestamp("apply_prru_qos") %>
+<script>
+var selected_node='<% cfg_get("qoslist_editnode") %>';
+<% qos_items_xss() %>
+function loadvalue()
+{
+	var cf=document.forms[0];
+	for(var i=1; i<=qos_array_num; i=i+2)
+	{
+		var str = eval ( 'qosArray' + i ).replace(/&#92;/g, "\\").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+                var each_info=str.split(' ');
+		if(selected_node == i)
+		{
+			if(each_info[2] == '1')
+			{
+				var j=i+1;
+				var next = eval ( 'qosArray' + j ).replace(/&#92;/g, "\\").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+				document.getElementById("pre_name").style.display="none";
+				document.getElementById("add_name").style.display="";
+				document.getElementById("pre_app").style.display="none";
+				document.getElementById("bluebar").style.display="";
+				cf.ser_poli_name.value=each_info[0];
+				cf.ser_priority.value=each_info[3];
+				document.getElementById("add_port_type").style.display="";
+				document.getElementById("add_port_start").style.display="";
+				document.getElementById("add_port_end").style.display="";
+				if( next != "0")
+					cf.port_type.value="TCP/UDP";
+				else
+					cf.port_type.value=each_info[4];
+
+				cf.portstart.value=each_info[5];
+				cf.portend.value=each_info[6];
+			}
+			else
+			{
+				document.getElementById("pre_name").style.display="";
+				document.getElementById("add_name").style.display="none";
+				document.getElementById("pre_app").style.display="";
+				document.getElementById("bluebar").style.display="none";
+				cf.ser_priority.value=each_info[3];
+				document.getElementById("add_port_type").style.display="none";
+				document.getElementById("add_port_start").style.display="none";
+				document.getElementById("add_port_end").style.display="none";
+			}
+		}
+	}
+}
+</script>
+<TR><TD nowrap colspan=2><b>$qos_priority</b></TD></TR>
+<TR><TD nowrap>$qos_policy_for</TD>
+	<TD nowrap id="pre_name"><script>document.write(change_service_name_show('<% cfg_sed_xss("qoslist_pre_editname") %>'))</script></TD>
+	<TD nowrap id="add_name"><input type="text" name="ser_poli_name" maxLength="60" size="16" onKeyPress="return getkey('ssid', event)" value=""></TD>
+</TR>
+<TR><TD nowrap colspan=2></TD></TR>
+<TR id="pre_app"><TD nowrap>$qos_application</TD>
+	<TD nowrap><script>document.write(change_service_name_show('<% cfg_sed_xss("qoslist_pre_editname") %>'))</script></TD>
+</TR>
+<TR><TD nowrap colspan=2></TD></TR>
+<TR><TD nowrap>$qos_priority</TD>
+	<TD>
+		<select name="ser_priority">
+			<option value="0" >$qos_highest</option>
+			<option value="1" >$qos_high</option>
+			<option value="2" >$qos_normal</option>
+			<option value="3" >$qos_low</option>
+		</select>
+	</TD>
+</TR>
+<TR id="bluebar"><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+<TR id="add_port_type">
+	<TD nowrap>$trigger_contype</TD>
+	<TD nowrap>
+		<select name="port_type" size="1">
+			<option value="TCP/UDP">TCP/UDP</option>
+			<option value="TCP">TCP</option>
+			<option value="UDP">UDP</option>
+		</select>
+	</TD>
+</TR>
+<TR id="add_port_start">
+	<TD nowrap>$block_ser_start_port</TD>
+	<TD nowrap>
+		<input type="text" name="portstart" size="6" maxlength="5" onKeyPress="return getkey('num', event)">(1~65535)
+	</TD>
+</TR>
+<TR id="add_port_end">
+	<TD nowrap>$block_ser_end_port</TD>
+	<TD nowrap>
+		<input type="text" name="portend" size="6" maxlength="5" onKeyPress="return getkey('num', event)">(1~65535)
+	</TD>
+</TR>
+$bluebar
+</table>
+</div>
+<% help_box("0","_qos") %>
+</form>
+</body>
+</html>
+

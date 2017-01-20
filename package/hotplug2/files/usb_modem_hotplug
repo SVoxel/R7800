@@ -1,0 +1,13 @@
+#! /bin/sh
+
+FLAG="$1"
+if [ "$FLAG" = "on" ]; then
+	local mob=`ps |grep mobiled |grep -v grep |awk '{print $1}'`
+	if [ "x$mob" = "x" ]; then
+		/bin/mobiled
+	fi
+	/bin/mobilectl probe_card
+else
+	/bin/config set mobile_modem_model=""
+	/bin/config set mobile_vendor_name=""
+fi

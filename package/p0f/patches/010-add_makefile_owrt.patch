@@ -1,0 +1,38 @@
+--- /dev/null
++++ b/Makefile.owrt
+@@ -0,0 +1,32 @@
++PROG = p0f
++VERSION = 3.05b
++
++EXTRA_CFLAGS=-Wall -Wno-format -fPIE -D_FORTIFY_SOURCE=2 -DVERSION=\"$(VERSION)\"
++
++EXTRA_LDFLAGS=-Wl,-z,relro
++
++EXTRA_LIBS=-lpcap
++
++SRC_FILES=api.c process.c fp_tcp.c fp_mtu.c fp_http.c readfp.c p0f.c
++
++OBJ_FILES=$(SRC_FILES:.c=.o)
++
++.PHONY: clean tools
++
++all: release
++
++release: EXTRA_CFLAGS += -O3
++release: $(PROG)
++
++debug: EXTRA_CFLAGS += -g -ggdb -DDEBUG_BUILD=1
++debug: $(PROG)
++
++tools:
++	$(MAKE) -C tools
++
++$(PROG): $(OBJ_FILES)
++	$(CC) -o $@ $^ $(LDFLAGS) $(EXTRA_LDFLAGS) $(LIBS) $(EXTRA_LIBS)
++
++%.o: %.c
++	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) $< -o $@
++
++clean:
++	rm -f $(PROG) *.o 
++	$(MAKE) -C tools clean

@@ -1,0 +1,16 @@
+#!/bin/sh
+
+action=$1
+new_firmware=$(config get new_firmware)
+if [ "$action" = "boot" -o "$action" = "start" ]; then
+	streamboost auto_update 
+	ret_status=$?
+fi
+#if [ "$new_firmware" = "1" ];then
+#	streamboost update
+#	ret_status=$?
+#	[ "$ret_status" = "0" -o "$ret_status" = "11" ] && config set new_firmware=0 && config commit
+#fi
+[ "$ret_status" = "0" ] && streamboost restart
+	
+exit $ret_status

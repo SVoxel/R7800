@@ -1,0 +1,32 @@
+BODY {
+	MARGIN: 6px;
+	background-color: #4e4e4e;
+	*background-color: #4e4e4e;
+	color: white;	
+}
+
+b, strong{
+	color: #9d98ff;
+}
+
+a {
+        color: white; text-decoration: underline
+}
+
+P {
+	LIST-STYLE-POSITION: outside; FONT-SIZE: 12px; BACKGROUND: none transparent scroll repeat 0% 0%; FONT-FAMILY: Arial, Helvetica, Geneva, Swiss, SunSans-Regular, sans-serif
+}
+H1 {
+	FONT-WEIGHT: bold; FONT-SIZE: 16px; BACKGROUND: none transparent scroll repeat 0% 0%;  FONT-FAMILY: Arial, Helvetica, Geneva, Swiss, SunSans-Regular, sans-serif
+}
+H2 {
+	FONT-WEIGHT: bold; FONT-SIZE: 12px; BACKGROUND: none transparent scroll repeat 0% 0%;  FONT-FAMILY: Arial, Helvetica, Geneva, Swiss, SunSans-Regular, sans-serif
+}
+
+UL {
+	LIST-STYLE-POSITION: outside; FONT-SIZE: 12px; BACKGROUND: none transparent scroll repeat 0% 0%;  FONT-FAMILY: Arial, Helvetica, Geneva, Swiss, SunSans-Regular, sans-serif
+}
+OL {
+	LIST-STYLE-POSITION: outside; FONT-SIZE: 12px; BACKGROUND: none transparent scroll repeat 0% 0%;  FONT-FAMILY: Arial, Helvetica, Geneva, Swiss, SunSans-Regular, sans-serif
+}
+.helpfile{ font-weight: Bold; color: #9d98ff; }

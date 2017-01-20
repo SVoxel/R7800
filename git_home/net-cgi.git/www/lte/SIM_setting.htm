@@ -1,0 +1,144 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<body onLoad="loadvalue();">
+<div class="page_title">$sim_head</div>
+<div id="main" class="main">
+<script>
+<% refresh_timestamp("pin_apply", "pin_change") %>
+var ts="<% cfg_get("pin_apply") %>";
+var lte_pin_status="<% cfg_get("lte_pin_status") %>";
+var enable_pin="<% cfg_get("lte_enable_pin_verify") %>";
+
+function loadvalue()
+{
+	var cf=document.forms[0];
+	var cf2=document.forms[1];
+	if(lte_pin_status == "READY")
+	{
+		setDisabled(false,cf.pin_enable[0],cf.pin_enable[1],cf.pin_code,cf.pin_apply_bt);
+		document.getElementById("pin_apply_bt").className="common_bt";
+
+		if(enable_pin == "1")
+		{
+			cf.pin_enable[1].checked =true;
+			setDisabled(false,cf2.old_pin,cf2.new_pin1,cf2.new_pin2,cf2.change_pin_bt);
+			document.getElementById("change_pin_bt").className="common_bt";
+		}
+		else
+		{
+			cf.pin_enable[0].checked =true;
+			setDisabled(true,cf2.old_pin,cf2.new_pin1,cf2.new_pin2,cf2.change_pin_bt);
+			document.getElementById("change_pin_bt").className="common_gray_bt";
+		}
+	}
+	else
+	{
+		setDisabled(true,cf.pin_enable[0],cf.pin_enable[1],cf.pin_code,cf.pin_apply_bt);
+		setDisabled(true,cf2.old_pin,cf2.new_pin1,cf2.new_pin2,cf2.change_pin_bt);
+		document.getElementById("pin_apply_bt").className="common_gray_bt";
+		document.getElementById("change_pin_bt").className="common_gray_bt";
+	}
+}
+
+function click_pin_apply()
+{
+	var cf=document.forms[0];
+	if(cf.pin_code.value.length<4)
+	{
+		alert("PIN Code should be 4-8 digits!");
+		return false;
+	}
+	cf.action="/apply.cgi?/check_pin_enable.htm timestamp="+ts;
+	cf.submit();
+	return true;
+}
+
+function click_change_pin()
+{
+	var cf=document.forms[1];
+	if(cf.old_pin.value.length<4 || cf.new_pin1.value.length<4)
+	{
+		alert("PIN Code should be 4-8 digits!");
+		return false;
+	}
+	if(cf.new_pin1.value != cf.new_pin2.value)
+	{
+		alert("Please confirm new PIN Code again!");
+		return false;
+	}
+
+	cf.action="/apply.cgi?/check_pin_change.htm timestamp="+ts;
+	cf.submit();
+	return true;
+}
+
+</script>
+<div id="pin_div">
+<form method="post" action="/apply.cgi?/SIM_setting.htm" target="formframe">
+<input type="hidden" name="submit_flag" value="pin_apply" />
+
+<% table_header() %>
+<tr><td colspan=3><img src=/liteblue.gif width=100% height=12></td></tr>
+<tr><td nowrap colspan=3><b>$pin_msg</b></td></tr>
+<tr>
+	<td nowrap colspan=3><input type="radio" name="pin_enable" value="0" checked>$disable_mark &nbsp;
+	<input type="radio" name="pin_enable" value="1">$enable_mark</td>
+</tr>
+<tr>
+	<td nowrap>$current_pin</td>
+	<td nowrap><input type="text" name="pin_code" size="16" maxLength="8" onKeyPress="return getkey('num', event)"></td>
+	<td nowrap><input type="button" class="common_bt" id="pin_apply_bt" name="pin_apply_bt" value="$apply_mark" onClick="return click_pin_apply();"></td>
+</tr>
+</table>
+</form>
+</div>
+
+<div id="change_pin" >
+<form method="post" action="/apply.cgi?/SIM_setting.htm" target="formframe">
+<input type="hidden" name="submit_flag" value="pin_change" />
+
+<% table_header() %>
+<tr><td colspan=3><img src=/liteblue.gif width=100% height=12></td></tr>
+<tr><td nowrap colspan=3><b>$change_pin</b></td></tr>
+<tr>
+	<td nowrap>$current_pin</td>
+	<td nowrap><input type="text" name="old_pin" size="16" maxLength="8" onKeyPress="return getkey('num', event)"></td>
+</tr>
+<tr>
+	<td nowrap>$new_pin</td>
+	<td nowrap><input type="text" name="new_pin1" size="16" maxLength="8" onKeyPress="return getkey('num', event)"></td>
+	<td nowrap><input type="button" name="change_pin_bt" id="change_pin_bt" class="common_bt" value="$apply_mark" onClick="return click_change_pin();"></td>
+</tr>
+<tr>
+	<td nowrap>$confirm_pin</td>
+	<td nowrap><input type="text" name="new_pin2" size="16" maxLength="64" onKeyPress="return getkey('num', event)"></td>
+</tr>
+</table>
+</form>
+</div>
+
+<div>
+<% table_header() %>
+$bluebar
+<tr>
+	<td>$sim_status
+	<script>document.write(lte_pin_status);</script>
+	</td>
+</tr>
+<script>
+	if(lte_pin_status== "READY")
+	{
+		if(enable_pin =="1")
+			document.write("<tr><td>PIN Lock Status:Enable</td></tr>");
+		else
+			document.write("<tr><td>PIN Lock Status:Disable</td></tr>");
+		document.write("<tr><td>PIN Remain Count:"+<% cfg_get("lte_left_pin_times") %>+"</td></tr>");
+		document.write("<tr><td>PUK Remain Count:"+<% cfg_get("lte_left_puk_times") %>+"</td></tr>");		
+			
+	}
+</script>
+</table>
+</div>
+
+</div>
+</body>
+</html>

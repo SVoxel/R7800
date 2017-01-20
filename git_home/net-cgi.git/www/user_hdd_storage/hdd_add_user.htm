@@ -1,0 +1,97 @@
+<% http_header("style/form.css", "/funcs.js", "/hdd.js") %>
+<% body_header("", "hdd_usr_setup.htm", "shname_add") %>
+
+<div class="page_title">$add_user</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+<script>
+<% userhdd_items_xss() %>
+ function loadvalue()
+ {
+	document.getElementById("dup_text").style.display="none";
+	document.getElementById("dup_button").style.display="none";
+ }
+ 
+ function show_add_dup_warn()
+ {
+	document.getElementById("add_name").style.display="none";
+	document.getElementById("add_pas").style.display="none";
+	document.getElementById("add_pas_conf").style.display="none";
+	document.getElementById("add_button").style.display="none";
+ 
+	document.getElementById("dup_text").style.display="";
+	document.getElementById("dup_button").style.display="";
+ }
+ function show_add()
+ {
+	document.getElementById("add_name").style.display="";
+	document.getElementById("add_pas").style.display="";
+	document.getElementById("add_pas_conf").style.display="";
+	document.getElementById("add_button").style.display="";
+ 
+	document.getElementById("dup_text").style.display="none";
+	document.getElementById("dup_button").style.display="none";
+ }
+ </script>
+ 
+<input type="hidden" name="duplicated_num" value=0>
+<input type="hidden" name="duplicated_shname">
+ 
+ $bluebar 
+<TR id="add_name">
+	<TD nowrap>$ddns_username:</TD>
+	<TD nowrap>
+	<input type="text" size="16" maxlength="60" name="sh_name" onKeyPress="return getkey('ssid', event)" value="" >
+	</TD>
+</TR>
+<TR id="add_pas">
+	<TD nowrap>$ddns_passwd:</TD>
+	<TD nowrap>
+	<input type="password" maxLength="60" size="20" name="hddNewPasswd" onFocus="this.select();" >
+	</TD>
+</TR>
+<TR id="add_pas_conf">
+	<TD nowrap>$re_password:</TD> <!--no var for Re-enter password-->
+	<TD nowrap>
+	<input type="password" maxLength="60" size="20" name="hddConfirmPasswd" onFocus="this.select();" >
+	</TD>
+</TR>
+
+<TR id="dup_text">
+	<TD nowrap colspan=2 style="font-family:Arial; font-size:18px;" align=center>$user_dup</TD>
+</TR>
+
+$bluebar
+<TR id="add_button">
+	<TD nowrap colspan=2 align=center>
+	<input class="add_bt"  type="submit" value="$add_mark" name="Add" onClick="return hdd_user_add(document.forms[0],'add');">&nbsp;&nbsp;
+	<input class="cancel_bt" type='button' value='$cancel_mark' name="Cancel" onClick='location.href="hdd_usr_setup.htm";'>
+	</TD>
+</TR> 
+
+<TR id="dup_button">
+		 <TD nowrap colspan=2 align=center>
+		<INPUT  class="short_common_bt" type='button'  name="ok" value='$ok_mark' onClick='rewtit_ok(document.forms[0])' >&nbsp;&nbsp;&nbsp;&nbsp;
+		<INPUT  class="short_common_bt" type='button'  name="ok" value='$cancel_mark' onClick='rewrit_cancel()' ></TD>
+</TR> 
+<script>
+function rewtit_ok(cf) 
+{
+	//show_add();
+	cf.submit();
+	//return true;
+}
+
+function rewrit_cancel()
+{
+	show_add();
+	return false;	
+}
+</script>
+</TABLE>
+</div>
+<% help_box("0","_passwd") %>
+</FORM>
+</BODY>
+</HTML>
+

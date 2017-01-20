@@ -1,0 +1,27 @@
+#! /bin/sh
+
+CONFIG=/bin/config
+
+factory_tt3(){
+	sleep 2
+	Wan_link=`cat /tmp/WAN_status |grep down`
+	[ "x$Wan_link" != "x" ] && return
+	/sbin/swconfig dev switch0 load tt3
+	ledcontrol -n usb1 -c amber -s on
+	echo "enabled tt3 config..." > /dev/console
+	sleep 300
+	/sbin/swconfig dev switch0 load nowan 
+	ledcontrol -n usb1 -c amber -s off
+}
+
+if [ "x$($CONFIG get factory_mode)" = "x1" ]; then
+	echo "factory_mode: $1" > /dev/console
+	[ "$1" = "wps_pbc_pressed" ] && factory_tt3 &
+	if [ "x$($CONFIG get factory_tt3)" = "x1" ]; then
+		$CONFIG unset factory_tt3
+		$CONFIG commit
+		ledcontrol -n usb1 -c amber -s off
+		echo "factory_TT3: Exit" > /dev/console
+	fi
+	exit 255
+fi 

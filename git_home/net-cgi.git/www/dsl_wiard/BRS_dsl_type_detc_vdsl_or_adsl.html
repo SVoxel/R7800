@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="/style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="/script/brs_hijack.js"></script>
+<% hijack_language() %>
+
+<script language="javascript" type="text/javascript">
+<% check_adsl_vdsl() %>
+function loadvalue()
+{
+	var head_tag = document.getElementsByTagName("h1");
+	
+	var head_text = document.createTextNode(bh_detecting_connection);
+	head_tag[0].appendChild(head_text);
+	
+	var paragraph = document.getElementsByTagName("p");
+	
+	var paragraph_text = document.createTextNode(bh_plz_wait_process);
+	paragraph[0].appendChild(paragraph_text);
+	
+
+	//show Fireware Version
+	showFirmVersion("none");
+
+	if(dsl_mode == "adsl")
+	{	// none all
+		this.location.href = "BRS_adsl_detect.html";
+	}
+	else
+	{	
+		this.location.href = "BRS_vdsl_detect.html";
+	}	
+}
+</script>
+</head>
+
+<body onLoad="loadvalue()">
+<input type="hidden" name="submit_flag" value="hijack_tointenet" />
+<form>
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+			<h1><!--detecting_connection--></h1>
+			<p><!--plz_wait_process--></p>
+		
+		<div class="waiting_img_div" align="center">
+			<img src="image/wait30.gif" />
+		</div>
+		
+	</div>
+<a href="BRS_vdsl_detect.html" class="ui-corner-all">VDSL</a><br>
+<a href="BRS_adsl_detect.html" class="ui-corner-all">ADSL</a><br>
+
+</body>
+</form>
+</html>

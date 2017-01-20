@@ -1,0 +1,51 @@
+From 3f98f573940db265c5119c5ba7d6a67ff8e9dc2c Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Tue, 11 Jun 2013 17:12:49 -0500
+Subject: [ag71xx] move is_ar7240 to caller
+
+This moves the is_ar7240 check to the calling function where it has
+access to pdata.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+index 926e4e3..a5b2c2d 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+@@ -872,10 +872,10 @@ static bool ag71xx_check_dma_stuck(struct ag71xx *ag, struct net_device *dev)
+ 	return false;
+ }
+ 
+-static int ag71xx_tx_packets(struct ag71xx *ag, struct net_device *dev)
++static int ag71xx_tx_packets(struct ag71xx *ag, struct net_device *dev,
++			     bool is_ar7240)
+ {
+ 	struct ag71xx_ring *ring = &ag->tx_ring;
+-	struct ag71xx_platform_data *pdata = ag71xx_get_pdata(ag);
+ 	unsigned int sent = 0;
+ 	unsigned int bytes_compl = 0;
+ 	struct ag71xx_buf *dirty = ring->dirty;
+@@ -901,7 +901,7 @@ static int ag71xx_tx_packets(struct ag71xx *ag, struct net_device *dev)
+ 		struct sk_buff *next_skb;
+ 
+ 		if (unlikely(!(desc->ctrl & DESC_EMPTY))) {
+-			if (unlikely(pdata->is_ar7240)) {
++			if (is_ar7240) {
+ 				if (unlikely(ag71xx_check_dma_stuck(ag, dev))) {
+ 					schedule_work(&ag->restart_work);
+ 				}
+@@ -1117,7 +1117,7 @@ static int ag71xx_poll(struct napi_struct *napi, int limit)
+ 	pdata->ddr_flush();
+ 
+ 	rx_done = ag71xx_rx_packets(ag, dev, limit);
+-	tx_done = ag71xx_tx_packets(ag, dev);
++	tx_done = ag71xx_tx_packets(ag, dev, pdata->is_ar7240);
+ 	rx_replenished = ag71xx_rx_packets_replenish(ag, dev);
+ 
+ 	ag71xx_debugfs_update_napi_stats(ag, rx_done, tx_done);
+-- 
+1.8.1.2
+

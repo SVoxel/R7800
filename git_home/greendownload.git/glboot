@@ -1,0 +1,24 @@
+#!/bin/sh /etc/rc.common
+START=99
+download_state="$(/bin/config get green_download_enable)"
+have_usb_attached=`cat /tmp/usbdisknum`
+glboot_start() {
+	[ "x$download_state" != "x1" ] && exit
+	echo "there is $have_usb_attached usb disk attached on this device"
+	[ "x$have_usb_attached" == "x0" ] && exit
+	echo "etc/init.d/glboot: startting download ..."
+	/usr/sbin/green_download.sh restart
+}
+
+boot() {
+	glboot_start
+}
+
+glboot_stop(){
+	/usr/sbin/green_download.sh stop
+
+}
+
+restart(){
+	/usr/sbin/green_download.sh restart
+}

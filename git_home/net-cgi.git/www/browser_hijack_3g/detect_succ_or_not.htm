@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<script language="javascript" type="text/javascript" src="script/hsdpa.js"></script>
+</head>
+
+<body onLoad="loadvalue();" bgcolor=#ffffff>
+<script>
+
+function loadvalue()
+{
+	if(top.have_lte_flag =="1")
+	{
+		var lte_detect_flag="<% cfg_get("wan_lte_card") %>";
+		if(lte_detect_flag)
+			location.href="lte_detect_succ_hsdpa.htm";
+		else
+			location.href="detect_not.htm"
+	}
+	else
+	{
+	var detect_flag="<% cfg_get("wan_cdma_card") %>";
+	if( detect_flag == "WiMAX" ){
+		location.href="detect_succ_wimax_device.htm";
+	}
+	else if(detect_flag == "EVDO"){
+		set_evdo();//connecting to internet directly...
+		location.href="detect_succ_evdo.htm";
+	}
+	else 
+	if(detect_flag)
+		location.href="detect_succ_hsdpa.htm";
+	else
+		location.href="detect_not.htm"
+	}
+}
+</script>
+
+</body>
+
+</html>
+

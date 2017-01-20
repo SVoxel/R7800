@@ -1,0 +1,103 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_INIT(Makefile)
+AC_CONFIG_HEADER(src/config.h)
+
+# Checks for programs.
+
+# Checks for libraries.
+
+# Checks for header files.
+
+# Checks for typedefs, structures, and compiler characteristics.
+
+# Checks for library functions.
+
+echo "creating dnsmasq.init"
+cp dnsmasq.init.in dnsmasq.init
+
+AC_ARG_ENABLE(parental_ctl_support,
+	[AC_HELP_STRING(
+		[--enable-parental_ctl_support],
+		[support Parental Control feature])
+	],
+	[
+		if test x"$enableval" = xyes ; then
+			AC_DEFINE(DNI_PARENTAL_CTL)
+		fi
+	]
+)
+
+AC_ARG_ENABLE(static_pptp_support,
+	[AC_HELP_STRING(
+		[--enable-static_pptp_support],
+		[support static pptp for Russian Version])
+	],
+	[
+		if test x"$enableval" = xyes ; then
+			AC_DEFINE(SUP_STATIC_PPTP)
+		fi
+	]
+)
+
+AC_ARG_ENABLE(usbshare_domain_support,
+	[AC_HELP_STRING(
+		[--enable-usbshare_domain_support],
+		[resolve "readyshare.routerlogin.net" and "readyshare.routerlogin.com" to Router LAN IP])
+	],
+	[
+		if test x"$enableval" = xyes ; then
+			AC_DEFINE(USBSHARE_DOMAIN_SUPPORT)
+		fi
+	]
+)
+
+AC_ARG_ENABLE(dni_ipv6_feature,
+	[AC_HELP_STRING(
+		[ --enable-dni_ipv6_feature],
+		[support request of DNS with IPv6])
+	],
+	[
+		if test x"$enableval" = xyes ; then
+			AC_DEFINE(DNI_IPV6_FEATURE)
+		fi
+	]
+)
+
+AC_ARG_ENABLE(bind_srvsock_to_wan,
+	[AC_HELP_STRING(
+		[--enable-bind_srvsock_to_wan],
+		[bind server socket to WAN interface])
+	],
+	[
+		if test x"$enableval" = xyes ; then
+			AC_DEFINE(BIND_SRVSOCK_TO_WAN)
+		fi
+	]
+)
+
+AC_ARG_ENABLE(start_dnsmasq_when_boot_up,
+	[AC_HELP_STRING(
+		[--enable-start_dnsmasq_when_boot_up],
+		[start dnsmasq when system boot up])
+	],
+)
+
+if test x"${enable_parental_ctl_support}" != xyes; then
+	sed -i "{:a;N;/\n\t# start parental ctl config.*# end parental ctl config\n/s///;t;ba}" dnsmasq.init
+fi
+
+if test x"${enable_bind_srvsock_to_wan}" != xyes; then
+	sed -i "{:a;N;/\n\t# start wan ifname config.*# end wan ifname config\n/s///;t;ba}" dnsmasq.init
+fi
+
+if test x"${enable_static_pptp_support}" != xyes; then
+	sed -i "{:a;N;/\n\t# start static pptp config.*# end static pptp config\n/s///;t;ba}" dnsmasq.init
+fi
+
+if test x"${enable_start_dnsmasq_when_boot_up}" != xyes; then
+	sed -i "/^START=60$/d" dnsmasq.init
+fi
+
+AC_OUTPUT

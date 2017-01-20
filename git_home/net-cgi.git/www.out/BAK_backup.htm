@@ -1,0 +1,84 @@
+<% http_header("style/form.css", "/funcs.js", "/backup.js") %>
+
+<BODY onload="loadhelp('_backup'); please_wait(false);" bgcolor=#ffffff>
+<FORM action="NETGEAR_WNDR3700.cfg" method="post" enctype="multipart/form-data">
+<div class="page_title">$backup_head</div>
+<div id="main" class="main">
+<script>
+var wds_endis_fun='<% cfg_get("wds_endis_fun") %>';
+var wds_endis_fun_a="<% cfg_get("wla_wds_endis_fun") %>";
+var wds_repeater_basic='<% cfg_get("wds_repeater_basic") %>';
+var wds_repeater_basic_a="<% cfg_get("wds_repeater_basic_a") %>";
+var endis_wl_radio='<% enable_ap_orNot("bgn") %>';
+var endis_wla_radio='<% enable_ap_orNot("an") %>';
+
+var master="<% cfg_get("http_loginname") %>";
+<% refresh_timestamp("backup_save", "backup_restore") %>
+var ts = "<% cfg_get("backup_save") %>";
+</script>
+<% table_header() %>
+$bluebar
+
+
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_backup','save')"><B>$backup_save_settings</B></A>
+	</TD>
+</TR>
+<TR>
+<TD nowrap colspan=2 align=center>
+<script>
+if(master == "admin")
+	document.write('<input class="common_key_bt" type="button" id="backup" name="Backup" value="$backup_mark" onClick="click_backup()">');
+else
+	document.write('<input class="common1_key_bt" type="button" id="backup" name="Backup" value="$backup_mark" disabled>');
+</script></TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_backup','restore')"><B>$backup_restore</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<input name="mtenRestoreCfg" type="file" size="32" id="restore_cfg" maxlength="1024" class="type-file-file" onchange="this.form.upfile.value=this.value.substr(this.value.lastIndexOf('\\')+1);" contentEditable=false onkeydown="return false;" onbeforeeditfocus="return false;" onpaste="return false;" onmouseover="this.style.cursor='pointer';" />
+	<input type="text" name="upfile" size="20" maxlength="1024" readonly />&nbsp;
+	<input type="button" value="$browse_mark"  id="browse" name="Browse" class="middle_common_bt" onclick="if(IE_version()!=6){this.form.restore_cfg.click();}" onmouseover="this.style.cursor='pointer';" />
+	</TD>
+</TR>
+<TR>
+<script>
+if( master == "admin" )
+	document.write('<TD nowrap colspan=2 align=center><input class="common_key_bt" type="button" name="mtenRestore" id="restore" value="$restore_mark" onClick="check_restore();return false;">	</TD>');
+else
+	document.write('<TD nowrap colspan=2 align=center><input class="common1_key_bt" type="button" name="mtenRestore" id="restore" value="$restore_mark" disabled></TD>');
+	
+</script>
+	
+</TR>
+$bluebar
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_backup','revert')"><B>$backup_factory</B></A>
+	</TD>
+</TR>
+<TR>
+
+	<TD nowrap colspan=2 align=center>
+<script>
+	if(master == "admin")
+		document.write('<input class="common_key_bt" type="button" name="defaults" id="erase" value="$erase_mark" onClick="location.href=\'BAK_factory.htm\';">');
+	else
+		document.write('<input class="common1_key_bt" type="button" name="defaults" id="erase" value="$erase_mark" disabled>');
+</script>
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+
+</div>
+<% help_box("1","_backup") %>
+</FORM>
+</BODY>
+</HTML>

@@ -1,0 +1,69 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% body_header("_wps", "", "") %>
+<div class="page_title">$wps_add_success</div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+
+<script>
+var wds_endis_fun ="<% cfg_get("wds_endis_fun") %>";
+var wds_repeater_basic="<% cfg_get("wds_repeater_basic") %>";
+var endis_wl_radio="<% enable_ap_orNot("bgn") %>";
+var wps_status="<% wps_process_status() %>";
+var client_name="<% cfg_sed_xss("client_name") %>";
+var wps_now_configured="<% cfg_get("wps_status") %>";
+var wps_an_now_configured="<% cfg_get("wla_wps_status") %>";
+function loadvalue()
+{
+	top.enable_action=1;
+	top.topframe.location.href="top.html";
+}
+</script>
+</TABLE>
+<TABLE width="100%" border="0" cellspacing="0" cellpadding="4">
+<TR>
+<script>
+	if(client_name == "")
+		document.write('<TD align=center><B>$wps_client <% cfg_sed_xss("macAddr") %> $wps_client_add</B></TD>');
+	else
+		document.write('<TD align=center><B>$wps_client \''+client_name+'\'(<% cfg_sed_xss("macAddr") %>) $wps_client_add</B></TD>');
+</script>
+</TR>
+<script>
+//if (( parent.wps_endis_configured == 1 && wps_status == 1 ) || ( parent.wps_an_endis_configured == 1 && wps_status == 1))
+if ( (( parent.wps_endis_configured == 1 && wps_now_configured == 5 ) || ( parent.wps_an_endis_configured == 1 && wps_an_now_configured == 5 )) && wps_status == 1 )
+	document.write("<TR><TD align=center><font color=#ff0000>$wps_note_WL_change</font></TD></TR>");
+
+function go2url()
+{
+//	if (( parent.wps_endis_configured == 1 && wps_status == 1 ) || ( parent.wps_an_endis_configured == 1 && wps_status == 1))
+if ( (( parent.wps_endis_configured == 1 && wps_now_configured == 5 ) || ( parent.wps_an_endis_configured == 1 && wps_an_now_configured == 5 )) && wps_status == 1 )
+		location.href="WLG_wireless.htm";
+	else
+		location.href="WPS.htm";
+}
+</script>
+</TABLE>
+<TABLE width="100%" border="0" cellspacing="3" cellpadding="0">
+$bluebar
+</TABLE>
+<TABLE width="100%" border="0" cellspacing="0" cellpadding="4">
+<script>
+//if (( parent.wps_endis_configured == 1 && wps_status == 1 ) || ( parent.wps_an_endis_configured == 1 && wps_status == 1))
+if ( (( parent.wps_endis_configured == 1 && wps_now_configured == 5 ) || ( parent.wps_an_endis_configured == 1 && wps_an_now_configured == 5 )) && wps_status == 1 )
+	document.write("<TR><TD align=center>$wps_check_NewWLOK</TD></TR>");
+else
+	document.write("<TR><TD align=center>$wps_add_failure_gopage</TD></TR>");
+</script>
+<TR>
+	<TD align=center>
+	<input class="short_common_bt" type="button" name="OK" value="$ok_mark" onclick="go2url();">
+	</TD>
+</TR>	
+</TABLE>
+
+</div>
+<% help_box("1","_wps") %>
+</FORM>
+</BODY>
+</HTML>

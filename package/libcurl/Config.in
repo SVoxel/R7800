@@ -1,0 +1,7 @@
+config DNI_GREEN_DOWNLOAD
+	bool "support DNI Green download"
+	default n
+	help
+	  If DNI Green download was enabled, could set this config.
+
+	  If unsure, say N.

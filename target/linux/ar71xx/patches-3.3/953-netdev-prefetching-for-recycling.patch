@@ -1,0 +1,101 @@
+From 82d6698a1d2e1d261cb0c586970d8d331e88475b Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Tue, 11 Jun 2013 10:46:58 -0500
+Subject: [netdev] prefetching for recycling
+
+Added some simple prefetches during the recycle alloc so that the
+subsequent writes to shinfo will not cause a data miss.  Also, added
+a prefetch for skb->destructor that was another almost-certain miss.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ net/core/skbuff.c | 45 ++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 36 insertions(+), 9 deletions(-)
+
+Index: linux-3.3.8/net/core/skbuff.c
+===================================================================
+--- linux-3.3.8.orig/net/core/skbuff.c	2013-08-01 12:57:02.621790936 -0500
++++ linux-3.3.8/net/core/skbuff.c	2013-08-01 12:57:02.617790936 -0500
+@@ -379,16 +379,26 @@
+ 		local_irq_restore(flags);
+ 		put_cpu_var(recycle_list);
+ 		if (likely(skb)) {
+-			struct skb_shared_info *s = skb_shinfo(skb);
+-			zero_struct(s,
+-				    offsetof(struct skb_shared_info, dataref));
+-			atomic_set(&s->dataref, 1);
++			struct skb_shared_info *shinfo;
++
++			/*
++			 * We're about to write a large amount to the skb to
++			 * zero most of the structure so prefetch the start
++			 * of the shinfo region now so it's in the D-cache
++			 * before we start to write that.
++			 */
++			prefetchw(&skb->end);
++
+ 			zero_struct(skb, offsetof(struct sk_buff, tail));
+ 			skb->data = skb->head;
+ 			skb_reset_tail_pointer(skb);
+ #ifdef NET_SKBUFF_DATA_USES_OFFSET
+ 			skb->mac_header = ~0U;
+ #endif
++			shinfo = skb_shinfo(skb);
++			zero_struct(shinfo, offsetof(struct skb_shared_info, dataref));
++			atomic_set(&shinfo->dataref, 1);
++
+ 			skb_reserve(skb, NET_SKB_PAD);
+ 			skb->dev = dev;
+ 			return skb;
+@@ -448,6 +458,10 @@
+ {
+ 	unsigned int len;
+ 
++	/*
++	 * Is this a request for an skb that we might be able to pull
++	 * from the recycling list?
++	 */
+ 	if (likely(length <= SKB_RECYCLE_SIZE)) {
+ 		unsigned long flags;
+ 		struct sk_buff *skb;
+@@ -457,17 +471,25 @@
+ 		local_irq_restore(flags);
+ 		put_cpu_var(recycle_list);
+ 		if (likely(skb)) {
+-			struct skb_shared_info *s = skb_shinfo(skb);
+-			zero_struct(s,
+-				    offsetof(struct skb_shared_info, dataref));
+-			atomic_set(&s->dataref, 1);
++			struct skb_shared_info *shinfo;
++			/*
++			 * We're about to write a large amount to the skb to
++			 * zero most of the structure so prefetch the start
++			 * of the shinfo region now so it's in the D-cache
++			 * before we start to write that.
++			 */
++			prefetchw(&skb->end);
+ 			zero_struct(skb, offsetof(struct sk_buff, tail));
+-			skb->data = skb->head + NET_SKB_PAD;
++			skb->data = skb->head;
+ 			skb_reset_tail_pointer(skb);
+ 			skb_reserve(skb, NET_SKB_PAD);
+ #ifdef NET_SKBUFF_DATA_USES_OFFSET
+ 			skb->mac_header = ~0U;
+ #endif
++			shinfo = skb_shinfo(skb);
++			zero_struct(shinfo,
++				    offsetof(struct skb_shared_info, dataref));
++			atomic_set(&shinfo->dataref, 1);
+ 			return skb;
+ 		}
+ 	}
+@@ -679,6 +701,9 @@
+ {
+ 	if (unlikely(!skb))
+ 		return;
++
++	prefetch(&skb->destructor);
++
+ 	if (likely(atomic_read(&skb->users) == 1))
+ 		smp_rmb();
+ 	else if (likely(!atomic_dec_and_test(&skb->users)))

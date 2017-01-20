@@ -1,0 +1,39 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% body_header_sel("_wiz_logs", "log.htm", "wiz_logs") %>
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+        <TD nowrap colspan=2 align=center>
+        <input class="common_bt" type="submit" name="action_Upload" value="Upload">&nbsp;&nbsp;
+        <input class="common_bt" type="button" name="action_Refresh" value='$refresh_mark' onClick='location.href="log.htm";'>   
+	<input class="common_bt" type="button" name="action_Refresh" value='save' onClick='save_log();'>&nbsp;&nbsp;       
+        </TD>
+</TR>
+</TABLE>
+
+<% table_header() %> 
+<% save_timestamp("wiz_logs", "save_wiz_log") %>
+<script language="javascript">
+var ts = "<% cfg_get("wiz_logs") %>";
+function save_log()
+{
+	var cf=document.forms[0];
+	cf.submit_flag.value="save_wiz_log";
+	cf.action="/apply.cgi?/log_frame.htm timestamp=" + ts;
+	cf.submit();
+}
+
+function loadvalue()
+{
+	var form=document.forms[0];
+}
+</script>
+<TR>
+	<TD nowrap colspan=2 align=center>
+	<textarea NAME="log_detail" ROWS="35" cols="140" WRAP="vitural" readonly><% wiz_log_message("/tmp/wizard_log") %><% wiz_log_message("/tmp/manu_log") %></textarea>	
+	</TD>
+</TR>
+</TABLE>
+</form>
+</body>
+</html>
+

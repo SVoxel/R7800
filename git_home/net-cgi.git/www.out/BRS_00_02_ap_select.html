@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_02_genieHelp.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_00_02_ap_select.js"></script>
+<% hijack_language() %>
+</head>
+
+<body>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+function show_hid_router_ap_mode(cf)
+{	
+	if(cf.WANDetc[0].checked)
+	{
+		document.getElementById("chocies_router_div").style.display="none";
+		document.getElementById("chocies_ap_div").style.display="none";
+		document.getElementById("choose_router_ap").style.height="70px";
+	}
+	else if(cf.WANDetc[1].checked)
+	{	
+		document.getElementById("chocies_router_div").style.display="";
+		document.getElementById("chocies_ap_div").style.display="";
+		document.getElementById("choose_router_ap").style.height="220px";
+	}
+}
+
+</script>
+<form>
+<div class="wizard_content_div">
+
+	<div id="choices_div" class="wizard_words_div1">
+		<h1><!-- An existing router or gateway is detected in your network --></h1>
+		<p><!--connection_further_action--></p>		
+		<div id="userChoice_div" class="userChoice_divs">
+			<input type="radio" name="WANDetc" id="wandetc_help" value="help_me" onclick="show_hid_router_ap_mode(document.forms[0]);"/>
+			<b><script>document.write(bh_help_me_choose);</script></b>
+			<div class="apradio_doc" style="padding-left:25px; margin-top:5px; margin-bottom:12px;"><script>document.write(bh_help_me_content);</script>
+			</div>	
+			<input type="radio" name="WANDetc" id="wandetc_choose" value="chosse" onclick="show_hid_router_ap_mode(document.forms[0]);" />
+			<b><script>document.write(bh_let_me_choose);</script></b>
+			<script>document.write("("+bh_let_me_choose_tips+")");</script>
+		</div>
+		<div id="choose_router_ap" class="choose_router_ap_divs">
+			<div id="chocies_router_div" class="apradio_div" style="margin-top:10px; display:none;">
+				<input type="radio" name="mode_select" id="mode_router" value="router_mode" /><!--yes_mark-->
+				<b><script>document.write(bh_router_mode);</script></b>
+				<a href=# target="_blank" onclick="goto_url(1); return false;"><font color=blue><u><script>document.write("("+bh_mode_illustration+")");</script></u></font></a>
+				<div class="apradio_doc"><script>document.write(bh_router_description);</script></div>
+			</div>
+			
+			<div id="chocies_ap_div" class="apradio_div" style="margin-top:10px; display:none">
+				<input type="radio" name="mode_select" id="mode_ap" value="ap_mode" /><!--no_genie_help-->
+				<b><script>document.write(bh_ap_mode);</script></b>
+				<a href=# target="_blank" onclick="goto_url(2); return false;"><font color=blue><u><script>document.write("("+bh_mode_illustration+")");</script></u></font></a>
+				<div class="apradio_doc"><script>document.write(bh_ap_description);</script></div>
+			</div>
+			<div class="apradio_lean">
+				<div class="apradio_doc"><a href=# target="_blank" onclick="goto_url(3); return false;"><font color=blue><u><script>document.write(bh_ap_learn);</script></u></font></a>
+				</div>	
+			</div>
+		</div>
+	 </div>
+	
+	<div id="buttons_div_02" class="wizard_buttons_div" align="center">
+		<input type="button" name="Next" id="next" class="purple_short_btn"><!--next_mark-->
+	</div>
+</div>
+
+</form>
+</body>
+
+</html>

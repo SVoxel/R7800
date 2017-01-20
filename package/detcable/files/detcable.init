@@ -1,0 +1,16 @@
+#!/bin/sh /etc/rc.common
+START=20
+
+start() {
+	# Start detcable
+	/usr/bin/detcable 2
+}
+
+stop() {
+	killall detcable
+}
+
+restart() {
+	stop
+	start
+}

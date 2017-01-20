@@ -1,0 +1,378 @@
+<% http_header("style/form.css", "/funcs.js", "add_download_item.js") %>
+<% body_header("_green_download_bt", "GREEN_bt_basic.htm", "add_usb_bt_download_item") %>
+<div class="page_title">$greendl_common_manager</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+        <TD nowrap colspan=2 align=center>
+	<input class="cancel_bt" type='button' name="Cancel" value='$cancel_mark' onClick='location.href="add_BT_item.htm";'>&nbsp;&nbsp;
+	<input class="apply_bt" type='submit' name="Apply" value='$apply_mark' onclick='return enable_greendownload(document.forms[0],"bt");'>
+        </TD>
+</TR>
+</TABLE>
+</div>
+<div class="download_type">
+<% table_header() %>
+<script>
+<% usb_initTree() %>
+<% change_folder_path() %>
+if( "<% cfg_get("green_download_max_tasks_all") %>" == "" )
+	var max_tasks_all=0;
+else
+	var max_tasks_all=parseInt("<% cfg_get("green_download_max_tasks_all") %>", 10);
+
+var green_disk_lable = "<% cfg_get("green_disk_lable") %>";
+var ts = "<% cfg_get("add_usb_bt_download_item") %>";
+var greendl_open = 0;
+var green_download_enable="<% cfg_get("green_download_enable") %>";
+<% show_devices() %>
+function change_file_path(type)
+{
+	if( type == "0" )
+	{
+		document.forms[1].bt_location_type[0].checked = true;
+		document.getElementById("pc").style.display="";
+		document.getElementById("usb").style.display="none";
+		document.getElementById("magnet").style.display="none";
+	}
+	else if( type == "1")
+	{
+		document.forms[0].bt_location_type_magnet[2].checked = true;
+		document.getElementById("pc").style.display="none";
+		document.getElementById("usb").style.display="none";
+		document.getElementById("magnet").style.display="";
+	}
+	else
+	{
+		document.forms[0].bt_location_type_usb[1].checked = true;
+		document.getElementById("pc").style.display="none";
+		document.getElementById("usb").style.display="";
+		document.getElementById("magnet").style.display="none";
+	}
+}
+function add_BT()
+{
+	form = document.forms[1];
+	var filestr = form.mtenFWUpload.value;
+
+	var task_num_all = top.green_download_item_num;
+	if( task_num_all >= max_tasks_all )
+	{
+		alert("$greendl_common_alert_maxtask");
+		return false;
+	}
+	if( filestr == "" ){
+		alert("$greendl_bt_alert_torrent");
+		return false;
+	}
+	var file_format=filestr.substr(filestr.lastIndexOf(".")+1); 
+	if(file_format.toUpperCase()!="TORRENT")
+	{
+		alert("$greendl_not_correct_file");
+		return false;
+	}
+
+	return true;
+}
+function add_item()
+{
+	form = document.forms[0];
+	var filestr = form.folder.value;
+
+	var task_num_all = top.green_download_item_num;
+	if( task_num_all >= max_tasks_all )
+	{
+		alert("$greendl_common_alert_maxtask");
+		return false;
+	}
+
+	form.folder.value = form.folder.value.replace(/(^\s*)/g, "");
+	form.folder.value = delete_end_space(form.folder.value);
+
+	if( filestr == ""){
+		alert("$greendl_bt_alert_torrent");
+		return false;
+	}
+	var file_format = filestr.substr(filestr.lastIndexOf(".")+1);
+	if(file_format.toUpperCase()!="TORRENT")
+	{
+		alert("$greendl_not_correct_file");
+		return false;
+	}
+
+	var upfolder="\\.";
+	if( form.folder.value.indexOf(upfolder) > -1 ){
+		alert("$invalid_up_folderpath");
+		return false;
+	}
+
+	var info=form.folder.value.replace(/\\/g,"\/").split(":");
+	var device_lable=info[0].toUpperCase();
+
+        for(i=0; i<sda_num; i++){
+               var sda_str = eval('sda_U' + i);
+               each_info = sda_str.split('*');
+               if( device_lable == each_info[1] ){
+                       info[0]=each_info[0];
+               }
+        }
+        var str=""+info[0]+info[1]+"";
+
+	form.usb_path.value = str;
+
+	return true;
+}
+
+function add_magnet()
+{
+	form = document.forms[0];
+
+	var magnet_url = form.magnet_url.value;
+	var task_num_all = top.green_download_item_num;
+
+	if( task_num_all >= max_tasks_all )
+	{
+		alert("$greendl_common_alert_maxtask");
+		return false;
+	}
+
+
+	if(check_magnet(magnet_url))
+		form.download_url.value = magnet_url;
+	else
+		return false;
+
+	form.submit_flag.value = "add_download_item";
+	return true;
+}
+
+function loadvalue()
+{
+	form_1 = document.forms[0];
+	form_2 = document.forms[1];
+
+	if( green_download_enable == "1")
+		form_1.enable_green_download.checked = true;
+	else
+		form_1.enable_green_download.checked = false;
+
+	if(disk_num==0)
+	{
+		form_1.Cancel.disabled = true;
+		form_1.Apply.disabled = true;
+		form_1.Cancel.className = "common_gray_bt";
+		form_1.Apply.className = "common_gray_bt";
+		document.getElementById("download_endis").style.color="gray";
+		form_1.enable_green_download.disabled=true;
+		document.getElementById("download_save_path").style.color="gray";
+		form_1.green_link_basic.disabled=true;
+		form_1.green_link_basic.className = "long_edit_gray_bt";
+		document.getElementById("type").style.color="gray";
+		document.getElementById("pc").style.color="gray";
+		form_1.download_type_1.disabled=true;
+		document.getElementsByName("bt_location_type")[0].disabled=true;
+		document.getElementsByName("bt_location_type")[1].disabled=true;
+		document.getElementsByName("bt_location_type")[2].disabled=true;
+		form_2.magnet_url_pc.disabled=true;
+		form_2.mtenFWUpload.disabled=true;
+		form_1.Add.disabled=true;
+		form_2.Add.disabled=true;
+		form_1.reset.disabled=true;
+		form_2.reset.disabled=true;
+		form_1.Add.className = "add_gray_bt";
+		form_2.Add.className = "add_gray_bt";
+		form_1.reset.className = "long_delete_gray_bt";
+		form_2.reset.className = "long_delete_gray_bt";
+	}
+	else if(disk_num !=0 && green_download_enable == "0")
+	{
+		form_1.Cancel.disabled = false;
+		form_1.Apply.disabled = false;
+		form_1.Cancel.className = "cancel_bt";
+		form_1.Apply.className = "apply_bt";
+		document.getElementById("download_endis").style.color="black";
+		form_1.enable_green_download.disabled=false;
+		document.getElementById("download_save_path").style.color="black";
+		form_1.green_link_basic.disabled=false;
+		form_1.green_link_basic.className = "long_edit_bt";
+		document.getElementById("type").style.color="gray";
+		document.getElementById("pc").style.color="gray";
+		form_1.download_type_1.disabled=true;
+		document.getElementsByName("bt_location_type")[0].disabled=true;
+		document.getElementsByName("bt_location_type")[1].disabled=true;
+		document.getElementsByName("bt_location_type")[2].disabled=true;
+		form_2.magnet_url_pc.disabled=true;
+		form_2.mtenFWUpload.disabled=true;
+		form_1.Add.disabled=true;
+		form_2.Add.disabled=true;
+		form_1.reset.disabled=true;
+		form_2.reset.disabled=true;
+		form_1.Add.className = "add_gray_bt";
+		form_2.Add.className = "add_gray_bt";
+		form_1.reset.className = "long_delete_gray_bt";
+		form_2.reset.className = "long_delete_gray_bt";
+	}
+	else
+	{
+		form_1.Cancel.disabled = false;
+		form_1.Apply.disabled = false;
+		form_1.Cancel.className = "cancel_bt";
+		form_1.Apply.className = "apply_bt";
+		document.getElementById("download_endis").style.color="black";
+		form_1.enable_green_download.disabled=false;
+		document.getElementById("download_save_path").style.color="black";
+		form_1.green_link_basic.disabled=false;
+		form_1.green_link_basic.className = "long_edit_bt";
+		document.getElementById("type").style.color="black";
+		document.getElementById("pc").style.color="black";
+		form_1.download_type_1.disabled=false;
+		document.getElementsByName("bt_location_type")[0].disabled=false;
+		document.getElementsByName("bt_location_type")[1].disabled=false;
+		document.getElementsByName("bt_location_type")[2].disabled=false;
+		form_2.magnet_url_pc.disabled=false;
+		form_2.mtenFWUpload.disabled=false;
+		form_1.Add.disabled=false;
+                form_2.Add.disabled=false;
+                form_1.reset.disabled=false;
+                form_2.reset.disabled=false;
+                form_1.Add.className = "add_bt";
+                form_2.Add.className = "add_bt";
+                form_1.reset.className = "long_delete_bt";
+                form_2.reset.className = "long_delete_bt";
+		
+	}
+}
+var this_download_type = "bt";
+function change_downlaod_type(obj)
+{
+	var type = obj.value;
+        if( type != this_download_type )
+        {
+                if(type == "bt")
+                        parent.location.href="GREEN_bt_basic.htm";
+                else if( type == "emule")
+                        parent.location.href="GREEN_emule_basic.htm";
+                else if( type == "http")
+                        parent.location.href="GREEN_http_basic.htm";
+        }
+}
+
+</script>
+<% save_timestamp("add_usb_bt_download_item", "add_usb_bt_download_item_queuen", "add_download_item","enable_green_download") %>
+<input type=hidden name=download_type value="bt">
+<input type=hidden name=usb_path>
+<input type=hidden name=download_url>
+<input type=hidden name=devicePath value="all">
+<input type=hidden name=green_download_open_flag>
+<TR id="download_endis">
+	<TD nowrap colspan=2>
+		<input type="checkbox" name="enable_green_download"><b>$greendl_manager_enable</b>
+	</TD>
+</TR>
+<TR id="download_save_path">
+	<TD nowrap><b>$greendl_common_showSavedPath:&nbsp;</b>
+		<script>
+			if(disk_num != 0)
+				document.write(green_disk_lable);
+		</script>
+	</TD>
+	<TD nowrap align="center">
+		<input class="long_edit_bt" type="button" name="green_link_basic" value="$greendl_manager_config_set_mark" onClick="redirect_config_download();">
+	</TD>
+</TR>
+$bluebar
+<TR id="type">
+        <TD nowrap colspan=2><A tabindex=-1 href="javascript:loadhelp('_green_download','')"><b>$greendl_manager_downloadtype</b></A>
+        <select name="download_type_1" size="1" onchange="change_downlaod_type(this);">
+                <option value="bt" selected>$greendl_bt</option>
+                <option value="emule">Emule</option>
+                <option value="http">$greendl_filetp</option>
+        </select>
+</TD></TR>
+
+</TABLE>
+</div>
+<div class="download_add" id="usb" style="display: none">
+	<TABLE width=100% border=0 cellpadding=0 cellspacing=3>
+	<TR style="height: 8px"><TD></TD><TD></TD></TR>
+	<TR>
+		<TD nowrap>
+			<A tabindex=-1 href="javascript:loadhelp('_green_download_bt','bt_loc')"><B>$greendl_bt_torrent_location</B></A>&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="radio" name="bt_location_type_usb" value=0 onclick="change_file_path('0');"> $greendl_bt_torrent_location_PC
+			<input type="radio" checked name="bt_location_type_usb" value=1 > $greendl_bt_torrent_location_USB
+			<input type="radio" name="bt_location_type_usb" value=2 onclick="change_file_path('1');"> $greendl_bt_torrent_link
+			<input type="text" name="magnet_url_usb" size="42" value="">
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap >
+			<input type="text" name="folder" size="32" value="" disabled>
+			<input type="button" name="browse" value="$browse_mark" onClick='open_all_browser(document.forms[0],0);'>
+		</TD>
+	</TR>
+$bluebar
+        <TR>
+                <TD nowrap colspan=2 align=center>
+                <input class="add_bt" type="submit" name="Add" value="$add_mark" onClick="return add_item();">&nbsp;&nbsp;
+                <input class="long_delete_bt" type='button' name='reset' value='$green_qos_reset' onClick='location.href="add_BT_item.htm";'>
+                </TD>
+        </TR>
+</TABLE>
+</div>
+<div class="download_add" id="magnet" style="display: none">
+	<TABLE width=100% border=0 cellpadding=0 cellspacing=3>
+	<TR style="height: 8px"><TD></TD><TD></TD></TR>
+	<TR>
+		<TD nowrap>
+			<A tabindex=-1 href="javascript:loadhelp('_green_download_bt','bt_loc')"><B>$greendl_bt_torrent_location</B></A>&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="radio" name="bt_location_type_magnet" value=0 onclick="change_file_path('0');"> $greendl_bt_torrent_location_PC
+			<input type="radio" name="bt_location_type_magnet" value=1 onclick="change_file_path('2');"> $greendl_bt_torrent_location_USB
+			<input type="radio" checked name="bt_location_type_magnet" value=2> $greendl_bt_torrent_link
+			<input type="text" name="magnet_url" size="42" value="">
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap >
+			<input name="mtenFWUpload" type="file" size="32" disabled>
+		</TD>
+	</TR>
+$bluebar
+        <TR>
+                <TD nowrap colspan=2 align=center>
+                <input class="add_bt" type="submit" name="Add" value="$add_mark" onClick="return add_magnet();">&nbsp;&nbsp;
+                <input class="long_delete_bt" type='button' name='reset' value='$green_qos_reset' onClick='location.href="add_BT_item.htm";'>
+                </TD>
+        </TR>
+</TABLE>
+</div>
+</form>
+<div class="download_add" id="pc">
+<FORM method="post" action="/bt_file.cgi" target=formframe enctype="multipart/form-data">
+	<TABLE width=100% border=0 cellpadding=0 cellspacing=3>
+		 <TR style="height: 9px"><TD></TD><TD></TD></TR>
+	<TR>
+		<TD nowrap colspan=2>
+			<A tabindex=-1 href="javascript:loadhelp('_green_download_bt','bt_loc')"><B>$greendl_bt_torrent_location</B></A>&nbsp;&nbsp;&nbsp;&nbsp;
+				<input type="radio" checked name="bt_location_type" value=0> $greendl_bt_torrent_location_PC
+				<input type="radio" name="bt_location_type" value=1 onclick="change_file_path('2');"> $greendl_bt_torrent_location_USB
+				<input type="radio" name="bt_location_type" value=2 onclick="change_file_path('1');"> $greendl_bt_torrent_link
+				<input type="text" name="magnet_url_pc" size="42" value="">
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>
+			<input name="mtenFWUpload" type="file" size="32">
+		</TD>
+	</TR>
+$bluebar
+        <TR>
+                <TD nowrap colspan=2 align=center>
+                <input class="add_bt" type="submit" name="Add" value="$add_mark" onClick="return add_BT();">&nbsp;&nbsp;
+		<input class="long_delete_bt" type='button' name='reset' value='$green_qos_reset' onClick='location.href="add_BT_item.htm";'>
+                </TD>
+        </TR>
+</TABLE>
+</FORM>
+</div>
+</BODY>
+</HTML>

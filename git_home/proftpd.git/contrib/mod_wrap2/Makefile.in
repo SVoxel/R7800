@@ -1,0 +1,43 @@
+top_builddir=../..
+top_srcdir=../..
+srcdir=@srcdir@
+
+include $(top_srcdir)/Make.rules
+
+.SUFFIXES: .la .lo
+
+SHARED_CFLAGS=-DPR_SHARED_MODULE
+SHARED_LDFLAGS=-avoid-version -export-dynamic -module
+VPATH=@srcdir@
+
+MODULE_NAME=mod_wrap2
+MODULE_INCLUDES=-I$(srcdir) -I$(top_srcdir) $(INCLUDES)
+MODULE_LIBS=@MODULE_LIBS@
+
+# Necessary redefinitions
+CPPFLAGS= -DHAVE_CONFIG_H $(DEFAULT_PATHS) $(PLATFORM) $(MODULE_INCLUDES)
+LDFLAGS=-L../../lib @LDFLAGS@
+
+.c.o:
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+
+.c.la:
+	$(LIBTOOL) --mode=compile --tag=CC $(CC) $(CPPFLAGS) $(CFLAGS) $(SHARED_CFLAGS) -c $*.c
+	$(LIBTOOL) --mode=link --tag=CC $(CC) -o $@ -rpath $(LIBEXECDIR) $(LDFLAGS) $(SHARED_LDFLAGS) $*.lo $(SHARED_MODULE_LIBS) `cat $*.c | grep '$$Libraries:' | sed -e 's/^.*\$$Libraries: \(.*\)\\$$/\1/'`
+
+shared: $(MODULE_NAME).la
+
+static: $(MODULE_NAME).o
+	test -z "$(MODULE_LIBS)" || echo "$(MODULE_LIBS)" >> $(MODULE_LIBS_FILE)
+
+install:
+	if [ -f $(MODULE_NAME).la ] ; then \
+		$(LIBTOOL) --mode=install --tag=CC $(INSTALL_BIN) $(MODULE_NAME).la $(DESTDIR)$(LIBEXECDIR) ; \
+	fi
+
+clean:
+	$(LIBTOOL) --mode=clean $(RM) $(MODULE_NAME).a $(MODULE_NAME).la *.o *.lo .libs/*.o
+
+dist: clean
+	$(RM) Makefile $(MODULE_NAME).h config.status config.cache config.log
+	-$(RM) -r .git/ CVS/ RCS/

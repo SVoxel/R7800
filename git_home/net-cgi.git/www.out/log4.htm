@@ -1,0 +1,69 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% body_header_sel("_wiz_logs", "log4.htm", "dsl_log_start") %>
+<!--<body onLoad="loadvalue();" bgcolor=#ffffff>
+<form method="POST" action="/apply.cgi?/log.htm" target=_self>
+<input type=hidden name=submit_flag value="dsl_log_start">-->
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+$bluebar
+<TR>
+	<TD></TD>
+    <TD nowrap colspan=5 style="color:red ;font-size:15px">$dsl_log4_head</TD>
+</TR>
+<TR>
+	<TD></TD>
+    <TD nowrap colspan=5 style="font-size:15px">$dsl_log4_step1</TD>
+</TR>
+<TR>
+	<TD></TD>
+    <TD nowrap colspan=5 style="font-size:15px">$dsl_log4_step2</TD>
+</TR>
+<TR>
+	<TD></TD>
+    <TD nowrap colspan=5 style="font-size:15px">$dsl_log4_step3
+	<input type="button" name="start" value="$adva_start" style="font-size:15px" onClick="return log_start()"></TD>
+</TR>
+<TR>
+	<TD></TD>
+    <TD nowrap colspan=5 style="font-size:15px">$dsl_log4_step4</TD>
+</TR>
+<TR>
+	<TD></TD>
+    <TD nowrap colspan=5 style="font-size:15px">$dsl_log4_step5</TD>
+</TR>
+<TR>
+	<TD></TD>
+    <TD nowrap colspan=5 style="font-size:15px">$dsl_log4_step6</TD>
+</TR>
+<TR>
+	<TD></TD>
+    <TD nowrap colspan=5 style="font-size:15px">$dsl_log4_step71
+	<input type="button" name="start" value="$statistics_stop" style="font-size:15px" onClick="return log_stop()"><span  style="color:red">$dsl_log4_step72</span></TD>
+</TR>
+$bluebar
+</TABLE>
+<script>
+<% save_timestamp("dsl_log_start", "dsl_log_stop") %>
+var ts="<% cfg_get("dsl_log_start") %>";
+function log_stop()
+{
+    var cf=document.forms[0];
+	cf.submit_flag.value="dsl_log_stop"; 
+	cf.action="/apply.cgi?/log4.htm timestamp="+ts;
+	cf.submit();
+}
+function log_start()
+{
+    var cf=document.forms[0];
+	cf.submit_flag.value="dsl_log_start"; 
+	cf.action="/apply.cgi?/log4.htm timestamp="+ts;
+	cf.submit();
+}
+function loadvalue()
+{
+	var form=document.forms[0];
+}
+</script>
+</form>
+</body>
+</html>
+

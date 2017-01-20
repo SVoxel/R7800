@@ -1,0 +1,263 @@
+From fa594ce811bbf06f284d42d25dd4ad519f066c78 Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Tue, 11 Jun 2013 19:16:57 -0500
+Subject: [ag71xx] rework rx_packets back into single func
+
+This changes the mechanism for RX and RX replenishment to a single
+loop.  Each call to rx_packets attempts to do replenishment before it
+acknowledges the buffer to the HW, and sends the buffer to the stack.
+Also, since we are replenishing as we go, we don't need the double-tail
+entries to track position.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c | 156 +++++++++++-----------
+ 1 file changed, 81 insertions(+), 75 deletions(-)
+
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+@@ -978,28 +978,26 @@ static int ag71xx_rx_packets(struct ag71
+ 	struct ag71xx_ring *ring = &ag->rx_ring;
+ 	struct ag71xx_buf *curr = ring->curr;
+ 	struct ag71xx_desc *desc = curr->desc;
+-	unsigned int used = ring->used;
+-	int done = 0;
++	unsigned int rx_buf_size = ag->rx_buf_size;
++	unsigned int rx_buf_offset = ag->rx_buf_offset;
++	int received = 0;
+ 	struct sk_buff *skb;
++	bool has_ar8216;
+ 
+-	DBG("%s: rx packets, limit=%d, curr=%u, dirty=%u\n",
+-			dev->name, limit, curr, ring->dirty);
++	has_ar8216 = ag71xx_has_ar8216(ag);
+ 
+ 	/*
+-	 * Don't try to scan more entries than we have.
++	 * Start by looking at the SKB that will be up next.
+ 	 */
+-	if (limit > used) {
+-		limit = used;
+-	}
+-
+ 	skb = curr->skb;
+ 
+ 	/*
+ 	 * Process newly received packets.
+ 	 */
+-	while (done < limit) {
++	do {
+ 		u32 desc_ctrl;
+ 		struct sk_buff *next_skb;
++		struct sk_buff *new_skb;
+ 		int pktlen;
+ 
+ 		/*
+@@ -1010,41 +1008,96 @@ static int ag71xx_rx_packets(struct ag71
+ 			break;
+ 		}
+ 
++		/*
++		 * Speed up eth_type_trans() since it will inspect the packet
++		 * payload and write the protocol.  Strictly speaking this is a
++		 * little premature as the next SKB alloc could fail but in
++		 * practice it never will so this is good :-)
++		 */
+ 		prefetch(skb->data);
++		prefetch(&skb->protocol);
++
++		/*
++		 * When we receive a packet we also allocate a new buffer.  If
++		 * for some reason we can't allocate the buffer then we're not
++		 * going to try to process the received buffer yet either.
++		 */
++		new_skb = dev_alloc_skb(rx_buf_size);
++		if (unlikely(!new_skb)) {
++			break;
++		}
++
++		skb_reserve(new_skb, rx_buf_offset);
++
++		/*
++		 * This is where we'd unmap our buffer from the GMAC in a
++		 * general use of the DMA API.  On a MIPS platform this would
++		 * be a complete no-op so we don't bother:
++		 *
++		 * dma_unmap_single(&dev->dev, curr->dma_addr,
++		 *		    rx_buf_size, DMA_FROM_DEVICE);
++		 */
++
++		/*
++		 * Update the descriptor records to account for the new SKB.
++		 */
++		curr->skb = new_skb;
++		curr->dma_addr = dma_map_single(&dev->dev, new_skb->data,
++						rx_buf_size, DMA_FROM_DEVICE);
+ 
+-		curr->skb = NULL;
++		desc->data = (u32)curr->dma_addr;
++		desc->ctrl = DESC_EMPTY;
++
++		/*
++		 * Move forward to what will be the next RX descriptor.
++		 */
+ 		curr = curr->next;
+ 		next_skb = curr->skb;
+ 		desc = curr->desc;
+ 
++		/*
++		 * Our next skb is almost certainly cold in the cache as we last
++		 * saw it when we replenished this slot.  We'll take cache
++		 * misses on almost every access.  Try to mitigate this by
++		 * issuing some prefetches.
++		 *
++		 * Note that what we're prefetching here are the fields that
++		 * we'll need within the next iteration of this function.
++		 */
+ 		if (likely(next_skb)) {
++			/*
++			 * For a MIPS platform we shouldn't issue more than 3
++			 * prefetches at a time.
++			 */
++			prefetch(&next_skb->data);
+ 			prefetch(&next_skb->tail);
+ 			prefetch(&next_skb->len);
+-			prefetch(&next_skb->data);
+-			prefetch(&next_skb->protocol);
+ 		}
+ 
++		/*
++		 * Notify the GMAC that we received the packet.
++		 */
++		ag71xx_wr_fast(ag->rx_status_reg, RX_STATUS_PR);
++
++		/*
++		 * Determine the size of the packet we just received.
++		 */
+ 		pktlen = desc_ctrl & DESC_PKTLEN_M;
+ 		pktlen -= ETH_FCS_LEN;
+ 
+ 		/*
+-		 * This is where we'd unmap our buffer from the GMAC in a
+-		 * general use of the DMA API.  On a MIPS platform this would
+-		 * be a complete no-op so we don't bother:
+-		 *
+-		 * dma_unmap_single(&dev->dev, curr->dma_addr,
+-		 *		    rx_buf_size, DMA_FROM_DEVICE);
++		 * Update device stats.
+ 		 */
+-
+ 		dev->stats.rx_packets++;
+ 		dev->stats.rx_bytes += pktlen;
+ 
++		/*
++		 * Set up the length of the skb.
++		 */
+ 		skb->tail += pktlen;
+ 		skb->len += pktlen;
+ 
+-		ag71xx_wr_fast(ag->rx_status_reg, RX_STATUS_PR);
+-
+-		if (unlikely(ag71xx_has_ar8216(ag))) {
++		if (unlikely(has_ar8216)) {
+ 			int err = ag71xx_remove_ar8216_header(ag, skb, pktlen);
+ 			if (err) {
+ 				dev->stats.rx_dropped++;
+@@ -1053,64 +1106,19 @@ static int ag71xx_rx_packets(struct ag71
+ 			}
+ 		}
+ 
+-		skb->ip_summed = CHECKSUM_NONE;
+ 		skb->protocol = eth_type_trans(skb, dev);
++		skb_checksum_none_assert(skb);
+ 		netif_receive_skb(skb);
+ 
+ next:
+ 		skb = next_skb;
+-		done++;
+-	}
++		received++;
++	} while (received < limit);
+ 
+ 	ag71xx_wr_flush(ag->rx_status_reg);
+-	ring->curr = curr;
+-	ring->used = used - done;
+-	return done;
+-}
+-
+-static int ag71xx_rx_packets_replenish(struct ag71xx *ag, struct net_device *dev)
+-{
+-	struct ag71xx_ring *ring = &ag->rx_ring;
+-	unsigned int rx_buf_size = ag->rx_buf_size;
+-	unsigned int rx_buf_offset = ag->rx_buf_offset;
+-	struct ag71xx_buf *dirty = ring->dirty;
+-	struct ag71xx_desc *desc = dirty->desc;
+-	unsigned int used = ring->used;
+-	unsigned int size = ring->size;
+-
+-	while (used < size) {
+-		struct sk_buff *skb;
+-
+-		skb = dev_alloc_skb(rx_buf_size);
+-		if (unlikely(!skb)) {
+-			break;
+-		}
+-
+-		skb_reserve(skb, rx_buf_offset);
+-
+-		dirty->skb = skb;
+-		dirty->dma_addr = dma_map_single(&dev->dev, skb->data,
+-						 rx_buf_size, DMA_FROM_DEVICE);
+-
+-		desc->data = (u32)dirty->dma_addr;
+-		desc->ctrl = DESC_EMPTY;
+-
+-		/*
+-		 * Move to the next descriptor.
+-		 */
+-		dirty = dirty->next;
+-		desc = dirty->desc;
+-
+-		used++;
+-	}
+ 
+-	DBG("%s: rx finish, curr=%u, dirty=%u, done=%d\n",
+-		dev->name, ring->curr, ring->dirty, done);
+-
+-	ring->dirty = dirty;
+-	ring->used = used;
+-
+-	return 0;
++	ring->curr = curr;
++	return received;
+ }
+ 
+ static int ag71xx_poll(struct napi_struct *napi, int limit)
+@@ -1122,7 +1130,6 @@ static int ag71xx_poll(struct napi_struc
+ 	u32 status;
+ 	int tx_done;
+ 	int rx_done;
+-	int rx_replenished;
+ 
+ 	pdata->ddr_flush();
+ 
+@@ -1135,19 +1142,9 @@ static int ag71xx_poll(struct napi_struc
+ 	 */
+ 	tx_done = ag71xx_tx_packets(ag, dev, pdata->is_ar7240);
+ 	rx_done = ag71xx_rx_packets(ag, dev, limit);
+-	rx_replenished = ag71xx_rx_packets_replenish(ag, dev);
+ 
+ 	ag71xx_debugfs_update_napi_stats(ag, rx_done, tx_done);
+ 
+-	if (unlikely(rx_replenished != 0)) {
+-		if (netif_msg_rx_err(ag))
+-			pr_info("%s: out of memory\n", dev->name);
+-
+-		mod_timer(&ag->oom_timer, jiffies + AG71XX_OOM_REFILL);
+-		napi_complete(napi);
+-		return 0;
+-	}
+-
+ 	status = ag71xx_rr_fast(ag->rx_status_reg);
+ 	if (unlikely(status & RX_STATUS_OF)) {
+ 		ag71xx_wr_fast(ag->rx_status_reg, RX_STATUS_OF);

@@ -1,0 +1,158 @@
+<% http_header("style/form.css", "/funcs.js", "/USB_NETStorage.js") %>
+<% body_header("_USB_approve", "USB_approved.htm", "usb_approved_add") %>
+<div class="page_title">$usb_drive</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR><TD colspan=2 align=center>
+	<input class="common_bt" type="button" name="refresh" id="refresh" value=" $refresh_mark " onClick='location.href="USB_approved.htm";'> &nbsp;&nbsp;
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+    document.write('<input class="apply_bt" type="button" name="apply" id="apply" value=" $apply_mark " onClick="click_apply();">');
+else
+	document.write('<input class="apply1_bt" type="button" name="apply" id="apply" value=" $apply_mark " disabled>');
+</script>
+</TD></TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<% save_timestamp("usb_approved_add", "usb_approved_del", "usb_setting") %>
+<script>
+<!--
+var show_enableUSB="<% cfg_get("usb_enableUSB") %>";
+function loadvalue()
+{
+	var form = document.forms[0];
+	if( show_enableUSB == '1' )
+		form.allow_approved.checked = true;	
+	else
+		form.allow_approved.checked = false;
+}
+function delete_app()
+{
+	form=document.forms[0];
+	var num = -1;
+	if( app_num== 1){
+		if(form.app_devname.checked == true){
+			 num = 0;
+		}
+	}
+	else{
+		for(i=0;i < app_num;i++){
+			if(form.app_devname[i].checked == true){
+				num = i;
+			}
+		}
+	}
+	if(num == -1 ){
+		alert("$choose_device");
+		return false;
+	}
+
+	form.select_approved_item.value=num+1;
+	form.submit_flag.value="usb_approved_del";
+	form.submit();
+}
+function click_add_device()
+{
+	form=document.forms[0];
+	var num = -1;
+	if( ava_num== 1){
+		if(form.ava_devname.checked == true){
+			num = 0;
+		}
+	}
+	else{
+		for(i=0;i < ava_num;i++){
+			if(form.ava_devname[i].checked == true){
+				num = i;
+			}
+		}
+	}
+	if(num == -1 ){
+		alert("$choose_device");
+		return false;
+	}
+	form.submit();
+	return true;
+}
+function click_apply()
+{
+	var form = document.forms[0];
+
+	if(form.allow_approved.checked == true)
+		form.enableUSB.value="1";
+	else
+		form.enableUSB.value="0";
+
+	form.submit_flag.value="usb_setting";
+	form.submit();
+	
+}
+-->
+</script>
+<input type="hidden" name="enableUSB">
+<input type="hidden" name="select_approved_item">
+<TR><TD colspan=2><input type="checkbox" name="allow_approved" id="allow_approved">$allow_approved_device</TD></TR>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD colspan=2><b>$approved_usb_devices</b></TD></TR>
+<TR><TD colspan=2>
+	<TABLE class=tables id="approved_device" border ="0" cellpadding ="2" cellspacing ="0" width="100%">
+	<TR class=table_header>
+		<TD nowrap align="center" width="20%"><span class="thead">&nbsp;</span></TD>
+		<TD nowrap align="center"><span class="thead">$volume_name</span></TD>
+		<TD nowrap align="center"><span class="thead">$usb_device_name</span></TD>
+		<TD nowrap align="center"><span class="thead">$disk_capacity</span></TD>
+	</TR>
+<% show_approved_devices() %>
+	</TABLE>
+	</td>
+</TR>
+<script>
+if( master == "admin" )
+    document.write('<TR><TD colspan=2 align=left><input class="delete_bt" type="button" name="delete" id="delete" value=" $delete_mark " onClick="delete_app();"></TD></TR>');
+else
+	document.write('<TR><TD colspan=2 align=left><input class="delete1_bt" type="button" name="delete" id="delete" value=" $delete_mark " disabled></TD></TR>');
+</script>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+
+<TR><TD colspan=2><b>$available_usb_devices</b></TD></TR>
+<TR><TD colspan=2>
+	<TABLE class=tables id="available_device" border ="0" cellpadding ="2" cellspacing ="0" width="100%">
+	<TR class=table_header>
+		<TD nowrap align="center" width="20%"><span class="thead">&nbsp;</span></TD>
+		<TD nowrap align="center"><span class="thead">$volume_name</span></TD>
+		<TD nowrap align="center"><span class="thead">$usb_device_name</span></TD>
+		<TD nowrap align="center"><span class="thead">$disk_capacity</span></TD>
+	</TR>
+<% show_available_devices() %>
+	</TABLE>
+</TD></TR>
+<script>
+if( master == "admin" )
+    document.write('<TR><TD colspan=2 align=left><input class="add_bt" type="button" name="add" id="add" value="  $add_mark  " onClick="return click_add_device();"></TD></TR>');
+else
+	document.write('<TR><TD colspan=2 align=left><input class="add_gray_bt" type="button" name="add" id="add" value="  $add_mark  " disabled></TD></TR>');
+</script>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+</TABLE>
+</div>
+<% help_box("0","_USB_approve") %>
+
+</FORM>
+</BODY>
+</HTML>
+
+
+
+
+
+
+
+
+
+
+

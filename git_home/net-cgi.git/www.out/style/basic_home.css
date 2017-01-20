@@ -1,0 +1,35 @@
+body{  background-color: #e5e5e5;}
+
+#form{ width: 599px; height: 404px; position: absolute; top: 0px; left: 0px;  background: url(../image/basic_homes.gif) no-repeat 0 0; margin-left:20px;}
+#form_content{ width: 585px; height: 390px; margin-left: 5px; margin-top: 5px;}
+p{position: relative; top: 5px;}
+.basic_icon, .basic_icon_error, .basic_icon_warning{ width: 192px; height: 192px; cursor:pointer; margin-left: 3px; display:inline; margin-top: 3px; float: left; overflow: hidden;}
+.icon_name {  width: 192px; height: 42px; top: 110px; position: absolute; font-family: Arial; font-weight: Bold; font-size: 18px; color: #323232; text-align: center; overflow: hidden;}
+.icon1_name {  width: 192px; height: 42px; top: 110px; position: absolute; font-family: Arial; font-weight: Bold; font-size: 17px; color: #323232; text-align: center; overflow: hidden;}
+.icon_click { width: 192px; height: 144px; top: 0px; position: absolute; overflow: hidden; }
+#icon_error { margin: 6px auto auto 6px; width: 37px; height: 36px; font-family: Arial; background:url(../image/basic_homes.gif ) no-repeat -409px -596px; overflow: hidden;}
+#icon_warning { margin: 6px auto auto 6px; width: 37px; height: 36px; font-family: Arial; background:url(../image/basic_homes.gif ) no-repeat -372px -596px; overflow: hidden;}
+.icon_status span  { line-height: 18px; top: 9px; left: 0px; width: 186px; float: left; position: absolute }
+.icon_long_status span { line-height: 18px; top: 0px; left: 0px; width: 186px; float: left; position: absolute }
+.basic_icon .icon_status {position:absolute; left: 4px; top: 152px; width: 186px; height: 36px; font-family: Arial; font-weight: Bold; font-size: 14px; color: #323232; text-align: center;}
+.basic_icon .icon_long_status {position:absolute; left: 4px; top: 152px; width: 186px; height: 36px; font-family: Arial; font-weight: Bold; font-size: 14px; color: #323232; text-align: center;}
+.basic_icon_error .icon_status, .basic_icon_error .icon_long_status {position:absolute; left: 4px; top: 152px; width: 186px; height: 36px; font-family: Arial; font-weight: Bold; font-size: 14px; color: #323232; text-align: center; background:url(../image/basic_homes.gif ) no-repeat -186px -596px }
+.basic_icon_warning .icon_status, .basic_icon_warning .icon_long_status {position:absolute; left: 4px; top: 152px; width: 186px; height: 36px; font-family: Arial; font-weight: Bold; font-size: 14px; color: #323232; text-align: center; background:url(../image/basic_homes.gif ) no-repeat 0 -596px }
+.basic_icon .icon_status b, .basic_icon .icon_long_status b{color: #43a800;}
+.basic_icon_error .icon_status b, .basic_icon_warning .icon_status b , .basic_icon_error .icon_long_status b, .basic_icon_warning .icon_long_status b{font-family: Arial; font-size: 16px; color: #ffffff;}
+.basic_icon_error .icon_status a, .basic_icon_warning .icon_status a , .basic_icon_error .icon_long_status a, .basic_icon_warning .icon_long_status a{font-family: Arial; font-weight: normal; font-style: italic; font-size: 12px; color: #ffffff;text-decoration: underline}
+
+.status_info{ position: relative; top: 5px;}
+#internet{ background:url(../image/basic_homes.gif ) no-repeat -599px 0 ; position: relative }
+#wireless{ background:url(../image/basic_homes.gif ) no-repeat -599px -192px; position: relative }
+#attached{ background:url(../image/basic_homes.gif ) no-repeat -599px -384px; position: relative }
+#parental{ background:url(../image/basic_homes.gif ) no-repeat 0 -404px; position: relative }
+#readyshare{ background:url(../image/basic_homes.gif ) no-repeat -192px -404px; position: relative }
+#guest{ background:url(../image/basic_homes.gif ) no-repeat -384px -404px; position: relative }
+
+#mobile_internet0{ background:url(../image/mobile_internet.gif ) no-repeat 0 0; position: relative }
+#mobile_internet1{ background:url(../image/mobile_internet.gif ) no-repeat -192px 0; position: relative }
+#mobile_internet2{ background:url(../image/mobile_internet.gif ) no-repeat -384px 0; position: relative }
+#mobile_internet3{ background:url(../image/mobile_internet.gif ) no-repeat 0 -192px; position: relative }
+#mobile_internet4{ background:url(../image/mobile_internet.gif ) no-repeat -192px -192px; position: relative }
+#mobile_internet5{ background:url(../image/mobile_internet.gif ) no-repeat -384px -192px; position: relative }

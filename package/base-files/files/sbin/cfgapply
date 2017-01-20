@@ -1,0 +1,9 @@
+#!/bin/sh
+. /lib/cfgmgr/cfgmgr.sh
+
+#massege control medium way: For example: cfgapply apmode it will run /sbin/cfgmgr/cfg_apmode
+[ -x "$cfg_cmddir/cfg_$1" ] && { "$cfg_cmddir/cfg_$1"; 	exit; }
+
+case "$1" in
+*) oc echo "not supportted" ;;
+esac

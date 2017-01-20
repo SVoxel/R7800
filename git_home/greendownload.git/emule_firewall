@@ -1,0 +1,24 @@
+#!/bin/sh
+tmp_file=/tmp/check_emule_firewall
+# port equal to emule config amule.conf
+emule_tcp_port=4662
+emule_udp_port1=4665
+emule_udp_port2=4672
+start()
+{
+	/usr/sbin/iptables -nvL > $tmp_file
+	[ -f $tmp_file -a `grep -c "tcp spt:$emule_tcp_port" $tmp_file` -eq 0 ]	&& iptables -I OUTPUT -p tcp --sport $emule_tcp_port -j ACCEPT
+	[ -f $tmp_file -a `grep -c "udp spt:$emule_udp_port1" $tmp_file` -eq 0 ] && iptables -I OUTPUT -p udp --sport $emule_udp_port1 -j ACCEPT
+	[ -f $tmp_file -a `grep -c "udp spt:$emule_udp_port2" $tmp_file` -eq 0 ] && iptables -I OUTPUT -p udp --sport $emule_udp_port2 -j ACCEPT
+
+	[ -f $tmp_file -a `grep -c "tcp dpt:$emule_tcp_port" $tmp_file` -eq 0 ]	&& iptables -I INPUT -p tcp --dport $emule_tcp_port -j ACCEPT
+	[ -f $tmp_file -a `grep -c "udp dpt:$emule_udp_port1" $tmp_file` -eq 0 ] && iptables -I INPUT -p udp --dport $emule_udp_port1 -j ACCEPT
+	[ -f $tmp_file -a `grep -c "udp dpt:$emule_udp_port2" $tmp_file` -eq 0 ] && iptables -I INPUT -p udp --dport $emule_udp_port2 -j ACCEPT
+
+	/bin/rm $tmp_file
+}
+
+[ $1 = "start" ] && start
+[ $1 = "restart" ] && start
+
+

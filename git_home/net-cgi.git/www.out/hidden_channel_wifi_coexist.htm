@@ -1,0 +1,105 @@
+<% http_header("style/form.css") %>
+<% nohelp_header("hidden_channel_wifi_coexist.htm", "wifi_channel_coexist") %>
+
+<script>
+<% web_flag() %>
+var wl_disablecoext="<% cfg_get("wl_disablecoext") %>";
+var wla_disablecoext="<% cfg_get("wla_disablecoext") %>";
+var wl_wifi_restart_tag="<% cfg_get("wl_wifi_restart_tag") %>";
+function show_page()
+{
+	if( an_router_flag == 1 && an_coexist_flag == 1 )
+	{
+		document.getElementById("an_title").style.display="";
+		document.getElementById("an_radio").style.display="";
+	}
+	else
+	{
+                document.getElementById("an_title").style.display="none";
+                document.getElementById("an_radio").style.display="none";
+	}
+}
+
+function loadvalue()
+{
+	var form=document.forms[0];
+	show_page();
+
+	if(wl_disablecoext == 0)
+		form.wifi_coexist[0].checked = true;
+	else
+		form.wifi_coexist[1].checked = true;
+
+        if( wla_disablecoext == 0)
+                form.wifi_a_coexist[0].checked = true;
+        else
+                form.wifi_a_coexist[1].checked = true;
+
+	if(wl_wifi_restart_tag == 1)
+		form.wifi_rest.checked = true;
+	else
+		form.wifi_rest.checked = false;
+}
+function click_apply()
+{
+	var form=document.forms[0];
+	if(form.wifi_coexist[0].checked == true)
+		form.hidd_coexist_flag.value=0;
+	else
+		form.hidd_coexist_flag.value=1;
+
+        if(form.wifi_a_coexist[0].checked == true)
+                form.hidd_a_coexist_flag.value=0;
+        else
+                form.hidd_a_coexist_flag.value=1;
+
+	if(form.wifi_rest.checked == true)
+		form.hidd_wifi_restart_flag.value=1;
+	else
+		form.hidd_wifi_restart_flag.value=0;
+	
+	form.submit();
+}
+</script>
+<input type="hidden" name="hidd_coexist_flag">
+<input type="hidden" name="hidd_a_coexist_flag">
+<input type="hidden" name="hidd_wifi_restart_flag">
+<table>
+<tr><td  colspan=2>$wifi_coexist_function<script> if( an_router_flag == 1) document.write("(2.4GHz b/g/n)")</script></td></tr>
+<tr>
+<td><input type=radio name="wifi_coexist" value="0">$r_enable</td>
+<td><input type=radio name="wifi_coexist" value="1">$r_disable</td>
+</tr>
+<tr>
+<tr id="an_title"><td  colspan=2>
+<script>
+	if(top.ac_router_flag == 1)
+		document.write("$wifi_coexist_function (5GHz 802.11a/n/ac)")
+	else
+		document.write("$wifi_coexist_function (5GHz a/n)")
+
+</script>
+</td></tr>
+</tr>
+<tr id="an_radio">
+<td><input type=radio name="wifi_a_coexist" value="0">$r_enable</td>
+<td><input type=radio name="wifi_a_coexist" value="1">$r_disable</td>
+</tr>
+<tr>
+<td><input type=checkbox name="wifi_rest">$wifi_restart</td>
+</tr>
+<tr>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<td><input type="button" name="Apply" value="$apply_mark" onClick="click_apply()"></td>');
+else
+	
+	document.write('<td><input type="button" name="Apply" value="$apply_mark" disabled></td>');
+</script>
+</tr>
+</table>
+</form>
+</body>
+</html>
+

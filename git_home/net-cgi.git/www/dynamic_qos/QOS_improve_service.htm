@@ -1,0 +1,31 @@
+<% http_header("style/form.css") %>
+<script>
+function check_improve()
+{
+	var improve1 = document.getElementById("improve1");
+	var improve2 = document.getElementById("improve2");
+	if(improve1.checked == true) {
+		window.opener.document.forms[0].help_improve.checked = true;
+		self.close();
+	} else if(improve2.checked == true) {
+		window.opener.document.forms[0].help_improve.checked = false;
+		self.close();
+	}
+}
+</script>
+<div style="margin: 0px 20px;">
+<script>document.write("$improve_service1");</script>
+<p>$improve_service2</p>
+<input type="radio" name="improve_ser" id="improve1" value="1" checked>$yes_mark<br />
+<input type="radio" name="improve_ser" id="improve2" value="0">$no_mark<br />
+<p>$improve_service3</p>
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR>
+	<TD nowrap align=center>
+	<input  class="short_common_bt" type=button name="yes" value="$submit" onclick="check_improve();">
+	</TD>
+</TR>
+</TABLE>
+</div>
+</body>
+</html>

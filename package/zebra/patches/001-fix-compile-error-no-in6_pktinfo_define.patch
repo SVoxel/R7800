@@ -1,0 +1,15 @@
+diff -Nur zebra-0.95a/lib/zebra.h zebra-0.95a.new/lib/zebra.h
+--- zebra-0.95a/lib/zebra.h	2004-02-02 12:55:48.000000000 -0500
++++ zebra-0.95a.new/lib/zebra.h	2012-04-22 05:32:06.896036517 -0400
+@@ -323,6 +323,11 @@
+ typedef u_int16_t zebra_size_t;
+ typedef u_int8_t zebra_command_t;
+ 
++struct in6_pktinfo {
++        struct in6_addr ipi6_addr;
++        int             ipi6_ifindex;
++};
++
+ /* FIFO -- first in first out structure and macros.  */
+ struct fifo
+ {

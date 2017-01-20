@@ -1,0 +1,26 @@
+#!/bin/sh
+
+if [ ! -f /tmp/modem ]; then
+	/usr/sbin/net-wall-bin $*
+else
+	/usr/sbin/net-wall-bin -w eth0 $*
+fi
+
+if [ "$1" = "rule" ]; then
+	# Check config file existence
+	if [ -f /etc/netwall.conf ]; then
+		config=/etc/netwall.conf
+	elif [ -f /root/netwall-rules ]; then
+		config=/root/netwall-rules
+	else
+		exit 0
+	fi
+
+	# Add own rules
+	mv /tmp/netwall-rules /tmp/netwall-rules.tmp
+	cat $config > /tmp/netwall-rules
+	cat /tmp/netwall-rules.tmp >> /tmp/netwall-rules
+	rm -f /tmp/netwall-rules.tmp
+else
+	iptables -I INPUT -p icmp --icmp-type 8 -i brwan -j DROP
+fi

@@ -1,0 +1,227 @@
+<% http_header("style/form.css","funcs.js") %>
+<script>
+<% refresh_timestamp("debug_info","collect_log") %>
+var ts="<% cfg_get("debug_info") %>";
+function loadvalue()
+{
+	if("<% cfg_get("debug_boot_up") %>" == "1")
+		document.forms[0].log_capture.checked = true;
+	else
+		document.forms[0].log_capture.checked = false;
+
+	if("<% cat_file("/tmp/wanlan_capture") %>" == "1")
+	{
+		document.forms[1].wanlan_capture.checked = true;
+		document.forms[2].store_location.disabled = false;
+	}
+	else
+	{
+		document.forms[1].wanlan_capture.checked = false;
+		document.forms[2].store_location.disabled = true;
+	}
+
+	var locate= "<% cat_file("/tmp/debug_store_locate") %>";
+	if(locate == "")
+		locate = "0";
+	document.forms[2].store_location.value = locate;
+
+	if("<% cat_file("/tmp/enable_telnet") %>" == "1")
+		document.forms[5].enable_telnet.checked = true;
+	else
+		document.forms[5].enable_telnet.checked = false;
+
+	if("<% cat_file("/tmp/debug_mirror_on") %>" == "1")
+		document.forms[6].mirrortolan.checked = true;
+	else
+		document.forms[6].mirrortolan.checked = false;
+
+	if("<% cat_file("/tmp/allow_ipv6_ping") %>" == "1")
+		document.forms[7].allow_ipv6_ping.checked = true;
+	else
+		document.forms[7].allow_ipv6_ping.checked = false;
+
+	refresh_start();
+}
+
+function click_logcapture()
+{
+	var cf = document.forms[0];
+	if(cf.log_capture.checked == true)
+		cf.hid_boot_up.value = "1";
+	else
+		cf.hid_boot_up.value = "0";
+	cf.action="/apply.cgi?/debug_detail.htm timestamp="+ts;
+	cf.submit();
+}
+
+function click_wanlan()
+{
+	var cf = document.forms[1];
+	if(cf.wanlan_capture.checked == true)
+		cf.hid_wanlan_capture.value = "1";
+	else
+		cf.hid_wanlan_capture.value = "0";
+	cf.action="/apply.cgi?/debug_detail.htm timestamp="+ts;
+	cf.submit();
+}
+
+function click_location()
+{
+	var cf = document.forms[2];
+	if(cf.store_location.value == "1" && "<% cat_file("/tmp/debug-usb") %>" != "1")
+	{
+		alert("There are no USB devices connected to the router!");
+		cf.store_location.value = "0";
+	}
+	cf.action="/apply.cgi?/debug_detail.htm timestamp="+ts;
+	cf.submit();
+}
+
+function click_start()
+{
+	var cf = document.forms[3];
+	cf.action="/apply.cgi?/debug_detail.htm timestamp="+ts;
+	cf.submit();
+}
+
+function click_telnet()
+{
+	var cf = document.forms[5];
+	if(cf.enable_telnet.checked == true)
+		cf.hid_telnet.value = "1";
+	else
+		cf.hid_telnet.value = "0";
+	cf.action="/apply.cgi?/debug_detail.htm timestamp="+ts;
+	cf.submit();
+}
+
+function click_mirror()
+{
+	var cf = document.forms[6];
+	if(cf.mirrortolan.checked == true)
+		cf.hid_mirrortolan.value = "1";
+	else
+		cf.hid_mirrortolan.value = "0";
+	cf.action="/apply.cgi?/debug_detail.htm timestamp="+ts;
+	cf.submit();
+}
+function click_ipv6()
+{
+	var cf = document.forms[7];
+	if(cf.allow_ipv6_ping.checked == true)
+		cf.hid_ipv6.value = "1";
+	else
+		cf.hid_ipv6.value = "0";
+	cf.action="/apply.cgi?/debug_detail.htm timestamp="+ts;
+	cf.submit();
+}
+
+function refresh_start()
+{
+        var file="/collect_debug.txt";
+        var xmlHttp = createXMLHttpRequest();
+        var result;
+
+	var disable_str="<input type='button' name='Start' class='common_gray_bt' value='Start Capture' disabled/>    Debug Log capturing in progress";
+	var enable_str="<input type='button' name='Start' class='common_bt' value='Start Capture' onclick='click_start();'/>";
+
+        xmlHttp.onreadystatechange=function()
+        {
+                if(xmlHttp.readyState==4 && xmlHttp.status==200)
+                {
+                        result=xmlHttp.responseText;
+			getObj("start_button").innerHTML='';
+                        if(result == 1)
+				getObj("start_button").innerHTML=disable_str;
+                        else
+				getObj("start_button").innerHTML=enable_str;
+                }
+        }
+        xmlHttp.open("GET", file, true);
+        xmlHttp.send();
+
+}
+
+</script>
+
+<BODY onLoad="loadvalue();" bgcolor=#ffffff>
+<div id="main">
+<div>
+<table width="100%" border="0" cellpadding="0" cellspacing="10">
+<tr><td colspan=3><img src=/liteblue.gif width=100% height=12></td></tr>
+<tr><td colspan=3><b>Basic Infomation</b></td></tr>
+<tr><td width=30px>&nbsp;</td><td width=250px><b>CPU Load</b></td><td><% cat_file("/tmp/debug_cpu") %></td></tr>
+<tr><td></td><td><b>Memory Usage(Used/Total)</b></td><td><% cat_file("/tmp/debug_mem") %></td></tr>
+<tr><td></td><td><b>Flash Usage(Used/Total)</b></td><td><% cat_file("/tmp/debug_flash") %></td></tr>
+<tr><td></td><td><b>Network Session(Active/Total)</b></td><td><% cat_file("/tmp/debug_session") %></td></tr>
+<tr>
+	<td></td><td><b>System Uptime</b></td>
+	<td>
+	<script>
+	var uptime= "<% show_uptime() %>";
+	var new_time=change_sec_to_time(uptime);
+	document.write(new_time);
+	</script>
+</td></tr>
+</table>
+</div>
+
+<div style="margin-left:5px">
+<b>Debug Log Capture</b>
+<div style="margin-left:50px">
+<form method="post" action="/apply.cgi?/debug_detail.htm" target="formframe">
+<input type="hidden" name="submit_flag" value="debug_info" />
+<input type="hidden" name="hid_boot_up" />
+<input type="checkbox" name="log_capture" onclick="click_logcapture();"><b>Start Debug Log Capture when boot up</b>
+</form>
+<br/>
+<form method="post" action="/apply.cgi?/debug_detail.htm" target="formframe">
+<input type="hidden" name="submit_flag" value="debug_info" />
+<input type="hidden" name="hid_wanlan_capture" />
+<input type="checkbox" name="wanlan_capture" onchange="click_wanlan();"><b>Enable LAN/WAN Packet Capture</b>
+</form>
+<br/>
+<div style="margin-left:30px">
+<form method="post" action="/apply.cgi?/debug_detail.htm" target="formframe">
+<input type="hidden" name="submit_flag" value="debug_info" />
+<b>Store location</b>&nbsp;&nbsp;&nbsp;&nbsp;
+	<select name="store_location" onchange="click_location();">
+		<option value="0">System Memory</option>
+		<option value="1">USB Device</option>
+	</select>
+</form>
+</div>
+<br/>
+<form method="post" action="/apply.cgi?/debug_detail.htm" target="formframe">
+<input type="hidden" name="submit_flag" value="collect_log" />
+<div id="start_button"></div>
+</form>
+<br/>
+<form action="/debug.cgi" method="post" enctype="multipart/form-data" target="formframe">
+<input type="submit" name="Save" class="common_bt" value="Save Debug Log" onclick="setTimeout('refresh_start()',5000);return true;"/>
+</form>
+</div>
+<br/>
+<form method="post" action="/apply.cgi?/debug_detail.htm" target="formframe">
+<input type="hidden" name="submit_flag" value="debug_info" />
+<input type="hidden" name="hid_telnet" />
+<input type="checkbox" name="enable_telnet" onclick="click_telnet();"><b>Enable Telnet</b>
+</form>
+<br/>
+<form method="post" action="/apply.cgi?/debug_detail.htm" target="formframe">
+<input type="hidden" name="submit_flag" value="debug_info" />
+<input type="hidden" name="hid_mirrortolan" />
+<input type="checkbox" name="mirrortolan" onclick="click_mirror();"><b>WAN Port mirror to LAN port1</b>
+</form>
+<br/>
+<form method="post" action="/apply.cgi?/debug_detail.htm" target="formframe">
+<input type="hidden" name="submit_flag" value="debug_info" />
+<input type="hidden" name="hid_ipv6" />
+<input type="checkbox" name="allow_ipv6_ping" onclick="click_ipv6();"><b>Allow external IPv6 hosts ping internal IPv6 hosts</b>
+</form>
+
+</div>
+</div>
+</body>
+</html>
+

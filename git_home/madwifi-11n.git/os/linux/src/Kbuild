@@ -1,0 +1,32 @@
+ifeq ($(obj),)
+obj := .
+endif
+
+DEPTH := ../../..
+
+include $(obj)/$(DEPTH)/os/linux/Makefile-linux.common
+
+INCS += -I$(obj)/$(DEPTH)/include -I$(obj)/$(DEPTH)/umac/include \
+        -I$(obj)/$(DEPTH)/umac/if_lmac -I$(obj)/$(DEPTH)/umac/crypto \
+        -I$(obj)/$(DEPTH)/umac/scan -I$(obj)/$(DEPTH)/umac/resmgr \
+        -I$(obj)/$(DEPTH)/umac/pm -I$(obj)/$(DEPTH)/umac/txrx \
+        -I$(obj)/$(DEPTH)/umac/acs -I$(obj)/$(DEPTH)/umac/txbf \
+        -I$(obj)/$(DEPTH)/umac/tdls \
+        -I$(obj)/$(DEPTH)/umac/wnm \
+        -I$(obj)/$(DEPTH)/umac/dfs \
+        -I$(obj)/$(DEPTH)/umac/rpt_placement \
+        -I$(obj)/$(DEPTH)/umac/wds -I$(obj)/$(DEPTH)/umac/ique \
+        -I$(obj)/$(DEPTH)/hal -I$(obj)/$(DEPTH)/lmac/ath_dev \
+        -I$(obj)/$(DEPTH)/hal/$(OS) \
+        -I$(obj)/$(DEPTH)/umac/aow
+
+obj-m += ath_usbdrv.o
+EXTRA_CFLAGS+= $(INCS) $(COPTS)
+ath_usbdrv-objs := usbdrv.o if_ath_usb.o fwu.o fwu_1_1.o
+
+ifeq ($(ENCAP_OFFLOAD), 1)
+ath_usbdrv-objs += fwu_k2_encap_offload.o
+else
+ath_usbdrv-objs += fwu_k2.o
+endif
+

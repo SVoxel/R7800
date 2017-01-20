@@ -1,0 +1,68 @@
+#BUFFER_CFG_BEGIN 
+#  1--ring  0--fixed buffer
+MAC_TRC_BUF_CFG_VALUE: 0
+MAC_TRC_ADDR_START_VALUE: 0x1
+MAC_TRC_ADDR_END_VALUE: 0x7ff
+
+#BUFFER_CFG_END
+
+#EVENT_CFG_BEGIN
+
+249  RXPCU_HW_ERR_AND_EVENT_COLLISION_EVENT                      1
+250  RXPCU_EVENT_COLLISION_EVENT                                 1
+251  RXPCU_HW_ERR_EVENT                                          1
+252  RXPCU_EVENT_RXSM_STATE_EVENT                                1
+253  RXPCU_EVENT_RXSM_WCF_A_WR_EVENT                             1
+254  RXPCU_EVENT_RXSM_WCF_B_WR_EVENT                             1
+255  RXPCU_EVENT_RXSM_WCF_C_WR_EVENT                             1
+256  RXPCU_EVENT_RXSM_IS_DELIMITER_EVENT                         1
+257  RXPCU_EVENT_RXSM_FRAME_DONE_EVENT                           1
+258  RXPCU_EVENT_RXSM_RESP_REQ_MPDU_EVENT                        1
+259  RXPCU_EVENT_RXSM_RESP_REQ_EVENT                             1
+260  RXPCU_EVENT_RXSM_RESP_RCV_EVENT                             1
+261  RXPCU_EVENT_RXSM_SEND_RX_FRAME_INFO_EVENT                   1
+262  RXPCU_EVENT_RXSM_RX_PKT_END_DONE_EVENT                      1
+263  RXPCU_EVENT_RXSM_OVERFLOW_INT_EVENT                         1
+264  RXPCU_EVENT_DPSM_LAT_CMD_A_EVENT                            1
+265  RXPCU_EVENT_DPSM_ASE_ARB_EVENT                              1
+266  RXPCU_EVENT_DPSM_AST_DONE_EVENT                             1
+267  RXPCU_EVENT_DPSM_PTE_DONE_EVENT                             1
+268  RXPCU_EVENT_DPSM_UPDATE_PPDU_START_VALID_EVENT              1
+269  RXPCU_EVENT_DPSM_UPDATE_MPDU_START_DONE_EVENT               1
+270  RXPCU_EVENT_DPSM_UPDATE_PTE_DONE_EVENT                      1
+271  RXPCU_EVENT_DPSM_POP_CMD_B_EVENT                            1
+272  RXPCU_EVENT_DPSM_POP_CMD_AC_EVENT                           1
+273  RXPCU_EVENT_DPSM_CHECK_TLV_TERMINATE_EVENT                  1
+274  RXPCU_EVENT_DPSM_UPDATE_MPDU_END_DONE_EVENT                 1
+275  RXPCU_EVENT_DPSM_UPDATE_PPDU_END_DONE_EVENT                 1
+276  RXPCU_EVENT_TRIC_READ_PPDU_START_VALID_EVENT                1
+277  RXPCU_EVENT_TRIC_XFER_MPDU_START_EVENT                      1
+278  RXPCU_EVENT_TRIC_XFER_PTE_EVENT                             1
+279  RXPCU_EVENT_TRIC_XFER_DATA_TLV_EVENT                        1
+280  RXPCU_EVENT_TRIC_XFER_MPDU_END_EVENT                        1
+281  RXPCU_EVENT_TRIC_XFER_PPDU_END_EVENT                        1
+282  RXPCU_EVENT_TRIC_XFER_TERMINATE_EVENT                       1
+283  RXPCU_EVENT_TRIC_ALL_DONE_EVENT                             1
+284  RXPCU_EVENT_SEND_RX_FRAME_RESP_CBF_EVENT                    1
+285  RXPCU_EVENT_SEND_RX_MESSAGE_PHY_ON_OFF_NAP_EVENT            1
+286  RXPCU_EVENT_SEND_RX_MESSAGE_TXBF_EVENT                      1
+287  RXPCU_EVENT_SEND_RX_MESSAGE_RTT_IMPBF_EVENT                 1
+288  RXPCU_EVENT_SEND_RX_FRAME_RESP_DONE_EVENT                   1
+289  RXPCU_EVENT_TLVIN_RSSI_LEGACY_EVENT                         1
+290  RXPCU_EVENT_TLVIN_L_SIG_A_EVENT                             1
+291  RXPCU_EVENT_TLVIN_L_SIG_B_EVENT                             1
+292  RXPCU_EVENT_TLVIN_HT_SIG_EVENT                              1
+293  RXPCU_EVENT_TLVIN_VHT_SIG_A_EVENT                           1
+294  RXPCU_EVENT_TLVIN_VHT_SIG_B_EVENT                           1
+295  RXPCU_EVENT_TLVIN_SERVICE_EVENT                             1
+296  RXPCU_EVENT_TLVIN_RX_PKT_END_EVENT                          1
+297  RXPCU_EVENT_TLVIN_RX_PHY_PPDU_END_EVENT                     1
+298  RXPCU_EVENT_TLVIN_TLV_TERMINATE_EVENT                       1
+
+#EVENT_CFG_END
+
+
+#EVENT_STOP_BEGIN  (index  event_name    datamask		datavalue)
+
+#EVENT_STOP_END
+

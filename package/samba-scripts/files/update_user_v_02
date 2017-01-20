@@ -1,0 +1,55 @@
+#!/bin/sh
+
+config=/bin/config
+
+SMB_CONF_DIR=/tmp/config
+SMB_PASSWD_DIR=/etc/samba/smbpasswd
+
+# unset
+rm -f $SMB_CONF_DIR/passwd+
+rm -f $SMB_CONF_DIR/gshadow
+rm -f $SMB_CONF_DIR/shadow
+
+# user setting
+echo "root:!:0:0:root:/root:/bin/ash"			> $SMB_CONF_DIR/passwd
+echo "guest:*:65534:65534:guest:/tmp/ftpadmin:/bin/ash"	>>$SMB_CONF_DIR/passwd
+echo "nobody:*:65534:65534:nobody:/var:/bin/false" 	>>$SMB_CONF_DIR/passwd
+echo "daemon:*:65534:65534:daemon:/var:/bin/false"	>>$SMB_CONF_DIR/passwd
+
+# group setting
+echo "root:x:0:"	> $SMB_CONF_DIR/group
+echo "admin:x:1:"	>>$SMB_CONF_DIR/group
+echo "guest:x:65534:"	>>$SMB_CONF_DIR/group
+
+#/bin/adduser -G admin admin -D -H
+(sleep 1; echo "$($config get http_passwd)"; sleep 1; echo "$($config get http_passwd)") | /bin/adduser -G admin admin -H -h /tmp/ftpadmin -s /bin/ash
+echo "guest::10957:0:99999:7:::"                        >> $SMB_CONF_DIR/shadow
+
+# clear smbpasswd file
+echo -n ""	> $SMB_PASSWD_DIR
+
+/usr/bin/smbpasswd admin "$($config get http_passwd)"
+/usr/bin/smbpasswd guest ""
+
+readycloud_enable=`${config} get readycloud_enable`
+#readycloud_enable=1
+if [ $readycloud_enable -eq 1 ]; then
+i=0
+id=500
+while [ $i -le 9 ]; do
+	readycloud_user="`${config} get readycloud_user$i`"
+	if [ "x$readycloud_user" != "x" ]; then
+		username=`echo $readycloud_user | awk '{print $1}'`
+		userpasswd=`echo $readycloud_user | awk '{print $3}'`
+		echo "$username:x:$id:" >> $SMB_CONF_DIR/group
+		(sleep 1; echo $userpasswd; sleep 1; echo $userpasswd) | /bin/adduser -G $username $username -H -h /tmp/ftpadmin -s /bin/ash
+		/usr/bin/smbpasswd $username $userpasswd
+	else
+		break;
+	fi
+	let i=$i+1
+	let id=$id+1
+# admin permission for cloud user
+sed -i "s/$username\:x\:$id/$username\:x\:0/g" $SMB_CONF_DIR/passwd
+done
+fi

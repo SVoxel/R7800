@@ -1,0 +1,65 @@
+#!/bin/sh
+# Copyright (C) 2006 OpenWrt.org
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+
+mount proc /proc -t proc
+
+mount sysfs /sys -t sysfs
+
+size=$(awk '/MemTotal:/ {l=5242880;mt=($2*1024);print((s=mt/2)<l)&&(mt>l)?mt-l:s}' /proc/meminfo)
+mount tmpfs /tmp -t tmpfs -o size=$pi_size,nosuid,nodev,mode=1777
+
+mount -t tmpfs tmpfs /dev -o mode=0755,size=512K
+[ -c /dev/console ] || mknod /dev/console c 5 1
+
+/sbin/hotplug2 --set-worker /lib/hotplug2/worker_fork.so --set-rules-file /etc/hotplug2-init.rules --no-persistent --set-coldplug-cmd /sbin/udevtrigger
+/sbin/hotplug2 --set-worker /lib/hotplug2/worker_fork.so --set-rules-file /etc/hotplug2-init.rules --persistent &
+
+[ -d /dev/shm ] || mkdir -p /dev/shm
+
+[ -d /dev/pts ] || mkdir -p /dev/pts
+
+mount devpts /dev/pts -t devpts
+
+mount none /proc/bus/usb -t usbfs
+
+if [ "x`grep overlay_volume /proc/mtd`" = "x" -a "x`grep netgear /proc/mtd`" != "x" ]; then
+	ubinize -m 2048 -p 128KiB -o /tmp/ubi.image /etc/netgear.cfg
+	mtdn=`grep netgear /proc/mtd | awk -F ':' '{print $1}' | awk -F 'd' '{print $2}'`
+	ubidetach /dev/ubi_ctrl -m $mtdn
+	flash_erase /dev/mtd$mtdn 0 0
+	nandwrite -p /dev/mtd$mtdn /tmp/ubi.image
+	ubiattach /dev/ubi_ctrl -m $mtdn
+	if [ "x`grep overlay_volume /proc/mtd`" = "x" ]; then
+		echo "Error: attach overlay_volume mtd device fail!"
+	fi
+fi
+
+mkdir -p /tmp/overlay
+mkdir -p /tmp/mnt
+ubinum=`ubinfo -a|grep overlay_volume -B 5 |grep "Volume ID" |awk '{print $5}' |cut -b 4`
+[ "x$ubinum" = "x" ] && ubinum=0
+mount -t ubifs ubi$ubinum:overlay_volume /tmp/overlay
+mount -o move /tmp/overlay /overlay 2>&-
+if [ "x`cat /firmware_time`" != "x`cat /overlay/.firmware_time`" ]; then
+	crashmtd=`grep crashdump /proc/mtd | awk -F ':' '{print $1}' | awk -F 'd' '{print $2}'`
+	[ "$crashmtd" = "9" ] && flash_erase /dev/mtd$crashmtd 0 0
+	cloud backup
+	ls -d /overlay/* | grep -v hipplay | xargs rm -rf
+	rm -rf /overlay/.*
+	sync
+	cloud restore
+	# we touch a file to indicate that we need to update StreamBoost database 
+	touch /tmp/new_firmware
+	cp /firmware_time /overlay/.firmware_time
+fi
+. /lib/functions/boot.sh
+fopivot /overlay /rom
+
+check_board_parameter
+
+echo "- init -"
+
+echo "" > /proc/sys/kernel/hotplug
+	
+exec /sbin/init

@@ -1,0 +1,56 @@
+#!/bin/sh
+
+. ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+# standard settings - accept overrides from the calling environment
+DISPLAY_NAME="settings-loader"
+REDIS_PORT=6379
+
+EXTRA_COMMANDS=status
+DNI_CONFIG=/bin/config
+
+export DISPLAY_NAME
+
+STATUS_KEY="status:settingsloader:start"
+
+start() {
+	[ -f $STREAMBOOST_USER_CFG ] || {
+		logger "User config file $STREAMBOOST_USER_CFG does not exist, exiting"
+		echo >&2 "User config file $STREAMBOOST_USER_CFG does not exist, exiting"
+		return 1
+	}
+	
+	if [ "x$($DNI_CONFIG get bandwidth_type)" = "x1" ]; then
+		uplimit=$($DNI_CONFIG get uplimit)
+		downlimit=$($DNI_CONFIG get downlimit)
+	else
+		uplimit=$($DNI_CONFIG get ookla_uplimit)
+		downlimit=$($DNI_CONFIG get ookla_downlimit)
+	fi
+
+	if [ "x$uplimit" != "x" ] && [ "x$downlimit" != "x" ]; then
+		uplimit=`awk -v up=$uplimit 'BEGIN{printf "%.0f",up/0.9}'`
+		downlimit=`awk -v down=$downlimit 'BEGIN{printf "%.0f",down/0.9}'`
+	fi
+	redis-cli set settings:bw:up $uplimit > /dev/null
+	redis-cli set settings:bw:down $downlimit > /dev/null
+	redis-cli set ${STATUS_KEY} 1
+}
+
+stop() {
+	redis-cli del ${STATUS_KEY}
+	return 0
+}
+
+status() {
+	EXISTS=$(redis-cli exists ${STATUS_KEY} 2>/dev/null)
+	if [ "$EXISTS" = "1" ]; then
+		echo "Settings have been loaded."
+	else
+		echo "Settings have not been loaded."
+		return 1
+	fi
+}
+
+action "$@"
+exit $?

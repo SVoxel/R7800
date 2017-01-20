@@ -1,0 +1,27 @@
+#!/bin/sh /etc/rc.common
+#START=80
+boot() {
+       wlan updateconf
+       wlan down
+       wlan up
+}
+
+start()    # don't use this command unless you know what it means
+{
+        wlan updateconf
+        wlan up
+}
+
+stop()    # don't use this command unless you know what it means
+{
+        wlan updateconf
+        wlan down
+}
+
+restart()
+{
+        wlan updateconf
+        wlan down
+        wlan up
+}
+

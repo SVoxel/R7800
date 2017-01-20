@@ -1,0 +1,872 @@
+<% http_header("style/form.css", "/funcs.js", "/ddns.js") %>
+<% body_header("_DNS_ddns", "DNS_ddns.htm", "ddns") %>
+<div class="page_title">$ddns_head</div>
+<div class="no_ip_logo" id="no_ip_logo"></div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR id="top_buttons">
+        <TD nowrap colspan=2 align=center>
+	<input class="common_big_bt" id="show_status" type="button" name="Show Status" value="$show_status_mark" onClick="window.open('DNS_status_wait.htm','show_ddns','width=600,height=400,top=200,left=200,status=yes,resizable=yes');">&nbsp;
+	<script>
+		var master="<% cfg_get("http_loginname") %>";
+		if( master == "admin" )
+			document.write('<input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'DNS_ddns.htm\';">&nbsp;<input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onClick="click_register(document.forms[0], 0);">');
+		else
+			document.write(' <input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;<input class="apply1_bt" type="button" name="Apply" id="apply" value="$apply_mark" disabled>');
+	</script>
+        </TD>
+</TR>
+</TABLE>
+
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+<% save_timestamp("ddns", "ddns_register", "ddns_reset","ddns_disable") %>
+<script>
+var old_endis_ddns="<% cfg_get("endis_ddns") %>";
+var old_sysDNSHost="<% cfg_sed_xss("sysDNSHost") %>";
+var old_sysDNSUser="<% cfg_sed_xss("sysDNSUser")%>";
+
+var old_sysDNSHost_1="<% cfg_sed_xss("sysDNSHost_1") %>";
+var old_sysDNSUser_1="<% cfg_sed_xss("sysDNSUser_1")%>";
+
+var old_sysDNSHost_2="<% cfg_sed_xss("sysDNSHost_2") %>";
+var old_sysDNSUser_2="<% cfg_sed_xss("sysDNSUser_2")%>";
+
+var old_sysDNSHost_3="<% cfg_sed_xss("sysDNSHost_3") %>";
+var old_sysDNSUser_3="<% cfg_sed_xss("sysDNSUser_3")%>";
+
+var old_sysDNSHost_4="<% cfg_sed_xss("sysDNSHost_4") %>";
+var old_sysDNSUser_4="<% cfg_sed_xss("sysDNSUser_4")%>";
+var old_sysDNSPassword_1="<% password_convert("sysDNSPassword_1") %>";
+var old_sysDNSPassword_2="<% password_convert("sysDNSPassword_2") %>";
+var old_sysDNSPassword_3="<% password_convert("sysDNSPassword_3") %>";
+var old_sysDNSPassword_4="<% password_convert("sysDNSPassword_4") %>";
+var changed="<% cfg_get("dns_changed")%>";
+
+var vpn_enable="<% cfg_get("vpn_enable") %>";
+var vpn_flag="<% cfg_get("vpn_detect_ddns_change_flag") %>";
+
+var n_have_account = "<% cfg_sed_xss("n_dns_have_account") %>";
+var n_show_reset = "<% cfg_sed_xss("nddns_cfged") %>";
+var old_nDNSHost="<% cfg_sed_xss("sysDNSHost_5") %>".split('.')[0];
+var old_nEmail="<% cfg_sed_xss("sysDNSUser_5") %>";
+
+var dns_list="<% cfg_get("sysDNSProviderlist") %>";
+var old_endis_wildcards="<% cfg_get("endis_wildcards") %>";
+var ddns_oray_router_flag=parent.ddns_oray_router_flag;
+var ddns_3322_router_flag=parent.ddns_3322_router_flag;
+var gui_region="<% cfg_get("GUI_Region") %>"
+var netgear_region=top.netgear_region;
+var ddns_wildcards_flag=parent.ddns_wildcards_flag;
+var pr_flag = (( gui_region == "Chinese" && (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "PR") ? 1 : 0
+var pr_oray_flag=( ddns_oray_router_flag == 1  && pr_flag == 1) ? 1 : 0;
+var pr_3322_flag=( ddns_3322_router_flag == 1  && pr_flag == 1) ? 1 : 0;
+var no_ip_flag=parent.ddns_no_ip_flag;
+var support_netgear_ddns=parent.support_netgear_ddns;
+<% list_domain_name() %>
+var wan_status = "<% detwan_valid() %>";
+var register_result="<% cat_file("/tmp/ntgr-register.status") %>";
+<% echo_set("","/tmp/ntgr-register.status") %>
+
+function ajaxCheckHost(host)
+{
+	var file="/dns_check_host.txt"+"?host="+host+".mynetgear.com";
+	var xmlHttp = createXMLHttpRequest();
+	var result;
+	xmlHttp.onreadystatechange=function()
+	{
+		var cf=document.forms[0];
+		if(cf.account[1].checked == true && xmlHttp.readyState==4 && xmlHttp.status==200)
+		{
+			result=xmlHttp.responseText;
+			if(result == 1)
+			{
+				document.getElementById("right_png").style.display="";
+				document.getElementById("x_png").style.display="none";
+			}
+			else if(result == 0)
+			{
+				document.getElementById("x_png").style.display="";
+				document.getElementById("right_png").style.display="none";
+			}
+			else{
+				document.getElementById("x_png").style.display="none";
+				document.getElementById("right_png").style.display="none";
+			}
+		}
+	}
+	xmlHttp.open("GET", file, true);
+	xmlHttp.send();
+}
+
+function changeYesNo(type)
+{
+	var cf=document.forms[0];
+	if(type == 1 )
+	{
+		this.help_iframe.location.href="/help/_DNS_ddns_netgear_yes_help.html";
+		document.getElementById("netgear_ddns_yes").style.display="";
+		document.getElementById("register_line").style.display="none";
+		document.getElementById("netgear_ddns_no").style.display="none";
+		document.getElementById("top_buttons").style.display="";
+		cf.sysDNSHost_Netgear.value=str_replace(old_nDNSHost);
+		cf.sysDNSEmail_Netgear.value=str_replace(old_nEmail);
+		cf.sysDNSPassword_Netgear.value="";
+	}
+	else
+	{
+		this.help_iframe.location.href="/help/_DNS_ddns_netgear_no_help.html";
+		document.getElementById("netgear_ddns_yes").style.display="none";
+		document.getElementById("register_line").style.display="";
+		document.getElementById("netgear_ddns_no").style.display="";
+		document.getElementById("top_buttons").style.display="none";
+		cf.sysDNSHost_Netgear.value="";
+		cf.sysDNSEmail_Netgear.value="";
+		cf.sysDNSPassword_Netgear.value="";
+	}
+	clear_all_status();
+}
+
+function changemode()
+{
+	var cf=document.forms[0];
+	
+	var username=document.getElementsByName("sysDNSUser")[0];
+	var passwd=document.getElementsByName("sysDNSPassword")[0];
+	var show_status=document.getElementById("show_status");
+
+	clear_all_status();
+
+	cf.hidden_sysDNSProviderlist.value = cf.sysDNSProviderlist.value;
+	if( cf.sysDNSProviderlist.value == 'NETGEAR' )
+	{
+		document.getElementById("others_type").style.display="none";
+		document.getElementById("no_ip_logo").style.display="";
+		if(n_show_reset == '1')
+		{
+			document.getElementById("netgear_ddns_ask").style.display="none";
+			document.getElementById("netgear_ddns_yes").style.display="none";
+			document.getElementById("register_line").style.display="none";
+			document.getElementById("netgear_ddns_no").style.display="none";
+			document.getElementById("top_buttons").style.display="";
+			document.getElementById("netgear_ddns_reset").style.display="";
+
+		}
+		else
+		{
+			document.getElementById("netgear_ddns_reset").style.display="none";
+			document.getElementById("netgear_ddns_ask").style.display="";
+			if(cf.account[0].checked == true)
+				changeYesNo(1);
+			else
+				changeYesNo(0);
+		}
+	}
+	else
+	{
+		this.help_iframe.location.href="/help/_DNS_ddns_un_netgear_help.html";
+		document.getElementById("netgear_ddns_ask").style.display="none";
+		document.getElementById("no_ip_logo").style.display="none";
+		document.getElementById("netgear_ddns_yes").style.display="none";
+		document.getElementById("netgear_ddns_no").style.display="none";
+		document.getElementById("netgear_ddns_reset").style.display="none";
+		document.getElementById("top_buttons").style.display="";
+		document.getElementById("others_type").style.display="";
+	}
+	var password_click=0;
+    	if((cf.hidden_pwd_change_1.value == "1") || (cf.hidden_pwd_change_2.value == "1") ||
+      (cf.hidden_pwd_change_3.value == "1") || (cf.hidden_pwd_change_4.value == "1"))
+      		 password_click=1;
+	if( cf.sysDNSProviderlist.value == 'www/var/www.oray.cn')
+	{
+		cf.sysDNSHost.value = "";
+		cf.sysDNSHost.disabled = true; //37032
+		username.maxLength = 16; //37034
+		passwd.maxLength = 16; //37035
+		cf.sysDNSUser.value = old_sysDNSUser_2;
+		cf.sysDNSPassword.value = old_sysDNSPassword_2;
+        	if( cf.hidden_pwd_change_2.value == "1")
+           		 cf.sysDNSPassword.value = old_sysDNSPassword_2;
+        	if( password_click ==1 )
+            		cf.sysDNSPassword.type = "password";
+		if(top.is_ru_version == 1)
+			show_status.className="common_key_gray_bt";
+		else
+			show_status.className="common_gray_bt"; //37036
+		show_status.disabled = true;
+		document.getElementById("oray_status").style.display="";
+	}
+	else
+	{
+		cf.sysDNSHost.disabled = false;
+		username.maxLength = 64;
+		passwd.maxLength = 64;
+		if(top.is_ru_version == 1)
+			show_status.className="common_key_bt";
+		else
+			show_status.className="common_bt";
+		show_status.disabled = false;
+		document.getElementById("oray_status").style.display="none";
+		if( cf.sysDNSProviderlist.value == 'www/var/www.DynDNS.org' )
+		{
+			cf.sysDNSHost.value = old_sysDNSHost_1;
+			cf.sysDNSUser.value = old_sysDNSUser_1;
+			cf.sysDNSPassword.value = old_sysDNSPassword_1;
+            		if( cf.hidden_pwd_change_1.value == "1" )
+				cf.sysDNSPassword.value = old_sysDNSPassword_1;
+            		if( password_click ==1 )
+				cf.sysDNSPassword.type = "password";
+		}
+		else if( cf.sysDNSProviderlist.value == 'www/var/www.3322.org' )
+		{
+			cf.sysDNSHost.value = old_sysDNSHost_3;
+			cf.sysDNSUser.value = old_sysDNSUser_3;
+			cf.sysDNSPassword.value = old_sysDNSPassword_3;
+            		if( cf.hidden_pwd_change_3.value == "1" )
+				cf.sysDNSPassword.value = old_sysDNSPassword_3;
+            		if( password_click ==1 )
+				cf.sysDNSPassword.type = "password";
+		}
+		else if( cf.sysDNSProviderlist.value == 'www/var/dynupdate.no-ip.com' )
+		{
+			cf.sysDNSHost.value = old_sysDNSHost_4;
+			cf.sysDNSUser.value = old_sysDNSUser_4;
+			cf.sysDNSPassword.value = old_sysDNSPassword_4;
+			if( cf.hidden_pwd_change_4.value == "1" )
+				cf.sysDNSPassword.value = old_sysDNSPassword_4;
+            		if( password_click ==1 )
+				cf.sysDNSPassword.type = "password";
+		}
+	}
+	if( ddns_wildcards_flag==1 && cf.sysDNSProviderlist.value == 'www/var/www.3322.org')
+		document.getElementById("wildcards").style.display="";
+	else
+		document.getElementById("wildcards").style.display="none";
+
+}
+
+function Chgmode()
+{
+	var cf = document.forms[0];
+
+	if( cf.sysDNSProviderlist.value == 'www/var/www.DynDNS.org' )
+	{
+		old_sysDNSHost_1 = cf.sysDNSHost.value;
+		old_sysDNSUser_1 = cf.sysDNSUser.value;
+		old_sysDNSPassword_1 = cf.sysDNSPassword.value;
+	}
+	else if( cf.sysDNSProviderlist.value == 'www/var/www.oray.cn')
+	{
+		old_sysDNSUser_2 = cf.sysDNSUser.value;
+		old_sysDNSPassword_2 = cf.sysDNSPassword.value;
+	}
+	else if( cf.sysDNSProviderlist.value == 'www/var/www.3322.org' )
+	{
+		old_sysDNSHost_3 = cf.sysDNSHost.value;
+		old_sysDNSUser_3 = cf.sysDNSUser.value;
+		old_sysDNSPassword_3 = cf.sysDNSPassword.value;
+	}
+	else if( cf.sysDNSProviderlist.value == 'www/var/dynupdate.no-ip.com' )
+	{
+		old_sysDNSHost_4 = cf.sysDNSHost.value;
+		old_sysDNSUser_4 = cf.sysDNSUser.value;
+		old_sysDNSPassword_4 = cf.sysDNSPassword.value;
+	}
+	else if(cf.sysDNSProviderlist.value == 'NETGEAR')
+	{
+		old_nDNSHost=cf.sysDNSHost_Netgear.value;
+		old_nEmail=cf.sysDNSEmail_Netgear.value;
+	}
+}
+
+function changeActive()
+{
+	var cf = document.forms[0];
+	if(cf.sysDNSActive.checked == true)
+	{
+		setDisabled(false, cf.sysDNSProviderlist, cf.sysDNSHost, cf.sysDNSUser, cf.sysDNSPassword, cf.sysDNSWildCard, cf.account[0], cf.account[1], cf.sysDNSHost_Netgear, cf.sysDNSEmail_Netgear, cf.sysDNSPassword_Netgear, cf.Reset)
+			cf.Reset.className="common_bt";
+			changemode();
+			check_register_available();
+
+	}
+	else
+	{
+		if(document.getElementById("top_buttons").style.display=="none")
+		{
+			document.getElementById("top_buttons").style.display="";
+		}
+
+		setDisabled(true, cf.sysDNSProviderlist, cf.sysDNSHost, cf.sysDNSUser, cf.sysDNSPassword, cf.sysDNSWildCard, cf.account[0], cf.account[1], cf.sysDNSHost_Netgear, cf.sysDNSEmail_Netgear, cf.sysDNSPassword_Netgear, cf.Reset)
+		cf.Reset.className="common_gray_bt";
+		cf.Register.className="common_gray_bt";
+		cf.Register.disabled = true;
+	}
+}
+
+
+var valid_host=0;
+var valid_email=0;
+var valid_passwd=0;
+
+function clear_all_status()
+{
+	valid_host=0;
+	valid_email=0;
+	valid_passwd=0;
+
+	document.getElementById("x_png").style.display="none";
+	document.getElementById("right_png").style.display="none";
+
+	document.getElementById("host_error").style.display="none";
+	document.getElementById("email_error").style.display="none";
+	document.getElementById("passwd_error").style.display="none";
+
+	for(var i=1; i<=9; i++)
+	{
+		var error_line = "rg_err_"+i;
+		document.getElementById(error_line).style.display="none";
+	}
+}
+
+function check_register_available()
+{
+	var cf = document.forms[0];
+	if(valid_host == 1 && valid_email == 1 && valid_passwd == 1 && master =="admin" )
+	{
+		cf.Register.className="common_bt";
+		cf.Register.disabled = false;
+	}
+	else
+	{
+		cf.Register.className="common_gray_bt";
+		cf.Register.disabled = true;
+	}
+}
+
+function keyup_check_host(e, ev)
+{
+	var keycode, event;
+	var cf = document.forms[0];
+
+	if (window.event)
+	{
+		event = window.event;
+		keycode = window.event.keyCode;
+	}
+	else if (ev)
+	{
+		event = ev;
+		keycode = ev.which;
+	}
+	else return true;
+
+	if(keycode==37||keycode==39)
+		return true;
+
+	if(cf.account[1] && cf.account[1].checked == true)
+		ajaxCheckHost(e.value);
+
+	return true;
+}
+function check_value(type, e)
+{
+	var cf = document.forms[0];
+	var error_flag=0;
+	var error_line = type+"_error";
+	if(type == 'host')
+	{
+		if(e.value.length < 1 )
+			error_flag=1;	
+		else
+		{
+			for(var i=0; i<e.value.length; i++)
+			{
+				if(isValidDdnsOrayUserName(e.value.charCodeAt(i)) == false)
+					error_flag=1;
+			}
+		}
+		valid_host= (error_flag == 1)? 0:1;
+
+		if(cf.account[1] && cf.account[1].checked == true)
+			ajaxCheckHost(e.value);
+	}
+	else if(type == 'email')
+	{
+		if(e.value.length < 1 )
+			error_flag=1;
+		else
+		{
+			for(var i=0; i<e.value.length; i++)
+			{
+				if(isValidChar(e.value.charCodeAt(i)) == false)
+					error_flag=1;
+			}
+
+			var at_arr = e.value.split('@');
+			if(at_arr.length != 2 )
+				error_flag = 1;
+			else
+			{
+				if(at_arr[0].length == 0 )
+					error_flag = 1;
+
+				var dot_arr = at_arr[1].split('.');
+				if(dot_arr.length < 2 )
+					error_flag = 1;
+				else
+				{
+					for(var j=0; j<dot_arr.length; j++)
+					{
+						if( dot_arr[j].length < 1 )
+							error_flag = 1;
+					}
+				}
+			}
+		}
+
+		valid_email= (error_flag == 1)? 0:1;
+	}
+	else if(type == "passwd" )
+	{
+		if(e.value.length < 6 || e.value.length > 32 )
+			error_flag = 1;
+
+		valid_passwd= (error_flag == 1)? 0:1;
+	}
+
+	check_register_available();
+
+	if(error_flag == 1)
+	{
+		if(type == "passwd" )
+		{
+			document.getElementById(error_line).style.display="";
+			return true;
+		}
+		else
+		{
+			e.focus();
+			e.select();
+			document.getElementById(error_line).style.display="";
+			return false;
+		}
+	}
+	else
+	{
+		document.getElementById(error_line).style.display="none";
+		return true;
+	}
+}
+
+function show_register_errors(cf)
+{
+	if(register_result == "1")
+		document.getElementById("rg_err_1").style.display="";
+		
+	else if(register_result == "2")
+		document.getElementById("rg_err_2").style.display="";
+	else if(register_result == "3")
+                document.getElementById("rg_err_3").style.display="";
+	else if(register_result == "4")
+                document.getElementById("rg_err_4").style.display="";
+	else if(register_result == "5")
+                document.getElementById("rg_err_5").style.display="";
+	else if(register_result == "6")
+                document.getElementById("rg_err_6").style.display="";
+	else if(register_result == "7")
+                document.getElementById("rg_err_7").style.display="";
+	else if(register_result == "8")
+                document.getElementById("rg_err_8").style.display="";
+	else if(register_result == "9")
+                document.getElementById("rg_err_9").style.display="";
+
+			
+}
+
+function loadvalue()
+{
+	var cf = document.forms[0];
+
+	if(old_endis_ddns == "1")
+		cf.sysDNSActive.checked =true;
+	else
+		cf.sysDNSActive.checked=false;
+	if(old_endis_wildcards == "1")
+		cf.sysDNSWildCard.checked =true;
+	else if(ddns_wildcards_flag == 1)
+		cf.sysDNSWildCard.checked = false;
+
+	if( dns_list == "www/var/www.DynDNS.org" )
+		cf.sysDNSProviderlist.value = "www/var/www.DynDNS.org";
+	else if( dns_list == "www/var/www.oray.cn" && pr_oray_flag == 1 )
+		cf.sysDNSProviderlist.value = "www/var/www.oray.cn";
+	else if( dns_list == "www/var/www.3322.org" && pr_3322_flag == 1 )
+		cf.sysDNSProviderlist.value = "www/var/www.3322.org";
+	else if( dns_list == "www/var/dynupdate.no-ip.com" && no_ip_flag == 1 )
+		cf.sysDNSProviderlist.value = "www/var/dynupdate.no-ip.com";
+	else //dns_list == "NETGEAR"
+		cf.sysDNSProviderlist.value = "NETGEAR";
+
+	if(cf.account)
+	{
+		if(n_have_account == "1")
+			cf.account[0].checked = true;
+		else
+			cf.account[1].checked = true;
+	}
+
+	if( register_result == "10" && n_have_account == "0")
+	{
+		alert("$ddns_ntg_email_con");
+	}
+	
+	parse_xss_str();
+	changemode();
+	changeActive();
+	check_register_available()
+
+	show_register_errors(cf);
+	if(dns_list == "NETGEAR"){
+		if((register_result == "0"||(register_result != "0" && n_show_reset == "1"))&&vpn_flag == "1" && vpn_enable == "1" && parent.ddns_post_flag == 1){
+                        parent.ddns_post_flag = 0;
+                        alert("$warn_change_ddns");
+                }
+		
+	}
+	else{
+		if(vpn_flag == "1" && vpn_enable == "1" && parent.ddns_post_flag == 1){
+                        parent.ddns_post_flag = 0;
+                        alert("$warn_change_ddns");
+                }
+	}
+}
+function click_disable(cf)
+{
+    if (cf.sysDNSActive.checked)
+        cf.ddns_enabled.value = "1";
+    else
+        cf.ddns_enabled.value = "0";
+
+    cf.hidden_sysDNSProviderlist.value = cf.sysDNSProviderlist.value;
+	cf.submit_flag.value="ddns_disable";
+	return true;
+}
+function click_register(cf, isRegister)
+{
+	if(cf.sysDNSActive.checked == false)
+	{
+		if(click_disable(cf) == true)
+		{
+			cf.submit();
+			return true;
+		}
+		else
+			return false;
+	}
+	if(cf.sysDNSProviderlist.value != "NETGEAR" )	
+	{
+		if(click_ddns(cf) == true)
+		{
+			cf.submit();
+			return true;
+		}
+		else
+			return false;
+	}
+	if((dns_list != "NETGEAR" || (n_show_reset == "0"&&dns_list == "NETGEAR" && cf.sysDNSHost_Netgear.value != old_sysDNSHost.split('.')[0])) && vpn_enable == "1" && cf.sysDNSActive.checked == true)
+                cf.hid_vpn_detect_ddns_change.value = 1;
+        else
+                cf.hid_vpn_detect_ddns_change.value = 0;
+	parent.ddns_post_flag=1;
+	
+	cf.submit_flag.value="ddns_register";
+
+    cf.hidden_sysDNSProviderlist.value = cf.sysDNSProviderlist.value;
+	if(cf.sysDNSActive.checked == true)
+		cf.ddns_enabled.value="1";
+	else
+	{
+		cf.ddns_enabled.value="0";
+		cf.submit();
+		return true;
+	}
+
+	if(isRegister == 1 && wan_status == "0")
+	{
+		document.getElementById("rg_err_1").style.display="";
+		return false;
+	}
+
+	cf.submit();
+	return true;
+}
+
+function click_reset()
+{
+	var cf=document.forms[0];
+
+	if(cf.sysDNSActive.checked == true)
+		cf.ddns_enabled.value="1";
+	else
+		cf.ddns_enabled.value="0";
+
+	cf.submit_flag.value="ddns_reset";
+	cf.submit();
+}
+</script>
+<input type="hidden" name="ddns_enabled" value="">
+<input type="hidden" name="wildcards_enabled" value="">
+<input type="hidden" name="change_wan_type">
+<input type="hidden" name="hidden_sysDNSHost">
+<input type="hidden" name="hidden_sysDNSProviderlist">
+<input type="hidden" name="hid_vpn_detect_ddns_change">
+<input type="hidden" name="hidden_pwd_change_1" value="0">
+<input type="hidden" name="hidden_pwd_change_2" value="0">
+<input type="hidden" name="hidden_pwd_change_3" value="0">
+<input type="hidden" name="hidden_pwd_change_4" value="0">
+
+<TR>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="sysDNSActive" id="sys_dnsactive" onclick="changeActive()">
+	<A tabindex=-1 href="javascript:loadhelp('_DNS_ddns','setup')"><B>$ddns_use_dnsser</B></A>
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap width=50%>
+	<A tabindex=-1 href="javascript:loadhelp('_DNS_ddns','provider')"><B>$ddns_serpro</B></A>
+	</TD>
+	<TD nowrap>
+	<select name="sysDNSProviderlist" id="sys_dnsprovider_list" onChange="changemode()" onfocus="Chgmode()">
+		<option value="NETGEAR" selected>NETGEAR</option>
+<script>
+if( no_ip_flag == 1 )
+                document.write('<option value="www/var/dynupdate.no-ip.com">www.No-IP.com</option>');
+</script>
+
+		<option value="www/var/www.DynDNS.org">www.Dyn.com</option>
+<script>
+if( pr_3322_flag == 1 )
+                document.write('<option value="www/var/www.3322.org">www.3322.org</option>');
+if( pr_oray_flag == 1 )
+		document.write('<option value="www/var/www.oray.cn" >www.oray.cn</option>');
+</script>
+	</select>
+	</TD>
+</TR>
+<tbody id="others_type" style="display: none;">
+<TR id="sysDNShost_id">
+	<TD nowrap>$ddns_hostname</TD>
+	<TD nowrap>
+	<input type="text" name="sysDNSHost" id="sys_dnshost" size="32" maxlength="255" value="<% cfg_sed_xss("sysDNSHost") %>" onKeyPress="return getkey('ddns_hostname',event)">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$ddns_username</TD>
+	<TD nowrap>
+	<input type="text" name="sysDNSUser" id="sys_dnsuser" size="32" maxlength="64" value="<% cfg_sed_xss("sysDNSUser")%>">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$ddns_passwd</TD>
+	<TD nowrap>
+	<input type="password" name="sysDNSPassword" id="sys_dnspassword" onfocus="change_ddns_password(this);" size="32" maxlength="64">
+	</TD>
+</TR>
+<TR id="oray_status" style="display:none">
+<TD colspan=2>
+	<table width=100% border=0 cellpadding=0 cellspacing=2>
+		<TR><TD nowrap width=50%>$router_mac_link_status</TD>
+		<TD>
+		<script>
+			var link_status="<% cat_file("/tmp/ez-ipupd.status") %>";
+			var enable_oray=(old_endis_ddns=="1" && dns_list == "www/var/www.oray.cn")? 1 :0;
+			if (enable_oray==0 || link_status == "0")
+                		document.write("$oray_status_offline");
+        		else if(link_status=="1")
+                		document.write("$oray_status_online");
+        		else if(link_status=="2")
+                		document.write("$oray_status_connect");
+        		else if(link_status=="3")
+                		document.write("$oray_status_auth_fail");
+       			else if(link_status=="4")
+                		document.write("$oray_status_reg_fail");
+        		else
+                		document.write("$oray_status_con_fail");
+		</script>
+		</TD></TR>
+		<TR><TD nowrap>$block_ser_service_type</TD>
+		<TD>
+		<script>
+			var ser_type="<% cat_file("/tmp/ez-ipupd.usertp") %>";
+			if(enable_oray==1 && link_status=="1")
+			{
+				if(ser_type=="0")
+					document.write("$oray_standard");
+				else if(ser_type=="1")
+					document.write("$oray_professional");
+				else if(ser_type=="2")
+					document.write("$oray_enterprise");
+			}
+		</script>
+		</TD></TR>
+		<TR><TD nowrap>$oray_domain_info</TD>
+		<script>
+			if(enable_oray==1 && link_status=="1" && domain_name_num>0)
+			{
+				for(i=0;i<domain_name_num;i++)
+				{	
+					var str=eval ( 'domain_name' + i );
+					if(i==0)
+						document.write("<TD>"+str+"</TD>");
+					else
+						document.write("</TR><TR><TD></TD><TD>"+str+"</TD>");
+				}
+			}	
+		</script>
+		</TR>
+		<TR><TD nowrap>$oray_link</TD>
+		<TD nowrap><a class="linktype" href="http://www.oray.cn/passport/register.php" target="_blank">$oray_link_reg</a></TD></TR>
+		<TR><TD nowrap></TD><TD nowrap><a class="linktype" href="http://www.oray.cn/peanuthull/service.php" target="_blank">$oray_link_upg</a></TD></TR>
+		<TR><TD nowrap></TD><TD nowrap><a class="linktype" href="http://www.oray.cn/ask/" target="_blank">$oray_link_help</a></TD></TR>
+	</table>
+</TD>
+</TR>
+<TR id="wildcards" style="display:none">
+	<TD nowrap colspan=2><input type="checkbox" name="sysDNSWildCard" value="1">
+	<A tabindex=-1 href="javascript:loadhelp('_DNS_ddns','wildcards')"><B>$ddns_use_wildcards</B></A>
+	</TD>
+</TR>
+</tbody>
+
+<tbody id="netgear_ddns_ask">
+<tr>
+        <td nowrap colspan=2>$ddns_ntg_have_account</td>
+</tr>
+<tr>
+        <td nowrap colspan=2>
+                <input type="radio" name="account" id="account_yes" value="yes" onclick="changeYesNo(1)"> $yes_mark
+        </td>
+</tr>
+<tr>
+        <td nowrap colspan=2>
+         <input type="radio" name="account" id="account_no" value="no" onclick="changeYesNo(0)" checked> $no_mark
+        </td>
+</tr>
+$bluebar
+<tr id="register_line">
+        <td nowrap colspan=2>$ddns_ntg_please_enter</td>
+</tr>
+<TR>
+        <TD nowrap>$ddns_hostname</TD>
+        <TD nowrap>
+        <input type="text" name="sysDNSHost_Netgear" id="sys_dnshost" size="16" maxlength="128" onKeyPress="return getkey('hostname',event)" onKeyup="return keyup_check_host(this, event);" onchange="check_value('host', this);" >.mynetgear.com  <img id="right_png" style="display:none" src=/image/check.png width=25 height=25 /> <img  id="x_png" style="display:none" src=/image/x.png width=25 height=25  />
+        </TD>
+</TR>
+<tr id="host_error" style="display: none; color:red">
+	<td></td>
+	<td>$ddns_ntg_err_host</td>
+</tr>
+<tr>
+        <td nowrap>$ddns_ntg_email</td>
+        <td nowrap>
+        <input type="text" name="sysDNSEmail_Netgear" id="sys_dnsmail" size="32" maxlength="48" onKeyPress="return getkey('ssid',event)" onchange="return check_value('email', this);" >
+        </td>
+</tr>
+<tr id="email_error" style="display: none; color:red">
+	<td></td>
+	<td>$ddns_ntg_err_email </td>
+</tr>
+<TR>
+        <TD nowrap>$ddns_ntg_password</TD>
+        <TD nowrap>
+        <input type="text" name="sysDNSPassword_Netgear" id="sys_dnspassword" size="32" maxlength="32" value="" onKeyPress="return getkey('ssid',event)" onKeyUp="return check_value('passwd', this);">
+        </TD>
+</TR>
+<tr id="passwd_error" style="display: none; color:red">
+	<td></td>
+	<td>$ddns_ntg_err_passwd</td>
+</tr>
+<tr id="rg_err_1" style="display: none; color:red">
+        <td colspan=2>$ddns_ntg_err_no_conn</td>
+</tr>
+<tr id="rg_err_2" style="display: none; color:red">
+        <td colspan=2>$ddns_ntg_err_no_dns</td>
+</tr>
+<tr id="rg_err_3" style="display: none; color:red">
+        <td colspan=2>$ddns_ntg_err_100</td>
+</tr>
+<tr id="rg_err_4" style="display: none; color:red">
+        <td colspan=2>$ddns_ntg_err_111</td>
+</tr>
+<tr id="rg_err_5" style="display: none; color:red">
+        <td colspan=2>$ddns_ntg_err_112</td>
+</tr>
+<tr id="rg_err_7" style="display: none; color:red">
+        <td colspan=2>$ddns_ntg_err_113</td>
+</tr>
+<tr id="rg_err_8" style="display: none; color:red">
+        <td colspan=2>$ddns_ntg_err_115_1 <a class='linktype' href='https://www.noip.com/login/?oem=ntgr' target='_blank'>$ddns_ntg_click</a> $ddns_ntg_err_115_2</td>
+</tr>
+<tr id="rg_err_9" style="display: none; color:red">
+        <td colspan=2>$ddns_ntg_err_other</td>
+</tr>
+</tbody>
+<tbody id="netgear_ddns_no">
+<tr class="blue_a">
+        <td nowrap colspan=2>
+        <script>
+		if( master == "admin" )
+			document.write('<input class="common_bt" type="button" name="Register" id="NRegister" value="$ddns_register" onclick="click_register(document.forms[0], 1);">');
+		else
+			document.write('<input class="common1_bt" type="button" name="Register" id="NRegister" value="$ddns_register" disabled>');
+	</script>
+	<div>$ddns_ntg_agree_1 <a class='linktype' href='http://kb.netgear.com/app/answers/detail/a_id/23757' target='_blank'>$ddns_ntg_agree_2</a> $ddns_ntg_agree_3</div>
+        </td>
+</tr>
+</tbody>
+<tbody id="netgear_ddns_yes" style="display: none;">
+<tr id="rg_err_6" style="display: none; color:red">
+        <td colspan=2>$ddns_ntg_cfg_err_112</td>
+</tr>
+<tr class="blue_a">
+        <td nowrap colspan=2>$ddns_ntg_forget_pw <a class='linktype' href='https://www.noip.com/forgotPw.php?oem=ntgr' target='_blank'>$ddns_ntg_click</a>  </td>
+</tr>
+<tr class="blue_a">
+        <td nowrap colspan=2>$ddns_ntg_manage_ac <a class='linktype' href='https://www.noip.com/login/?oem=ntgr' target='_blank'>$ddns_ntg_click</a></td>
+</tr>
+</tbody>
+<tbody id="netgear_ddns_reset" style="display: none">
+<tr>
+	<td nowrap colspan=2>
+		<b>$ddns_ntg_cur_con</b>
+	</td>
+</tr>
+<tr>
+	<td nowrap colspan=2>
+		<b>$ddns_hostname :</b> <% cfg_sed_xss("sysDNSHost_5") %>
+	</td>
+</tr>
+<tr>
+        <td nowrap colspan=2>
+                <b>$ddns_ntg_acc_eml</b> <% cfg_sed_xss("sysDNSUser_5") %>
+        </td>
+</tr>
+<tr>
+	<script>
+		if( master == "admin" )
+			document.write('<td nowrap colspan=2> $ddns_ntg_ret_1 <input type="button" name="Reset" id="NReset" class="common_bt" value="$green_qos_reset" onclick="click_reset();"> $ddns_ntg_ret_2</td>');
+		else
+			document.write('<td nowrap colspan=2> $ddns_ntg_ret_1 <input type="button" name="Reset" id="NReset" class="common1_bt" value="$green_qos_reset" disabled> $ddns_ntg_ret_2</td>');
+	</script>
+</tr>
+</tbody>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_DNS_ddns_netgear_no") %>
+</FORM>
+</BODY>
+</HTML>

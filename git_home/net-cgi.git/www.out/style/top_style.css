@@ -1,0 +1,21 @@
+html, body{ margin: 0; border:none; background-color:transparent; font-family:Arial, Helvetica, sans-serif; font-size:16px;; font-style:normal; font-weight:normal; }
+
+/*bug 22044*/
+#header_top{ height:77px; width:940px; margin:0 0; overflow:hidden; }
+/*bug 22044*/
+#header_top .top_name{ height:77px; width:730px; float:left; margin:0; overflow:hidden; }
+#header_top .title_div{ height:43px; width:533px; margin: 6px 0; overflow:hidden; background: url(../image/tops.gif) no-repeat 0px -76px }
+#header_top .title_div img{ position: absolute; left : 0px; top: 7px;}
+#header_top .router_name_div{ height:25px; width:500px; margin:0; overflow:hidden; font-family: Arial; font-size: 18px;	font-weight: Bold; color: #000000; }
+#header_top .router_centria_div{ height:34px; color:#ffffff; font-family:Arial; }
+#header_top .centria_router_name_div{ height:34px; color:#ffffff; font-family:Arial; }
+#header_top .firmware_version_div{ height:40px; width: 210px; float:left; margin:30px 0;  font-family: Arial; font-size: 14px; font-weight: Bold; color: #000000; }
+/*bug 38414*/
+#header_top .firmware_version_div div{ height:50%; margin:0 14px 0 }
+
+
+#header_bottom{ height:37px; width:980px; margin:0; }
+#header_bottom .top_menu_select{ height:30px; width:150px; margin:12px 10px 0 0; line-height:30px; cursor:pointer; border-bottom:none; float:left; background:#999966; }
+#header_bottom .top_menu_unselect{ height:30px; width:150px; margin:12px 10px 0 0; line-height:30px; cursor:pointer; border-bottom:none; float:left; background:#999999; }
+#header_bottom .top_firmware_upgrade{ height:22px; width:400px; margin:10px 0 auto 50px; float:left; background:#6666FF; }
+#header_bottom .top_language_div{ height:22px; width:180px; margin:10px 0 0 auto; line-height:22px; float:right; background:#FF0000; }

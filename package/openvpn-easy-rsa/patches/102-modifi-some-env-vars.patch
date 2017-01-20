@@ -1,0 +1,39 @@
+--- a/easy-rsa/2.0/vars	2014-08-18 01:56:25.760248303 +0800
++++ b/easy-rsa/2.0/vars	2014-08-18 01:57:26.730248298 +0800
+@@ -12,7 +12,7 @@
+ # This variable should point to
+ # the top level of the easy-rsa
+ # tree.
+-export EASY_RSA="/etc/easy-rsa"
++export EASY_RSA="/tmp/etc/easy-rsa"
+ 
+ #
+ # This variable should point to
+@@ -50,7 +50,7 @@
+ # down TLS negotiation performance
+ # as well as the one-time DH parms
+ # generation process.
+-export KEY_SIZE=2048
++export KEY_SIZE=1024
+ 
+ # In how many days should the root CA key expire?
+ export CA_EXPIRE=3650
+@@ -61,12 +61,12 @@
+ # These are the default values for fields
+ # which will be placed in the certificate.
+ # Don't leave any of these fields blank.
+-export KEY_COUNTRY="US"
+-export KEY_PROVINCE="CA"
+-export KEY_CITY="SanFrancisco"
+-export KEY_ORG="Fort-Funston"
+-export KEY_EMAIL="me@myhost.mydomain"
+-export KEY_OU="MyOrganizationalUnit"
++export KEY_COUNTRY="TW"
++export KEY_PROVINCE="TW"
++export KEY_CITY="Taipei"
++export KEY_ORG="netgear"
++export KEY_EMAIL="mail@netgear"
++export KEY_OU="netgear"
+ 
+ # X509 Subject Field
+ export KEY_NAME="EasyRSA"

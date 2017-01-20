@@ -1,0 +1,2540 @@
+--- wxWidgets-2.8.12/Makefile.in	2011-03-22 08:00:32.000000000 -0400
++++ wxWidgets-2.8.12/Makefile.in	2012-05-07 13:29:14.008175725 -0400
+@@ -236,7 +236,6 @@
+ 	wx/buffer.h \
+ 	wx/build.h \
+ 	wx/chkconf.h \
+-	wx/clntdata.h \
+ 	wx/cmdline.h \
+ 	wx/confbase.h \
+ 	wx/config.h \
+@@ -252,7 +251,6 @@
+ 	wx/dlimpexp.h \
+ 	wx/dynarray.h \
+ 	wx/dynlib.h \
+-	wx/dynload.h \
+ 	wx/encconv.h \
+ 	wx/event.h \
+ 	wx/except.h \
+@@ -266,8 +264,6 @@
+ 	wx/fontenc.h \
+ 	wx/fontmap.h \
+ 	wx/fs_arc.h \
+-	wx/fs_filter.h \
+-	wx/fs_mem.h \
+ 	wx/fs_zip.h \
+ 	wx/hash.h \
+ 	wx/hashmap.h \
+@@ -279,7 +275,6 @@
+ 	wx/iosfwrap.h \
+ 	wx/ioswrap.h \
+ 	wx/ipc.h \
+-	wx/ipcbase.h \
+ 	wx/isql.h \
+ 	wx/isqlext.h \
+ 	wx/link.h \
+@@ -289,7 +284,6 @@
+ 	wx/longlong.h \
+ 	wx/math.h \
+ 	wx/memconf.h \
+-	wx/memory.h \
+ 	wx/memtext.h \
+ 	wx/mimetype.h \
+ 	wx/module.h \
+@@ -307,7 +301,6 @@
+ 	wx/snglinst.h \
+ 	wx/sstream.h \
+ 	wx/stack.h \
+-	wx/stackwalk.h \
+ 	wx/stdpaths.h \
+ 	wx/stockitem.h \
+ 	wx/stopwatch.h \
+@@ -326,7 +319,6 @@
+ 	wx/types.h \
+ 	wx/uri.h \
+ 	wx/utils.h \
+-	wx/variant.h \
+ 	wx/vector.h \
+ 	wx/version.h \
+ 	wx/volume.h \
+@@ -335,18 +327,15 @@
+ 	wx/wxchar.h \
+ 	wx/wxprec.h \
+ 	wx/xti.h \
+-	wx/xtistrm.h \
+ 	wx/zipstrm.h \
+ 	wx/zstream.h \
+ 	$(BASE_PLATFORM_HDR) \
+-	wx/fs_inet.h \
+ 	wx/gsocket.h \
+ 	wx/protocol/file.h \
+ 	wx/protocol/ftp.h \
+ 	wx/protocol/http.h \
+ 	wx/protocol/protocol.h \
+ 	wx/sckaddr.h \
+-	wx/sckipc.h \
+ 	wx/sckstrm.h \
+ 	wx/socket.h \
+ 	wx/url.h \
+@@ -370,7 +359,6 @@
+ 	wx/buffer.h \
+ 	wx/build.h \
+ 	wx/chkconf.h \
+-	wx/clntdata.h \
+ 	wx/cmdline.h \
+ 	wx/confbase.h \
+ 	wx/config.h \
+@@ -386,7 +374,6 @@
+ 	wx/dlimpexp.h \
+ 	wx/dynarray.h \
+ 	wx/dynlib.h \
+-	wx/dynload.h \
+ 	wx/encconv.h \
+ 	wx/event.h \
+ 	wx/except.h \
+@@ -400,8 +387,6 @@
+ 	wx/fontenc.h \
+ 	wx/fontmap.h \
+ 	wx/fs_arc.h \
+-	wx/fs_filter.h \
+-	wx/fs_mem.h \
+ 	wx/fs_zip.h \
+ 	wx/hash.h \
+ 	wx/hashmap.h \
+@@ -413,7 +398,6 @@
+ 	wx/iosfwrap.h \
+ 	wx/ioswrap.h \
+ 	wx/ipc.h \
+-	wx/ipcbase.h \
+ 	wx/isql.h \
+ 	wx/isqlext.h \
+ 	wx/link.h \
+@@ -423,7 +407,6 @@
+ 	wx/longlong.h \
+ 	wx/math.h \
+ 	wx/memconf.h \
+-	wx/memory.h \
+ 	wx/memtext.h \
+ 	wx/mimetype.h \
+ 	wx/module.h \
+@@ -441,7 +424,6 @@
+ 	wx/snglinst.h \
+ 	wx/sstream.h \
+ 	wx/stack.h \
+-	wx/stackwalk.h \
+ 	wx/stdpaths.h \
+ 	wx/stockitem.h \
+ 	wx/stopwatch.h \
+@@ -460,7 +442,6 @@
+ 	wx/types.h \
+ 	wx/uri.h \
+ 	wx/utils.h \
+-	wx/variant.h \
+ 	wx/vector.h \
+ 	wx/version.h \
+ 	wx/volume.h \
+@@ -469,7 +450,6 @@
+ 	wx/wxchar.h \
+ 	wx/wxprec.h \
+ 	wx/xti.h \
+-	wx/xtistrm.h \
+ 	wx/zipstrm.h \
+ 	wx/zstream.h \
+ 	wx/unix/apptbase.h \
+@@ -478,7 +458,6 @@
+ 	wx/unix/mimetype.h \
+ 	wx/unix/pipe.h \
+ 	wx/unix/private.h \
+-	wx/unix/stackwalk.h \
+ 	wx/unix/stdpaths.h \
+ 	wx/msw/apptrait.h \
+ 	wx/msw/apptbase.h \
+@@ -494,7 +473,6 @@
+ 	wx/msw/regconf.h \
+ 	wx/msw/registry.h \
+ 	wx/msw/seh.h \
+-	wx/msw/stackwalk.h \
+ 	wx/msw/stdpaths.h \
+ 	wx/msw/winundef.h \
+ 	wx/msw/wrapcctl.h \
+@@ -508,14 +486,12 @@
+ 	wx/palmos/mimetype.h \
+ 	wx/palmos/stdpaths.h \
+ 	wx/msdos/mimetype.h \
+-	wx/fs_inet.h \
+ 	wx/gsocket.h \
+ 	wx/protocol/file.h \
+ 	wx/protocol/ftp.h \
+ 	wx/protocol/http.h \
+ 	wx/protocol/protocol.h \
+ 	wx/sckaddr.h \
+-	wx/sckipc.h \
+ 	wx/sckstrm.h \
+ 	wx/socket.h \
+ 	wx/url.h \
+@@ -535,16 +511,13 @@
+ 	src/common/arcall.cpp \
+ 	src/common/arcfind.cpp \
+ 	src/common/archive.cpp \
+-	src/common/clntdata.cpp \
+ 	src/common/cmdline.cpp \
+ 	src/common/config.cpp \
+ 	src/common/convauto.cpp \
+ 	src/common/datetime.cpp \
+ 	src/common/datstrm.cpp \
+-	src/common/dircmn.cpp \
+ 	src/common/dynarray.cpp \
+ 	src/common/dynlib.cpp \
+-	src/common/dynload.cpp \
+ 	src/common/encconv.cpp \
+ 	src/common/extended.c \
+ 	src/common/ffile.cpp \
+@@ -554,26 +527,20 @@
+ 	src/common/filefn.cpp \
+ 	src/common/filename.cpp \
+ 	src/common/filesys.cpp \
+-	src/common/filtall.cpp \
+-	src/common/filtfind.cpp \
+ 	src/common/fmapbase.cpp \
+ 	src/common/fs_arc.cpp \
+-	src/common/fs_filter.cpp \
+ 	src/common/hash.cpp \
+ 	src/common/hashmap.cpp \
+ 	src/common/init.cpp \
+ 	src/common/intl.cpp \
+-	src/common/ipcbase.cpp \
+ 	src/common/list.cpp \
+ 	src/common/log.cpp \
+ 	src/common/longlong.cpp \
+-	src/common/memory.cpp \
+ 	src/common/mimecmn.cpp \
+ 	src/common/module.cpp \
+ 	src/common/mstream.cpp \
+ 	src/common/object.cpp \
+ 	src/common/platinfo.cpp \
+-	src/common/powercmn.cpp \
+ 	src/common/process.cpp \
+ 	src/common/regex.cpp \
+ 	src/common/stdpbase.cpp \
+@@ -589,11 +556,9 @@
+ 	src/common/tokenzr.cpp \
+ 	src/common/txtstrm.cpp \
+ 	src/common/uri.cpp \
+-	src/common/variant.cpp \
+ 	src/common/wfstream.cpp \
+ 	src/common/wxchar.cpp \
+ 	src/common/xti.cpp \
+-	src/common/xtistrm.cpp \
+ 	src/common/zipstrm.cpp \
+ 	src/common/zstream.cpp \
+ 	src/unix/baseunix.cpp \
+@@ -601,7 +566,6 @@
+ 	src/unix/dlunix.cpp \
+ 	src/unix/mimetype.cpp \
+ 	src/unix/snglinst.cpp \
+-	src/unix/stackwalk.cpp \
+ 	src/unix/stdpaths.cpp \
+ 	src/unix/threadpsx.cpp \
+ 	src/msw/basemsw.cpp \
+@@ -615,7 +579,6 @@
+ 	src/msw/regconf.cpp \
+ 	src/msw/registry.cpp \
+ 	src/msw/snglinst.cpp \
+-	src/msw/stackwalk.cpp \
+ 	src/msw/stdpaths.cpp \
+ 	src/msw/thread.cpp \
+ 	src/msw/utils.cpp \
+@@ -648,7 +611,6 @@
+ 	src/palmos/utils.cpp \
+ 	src/palmos/utilsexc.cpp \
+ 	src/common/event.cpp \
+-	src/common/fs_mem.cpp \
+ 	src/common/msgout.cpp \
+ 	src/common/utilscmn.cpp \
+ 	src/unix/utilsunx.cpp \
+@@ -657,13 +619,11 @@
+ 	src/msw/main.cpp \
+ 	src/msw/mslu.cpp \
+ 	src/msw/volume.cpp \
+-	src/common/fs_inet.cpp \
+ 	src/common/ftp.cpp \
+ 	src/common/http.cpp \
+ 	src/common/protocol.cpp \
+ 	src/common/sckaddr.cpp \
+ 	src/common/sckfile.cpp \
+-	src/common/sckipc.cpp \
+ 	src/common/sckstrm.cpp \
+ 	src/common/socket.cpp \
+ 	src/common/url.cpp \
+@@ -698,16 +658,13 @@
+ 	monodll_arcall.o \
+ 	monodll_arcfind.o \
+ 	monodll_archive.o \
+-	monodll_clntdata.o \
+ 	monodll_cmdline.o \
+ 	monodll_config.o \
+ 	monodll_convauto.o \
+ 	monodll_datetime.o \
+ 	monodll_datstrm.o \
+-	monodll_dircmn.o \
+ 	monodll_dynarray.o \
+ 	monodll_dynlib.o \
+-	monodll_dynload.o \
+ 	monodll_encconv.o \
+ 	monodll_extended.o \
+ 	monodll_ffile.o \
+@@ -717,26 +674,20 @@
+ 	monodll_filefn.o \
+ 	monodll_filename.o \
+ 	monodll_filesys.o \
+-	monodll_filtall.o \
+-	monodll_filtfind.o \
+ 	monodll_fmapbase.o \
+ 	monodll_fs_arc.o \
+-	monodll_fs_filter.o \
+ 	monodll_hash.o \
+ 	monodll_hashmap.o \
+ 	monodll_init.o \
+ 	monodll_intl.o \
+-	monodll_ipcbase.o \
+ 	monodll_list.o \
+ 	monodll_log.o \
+ 	monodll_longlong.o \
+-	monodll_memory.o \
+ 	monodll_mimecmn.o \
+ 	monodll_module.o \
+ 	monodll_mstream.o \
+ 	monodll_object.o \
+ 	monodll_platinfo.o \
+-	monodll_powercmn.o \
+ 	monodll_process.o \
+ 	monodll_regex.o \
+ 	monodll_stdpbase.o \
+@@ -752,27 +703,22 @@
+ 	monodll_tokenzr.o \
+ 	monodll_txtstrm.o \
+ 	monodll_uri.o \
+-	monodll_variant.o \
+ 	monodll_wfstream.o \
+ 	monodll_wxchar.o \
+ 	monodll_xti.o \
+-	monodll_xtistrm.o \
+ 	monodll_zipstrm.o \
+ 	monodll_zstream.o \
+ 	$(__BASE_PLATFORM_SRC_OBJECTS) \
+ 	monodll_event.o \
+-	monodll_fs_mem.o \
+ 	monodll_msgout.o \
+ 	monodll_utilscmn.o \
+ 	$(__BASE_AND_GUI_PLATFORM_SRC_OBJECTS) \
+ 	$(__BASE_AND_GUI_TOOLKIT_SRC_OBJECTS) \
+-	monodll_fs_inet.o \
+ 	monodll_ftp.o \
+ 	monodll_http.o \
+ 	monodll_protocol.o \
+ 	monodll_sckaddr.o \
+ 	monodll_sckfile.o \
+-	monodll_sckipc.o \
+ 	monodll_sckstrm.o \
+ 	monodll_socket.o \
+ 	monodll_url.o \
+@@ -802,16 +748,13 @@
+ 	monolib_arcall.o \
+ 	monolib_arcfind.o \
+ 	monolib_archive.o \
+-	monolib_clntdata.o \
+ 	monolib_cmdline.o \
+ 	monolib_config.o \
+ 	monolib_convauto.o \
+ 	monolib_datetime.o \
+ 	monolib_datstrm.o \
+-	monolib_dircmn.o \
+ 	monolib_dynarray.o \
+ 	monolib_dynlib.o \
+-	monolib_dynload.o \
+ 	monolib_encconv.o \
+ 	monolib_extended.o \
+ 	monolib_ffile.o \
+@@ -821,26 +764,20 @@
+ 	monolib_filefn.o \
+ 	monolib_filename.o \
+ 	monolib_filesys.o \
+-	monolib_filtall.o \
+-	monolib_filtfind.o \
+ 	monolib_fmapbase.o \
+ 	monolib_fs_arc.o \
+-	monolib_fs_filter.o \
+ 	monolib_hash.o \
+ 	monolib_hashmap.o \
+ 	monolib_init.o \
+ 	monolib_intl.o \
+-	monolib_ipcbase.o \
+ 	monolib_list.o \
+ 	monolib_log.o \
+ 	monolib_longlong.o \
+-	monolib_memory.o \
+ 	monolib_mimecmn.o \
+ 	monolib_module.o \
+ 	monolib_mstream.o \
+ 	monolib_object.o \
+ 	monolib_platinfo.o \
+-	monolib_powercmn.o \
+ 	monolib_process.o \
+ 	monolib_regex.o \
+ 	monolib_stdpbase.o \
+@@ -856,27 +793,22 @@
+ 	monolib_tokenzr.o \
+ 	monolib_txtstrm.o \
+ 	monolib_uri.o \
+-	monolib_variant.o \
+ 	monolib_wfstream.o \
+ 	monolib_wxchar.o \
+ 	monolib_xti.o \
+-	monolib_xtistrm.o \
+ 	monolib_zipstrm.o \
+ 	monolib_zstream.o \
+ 	$(__BASE_PLATFORM_SRC_OBJECTS_1) \
+ 	monolib_event.o \
+-	monolib_fs_mem.o \
+ 	monolib_msgout.o \
+ 	monolib_utilscmn.o \
+ 	$(__BASE_AND_GUI_PLATFORM_SRC_OBJECTS_1) \
+ 	$(__BASE_AND_GUI_TOOLKIT_SRC_OBJECTS_1) \
+-	monolib_fs_inet.o \
+ 	monolib_ftp.o \
+ 	monolib_http.o \
+ 	monolib_protocol.o \
+ 	monolib_sckaddr.o \
+ 	monolib_sckfile.o \
+-	monolib_sckipc.o \
+ 	monolib_sckstrm.o \
+ 	monolib_socket.o \
+ 	monolib_url.o \
+@@ -903,16 +835,13 @@
+ 	basedll_arcall.o \
+ 	basedll_arcfind.o \
+ 	basedll_archive.o \
+-	basedll_clntdata.o \
+ 	basedll_cmdline.o \
+ 	basedll_config.o \
+ 	basedll_convauto.o \
+ 	basedll_datetime.o \
+ 	basedll_datstrm.o \
+-	basedll_dircmn.o \
+ 	basedll_dynarray.o \
+ 	basedll_dynlib.o \
+-	basedll_dynload.o \
+ 	basedll_encconv.o \
+ 	basedll_extended.o \
+ 	basedll_ffile.o \
+@@ -922,26 +851,20 @@
+ 	basedll_filefn.o \
+ 	basedll_filename.o \
+ 	basedll_filesys.o \
+-	basedll_filtall.o \
+-	basedll_filtfind.o \
+ 	basedll_fmapbase.o \
+ 	basedll_fs_arc.o \
+-	basedll_fs_filter.o \
+ 	basedll_hash.o \
+ 	basedll_hashmap.o \
+ 	basedll_init.o \
+ 	basedll_intl.o \
+-	basedll_ipcbase.o \
+ 	basedll_list.o \
+ 	basedll_log.o \
+ 	basedll_longlong.o \
+-	basedll_memory.o \
+ 	basedll_mimecmn.o \
+ 	basedll_module.o \
+ 	basedll_mstream.o \
+ 	basedll_object.o \
+ 	basedll_platinfo.o \
+-	basedll_powercmn.o \
+ 	basedll_process.o \
+ 	basedll_regex.o \
+ 	basedll_stdpbase.o \
+@@ -957,16 +880,13 @@
+ 	basedll_tokenzr.o \
+ 	basedll_txtstrm.o \
+ 	basedll_uri.o \
+-	basedll_variant.o \
+ 	basedll_wfstream.o \
+ 	basedll_wxchar.o \
+ 	basedll_xti.o \
+-	basedll_xtistrm.o \
+ 	basedll_zipstrm.o \
+ 	basedll_zstream.o \
+ 	$(__BASE_PLATFORM_SRC_OBJECTS_2) \
+ 	basedll_event.o \
+-	basedll_fs_mem.o \
+ 	basedll_msgout.o \
+ 	basedll_utilscmn.o \
+ 	$(__BASE_AND_GUI_PLATFORM_SRC_OBJECTS_2) \
+@@ -987,16 +907,13 @@
+ 	baselib_arcall.o \
+ 	baselib_arcfind.o \
+ 	baselib_archive.o \
+-	baselib_clntdata.o \
+ 	baselib_cmdline.o \
+ 	baselib_config.o \
+ 	baselib_convauto.o \
+ 	baselib_datetime.o \
+ 	baselib_datstrm.o \
+-	baselib_dircmn.o \
+ 	baselib_dynarray.o \
+ 	baselib_dynlib.o \
+-	baselib_dynload.o \
+ 	baselib_encconv.o \
+ 	baselib_extended.o \
+ 	baselib_ffile.o \
+@@ -1006,26 +923,20 @@
+ 	baselib_filefn.o \
+ 	baselib_filename.o \
+ 	baselib_filesys.o \
+-	baselib_filtall.o \
+-	baselib_filtfind.o \
+ 	baselib_fmapbase.o \
+ 	baselib_fs_arc.o \
+-	baselib_fs_filter.o \
+ 	baselib_hash.o \
+ 	baselib_hashmap.o \
+ 	baselib_init.o \
+ 	baselib_intl.o \
+-	baselib_ipcbase.o \
+ 	baselib_list.o \
+ 	baselib_log.o \
+ 	baselib_longlong.o \
+-	baselib_memory.o \
+ 	baselib_mimecmn.o \
+ 	baselib_module.o \
+ 	baselib_mstream.o \
+ 	baselib_object.o \
+ 	baselib_platinfo.o \
+-	baselib_powercmn.o \
+ 	baselib_process.o \
+ 	baselib_regex.o \
+ 	baselib_stdpbase.o \
+@@ -1041,16 +952,13 @@
+ 	baselib_tokenzr.o \
+ 	baselib_txtstrm.o \
+ 	baselib_uri.o \
+-	baselib_variant.o \
+ 	baselib_wfstream.o \
+ 	baselib_wxchar.o \
+ 	baselib_xti.o \
+-	baselib_xtistrm.o \
+ 	baselib_zipstrm.o \
+ 	baselib_zstream.o \
+ 	$(__BASE_PLATFORM_SRC_OBJECTS_3) \
+ 	baselib_event.o \
+-	baselib_fs_mem.o \
+ 	baselib_msgout.o \
+ 	baselib_utilscmn.o \
+ 	$(__BASE_AND_GUI_PLATFORM_SRC_OBJECTS_3) \
+@@ -1063,13 +971,11 @@
+ 	-DWXMAKINGDLL_NET $(PIC_FLAG) $(CPPFLAGS) $(CXXFLAGS)
+ NETDLL_OBJECTS =  \
+ 	$(__netdll___win32rc) \
+-	netdll_fs_inet.o \
+ 	netdll_ftp.o \
+ 	netdll_http.o \
+ 	netdll_protocol.o \
+ 	netdll_sckaddr.o \
+ 	netdll_sckfile.o \
+-	netdll_sckipc.o \
+ 	netdll_sckstrm.o \
+ 	netdll_socket.o \
+ 	netdll_url.o \
+@@ -1081,13 +987,11 @@
+ 	$(__INC_ODBC_p) $(__INC_REGEX_p) $(__INC_EXPAT_p) -DwxUSE_GUI=0 $(CPPFLAGS) \
+ 	$(CXXFLAGS)
+ NETLIB_OBJECTS =  \
+-	netlib_fs_inet.o \
+ 	netlib_ftp.o \
+ 	netlib_http.o \
+ 	netlib_protocol.o \
+ 	netlib_sckaddr.o \
+ 	netlib_sckfile.o \
+-	netlib_sckipc.o \
+ 	netlib_sckstrm.o \
+ 	netlib_socket.o \
+ 	netlib_url.o \
+@@ -1113,7 +1017,6 @@
+ COREDLL_OBJECTS =  \
+ 	$(__coredll___win32rc) \
+ 	coredll_event.o \
+-	coredll_fs_mem.o \
+ 	coredll_msgout.o \
+ 	coredll_utilscmn.o \
+ 	$(__BASE_AND_GUI_PLATFORM_SRC_OBJECTS_4) \
+@@ -1137,7 +1040,6 @@
+ 	$(__INC_EXPAT_p) -DwxUSE_BASE=0 $(CPPFLAGS) $(OBJCXXFLAGS)
+ CORELIB_OBJECTS =  \
+ 	corelib_event.o \
+-	corelib_fs_mem.o \
+ 	corelib_msgout.o \
+ 	corelib_utilscmn.o \
+ 	$(__BASE_AND_GUI_PLATFORM_SRC_OBJECTS_5) \
+@@ -1687,7 +1589,6 @@
+ 	wx/unix/mimetype.h \
+ 	wx/unix/pipe.h \
+ 	wx/unix/private.h \
+-	wx/unix/stackwalk.h \
+ 	wx/unix/stdpaths.h \
+ 	wx/mac/corefoundation/cfdataref.h \
+ 	wx/mac/corefoundation/cfref.h \
+@@ -1702,7 +1603,6 @@
+ 	wx/unix/mimetype.h \
+ 	wx/unix/pipe.h \
+ 	wx/unix/private.h \
+-	wx/unix/stackwalk.h \
+ 	wx/unix/stdpaths.h \
+ 	wx/mac/corefoundation/cfdataref.h \
+ 	wx/mac/corefoundation/cfref.h \
+@@ -1717,7 +1617,6 @@
+ 	wx/unix/mimetype.h \
+ 	wx/unix/pipe.h \
+ 	wx/unix/private.h \
+-	wx/unix/stackwalk.h \
+ 	wx/unix/stdpaths.h \
+ 	wx/mac/corefoundation/cfdataref.h \
+ 	wx/mac/corefoundation/cfref.h \
+@@ -1742,7 +1641,6 @@
+ 	wx/unix/mimetype.h \
+ 	wx/unix/pipe.h \
+ 	wx/unix/private.h \
+-	wx/unix/stackwalk.h \
+ 	wx/unix/stdpaths.h \
+ 	wx/mac/corefoundation/cfdataref.h \
+ 	wx/mac/corefoundation/cfref.h \
+@@ -1757,7 +1655,6 @@
+ 	wx/unix/mimetype.h \
+ 	wx/unix/pipe.h \
+ 	wx/unix/private.h \
+-	wx/unix/stackwalk.h \
+ 	wx/unix/stdpaths.h \
+ 	wx/mac/corefoundation/cfdataref.h \
+ 	wx/mac/corefoundation/cfref.h \
+@@ -1783,7 +1680,6 @@
+ 	wx/unix/mimetype.h \
+ 	wx/unix/pipe.h \
+ 	wx/unix/private.h \
+-	wx/unix/stackwalk.h \
+ 	wx/unix/stdpaths.h
+ @COND_PLATFORM_UNIX_1@BASE_PLATFORM_HDR = $(COND_PLATFORM_UNIX_1_BASE_PLATFORM_HDR)
+ COND_PLATFORM_WIN32_1_BASE_PLATFORM_HDR =  \
+@@ -1801,7 +1697,6 @@
+ 	wx/msw/regconf.h \
+ 	wx/msw/registry.h \
+ 	wx/msw/seh.h \
+-	wx/msw/stackwalk.h \
+ 	wx/msw/stdpaths.h \
+ 	wx/msw/winundef.h \
+ 	wx/msw/wrapcctl.h \
+@@ -1830,7 +1725,6 @@
+ 	wx/dfb/cursor.h \
+ 	wx/dfb/dc.h \
+ 	wx/dfb/dcclient.h \
+-	wx/dfb/dcmemory.h \
+ 	wx/dfb/dcscreen.h \
+ 	wx/dfb/dfbptr.h \
+ 	wx/dfb/evtloop.h \
+@@ -1860,7 +1754,6 @@
+ 	wx/gtk1/dataobj2.h \
+ 	wx/gtk1/dc.h \
+ 	wx/gtk1/dcclient.h \
+-	wx/gtk1/dcmemory.h \
+ 	wx/gtk1/dcscreen.h \
+ 	wx/gtk1/dnd.h \
+ 	wx/gtk1/font.h \
+@@ -1893,7 +1786,6 @@
+ 	wx/gtk/dataobj2.h \
+ 	wx/gtk/dc.h \
+ 	wx/gtk/dcclient.h \
+-	wx/gtk/dcmemory.h \
+ 	wx/gtk/dcscreen.h \
+ 	wx/gtk/dnd.h \
+ 	wx/gtk/font.h \
+@@ -1923,7 +1815,6 @@
+ 	wx/mgl/cursor.h \
+ 	wx/mgl/dc.h \
+ 	wx/mgl/dcclient.h \
+-	wx/mgl/dcmemory.h \
+ 	wx/mgl/dcscreen.h \
+ 	wx/mgl/font.h \
+ 	wx/mgl/palette.h \
+@@ -1973,7 +1864,6 @@
+ 	wx/x11/dataobj2.h \
+ 	wx/x11/dc.h \
+ 	wx/x11/dcclient.h \
+-	wx/x11/dcmemory.h \
+ 	wx/x11/dcprint.h \
+ 	wx/x11/dcscreen.h \
+ 	wx/x11/dnd.h \
+@@ -2027,7 +1917,6 @@
+ 	wx/cocoa/dataobj2.h \
+ 	wx/cocoa/dc.h \
+ 	wx/cocoa/dcclient.h \
+-	wx/cocoa/dcmemory.h \
+ 	wx/cocoa/dcscreen.h \
+ 	wx/cocoa/dialog.h \
+ 	wx/cocoa/dirdlg.h \
+@@ -2191,7 +2080,6 @@
+ 	wx/mac/dataobj2.h \
+ 	wx/mac/dc.h \
+ 	wx/mac/dcclient.h \
+-	wx/mac/dcmemory.h \
+ 	wx/mac/dcprint.h \
+ 	wx/mac/dcscreen.h \
+ 	wx/mac/dialog.h \
+@@ -2275,7 +2163,6 @@
+ 	wx/mac/carbon/dataobj2.h \
+ 	wx/mac/carbon/dc.h \
+ 	wx/mac/carbon/dcclient.h \
+-	wx/mac/carbon/dcmemory.h \
+ 	wx/mac/carbon/dcprint.h \
+ 	wx/mac/carbon/dcscreen.h \
+ 	wx/mac/carbon/dialog.h \
+@@ -2374,7 +2261,6 @@
+ 	wx/motif/dataobj2.h \
+ 	wx/motif/dc.h \
+ 	wx/motif/dcclient.h \
+-	wx/motif/dcmemory.h \
+ 	wx/motif/dcprint.h \
+ 	wx/motif/dcscreen.h \
+ 	wx/motif/dialog.h \
+@@ -2431,7 +2317,6 @@
+ 	wx/msw/cursor.h \
+ 	wx/msw/dc.h \
+ 	wx/msw/dcclient.h \
+-	wx/msw/dcmemory.h \
+ 	wx/msw/dcprint.h \
+ 	wx/msw/dcscreen.h \
+ 	wx/msw/dialog.h \
+@@ -2555,7 +2440,6 @@
+ 	wx/os2/dataobj2.h \
+ 	wx/os2/dc.h \
+ 	wx/os2/dcclient.h \
+-	wx/os2/dcmemory.h \
+ 	wx/os2/dcprint.h \
+ 	wx/os2/dcscreen.h \
+ 	wx/os2/dialog.h \
+@@ -2625,7 +2509,6 @@
+ 	wx/msw/cursor.h \
+ 	wx/msw/dc.h \
+ 	wx/msw/dcclient.h \
+-	wx/msw/dcmemory.h \
+ 	wx/msw/dcprint.h \
+ 	wx/msw/dcscreen.h \
+ 	wx/msw/dialog.h \
+@@ -2914,7 +2797,6 @@
+ 	wx/dc.h \
+ 	wx/dcclient.h \
+ 	wx/dcgraph.h \
+-	wx/dcmemory.h \
+ 	wx/dcprint.h \
+ 	wx/dcscreen.h \
+ 	wx/dialog.h \
+@@ -3295,7 +3177,6 @@
+ 	monodll_dlunix.o \
+ 	monodll_unix_mimetype.o \
+ 	monodll_unix_snglinst.o \
+-	monodll_unix_stackwalk.o \
+ 	monodll_unix_stdpaths.o \
+ 	monodll_threadpsx.o
+ @COND_PLATFORM_UNIX_1@__BASE_PLATFORM_SRC_OBJECTS = $(COND_PLATFORM_UNIX_1___BASE_PLATFORM_SRC_OBJECTS)
+@@ -3311,7 +3192,6 @@
+ 	monodll_regconf.o \
+ 	monodll_registry.o \
+ 	monodll_msw_snglinst.o \
+-	monodll_msw_stackwalk.o \
+ 	monodll_msw_stdpaths.o \
+ 	monodll_msw_thread.o \
+ 	monodll_msw_utils.o \
+@@ -3325,7 +3205,6 @@
+ 	monodll_dlunix.o \
+ 	monodll_unix_mimetype.o \
+ 	monodll_unix_snglinst.o \
+-	monodll_unix_stackwalk.o \
+ 	monodll_unix_stdpaths.o \
+ 	monodll_threadpsx.o \
+ 	monodll_cfstring.o \
+@@ -3338,7 +3217,6 @@
+ 	monodll_dlunix.o \
+ 	monodll_unix_mimetype.o \
+ 	monodll_unix_snglinst.o \
+-	monodll_unix_stackwalk.o \
+ 	monodll_unix_stdpaths.o \
+ 	monodll_threadpsx.o \
+ 	monodll_cfstring.o \
+@@ -3351,7 +3229,6 @@
+ 	monodll_dlunix.o \
+ 	monodll_unix_mimetype.o \
+ 	monodll_unix_snglinst.o \
+-	monodll_unix_stackwalk.o \
+ 	monodll_unix_stdpaths.o \
+ 	monodll_threadpsx.o \
+ 	monodll_cfstring.o \
+@@ -3379,7 +3256,6 @@
+ 	monodll_dlunix.o \
+ 	monodll_unix_mimetype.o \
+ 	monodll_unix_snglinst.o \
+-	monodll_unix_stackwalk.o \
+ 	monodll_unix_stdpaths.o \
+ 	monodll_threadpsx.o \
+ 	monodll_cfstring.o \
+@@ -3392,7 +3268,6 @@
+ 	monodll_dlunix.o \
+ 	monodll_unix_mimetype.o \
+ 	monodll_unix_snglinst.o \
+-	monodll_unix_stackwalk.o \
+ 	monodll_unix_stdpaths.o \
+ 	monodll_threadpsx.o \
+ 	monodll_cfstring.o \
+@@ -3842,7 +3717,6 @@
+ 	monodll_dfb_cursor.o \
+ 	monodll_dfb_dc.o \
+ 	monodll_dfb_dcclient.o \
+-	monodll_dfb_dcmemory.o \
+ 	monodll_dfb_dcscreen.o \
+ 	monodll_dfb_evtloop.o \
+ 	monodll_dfb_font.o \
+@@ -3877,7 +3751,6 @@
+ 	monodll_gtk1_dataobj.o \
+ 	monodll_gtk1_dc.o \
+ 	monodll_gtk1_dcclient.o \
+-	monodll_gtk1_dcmemory.o \
+ 	monodll_gtk1_dcscreen.o \
+ 	monodll_gtk1_dnd.o \
+ 	monodll_gtk1_evtloop.o \
+@@ -3918,7 +3791,6 @@
+ 	monodll_gtk_dataobj.o \
+ 	monodll_gtk_dc.o \
+ 	monodll_gtk_dcclient.o \
+-	monodll_gtk_dcmemory.o \
+ 	monodll_gtk_dcscreen.o \
+ 	monodll_gtk_dnd.o \
+ 	monodll_gtk_evtloop.o \
+@@ -3955,7 +3827,6 @@
+ 	monodll_mgl_data.o \
+ 	monodll_mgl_dc.o \
+ 	monodll_mgl_dcclient.o \
+-	monodll_mgl_dcmemory.o \
+ 	monodll_mgl_dcscreen.o \
+ 	monodll_dirmgl.o \
+ 	monodll_mgl_evtloop.o \
+@@ -3996,7 +3867,6 @@
+ 	monodll_msw_data.o \
+ 	monodll_msw_dc.o \
+ 	monodll_msw_dcclient.o \
+-	monodll_msw_dcmemory.o \
+ 	monodll_msw_dcprint.o \
+ 	monodll_msw_dcscreen.o \
+ 	monodll_msw_dialup.o \
+@@ -4049,7 +3919,6 @@
+ 	monodll_msw_data.o \
+ 	monodll_msw_dc.o \
+ 	monodll_msw_dcclient.o \
+-	monodll_msw_dcmemory.o \
+ 	monodll_msw_dcprint.o \
+ 	monodll_msw_dcscreen.o \
+ 	monodll_msw_dialup.o \
+@@ -4107,7 +3976,6 @@
+ 	monodll_x11_dataobj.o \
+ 	monodll_x11_dc.o \
+ 	monodll_x11_dcclient.o \
+-	monodll_x11_dcmemory.o \
+ 	monodll_x11_dcscreen.o \
+ 	monodll_x11_evtloop.o \
+ 	monodll_x11_font.o \
+@@ -4156,7 +4024,6 @@
+ 	monodll_cocoa_dataobj.o \
+ 	monodll_cocoa_dc.o \
+ 	monodll_cocoa_dcclient.o \
+-	monodll_cocoa_dcmemory.o \
+ 	monodll_cocoa_dcscreen.o \
+ 	monodll_cocoa_dialog.o \
+ 	monodll_cocoa_dirdlg.o \
+@@ -4334,7 +4201,6 @@
+ 	monodll_carbon_dc.o \
+ 	monodll_dccg.o \
+ 	monodll_carbon_dcclient.o \
+-	monodll_carbon_dcmemory.o \
+ 	monodll_carbon_dcprint.o \
+ 	monodll_carbon_dcscreen.o \
+ 	monodll_carbon_dialog.o \
+@@ -4418,7 +4284,6 @@
+ 	monodll_motif_dataobj.o \
+ 	monodll_motif_dc.o \
+ 	monodll_motif_dcclient.o \
+-	monodll_motif_dcmemory.o \
+ 	monodll_motif_dcscreen.o \
+ 	monodll_motif_dialog.o \
+ 	monodll_motif_evtloop.o \
+@@ -4542,7 +4407,6 @@
+ 	monodll_os2_dataobj.o \
+ 	monodll_os2_dc.o \
+ 	monodll_os2_dcclient.o \
+-	monodll_os2_dcmemory.o \
+ 	monodll_os2_dcprint.o \
+ 	monodll_os2_dcscreen.o \
+ 	monodll_os2_dialog.o \
+@@ -4678,7 +4542,6 @@
+ 	monodll_dfb_cursor.o \
+ 	monodll_dfb_dc.o \
+ 	monodll_dfb_dcclient.o \
+-	monodll_dfb_dcmemory.o \
+ 	monodll_dfb_dcscreen.o \
+ 	monodll_dfb_evtloop.o \
+ 	monodll_dfb_font.o \
+@@ -4713,7 +4576,6 @@
+ 	monodll_gtk1_dataobj.o \
+ 	monodll_gtk1_dc.o \
+ 	monodll_gtk1_dcclient.o \
+-	monodll_gtk1_dcmemory.o \
+ 	monodll_gtk1_dcscreen.o \
+ 	monodll_gtk1_dnd.o \
+ 	monodll_gtk1_evtloop.o \
+@@ -4754,7 +4616,6 @@
+ 	monodll_gtk_dataobj.o \
+ 	monodll_gtk_dc.o \
+ 	monodll_gtk_dcclient.o \
+-	monodll_gtk_dcmemory.o \
+ 	monodll_gtk_dcscreen.o \
+ 	monodll_gtk_dnd.o \
+ 	monodll_gtk_evtloop.o \
+@@ -4791,7 +4652,6 @@
+ 	monodll_mgl_data.o \
+ 	monodll_mgl_dc.o \
+ 	monodll_mgl_dcclient.o \
+-	monodll_mgl_dcmemory.o \
+ 	monodll_mgl_dcscreen.o \
+ 	monodll_dirmgl.o \
+ 	monodll_mgl_evtloop.o \
+@@ -4832,7 +4692,6 @@
+ 	monodll_msw_data.o \
+ 	monodll_msw_dc.o \
+ 	monodll_msw_dcclient.o \
+-	monodll_msw_dcmemory.o \
+ 	monodll_msw_dcprint.o \
+ 	monodll_msw_dcscreen.o \
+ 	monodll_msw_dialup.o \
+@@ -4885,7 +4744,6 @@
+ 	monodll_msw_data.o \
+ 	monodll_msw_dc.o \
+ 	monodll_msw_dcclient.o \
+-	monodll_msw_dcmemory.o \
+ 	monodll_msw_dcprint.o \
+ 	monodll_msw_dcscreen.o \
+ 	monodll_msw_dialup.o \
+@@ -4943,7 +4801,6 @@
+ 	monodll_x11_dataobj.o \
+ 	monodll_x11_dc.o \
+ 	monodll_x11_dcclient.o \
+-	monodll_x11_dcmemory.o \
+ 	monodll_x11_dcscreen.o \
+ 	monodll_x11_evtloop.o \
+ 	monodll_x11_font.o \
+@@ -5086,7 +4943,6 @@
+ 	monolib_dlunix.o \
+ 	monolib_unix_mimetype.o \
+ 	monolib_unix_snglinst.o \
+-	monolib_unix_stackwalk.o \
+ 	monolib_unix_stdpaths.o \
+ 	monolib_threadpsx.o
+ @COND_PLATFORM_UNIX_1@__BASE_PLATFORM_SRC_OBJECTS_1 = $(COND_PLATFORM_UNIX_1___BASE_PLATFORM_SRC_OBJECTS_1)
+@@ -5102,7 +4958,6 @@
+ 	monolib_regconf.o \
+ 	monolib_registry.o \
+ 	monolib_msw_snglinst.o \
+-	monolib_msw_stackwalk.o \
+ 	monolib_msw_stdpaths.o \
+ 	monolib_msw_thread.o \
+ 	monolib_msw_utils.o \
+@@ -5116,7 +4971,6 @@
+ 	monolib_dlunix.o \
+ 	monolib_unix_mimetype.o \
+ 	monolib_unix_snglinst.o \
+-	monolib_unix_stackwalk.o \
+ 	monolib_unix_stdpaths.o \
+ 	monolib_threadpsx.o \
+ 	monolib_cfstring.o \
+@@ -5129,7 +4983,6 @@
+ 	monolib_dlunix.o \
+ 	monolib_unix_mimetype.o \
+ 	monolib_unix_snglinst.o \
+-	monolib_unix_stackwalk.o \
+ 	monolib_unix_stdpaths.o \
+ 	monolib_threadpsx.o \
+ 	monolib_cfstring.o \
+@@ -5142,7 +4995,6 @@
+ 	monolib_dlunix.o \
+ 	monolib_unix_mimetype.o \
+ 	monolib_unix_snglinst.o \
+-	monolib_unix_stackwalk.o \
+ 	monolib_unix_stdpaths.o \
+ 	monolib_threadpsx.o \
+ 	monolib_cfstring.o \
+@@ -5170,7 +5022,6 @@
+ 	monolib_dlunix.o \
+ 	monolib_unix_mimetype.o \
+ 	monolib_unix_snglinst.o \
+-	monolib_unix_stackwalk.o \
+ 	monolib_unix_stdpaths.o \
+ 	monolib_threadpsx.o \
+ 	monolib_cfstring.o \
+@@ -5183,7 +5034,6 @@
+ 	monolib_dlunix.o \
+ 	monolib_unix_mimetype.o \
+ 	monolib_unix_snglinst.o \
+-	monolib_unix_stackwalk.o \
+ 	monolib_unix_stdpaths.o \
+ 	monolib_threadpsx.o \
+ 	monolib_cfstring.o \
+@@ -5634,7 +5484,6 @@
+ 	monolib_dfb_cursor.o \
+ 	monolib_dfb_dc.o \
+ 	monolib_dfb_dcclient.o \
+-	monolib_dfb_dcmemory.o \
+ 	monolib_dfb_dcscreen.o \
+ 	monolib_dfb_evtloop.o \
+ 	monolib_dfb_font.o \
+@@ -5669,7 +5518,6 @@
+ 	monolib_gtk1_dataobj.o \
+ 	monolib_gtk1_dc.o \
+ 	monolib_gtk1_dcclient.o \
+-	monolib_gtk1_dcmemory.o \
+ 	monolib_gtk1_dcscreen.o \
+ 	monolib_gtk1_dnd.o \
+ 	monolib_gtk1_evtloop.o \
+@@ -5710,7 +5558,6 @@
+ 	monolib_gtk_dataobj.o \
+ 	monolib_gtk_dc.o \
+ 	monolib_gtk_dcclient.o \
+-	monolib_gtk_dcmemory.o \
+ 	monolib_gtk_dcscreen.o \
+ 	monolib_gtk_dnd.o \
+ 	monolib_gtk_evtloop.o \
+@@ -5748,7 +5595,6 @@
+ 	monolib_mgl_data.o \
+ 	monolib_mgl_dc.o \
+ 	monolib_mgl_dcclient.o \
+-	monolib_mgl_dcmemory.o \
+ 	monolib_mgl_dcscreen.o \
+ 	monolib_dirmgl.o \
+ 	monolib_mgl_evtloop.o \
+@@ -5789,7 +5635,6 @@
+ 	monolib_msw_data.o \
+ 	monolib_msw_dc.o \
+ 	monolib_msw_dcclient.o \
+-	monolib_msw_dcmemory.o \
+ 	monolib_msw_dcprint.o \
+ 	monolib_msw_dcscreen.o \
+ 	monolib_msw_dialup.o \
+@@ -5842,7 +5687,6 @@
+ 	monolib_msw_data.o \
+ 	monolib_msw_dc.o \
+ 	monolib_msw_dcclient.o \
+-	monolib_msw_dcmemory.o \
+ 	monolib_msw_dcprint.o \
+ 	monolib_msw_dcscreen.o \
+ 	monolib_msw_dialup.o \
+@@ -5900,7 +5744,6 @@
+ 	monolib_x11_dataobj.o \
+ 	monolib_x11_dc.o \
+ 	monolib_x11_dcclient.o \
+-	monolib_x11_dcmemory.o \
+ 	monolib_x11_dcscreen.o \
+ 	monolib_x11_evtloop.o \
+ 	monolib_x11_font.o \
+@@ -5949,7 +5792,6 @@
+ 	monolib_cocoa_dataobj.o \
+ 	monolib_cocoa_dc.o \
+ 	monolib_cocoa_dcclient.o \
+-	monolib_cocoa_dcmemory.o \
+ 	monolib_cocoa_dcscreen.o \
+ 	monolib_cocoa_dialog.o \
+ 	monolib_cocoa_dirdlg.o \
+@@ -6127,7 +5969,6 @@
+ 	monolib_carbon_dc.o \
+ 	monolib_dccg.o \
+ 	monolib_carbon_dcclient.o \
+-	monolib_carbon_dcmemory.o \
+ 	monolib_carbon_dcprint.o \
+ 	monolib_carbon_dcscreen.o \
+ 	monolib_carbon_dialog.o \
+@@ -6211,7 +6052,6 @@
+ 	monolib_motif_dataobj.o \
+ 	monolib_motif_dc.o \
+ 	monolib_motif_dcclient.o \
+-	monolib_motif_dcmemory.o \
+ 	monolib_motif_dcscreen.o \
+ 	monolib_motif_dialog.o \
+ 	monolib_motif_evtloop.o \
+@@ -6335,7 +6175,6 @@
+ 	monolib_os2_dataobj.o \
+ 	monolib_os2_dc.o \
+ 	monolib_os2_dcclient.o \
+-	monolib_os2_dcmemory.o \
+ 	monolib_os2_dcprint.o \
+ 	monolib_os2_dcscreen.o \
+ 	monolib_os2_dialog.o \
+@@ -6471,7 +6310,6 @@
+ 	monolib_dfb_cursor.o \
+ 	monolib_dfb_dc.o \
+ 	monolib_dfb_dcclient.o \
+-	monolib_dfb_dcmemory.o \
+ 	monolib_dfb_dcscreen.o \
+ 	monolib_dfb_evtloop.o \
+ 	monolib_dfb_font.o \
+@@ -6506,7 +6344,6 @@
+ 	monolib_gtk1_dataobj.o \
+ 	monolib_gtk1_dc.o \
+ 	monolib_gtk1_dcclient.o \
+-	monolib_gtk1_dcmemory.o \
+ 	monolib_gtk1_dcscreen.o \
+ 	monolib_gtk1_dnd.o \
+ 	monolib_gtk1_evtloop.o \
+@@ -6547,7 +6384,6 @@
+ 	monolib_gtk_dataobj.o \
+ 	monolib_gtk_dc.o \
+ 	monolib_gtk_dcclient.o \
+-	monolib_gtk_dcmemory.o \
+ 	monolib_gtk_dcscreen.o \
+ 	monolib_gtk_dnd.o \
+ 	monolib_gtk_evtloop.o \
+@@ -6585,7 +6421,6 @@
+ 	monolib_mgl_data.o \
+ 	monolib_mgl_dc.o \
+ 	monolib_mgl_dcclient.o \
+-	monolib_mgl_dcmemory.o \
+ 	monolib_mgl_dcscreen.o \
+ 	monolib_dirmgl.o \
+ 	monolib_mgl_evtloop.o \
+@@ -6626,7 +6461,6 @@
+ 	monolib_msw_data.o \
+ 	monolib_msw_dc.o \
+ 	monolib_msw_dcclient.o \
+-	monolib_msw_dcmemory.o \
+ 	monolib_msw_dcprint.o \
+ 	monolib_msw_dcscreen.o \
+ 	monolib_msw_dialup.o \
+@@ -6679,7 +6513,6 @@
+ 	monolib_msw_data.o \
+ 	monolib_msw_dc.o \
+ 	monolib_msw_dcclient.o \
+-	monolib_msw_dcmemory.o \
+ 	monolib_msw_dcprint.o \
+ 	monolib_msw_dcscreen.o \
+ 	monolib_msw_dialup.o \
+@@ -6737,7 +6570,6 @@
+ 	monolib_x11_dataobj.o \
+ 	monolib_x11_dc.o \
+ 	monolib_x11_dcclient.o \
+-	monolib_x11_dcmemory.o \
+ 	monolib_x11_dcscreen.o \
+ 	monolib_x11_evtloop.o \
+ 	monolib_x11_font.o \
+@@ -6939,7 +6771,6 @@
+ 	basedll_dlunix.o \
+ 	basedll_unix_mimetype.o \
+ 	basedll_unix_snglinst.o \
+-	basedll_unix_stackwalk.o \
+ 	basedll_unix_stdpaths.o \
+ 	basedll_threadpsx.o
+ @COND_PLATFORM_UNIX_1@__BASE_PLATFORM_SRC_OBJECTS_2 = $(COND_PLATFORM_UNIX_1___BASE_PLATFORM_SRC_OBJECTS_2)
+@@ -6955,7 +6786,6 @@
+ 	basedll_regconf.o \
+ 	basedll_registry.o \
+ 	basedll_msw_snglinst.o \
+-	basedll_msw_stackwalk.o \
+ 	basedll_msw_stdpaths.o \
+ 	basedll_msw_thread.o \
+ 	basedll_msw_utils.o \
+@@ -6969,7 +6799,6 @@
+ 	basedll_dlunix.o \
+ 	basedll_unix_mimetype.o \
+ 	basedll_unix_snglinst.o \
+-	basedll_unix_stackwalk.o \
+ 	basedll_unix_stdpaths.o \
+ 	basedll_threadpsx.o \
+ 	basedll_cfstring.o \
+@@ -6982,7 +6811,6 @@
+ 	basedll_dlunix.o \
+ 	basedll_unix_mimetype.o \
+ 	basedll_unix_snglinst.o \
+-	basedll_unix_stackwalk.o \
+ 	basedll_unix_stdpaths.o \
+ 	basedll_threadpsx.o \
+ 	basedll_cfstring.o \
+@@ -6995,7 +6823,6 @@
+ 	basedll_dlunix.o \
+ 	basedll_unix_mimetype.o \
+ 	basedll_unix_snglinst.o \
+-	basedll_unix_stackwalk.o \
+ 	basedll_unix_stdpaths.o \
+ 	basedll_threadpsx.o \
+ 	basedll_cfstring.o \
+@@ -7023,7 +6850,6 @@
+ 	basedll_dlunix.o \
+ 	basedll_unix_mimetype.o \
+ 	basedll_unix_snglinst.o \
+-	basedll_unix_stackwalk.o \
+ 	basedll_unix_stdpaths.o \
+ 	basedll_threadpsx.o \
+ 	basedll_cfstring.o \
+@@ -7036,7 +6862,6 @@
+ 	basedll_dlunix.o \
+ 	basedll_unix_mimetype.o \
+ 	basedll_unix_snglinst.o \
+-	basedll_unix_stackwalk.o \
+ 	basedll_unix_stdpaths.o \
+ 	basedll_threadpsx.o \
+ 	basedll_cfstring.o \
+@@ -7103,7 +6928,6 @@
+ 	baselib_dlunix.o \
+ 	baselib_unix_mimetype.o \
+ 	baselib_unix_snglinst.o \
+-	baselib_unix_stackwalk.o \
+ 	baselib_unix_stdpaths.o \
+ 	baselib_threadpsx.o
+ @COND_PLATFORM_UNIX_1@__BASE_PLATFORM_SRC_OBJECTS_3 = $(COND_PLATFORM_UNIX_1___BASE_PLATFORM_SRC_OBJECTS_3)
+@@ -7119,7 +6943,6 @@
+ 	baselib_regconf.o \
+ 	baselib_registry.o \
+ 	baselib_msw_snglinst.o \
+-	baselib_msw_stackwalk.o \
+ 	baselib_msw_stdpaths.o \
+ 	baselib_msw_thread.o \
+ 	baselib_msw_utils.o \
+@@ -7133,7 +6956,6 @@
+ 	baselib_dlunix.o \
+ 	baselib_unix_mimetype.o \
+ 	baselib_unix_snglinst.o \
+-	baselib_unix_stackwalk.o \
+ 	baselib_unix_stdpaths.o \
+ 	baselib_threadpsx.o \
+ 	baselib_cfstring.o \
+@@ -7146,7 +6968,6 @@
+ 	baselib_dlunix.o \
+ 	baselib_unix_mimetype.o \
+ 	baselib_unix_snglinst.o \
+-	baselib_unix_stackwalk.o \
+ 	baselib_unix_stdpaths.o \
+ 	baselib_threadpsx.o \
+ 	baselib_cfstring.o \
+@@ -7159,7 +6980,6 @@
+ 	baselib_dlunix.o \
+ 	baselib_unix_mimetype.o \
+ 	baselib_unix_snglinst.o \
+-	baselib_unix_stackwalk.o \
+ 	baselib_unix_stdpaths.o \
+ 	baselib_threadpsx.o \
+ 	baselib_cfstring.o \
+@@ -7187,7 +7007,6 @@
+ 	baselib_dlunix.o \
+ 	baselib_unix_mimetype.o \
+ 	baselib_unix_snglinst.o \
+-	baselib_unix_stackwalk.o \
+ 	baselib_unix_stdpaths.o \
+ 	baselib_threadpsx.o \
+ 	baselib_cfstring.o \
+@@ -7200,7 +7019,6 @@
+ 	baselib_dlunix.o \
+ 	baselib_unix_mimetype.o \
+ 	baselib_unix_snglinst.o \
+-	baselib_unix_stackwalk.o \
+ 	baselib_unix_stdpaths.o \
+ 	baselib_threadpsx.o \
+ 	baselib_cfstring.o \
+@@ -7707,7 +7525,6 @@
+ 	coredll_dfb_cursor.o \
+ 	coredll_dfb_dc.o \
+ 	coredll_dfb_dcclient.o \
+-	coredll_dfb_dcmemory.o \
+ 	coredll_dfb_dcscreen.o \
+ 	coredll_dfb_evtloop.o \
+ 	coredll_dfb_font.o \
+@@ -7742,7 +7559,6 @@
+ 	coredll_gtk1_dataobj.o \
+ 	coredll_gtk1_dc.o \
+ 	coredll_gtk1_dcclient.o \
+-	coredll_gtk1_dcmemory.o \
+ 	coredll_gtk1_dcscreen.o \
+ 	coredll_gtk1_dnd.o \
+ 	coredll_gtk1_evtloop.o \
+@@ -7783,7 +7599,6 @@
+ 	coredll_gtk_dataobj.o \
+ 	coredll_gtk_dc.o \
+ 	coredll_gtk_dcclient.o \
+-	coredll_gtk_dcmemory.o \
+ 	coredll_gtk_dcscreen.o \
+ 	coredll_gtk_dnd.o \
+ 	coredll_gtk_evtloop.o \
+@@ -7821,7 +7636,6 @@
+ 	coredll_mgl_data.o \
+ 	coredll_mgl_dc.o \
+ 	coredll_mgl_dcclient.o \
+-	coredll_mgl_dcmemory.o \
+ 	coredll_mgl_dcscreen.o \
+ 	coredll_dirmgl.o \
+ 	coredll_mgl_evtloop.o \
+@@ -7862,7 +7676,6 @@
+ 	coredll_msw_data.o \
+ 	coredll_msw_dc.o \
+ 	coredll_msw_dcclient.o \
+-	coredll_msw_dcmemory.o \
+ 	coredll_msw_dcprint.o \
+ 	coredll_msw_dcscreen.o \
+ 	coredll_msw_dialup.o \
+@@ -7915,7 +7728,6 @@
+ 	coredll_msw_data.o \
+ 	coredll_msw_dc.o \
+ 	coredll_msw_dcclient.o \
+-	coredll_msw_dcmemory.o \
+ 	coredll_msw_dcprint.o \
+ 	coredll_msw_dcscreen.o \
+ 	coredll_msw_dialup.o \
+@@ -7973,7 +7785,6 @@
+ 	coredll_x11_dataobj.o \
+ 	coredll_x11_dc.o \
+ 	coredll_x11_dcclient.o \
+-	coredll_x11_dcmemory.o \
+ 	coredll_x11_dcscreen.o \
+ 	coredll_x11_evtloop.o \
+ 	coredll_x11_font.o \
+@@ -8022,7 +7833,6 @@
+ 	coredll_cocoa_dataobj.o \
+ 	coredll_cocoa_dc.o \
+ 	coredll_cocoa_dcclient.o \
+-	coredll_cocoa_dcmemory.o \
+ 	coredll_cocoa_dcscreen.o \
+ 	coredll_cocoa_dialog.o \
+ 	coredll_cocoa_dirdlg.o \
+@@ -8200,7 +8010,6 @@
+ 	coredll_carbon_dc.o \
+ 	coredll_dccg.o \
+ 	coredll_carbon_dcclient.o \
+-	coredll_carbon_dcmemory.o \
+ 	coredll_carbon_dcprint.o \
+ 	coredll_carbon_dcscreen.o \
+ 	coredll_carbon_dialog.o \
+@@ -8284,7 +8093,6 @@
+ 	coredll_motif_dataobj.o \
+ 	coredll_motif_dc.o \
+ 	coredll_motif_dcclient.o \
+-	coredll_motif_dcmemory.o \
+ 	coredll_motif_dcscreen.o \
+ 	coredll_motif_dialog.o \
+ 	coredll_motif_evtloop.o \
+@@ -8408,7 +8216,6 @@
+ 	coredll_os2_dataobj.o \
+ 	coredll_os2_dc.o \
+ 	coredll_os2_dcclient.o \
+-	coredll_os2_dcmemory.o \
+ 	coredll_os2_dcprint.o \
+ 	coredll_os2_dcscreen.o \
+ 	coredll_os2_dialog.o \
+@@ -8544,7 +8351,6 @@
+ 	coredll_dfb_cursor.o \
+ 	coredll_dfb_dc.o \
+ 	coredll_dfb_dcclient.o \
+-	coredll_dfb_dcmemory.o \
+ 	coredll_dfb_dcscreen.o \
+ 	coredll_dfb_evtloop.o \
+ 	coredll_dfb_font.o \
+@@ -8579,7 +8385,6 @@
+ 	coredll_gtk1_dataobj.o \
+ 	coredll_gtk1_dc.o \
+ 	coredll_gtk1_dcclient.o \
+-	coredll_gtk1_dcmemory.o \
+ 	coredll_gtk1_dcscreen.o \
+ 	coredll_gtk1_dnd.o \
+ 	coredll_gtk1_evtloop.o \
+@@ -8620,7 +8425,6 @@
+ 	coredll_gtk_dataobj.o \
+ 	coredll_gtk_dc.o \
+ 	coredll_gtk_dcclient.o \
+-	coredll_gtk_dcmemory.o \
+ 	coredll_gtk_dcscreen.o \
+ 	coredll_gtk_dnd.o \
+ 	coredll_gtk_evtloop.o \
+@@ -8658,7 +8462,6 @@
+ 	coredll_mgl_data.o \
+ 	coredll_mgl_dc.o \
+ 	coredll_mgl_dcclient.o \
+-	coredll_mgl_dcmemory.o \
+ 	coredll_mgl_dcscreen.o \
+ 	coredll_dirmgl.o \
+ 	coredll_mgl_evtloop.o \
+@@ -8699,7 +8502,6 @@
+ 	coredll_msw_data.o \
+ 	coredll_msw_dc.o \
+ 	coredll_msw_dcclient.o \
+-	coredll_msw_dcmemory.o \
+ 	coredll_msw_dcprint.o \
+ 	coredll_msw_dcscreen.o \
+ 	coredll_msw_dialup.o \
+@@ -8752,7 +8554,6 @@
+ 	coredll_msw_data.o \
+ 	coredll_msw_dc.o \
+ 	coredll_msw_dcclient.o \
+-	coredll_msw_dcmemory.o \
+ 	coredll_msw_dcprint.o \
+ 	coredll_msw_dcscreen.o \
+ 	coredll_msw_dialup.o \
+@@ -8810,7 +8611,6 @@
+ 	coredll_x11_dataobj.o \
+ 	coredll_x11_dc.o \
+ 	coredll_x11_dcclient.o \
+-	coredll_x11_dcmemory.o \
+ 	coredll_x11_dcscreen.o \
+ 	coredll_x11_evtloop.o \
+ 	coredll_x11_font.o \
+@@ -9167,7 +8967,6 @@
+ 	corelib_dfb_cursor.o \
+ 	corelib_dfb_dc.o \
+ 	corelib_dfb_dcclient.o \
+-	corelib_dfb_dcmemory.o \
+ 	corelib_dfb_dcscreen.o \
+ 	corelib_dfb_evtloop.o \
+ 	corelib_dfb_font.o \
+@@ -9202,7 +9001,6 @@
+ 	corelib_gtk1_dataobj.o \
+ 	corelib_gtk1_dc.o \
+ 	corelib_gtk1_dcclient.o \
+-	corelib_gtk1_dcmemory.o \
+ 	corelib_gtk1_dcscreen.o \
+ 	corelib_gtk1_dnd.o \
+ 	corelib_gtk1_evtloop.o \
+@@ -9243,7 +9041,6 @@
+ 	corelib_gtk_dataobj.o \
+ 	corelib_gtk_dc.o \
+ 	corelib_gtk_dcclient.o \
+-	corelib_gtk_dcmemory.o \
+ 	corelib_gtk_dcscreen.o \
+ 	corelib_gtk_dnd.o \
+ 	corelib_gtk_evtloop.o \
+@@ -9281,7 +9078,6 @@
+ 	corelib_mgl_data.o \
+ 	corelib_mgl_dc.o \
+ 	corelib_mgl_dcclient.o \
+-	corelib_mgl_dcmemory.o \
+ 	corelib_mgl_dcscreen.o \
+ 	corelib_dirmgl.o \
+ 	corelib_mgl_evtloop.o \
+@@ -9322,7 +9118,6 @@
+ 	corelib_msw_data.o \
+ 	corelib_msw_dc.o \
+ 	corelib_msw_dcclient.o \
+-	corelib_msw_dcmemory.o \
+ 	corelib_msw_dcprint.o \
+ 	corelib_msw_dcscreen.o \
+ 	corelib_msw_dialup.o \
+@@ -9375,7 +9170,6 @@
+ 	corelib_msw_data.o \
+ 	corelib_msw_dc.o \
+ 	corelib_msw_dcclient.o \
+-	corelib_msw_dcmemory.o \
+ 	corelib_msw_dcprint.o \
+ 	corelib_msw_dcscreen.o \
+ 	corelib_msw_dialup.o \
+@@ -9433,7 +9227,6 @@
+ 	corelib_x11_dataobj.o \
+ 	corelib_x11_dc.o \
+ 	corelib_x11_dcclient.o \
+-	corelib_x11_dcmemory.o \
+ 	corelib_x11_dcscreen.o \
+ 	corelib_x11_evtloop.o \
+ 	corelib_x11_font.o \
+@@ -9482,7 +9275,6 @@
+ 	corelib_cocoa_dataobj.o \
+ 	corelib_cocoa_dc.o \
+ 	corelib_cocoa_dcclient.o \
+-	corelib_cocoa_dcmemory.o \
+ 	corelib_cocoa_dcscreen.o \
+ 	corelib_cocoa_dialog.o \
+ 	corelib_cocoa_dirdlg.o \
+@@ -9660,7 +9452,6 @@
+ 	corelib_carbon_dc.o \
+ 	corelib_dccg.o \
+ 	corelib_carbon_dcclient.o \
+-	corelib_carbon_dcmemory.o \
+ 	corelib_carbon_dcprint.o \
+ 	corelib_carbon_dcscreen.o \
+ 	corelib_carbon_dialog.o \
+@@ -9744,7 +9535,6 @@
+ 	corelib_motif_dataobj.o \
+ 	corelib_motif_dc.o \
+ 	corelib_motif_dcclient.o \
+-	corelib_motif_dcmemory.o \
+ 	corelib_motif_dcscreen.o \
+ 	corelib_motif_dialog.o \
+ 	corelib_motif_evtloop.o \
+@@ -9868,7 +9658,6 @@
+ 	corelib_os2_dataobj.o \
+ 	corelib_os2_dc.o \
+ 	corelib_os2_dcclient.o \
+-	corelib_os2_dcmemory.o \
+ 	corelib_os2_dcprint.o \
+ 	corelib_os2_dcscreen.o \
+ 	corelib_os2_dialog.o \
+@@ -10004,7 +9793,6 @@
+ 	corelib_dfb_cursor.o \
+ 	corelib_dfb_dc.o \
+ 	corelib_dfb_dcclient.o \
+-	corelib_dfb_dcmemory.o \
+ 	corelib_dfb_dcscreen.o \
+ 	corelib_dfb_evtloop.o \
+ 	corelib_dfb_font.o \
+@@ -10039,7 +9827,6 @@
+ 	corelib_gtk1_dataobj.o \
+ 	corelib_gtk1_dc.o \
+ 	corelib_gtk1_dcclient.o \
+-	corelib_gtk1_dcmemory.o \
+ 	corelib_gtk1_dcscreen.o \
+ 	corelib_gtk1_dnd.o \
+ 	corelib_gtk1_evtloop.o \
+@@ -10080,7 +9867,6 @@
+ 	corelib_gtk_dataobj.o \
+ 	corelib_gtk_dc.o \
+ 	corelib_gtk_dcclient.o \
+-	corelib_gtk_dcmemory.o \
+ 	corelib_gtk_dcscreen.o \
+ 	corelib_gtk_dnd.o \
+ 	corelib_gtk_evtloop.o \
+@@ -10118,7 +9904,6 @@
+ 	corelib_mgl_data.o \
+ 	corelib_mgl_dc.o \
+ 	corelib_mgl_dcclient.o \
+-	corelib_mgl_dcmemory.o \
+ 	corelib_mgl_dcscreen.o \
+ 	corelib_dirmgl.o \
+ 	corelib_mgl_evtloop.o \
+@@ -10159,7 +9944,6 @@
+ 	corelib_msw_data.o \
+ 	corelib_msw_dc.o \
+ 	corelib_msw_dcclient.o \
+-	corelib_msw_dcmemory.o \
+ 	corelib_msw_dcprint.o \
+ 	corelib_msw_dcscreen.o \
+ 	corelib_msw_dialup.o \
+@@ -10212,7 +9996,6 @@
+ 	corelib_msw_data.o \
+ 	corelib_msw_dc.o \
+ 	corelib_msw_dcclient.o \
+-	corelib_msw_dcmemory.o \
+ 	corelib_msw_dcprint.o \
+ 	corelib_msw_dcscreen.o \
+ 	corelib_msw_dialup.o \
+@@ -10270,7 +10053,6 @@
+ 	corelib_x11_dataobj.o \
+ 	corelib_x11_dc.o \
+ 	corelib_x11_dcclient.o \
+-	corelib_x11_dcmemory.o \
+ 	corelib_x11_dcscreen.o \
+ 	corelib_x11_evtloop.o \
+ 	corelib_x11_font.o \
+@@ -12925,8 +12707,6 @@
+ monodll_archive.o: $(srcdir)/src/common/archive.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/archive.cpp
+ 
+-monodll_clntdata.o: $(srcdir)/src/common/clntdata.cpp $(MONODLL_ODEP)
+-	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/clntdata.cpp
+ 
+ monodll_cmdline.o: $(srcdir)/src/common/cmdline.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/cmdline.cpp
+@@ -12943,8 +12723,6 @@
+ monodll_datstrm.o: $(srcdir)/src/common/datstrm.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/datstrm.cpp
+ 
+-monodll_dircmn.o: $(srcdir)/src/common/dircmn.cpp $(MONODLL_ODEP)
+-	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/dircmn.cpp
+ 
+ monodll_dynarray.o: $(srcdir)/src/common/dynarray.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/dynarray.cpp
+@@ -12952,8 +12730,6 @@
+ monodll_dynlib.o: $(srcdir)/src/common/dynlib.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/dynlib.cpp
+ 
+-monodll_dynload.o: $(srcdir)/src/common/dynload.cpp $(MONODLL_ODEP)
+-	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/dynload.cpp
+ 
+ monodll_encconv.o: $(srcdir)/src/common/encconv.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/encconv.cpp
+@@ -12982,11 +12758,7 @@
+ monodll_filesys.o: $(srcdir)/src/common/filesys.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/filesys.cpp
+ 
+-monodll_filtall.o: $(srcdir)/src/common/filtall.cpp $(MONODLL_ODEP)
+-	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/filtall.cpp
+ 
+-monodll_filtfind.o: $(srcdir)/src/common/filtfind.cpp $(MONODLL_ODEP)
+-	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/filtfind.cpp
+ 
+ monodll_fmapbase.o: $(srcdir)/src/common/fmapbase.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/fmapbase.cpp
+@@ -12994,8 +12766,6 @@
+ monodll_fs_arc.o: $(srcdir)/src/common/fs_arc.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/fs_arc.cpp
+ 
+-monodll_fs_filter.o: $(srcdir)/src/common/fs_filter.cpp $(MONODLL_ODEP)
+-	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/fs_filter.cpp
+ 
+ monodll_hash.o: $(srcdir)/src/common/hash.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/hash.cpp
+@@ -13009,8 +12779,6 @@
+ monodll_intl.o: $(srcdir)/src/common/intl.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/intl.cpp
+ 
+-monodll_ipcbase.o: $(srcdir)/src/common/ipcbase.cpp $(MONODLL_ODEP)
+-	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/ipcbase.cpp
+ 
+ monodll_list.o: $(srcdir)/src/common/list.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/list.cpp
+@@ -13021,8 +12789,6 @@
+ monodll_longlong.o: $(srcdir)/src/common/longlong.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/longlong.cpp
+ 
+-monodll_memory.o: $(srcdir)/src/common/memory.cpp $(MONODLL_ODEP)
+-	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/memory.cpp
+ 
+ monodll_mimecmn.o: $(srcdir)/src/common/mimecmn.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/mimecmn.cpp
+@@ -13039,8 +12805,6 @@
+ monodll_platinfo.o: $(srcdir)/src/common/platinfo.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/platinfo.cpp
+ 
+-monodll_powercmn.o: $(srcdir)/src/common/powercmn.cpp $(MONODLL_ODEP)
+-	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/powercmn.cpp
+ 
+ monodll_process.o: $(srcdir)/src/common/process.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/process.cpp
+@@ -13087,8 +12851,6 @@
+ monodll_uri.o: $(srcdir)/src/common/uri.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/uri.cpp
+ 
+-monodll_variant.o: $(srcdir)/src/common/variant.cpp $(MONODLL_ODEP)
+-	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/variant.cpp
+ 
+ monodll_wfstream.o: $(srcdir)/src/common/wfstream.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/wfstream.cpp
+@@ -13099,8 +12861,6 @@
+ monodll_xti.o: $(srcdir)/src/common/xti.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/xti.cpp
+ 
+-monodll_xtistrm.o: $(srcdir)/src/common/xtistrm.cpp $(MONODLL_ODEP)
+-	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/xtistrm.cpp
+ 
+ monodll_zipstrm.o: $(srcdir)/src/common/zipstrm.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/zipstrm.cpp
+@@ -13141,8 +12901,6 @@
+ monodll_msw_snglinst.o: $(srcdir)/src/msw/snglinst.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/msw/snglinst.cpp
+ 
+-monodll_msw_stackwalk.o: $(srcdir)/src/msw/stackwalk.cpp $(MONODLL_ODEP)
+-	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/msw/stackwalk.cpp
+ 
+ monodll_msw_stdpaths.o: $(srcdir)/src/msw/stdpaths.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/msw/stdpaths.cpp
+@@ -13219,8 +12977,6 @@
+ monodll_event.o: $(srcdir)/src/common/event.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/event.cpp
+ 
+-monodll_fs_mem.o: $(srcdir)/src/common/fs_mem.cpp $(MONODLL_ODEP)
+-	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/fs_mem.cpp
+ 
+ monodll_msgout.o: $(srcdir)/src/common/msgout.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/msgout.cpp
+@@ -13243,8 +12999,6 @@
+ monodll_uma.o: $(srcdir)/src/mac/carbon/uma.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/mac/carbon/uma.cpp
+ 
+-monodll_fs_inet.o: $(srcdir)/src/common/fs_inet.cpp $(MONODLL_ODEP)
+-	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/fs_inet.cpp
+ 
+ monodll_ftp.o: $(srcdir)/src/common/ftp.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/ftp.cpp
+@@ -13261,8 +13015,6 @@
+ monodll_sckfile.o: $(srcdir)/src/common/sckfile.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/sckfile.cpp
+ 
+-monodll_sckipc.o: $(srcdir)/src/common/sckipc.cpp $(MONODLL_ODEP)
+-	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/sckipc.cpp
+ 
+ monodll_sckstrm.o: $(srcdir)/src/common/sckstrm.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/common/sckstrm.cpp
+@@ -13558,8 +13310,6 @@
+ monodll_motif_dcclient.o: $(srcdir)/src/motif/dcclient.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/motif/dcclient.cpp
+ 
+-monodll_motif_dcmemory.o: $(srcdir)/src/motif/dcmemory.cpp $(MONODLL_ODEP)
+-	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/motif/dcmemory.cpp
+ 
+ monodll_motif_dcscreen.o: $(srcdir)/src/motif/dcscreen.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/motif/dcscreen.cpp
+@@ -13768,8 +13518,6 @@
+ monodll_carbon_dcclient.o: $(srcdir)/src/mac/carbon/dcclient.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/mac/carbon/dcclient.cpp
+ 
+-monodll_carbon_dcmemory.o: $(srcdir)/src/mac/carbon/dcmemory.cpp $(MONODLL_ODEP)
+-	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/mac/carbon/dcmemory.cpp
+ 
+ monodll_carbon_dcprint.o: $(srcdir)/src/mac/carbon/dcprint.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/mac/carbon/dcprint.cpp
+@@ -14041,8 +13789,6 @@
+ monodll_cocoa_dcclient.o: $(srcdir)/src/cocoa/dcclient.mm $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_OBJCXXFLAGS) $(srcdir)/src/cocoa/dcclient.mm
+ 
+-monodll_cocoa_dcmemory.o: $(srcdir)/src/cocoa/dcmemory.mm $(MONODLL_ODEP)
+-	$(CXXC) -c -o $@ $(MONODLL_OBJCXXFLAGS) $(srcdir)/src/cocoa/dcmemory.mm
+ 
+ monodll_cocoa_dcscreen.o: $(srcdir)/src/cocoa/dcscreen.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/cocoa/dcscreen.cpp
+@@ -14230,8 +13976,6 @@
+ monodll_os2_dcclient.o: $(srcdir)/src/os2/dcclient.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/os2/dcclient.cpp
+ 
+-monodll_os2_dcmemory.o: $(srcdir)/src/os2/dcmemory.cpp $(MONODLL_ODEP)
+-	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/os2/dcmemory.cpp
+ 
+ monodll_os2_dcprint.o: $(srcdir)/src/os2/dcprint.cpp $(MONODLL_ODEP)
+ 	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/os2/dcprint.cpp
+@@ -14923,23 +14667,11 @@
+ @COND_PLATFORM_MACOSX_1_TOOLKIT_@monodll_unix_snglinst.o: $(srcdir)/src/unix/snglinst.cpp $(MONODLL_ODEP)
+ @COND_PLATFORM_MACOSX_1_TOOLKIT_@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/unix/snglinst.cpp
+ 
+-@COND_PLATFORM_UNIX_1@monodll_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(MONODLL_ODEP)
+-@COND_PLATFORM_UNIX_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_COCOA@monodll_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(MONODLL_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_COCOA@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_GTK@monodll_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(MONODLL_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_GTK@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_X11@monodll_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(MONODLL_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_X11@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_MOTIF@monodll_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(MONODLL_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_MOTIF@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_@monodll_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(MONODLL_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+ @COND_PLATFORM_UNIX_1@monodll_unix_stdpaths.o: $(srcdir)/src/unix/stdpaths.cpp $(MONODLL_ODEP)
+ @COND_PLATFORM_UNIX_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/unix/stdpaths.cpp
+@@ -15262,8 +14994,6 @@
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@monodll_gtk_dcclient.o: $(srcdir)/src/gtk/dcclient.cpp $(MONODLL_ODEP)
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/gtk/dcclient.cpp
+ 
+-@COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@monodll_gtk_dcmemory.o: $(srcdir)/src/gtk/dcmemory.cpp $(MONODLL_ODEP)
+-@COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/gtk/dcmemory.cpp
+ 
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@monodll_gtk_dcscreen.o: $(srcdir)/src/gtk/dcscreen.cpp $(MONODLL_ODEP)
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/gtk/dcscreen.cpp
+@@ -15349,8 +15079,6 @@
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@monodll_gtk1_dcclient.o: $(srcdir)/src/gtk1/dcclient.cpp $(MONODLL_ODEP)
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/gtk1/dcclient.cpp
+ 
+-@COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@monodll_gtk1_dcmemory.o: $(srcdir)/src/gtk1/dcmemory.cpp $(MONODLL_ODEP)
+-@COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/gtk1/dcmemory.cpp
+ 
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@monodll_gtk1_dcscreen.o: $(srcdir)/src/gtk1/dcscreen.cpp $(MONODLL_ODEP)
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/gtk1/dcscreen.cpp
+@@ -15496,11 +15224,7 @@
+ @COND_TOOLKIT_WINCE_USE_GUI_1@monodll_msw_dcclient.o: $(srcdir)/src/msw/dcclient.cpp $(MONODLL_ODEP)
+ @COND_TOOLKIT_WINCE_USE_GUI_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/msw/dcclient.cpp
+ 
+-@COND_TOOLKIT_MSW_USE_GUI_1@monodll_msw_dcmemory.o: $(srcdir)/src/msw/dcmemory.cpp $(MONODLL_ODEP)
+-@COND_TOOLKIT_MSW_USE_GUI_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/msw/dcmemory.cpp
+ 
+-@COND_TOOLKIT_WINCE_USE_GUI_1@monodll_msw_dcmemory.o: $(srcdir)/src/msw/dcmemory.cpp $(MONODLL_ODEP)
+-@COND_TOOLKIT_WINCE_USE_GUI_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/msw/dcmemory.cpp
+ 
+ @COND_TOOLKIT_MSW_USE_GUI_1@monodll_msw_dcprint.o: $(srcdir)/src/msw/dcprint.cpp $(MONODLL_ODEP)
+ @COND_TOOLKIT_MSW_USE_GUI_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/msw/dcprint.cpp
+@@ -15784,8 +15508,6 @@
+ @COND_TOOLKIT_X11_USE_GUI_1@monodll_x11_dcclient.o: $(srcdir)/src/x11/dcclient.cpp $(MONODLL_ODEP)
+ @COND_TOOLKIT_X11_USE_GUI_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/x11/dcclient.cpp
+ 
+-@COND_TOOLKIT_X11_USE_GUI_1@monodll_x11_dcmemory.o: $(srcdir)/src/x11/dcmemory.cpp $(MONODLL_ODEP)
+-@COND_TOOLKIT_X11_USE_GUI_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/x11/dcmemory.cpp
+ 
+ @COND_TOOLKIT_X11_USE_GUI_1@monodll_x11_dcscreen.o: $(srcdir)/src/x11/dcscreen.cpp $(MONODLL_ODEP)
+ @COND_TOOLKIT_X11_USE_GUI_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/x11/dcscreen.cpp
+@@ -15865,8 +15587,6 @@
+ @COND_TOOLKIT_MGL_USE_GUI_1@monodll_mgl_dcclient.o: $(srcdir)/src/mgl/dcclient.cpp $(MONODLL_ODEP)
+ @COND_TOOLKIT_MGL_USE_GUI_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/mgl/dcclient.cpp
+ 
+-@COND_TOOLKIT_MGL_USE_GUI_1@monodll_mgl_dcmemory.o: $(srcdir)/src/mgl/dcmemory.cpp $(MONODLL_ODEP)
+-@COND_TOOLKIT_MGL_USE_GUI_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/mgl/dcmemory.cpp
+ 
+ @COND_TOOLKIT_MGL_USE_GUI_1@monodll_mgl_dcscreen.o: $(srcdir)/src/mgl/dcscreen.cpp $(MONODLL_ODEP)
+ @COND_TOOLKIT_MGL_USE_GUI_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/mgl/dcscreen.cpp
+@@ -15928,8 +15648,6 @@
+ @COND_TOOLKIT_DFB_USE_GUI_1@monodll_dfb_dcclient.o: $(srcdir)/src/dfb/dcclient.cpp $(MONODLL_ODEP)
+ @COND_TOOLKIT_DFB_USE_GUI_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/dfb/dcclient.cpp
+ 
+-@COND_TOOLKIT_DFB_USE_GUI_1@monodll_dfb_dcmemory.o: $(srcdir)/src/dfb/dcmemory.cpp $(MONODLL_ODEP)
+-@COND_TOOLKIT_DFB_USE_GUI_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/dfb/dcmemory.cpp
+ 
+ @COND_TOOLKIT_DFB_USE_GUI_1@monodll_dfb_dcscreen.o: $(srcdir)/src/dfb/dcscreen.cpp $(MONODLL_ODEP)
+ @COND_TOOLKIT_DFB_USE_GUI_1@	$(CXXC) -c -o $@ $(MONODLL_CXXFLAGS) $(srcdir)/src/dfb/dcscreen.cpp
+@@ -17062,8 +16780,6 @@
+ monolib_archive.o: $(srcdir)/src/common/archive.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/archive.cpp
+ 
+-monolib_clntdata.o: $(srcdir)/src/common/clntdata.cpp $(MONOLIB_ODEP)
+-	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/clntdata.cpp
+ 
+ monolib_cmdline.o: $(srcdir)/src/common/cmdline.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/cmdline.cpp
+@@ -17080,8 +16796,6 @@
+ monolib_datstrm.o: $(srcdir)/src/common/datstrm.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/datstrm.cpp
+ 
+-monolib_dircmn.o: $(srcdir)/src/common/dircmn.cpp $(MONOLIB_ODEP)
+-	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/dircmn.cpp
+ 
+ monolib_dynarray.o: $(srcdir)/src/common/dynarray.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/dynarray.cpp
+@@ -17089,8 +16803,6 @@
+ monolib_dynlib.o: $(srcdir)/src/common/dynlib.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/dynlib.cpp
+ 
+-monolib_dynload.o: $(srcdir)/src/common/dynload.cpp $(MONOLIB_ODEP)
+-	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/dynload.cpp
+ 
+ monolib_encconv.o: $(srcdir)/src/common/encconv.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/encconv.cpp
+@@ -17119,11 +16831,7 @@
+ monolib_filesys.o: $(srcdir)/src/common/filesys.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/filesys.cpp
+ 
+-monolib_filtall.o: $(srcdir)/src/common/filtall.cpp $(MONOLIB_ODEP)
+-	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/filtall.cpp
+ 
+-monolib_filtfind.o: $(srcdir)/src/common/filtfind.cpp $(MONOLIB_ODEP)
+-	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/filtfind.cpp
+ 
+ monolib_fmapbase.o: $(srcdir)/src/common/fmapbase.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/fmapbase.cpp
+@@ -17131,8 +16839,6 @@
+ monolib_fs_arc.o: $(srcdir)/src/common/fs_arc.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/fs_arc.cpp
+ 
+-monolib_fs_filter.o: $(srcdir)/src/common/fs_filter.cpp $(MONOLIB_ODEP)
+-	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/fs_filter.cpp
+ 
+ monolib_hash.o: $(srcdir)/src/common/hash.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/hash.cpp
+@@ -17146,8 +16852,6 @@
+ monolib_intl.o: $(srcdir)/src/common/intl.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/intl.cpp
+ 
+-monolib_ipcbase.o: $(srcdir)/src/common/ipcbase.cpp $(MONOLIB_ODEP)
+-	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/ipcbase.cpp
+ 
+ monolib_list.o: $(srcdir)/src/common/list.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/list.cpp
+@@ -17158,8 +16862,6 @@
+ monolib_longlong.o: $(srcdir)/src/common/longlong.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/longlong.cpp
+ 
+-monolib_memory.o: $(srcdir)/src/common/memory.cpp $(MONOLIB_ODEP)
+-	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/memory.cpp
+ 
+ monolib_mimecmn.o: $(srcdir)/src/common/mimecmn.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/mimecmn.cpp
+@@ -17176,8 +16878,6 @@
+ monolib_platinfo.o: $(srcdir)/src/common/platinfo.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/platinfo.cpp
+ 
+-monolib_powercmn.o: $(srcdir)/src/common/powercmn.cpp $(MONOLIB_ODEP)
+-	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/powercmn.cpp
+ 
+ monolib_process.o: $(srcdir)/src/common/process.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/process.cpp
+@@ -17224,8 +16924,6 @@
+ monolib_uri.o: $(srcdir)/src/common/uri.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/uri.cpp
+ 
+-monolib_variant.o: $(srcdir)/src/common/variant.cpp $(MONOLIB_ODEP)
+-	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/variant.cpp
+ 
+ monolib_wfstream.o: $(srcdir)/src/common/wfstream.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/wfstream.cpp
+@@ -17236,8 +16934,6 @@
+ monolib_xti.o: $(srcdir)/src/common/xti.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/xti.cpp
+ 
+-monolib_xtistrm.o: $(srcdir)/src/common/xtistrm.cpp $(MONOLIB_ODEP)
+-	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/xtistrm.cpp
+ 
+ monolib_zipstrm.o: $(srcdir)/src/common/zipstrm.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/zipstrm.cpp
+@@ -17278,8 +16974,6 @@
+ monolib_msw_snglinst.o: $(srcdir)/src/msw/snglinst.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/msw/snglinst.cpp
+ 
+-monolib_msw_stackwalk.o: $(srcdir)/src/msw/stackwalk.cpp $(MONOLIB_ODEP)
+-	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/msw/stackwalk.cpp
+ 
+ monolib_msw_stdpaths.o: $(srcdir)/src/msw/stdpaths.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/msw/stdpaths.cpp
+@@ -17356,8 +17050,6 @@
+ monolib_event.o: $(srcdir)/src/common/event.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/event.cpp
+ 
+-monolib_fs_mem.o: $(srcdir)/src/common/fs_mem.cpp $(MONOLIB_ODEP)
+-	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/fs_mem.cpp
+ 
+ monolib_msgout.o: $(srcdir)/src/common/msgout.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/msgout.cpp
+@@ -17380,8 +17072,6 @@
+ monolib_uma.o: $(srcdir)/src/mac/carbon/uma.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/mac/carbon/uma.cpp
+ 
+-monolib_fs_inet.o: $(srcdir)/src/common/fs_inet.cpp $(MONOLIB_ODEP)
+-	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/fs_inet.cpp
+ 
+ monolib_ftp.o: $(srcdir)/src/common/ftp.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/ftp.cpp
+@@ -17398,8 +17088,6 @@
+ monolib_sckfile.o: $(srcdir)/src/common/sckfile.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/sckfile.cpp
+ 
+-monolib_sckipc.o: $(srcdir)/src/common/sckipc.cpp $(MONOLIB_ODEP)
+-	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/sckipc.cpp
+ 
+ monolib_sckstrm.o: $(srcdir)/src/common/sckstrm.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/common/sckstrm.cpp
+@@ -17695,8 +17383,6 @@
+ monolib_motif_dcclient.o: $(srcdir)/src/motif/dcclient.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/motif/dcclient.cpp
+ 
+-monolib_motif_dcmemory.o: $(srcdir)/src/motif/dcmemory.cpp $(MONOLIB_ODEP)
+-	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/motif/dcmemory.cpp
+ 
+ monolib_motif_dcscreen.o: $(srcdir)/src/motif/dcscreen.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/motif/dcscreen.cpp
+@@ -17905,8 +17591,6 @@
+ monolib_carbon_dcclient.o: $(srcdir)/src/mac/carbon/dcclient.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/mac/carbon/dcclient.cpp
+ 
+-monolib_carbon_dcmemory.o: $(srcdir)/src/mac/carbon/dcmemory.cpp $(MONOLIB_ODEP)
+-	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/mac/carbon/dcmemory.cpp
+ 
+ monolib_carbon_dcprint.o: $(srcdir)/src/mac/carbon/dcprint.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/mac/carbon/dcprint.cpp
+@@ -18178,8 +17862,6 @@
+ monolib_cocoa_dcclient.o: $(srcdir)/src/cocoa/dcclient.mm $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_OBJCXXFLAGS) $(srcdir)/src/cocoa/dcclient.mm
+ 
+-monolib_cocoa_dcmemory.o: $(srcdir)/src/cocoa/dcmemory.mm $(MONOLIB_ODEP)
+-	$(CXXC) -c -o $@ $(MONOLIB_OBJCXXFLAGS) $(srcdir)/src/cocoa/dcmemory.mm
+ 
+ monolib_cocoa_dcscreen.o: $(srcdir)/src/cocoa/dcscreen.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/cocoa/dcscreen.cpp
+@@ -18367,8 +18049,6 @@
+ monolib_os2_dcclient.o: $(srcdir)/src/os2/dcclient.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/os2/dcclient.cpp
+ 
+-monolib_os2_dcmemory.o: $(srcdir)/src/os2/dcmemory.cpp $(MONOLIB_ODEP)
+-	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/os2/dcmemory.cpp
+ 
+ monolib_os2_dcprint.o: $(srcdir)/src/os2/dcprint.cpp $(MONOLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/os2/dcprint.cpp
+@@ -19060,23 +18740,11 @@
+ @COND_PLATFORM_MACOSX_1_TOOLKIT_@monolib_unix_snglinst.o: $(srcdir)/src/unix/snglinst.cpp $(MONOLIB_ODEP)
+ @COND_PLATFORM_MACOSX_1_TOOLKIT_@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/unix/snglinst.cpp
+ 
+-@COND_PLATFORM_UNIX_1@monolib_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(MONOLIB_ODEP)
+-@COND_PLATFORM_UNIX_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_COCOA@monolib_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(MONOLIB_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_COCOA@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_GTK@monolib_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(MONOLIB_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_GTK@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_X11@monolib_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(MONOLIB_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_X11@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_MOTIF@monolib_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(MONOLIB_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_MOTIF@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_@monolib_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(MONOLIB_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+ @COND_PLATFORM_UNIX_1@monolib_unix_stdpaths.o: $(srcdir)/src/unix/stdpaths.cpp $(MONOLIB_ODEP)
+ @COND_PLATFORM_UNIX_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/unix/stdpaths.cpp
+@@ -19399,8 +19067,6 @@
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@monolib_gtk_dcclient.o: $(srcdir)/src/gtk/dcclient.cpp $(MONOLIB_ODEP)
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/gtk/dcclient.cpp
+ 
+-@COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@monolib_gtk_dcmemory.o: $(srcdir)/src/gtk/dcmemory.cpp $(MONOLIB_ODEP)
+-@COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/gtk/dcmemory.cpp
+ 
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@monolib_gtk_dcscreen.o: $(srcdir)/src/gtk/dcscreen.cpp $(MONOLIB_ODEP)
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/gtk/dcscreen.cpp
+@@ -19486,8 +19152,6 @@
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@monolib_gtk1_dcclient.o: $(srcdir)/src/gtk1/dcclient.cpp $(MONOLIB_ODEP)
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/gtk1/dcclient.cpp
+ 
+-@COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@monolib_gtk1_dcmemory.o: $(srcdir)/src/gtk1/dcmemory.cpp $(MONOLIB_ODEP)
+-@COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/gtk1/dcmemory.cpp
+ 
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@monolib_gtk1_dcscreen.o: $(srcdir)/src/gtk1/dcscreen.cpp $(MONOLIB_ODEP)
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/gtk1/dcscreen.cpp
+@@ -19633,11 +19297,7 @@
+ @COND_TOOLKIT_WINCE_USE_GUI_1@monolib_msw_dcclient.o: $(srcdir)/src/msw/dcclient.cpp $(MONOLIB_ODEP)
+ @COND_TOOLKIT_WINCE_USE_GUI_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/msw/dcclient.cpp
+ 
+-@COND_TOOLKIT_MSW_USE_GUI_1@monolib_msw_dcmemory.o: $(srcdir)/src/msw/dcmemory.cpp $(MONOLIB_ODEP)
+-@COND_TOOLKIT_MSW_USE_GUI_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/msw/dcmemory.cpp
+ 
+-@COND_TOOLKIT_WINCE_USE_GUI_1@monolib_msw_dcmemory.o: $(srcdir)/src/msw/dcmemory.cpp $(MONOLIB_ODEP)
+-@COND_TOOLKIT_WINCE_USE_GUI_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/msw/dcmemory.cpp
+ 
+ @COND_TOOLKIT_MSW_USE_GUI_1@monolib_msw_dcprint.o: $(srcdir)/src/msw/dcprint.cpp $(MONOLIB_ODEP)
+ @COND_TOOLKIT_MSW_USE_GUI_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/msw/dcprint.cpp
+@@ -19921,8 +19581,6 @@
+ @COND_TOOLKIT_X11_USE_GUI_1@monolib_x11_dcclient.o: $(srcdir)/src/x11/dcclient.cpp $(MONOLIB_ODEP)
+ @COND_TOOLKIT_X11_USE_GUI_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/x11/dcclient.cpp
+ 
+-@COND_TOOLKIT_X11_USE_GUI_1@monolib_x11_dcmemory.o: $(srcdir)/src/x11/dcmemory.cpp $(MONOLIB_ODEP)
+-@COND_TOOLKIT_X11_USE_GUI_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/x11/dcmemory.cpp
+ 
+ @COND_TOOLKIT_X11_USE_GUI_1@monolib_x11_dcscreen.o: $(srcdir)/src/x11/dcscreen.cpp $(MONOLIB_ODEP)
+ @COND_TOOLKIT_X11_USE_GUI_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/x11/dcscreen.cpp
+@@ -20002,8 +19660,6 @@
+ @COND_TOOLKIT_MGL_USE_GUI_1@monolib_mgl_dcclient.o: $(srcdir)/src/mgl/dcclient.cpp $(MONOLIB_ODEP)
+ @COND_TOOLKIT_MGL_USE_GUI_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/mgl/dcclient.cpp
+ 
+-@COND_TOOLKIT_MGL_USE_GUI_1@monolib_mgl_dcmemory.o: $(srcdir)/src/mgl/dcmemory.cpp $(MONOLIB_ODEP)
+-@COND_TOOLKIT_MGL_USE_GUI_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/mgl/dcmemory.cpp
+ 
+ @COND_TOOLKIT_MGL_USE_GUI_1@monolib_mgl_dcscreen.o: $(srcdir)/src/mgl/dcscreen.cpp $(MONOLIB_ODEP)
+ @COND_TOOLKIT_MGL_USE_GUI_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/mgl/dcscreen.cpp
+@@ -20065,8 +19721,6 @@
+ @COND_TOOLKIT_DFB_USE_GUI_1@monolib_dfb_dcclient.o: $(srcdir)/src/dfb/dcclient.cpp $(MONOLIB_ODEP)
+ @COND_TOOLKIT_DFB_USE_GUI_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/dfb/dcclient.cpp
+ 
+-@COND_TOOLKIT_DFB_USE_GUI_1@monolib_dfb_dcmemory.o: $(srcdir)/src/dfb/dcmemory.cpp $(MONOLIB_ODEP)
+-@COND_TOOLKIT_DFB_USE_GUI_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/dfb/dcmemory.cpp
+ 
+ @COND_TOOLKIT_DFB_USE_GUI_1@monolib_dfb_dcscreen.o: $(srcdir)/src/dfb/dcscreen.cpp $(MONOLIB_ODEP)
+ @COND_TOOLKIT_DFB_USE_GUI_1@	$(CXXC) -c -o $@ $(MONOLIB_CXXFLAGS) $(srcdir)/src/dfb/dcscreen.cpp
+@@ -21202,8 +20856,6 @@
+ basedll_archive.o: $(srcdir)/src/common/archive.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/archive.cpp
+ 
+-basedll_clntdata.o: $(srcdir)/src/common/clntdata.cpp $(BASEDLL_ODEP)
+-	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/clntdata.cpp
+ 
+ basedll_cmdline.o: $(srcdir)/src/common/cmdline.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/cmdline.cpp
+@@ -21220,8 +20872,6 @@
+ basedll_datstrm.o: $(srcdir)/src/common/datstrm.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/datstrm.cpp
+ 
+-basedll_dircmn.o: $(srcdir)/src/common/dircmn.cpp $(BASEDLL_ODEP)
+-	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/dircmn.cpp
+ 
+ basedll_dynarray.o: $(srcdir)/src/common/dynarray.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/dynarray.cpp
+@@ -21229,8 +20879,6 @@
+ basedll_dynlib.o: $(srcdir)/src/common/dynlib.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/dynlib.cpp
+ 
+-basedll_dynload.o: $(srcdir)/src/common/dynload.cpp $(BASEDLL_ODEP)
+-	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/dynload.cpp
+ 
+ basedll_encconv.o: $(srcdir)/src/common/encconv.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/encconv.cpp
+@@ -21259,11 +20907,7 @@
+ basedll_filesys.o: $(srcdir)/src/common/filesys.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/filesys.cpp
+ 
+-basedll_filtall.o: $(srcdir)/src/common/filtall.cpp $(BASEDLL_ODEP)
+-	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/filtall.cpp
+ 
+-basedll_filtfind.o: $(srcdir)/src/common/filtfind.cpp $(BASEDLL_ODEP)
+-	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/filtfind.cpp
+ 
+ basedll_fmapbase.o: $(srcdir)/src/common/fmapbase.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/fmapbase.cpp
+@@ -21271,8 +20915,6 @@
+ basedll_fs_arc.o: $(srcdir)/src/common/fs_arc.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/fs_arc.cpp
+ 
+-basedll_fs_filter.o: $(srcdir)/src/common/fs_filter.cpp $(BASEDLL_ODEP)
+-	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/fs_filter.cpp
+ 
+ basedll_hash.o: $(srcdir)/src/common/hash.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/hash.cpp
+@@ -21286,8 +20928,6 @@
+ basedll_intl.o: $(srcdir)/src/common/intl.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/intl.cpp
+ 
+-basedll_ipcbase.o: $(srcdir)/src/common/ipcbase.cpp $(BASEDLL_ODEP)
+-	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/ipcbase.cpp
+ 
+ basedll_list.o: $(srcdir)/src/common/list.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/list.cpp
+@@ -21298,8 +20938,6 @@
+ basedll_longlong.o: $(srcdir)/src/common/longlong.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/longlong.cpp
+ 
+-basedll_memory.o: $(srcdir)/src/common/memory.cpp $(BASEDLL_ODEP)
+-	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/memory.cpp
+ 
+ basedll_mimecmn.o: $(srcdir)/src/common/mimecmn.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/mimecmn.cpp
+@@ -21316,8 +20954,6 @@
+ basedll_platinfo.o: $(srcdir)/src/common/platinfo.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/platinfo.cpp
+ 
+-basedll_powercmn.o: $(srcdir)/src/common/powercmn.cpp $(BASEDLL_ODEP)
+-	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/powercmn.cpp
+ 
+ basedll_process.o: $(srcdir)/src/common/process.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/process.cpp
+@@ -21364,8 +21000,6 @@
+ basedll_uri.o: $(srcdir)/src/common/uri.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/uri.cpp
+ 
+-basedll_variant.o: $(srcdir)/src/common/variant.cpp $(BASEDLL_ODEP)
+-	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/variant.cpp
+ 
+ basedll_wfstream.o: $(srcdir)/src/common/wfstream.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/wfstream.cpp
+@@ -21376,8 +21010,6 @@
+ basedll_xti.o: $(srcdir)/src/common/xti.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/xti.cpp
+ 
+-basedll_xtistrm.o: $(srcdir)/src/common/xtistrm.cpp $(BASEDLL_ODEP)
+-	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/xtistrm.cpp
+ 
+ basedll_zipstrm.o: $(srcdir)/src/common/zipstrm.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/zipstrm.cpp
+@@ -21418,8 +21050,6 @@
+ basedll_msw_snglinst.o: $(srcdir)/src/msw/snglinst.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/msw/snglinst.cpp
+ 
+-basedll_msw_stackwalk.o: $(srcdir)/src/msw/stackwalk.cpp $(BASEDLL_ODEP)
+-	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/msw/stackwalk.cpp
+ 
+ basedll_msw_stdpaths.o: $(srcdir)/src/msw/stdpaths.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/msw/stdpaths.cpp
+@@ -21496,8 +21126,6 @@
+ basedll_event.o: $(srcdir)/src/common/event.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/event.cpp
+ 
+-basedll_fs_mem.o: $(srcdir)/src/common/fs_mem.cpp $(BASEDLL_ODEP)
+-	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/fs_mem.cpp
+ 
+ basedll_msgout.o: $(srcdir)/src/common/msgout.cpp $(BASEDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/common/msgout.cpp
+@@ -21619,23 +21247,11 @@
+ @COND_PLATFORM_MACOSX_1_TOOLKIT_@basedll_unix_snglinst.o: $(srcdir)/src/unix/snglinst.cpp $(BASEDLL_ODEP)
+ @COND_PLATFORM_MACOSX_1_TOOLKIT_@	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/unix/snglinst.cpp
+ 
+-@COND_PLATFORM_UNIX_1@basedll_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(BASEDLL_ODEP)
+-@COND_PLATFORM_UNIX_1@	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_COCOA@basedll_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(BASEDLL_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_COCOA@	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_GTK@basedll_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(BASEDLL_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_GTK@	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_X11@basedll_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(BASEDLL_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_X11@	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_MOTIF@basedll_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(BASEDLL_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_MOTIF@	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_@basedll_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(BASEDLL_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_@	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+ @COND_PLATFORM_UNIX_1@basedll_unix_stdpaths.o: $(srcdir)/src/unix/stdpaths.cpp $(BASEDLL_ODEP)
+ @COND_PLATFORM_UNIX_1@	$(CXXC) -c -o $@ $(BASEDLL_CXXFLAGS) $(srcdir)/src/unix/stdpaths.cpp
+@@ -21793,8 +21409,6 @@
+ baselib_archive.o: $(srcdir)/src/common/archive.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/archive.cpp
+ 
+-baselib_clntdata.o: $(srcdir)/src/common/clntdata.cpp $(BASELIB_ODEP)
+-	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/clntdata.cpp
+ 
+ baselib_cmdline.o: $(srcdir)/src/common/cmdline.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/cmdline.cpp
+@@ -21811,8 +21425,6 @@
+ baselib_datstrm.o: $(srcdir)/src/common/datstrm.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/datstrm.cpp
+ 
+-baselib_dircmn.o: $(srcdir)/src/common/dircmn.cpp $(BASELIB_ODEP)
+-	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/dircmn.cpp
+ 
+ baselib_dynarray.o: $(srcdir)/src/common/dynarray.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/dynarray.cpp
+@@ -21820,8 +21432,6 @@
+ baselib_dynlib.o: $(srcdir)/src/common/dynlib.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/dynlib.cpp
+ 
+-baselib_dynload.o: $(srcdir)/src/common/dynload.cpp $(BASELIB_ODEP)
+-	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/dynload.cpp
+ 
+ baselib_encconv.o: $(srcdir)/src/common/encconv.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/encconv.cpp
+@@ -21850,11 +21460,7 @@
+ baselib_filesys.o: $(srcdir)/src/common/filesys.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/filesys.cpp
+ 
+-baselib_filtall.o: $(srcdir)/src/common/filtall.cpp $(BASELIB_ODEP)
+-	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/filtall.cpp
+ 
+-baselib_filtfind.o: $(srcdir)/src/common/filtfind.cpp $(BASELIB_ODEP)
+-	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/filtfind.cpp
+ 
+ baselib_fmapbase.o: $(srcdir)/src/common/fmapbase.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/fmapbase.cpp
+@@ -21862,8 +21468,6 @@
+ baselib_fs_arc.o: $(srcdir)/src/common/fs_arc.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/fs_arc.cpp
+ 
+-baselib_fs_filter.o: $(srcdir)/src/common/fs_filter.cpp $(BASELIB_ODEP)
+-	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/fs_filter.cpp
+ 
+ baselib_hash.o: $(srcdir)/src/common/hash.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/hash.cpp
+@@ -21877,8 +21481,6 @@
+ baselib_intl.o: $(srcdir)/src/common/intl.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/intl.cpp
+ 
+-baselib_ipcbase.o: $(srcdir)/src/common/ipcbase.cpp $(BASELIB_ODEP)
+-	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/ipcbase.cpp
+ 
+ baselib_list.o: $(srcdir)/src/common/list.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/list.cpp
+@@ -21889,8 +21491,6 @@
+ baselib_longlong.o: $(srcdir)/src/common/longlong.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/longlong.cpp
+ 
+-baselib_memory.o: $(srcdir)/src/common/memory.cpp $(BASELIB_ODEP)
+-	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/memory.cpp
+ 
+ baselib_mimecmn.o: $(srcdir)/src/common/mimecmn.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/mimecmn.cpp
+@@ -21907,8 +21507,6 @@
+ baselib_platinfo.o: $(srcdir)/src/common/platinfo.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/platinfo.cpp
+ 
+-baselib_powercmn.o: $(srcdir)/src/common/powercmn.cpp $(BASELIB_ODEP)
+-	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/powercmn.cpp
+ 
+ baselib_process.o: $(srcdir)/src/common/process.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/process.cpp
+@@ -21955,8 +21553,6 @@
+ baselib_uri.o: $(srcdir)/src/common/uri.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/uri.cpp
+ 
+-baselib_variant.o: $(srcdir)/src/common/variant.cpp $(BASELIB_ODEP)
+-	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/variant.cpp
+ 
+ baselib_wfstream.o: $(srcdir)/src/common/wfstream.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/wfstream.cpp
+@@ -21967,8 +21563,6 @@
+ baselib_xti.o: $(srcdir)/src/common/xti.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/xti.cpp
+ 
+-baselib_xtistrm.o: $(srcdir)/src/common/xtistrm.cpp $(BASELIB_ODEP)
+-	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/xtistrm.cpp
+ 
+ baselib_zipstrm.o: $(srcdir)/src/common/zipstrm.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/zipstrm.cpp
+@@ -22009,8 +21603,6 @@
+ baselib_msw_snglinst.o: $(srcdir)/src/msw/snglinst.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/msw/snglinst.cpp
+ 
+-baselib_msw_stackwalk.o: $(srcdir)/src/msw/stackwalk.cpp $(BASELIB_ODEP)
+-	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/msw/stackwalk.cpp
+ 
+ baselib_msw_stdpaths.o: $(srcdir)/src/msw/stdpaths.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/msw/stdpaths.cpp
+@@ -22087,8 +21679,6 @@
+ baselib_event.o: $(srcdir)/src/common/event.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/event.cpp
+ 
+-baselib_fs_mem.o: $(srcdir)/src/common/fs_mem.cpp $(BASELIB_ODEP)
+-	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/fs_mem.cpp
+ 
+ baselib_msgout.o: $(srcdir)/src/common/msgout.cpp $(BASELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/common/msgout.cpp
+@@ -22210,23 +21800,11 @@
+ @COND_PLATFORM_MACOSX_1_TOOLKIT_@baselib_unix_snglinst.o: $(srcdir)/src/unix/snglinst.cpp $(BASELIB_ODEP)
+ @COND_PLATFORM_MACOSX_1_TOOLKIT_@	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/unix/snglinst.cpp
+ 
+-@COND_PLATFORM_UNIX_1@baselib_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(BASELIB_ODEP)
+-@COND_PLATFORM_UNIX_1@	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_COCOA@baselib_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(BASELIB_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_COCOA@	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_GTK@baselib_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(BASELIB_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_GTK@	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_X11@baselib_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(BASELIB_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_X11@	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_MOTIF@baselib_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(BASELIB_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_MOTIF@	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_@baselib_unix_stackwalk.o: $(srcdir)/src/unix/stackwalk.cpp $(BASELIB_ODEP)
+-@COND_PLATFORM_MACOSX_1_TOOLKIT_@	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/unix/stackwalk.cpp
+ 
+ @COND_PLATFORM_UNIX_1@baselib_unix_stdpaths.o: $(srcdir)/src/unix/stdpaths.cpp $(BASELIB_ODEP)
+ @COND_PLATFORM_UNIX_1@	$(CXXC) -c -o $@ $(BASELIB_CXXFLAGS) $(srcdir)/src/unix/stdpaths.cpp
+@@ -22375,8 +21953,6 @@
+ netdll_version_rc.o: $(srcdir)/src/msw/version.rc $(NETDLL_ODEP)
+ 	$(WINDRES) -i$< -o$@    --define __WX$(TOOLKIT)__ $(__WXUNIV_DEFINE_p_58)   $(__EXCEPTIONS_DEFINE_p_57) $(__RTTI_DEFINE_p_57) $(__THREAD_DEFINE_p_57)   --define WXBUILDING --define WXDLLNAME=$(WXDLLNAMEPREFIX)$(WXUNICODEFLAG)$(WXDEBUGFLAG)$(WX_LIB_FLAVOUR)_net$(WXCOMPILER)$(VENDORTAG)$(WXDLLVERSIONTAG) $(__RCDEFDIR_p) --include-dir $(top_srcdir)/include $(__INC_TIFF_p_57) $(__INC_JPEG_p_58) $(__INC_PNG_p_57) $(__INC_ZLIB_p_59) $(__INC_ODBC_p_57) $(__INC_REGEX_p_57) $(__INC_EXPAT_p_57) --define wxUSE_GUI=0 --define WXUSINGDLL --define WXMAKINGDLL_NET
+ 
+-netdll_fs_inet.o: $(srcdir)/src/common/fs_inet.cpp $(NETDLL_ODEP)
+-	$(CXXC) -c -o $@ $(NETDLL_CXXFLAGS) $(srcdir)/src/common/fs_inet.cpp
+ 
+ netdll_ftp.o: $(srcdir)/src/common/ftp.cpp $(NETDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(NETDLL_CXXFLAGS) $(srcdir)/src/common/ftp.cpp
+@@ -22393,8 +21969,6 @@
+ netdll_sckfile.o: $(srcdir)/src/common/sckfile.cpp $(NETDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(NETDLL_CXXFLAGS) $(srcdir)/src/common/sckfile.cpp
+ 
+-netdll_sckipc.o: $(srcdir)/src/common/sckipc.cpp $(NETDLL_ODEP)
+-	$(CXXC) -c -o $@ $(NETDLL_CXXFLAGS) $(srcdir)/src/common/sckipc.cpp
+ 
+ netdll_sckstrm.o: $(srcdir)/src/common/sckstrm.cpp $(NETDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(NETDLL_CXXFLAGS) $(srcdir)/src/common/sckstrm.cpp
+@@ -22426,8 +22000,6 @@
+ @COND_PLATFORM_OS2_1@netdll_unix_gsocket.o: $(srcdir)/src/unix/gsocket.cpp $(NETDLL_ODEP)
+ @COND_PLATFORM_OS2_1@	$(CXXC) -c -o $@ $(NETDLL_CXXFLAGS) $(srcdir)/src/unix/gsocket.cpp
+ 
+-netlib_fs_inet.o: $(srcdir)/src/common/fs_inet.cpp $(NETLIB_ODEP)
+-	$(CXXC) -c -o $@ $(NETLIB_CXXFLAGS) $(srcdir)/src/common/fs_inet.cpp
+ 
+ netlib_ftp.o: $(srcdir)/src/common/ftp.cpp $(NETLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(NETLIB_CXXFLAGS) $(srcdir)/src/common/ftp.cpp
+@@ -22444,8 +22016,6 @@
+ netlib_sckfile.o: $(srcdir)/src/common/sckfile.cpp $(NETLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(NETLIB_CXXFLAGS) $(srcdir)/src/common/sckfile.cpp
+ 
+-netlib_sckipc.o: $(srcdir)/src/common/sckipc.cpp $(NETLIB_ODEP)
+-	$(CXXC) -c -o $@ $(NETLIB_CXXFLAGS) $(srcdir)/src/common/sckipc.cpp
+ 
+ netlib_sckstrm.o: $(srcdir)/src/common/sckstrm.cpp $(NETLIB_ODEP)
+ 	$(CXXC) -c -o $@ $(NETLIB_CXXFLAGS) $(srcdir)/src/common/sckstrm.cpp
+@@ -22483,8 +22053,6 @@
+ coredll_event.o: $(srcdir)/src/common/event.cpp $(COREDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/common/event.cpp
+ 
+-coredll_fs_mem.o: $(srcdir)/src/common/fs_mem.cpp $(COREDLL_ODEP)
+-	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/common/fs_mem.cpp
+ 
+ coredll_msgout.o: $(srcdir)/src/common/msgout.cpp $(COREDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/common/msgout.cpp
+@@ -22780,8 +22348,6 @@
+ coredll_motif_dcclient.o: $(srcdir)/src/motif/dcclient.cpp $(COREDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/motif/dcclient.cpp
+ 
+-coredll_motif_dcmemory.o: $(srcdir)/src/motif/dcmemory.cpp $(COREDLL_ODEP)
+-	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/motif/dcmemory.cpp
+ 
+ coredll_motif_dcscreen.o: $(srcdir)/src/motif/dcscreen.cpp $(COREDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/motif/dcscreen.cpp
+@@ -22990,8 +22556,6 @@
+ coredll_carbon_dcclient.o: $(srcdir)/src/mac/carbon/dcclient.cpp $(COREDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/mac/carbon/dcclient.cpp
+ 
+-coredll_carbon_dcmemory.o: $(srcdir)/src/mac/carbon/dcmemory.cpp $(COREDLL_ODEP)
+-	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/mac/carbon/dcmemory.cpp
+ 
+ coredll_carbon_dcprint.o: $(srcdir)/src/mac/carbon/dcprint.cpp $(COREDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/mac/carbon/dcprint.cpp
+@@ -23263,8 +22827,6 @@
+ coredll_cocoa_dcclient.o: $(srcdir)/src/cocoa/dcclient.mm $(COREDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(COREDLL_OBJCXXFLAGS) $(srcdir)/src/cocoa/dcclient.mm
+ 
+-coredll_cocoa_dcmemory.o: $(srcdir)/src/cocoa/dcmemory.mm $(COREDLL_ODEP)
+-	$(CXXC) -c -o $@ $(COREDLL_OBJCXXFLAGS) $(srcdir)/src/cocoa/dcmemory.mm
+ 
+ coredll_cocoa_dcscreen.o: $(srcdir)/src/cocoa/dcscreen.cpp $(COREDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/cocoa/dcscreen.cpp
+@@ -23452,8 +23014,6 @@
+ coredll_os2_dcclient.o: $(srcdir)/src/os2/dcclient.cpp $(COREDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/os2/dcclient.cpp
+ 
+-coredll_os2_dcmemory.o: $(srcdir)/src/os2/dcmemory.cpp $(COREDLL_ODEP)
+-	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/os2/dcmemory.cpp
+ 
+ coredll_os2_dcprint.o: $(srcdir)/src/os2/dcprint.cpp $(COREDLL_ODEP)
+ 	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/os2/dcprint.cpp
+@@ -23902,8 +23462,6 @@
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@coredll_gtk_dcclient.o: $(srcdir)/src/gtk/dcclient.cpp $(COREDLL_ODEP)
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/gtk/dcclient.cpp
+ 
+-@COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@coredll_gtk_dcmemory.o: $(srcdir)/src/gtk/dcmemory.cpp $(COREDLL_ODEP)
+-@COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/gtk/dcmemory.cpp
+ 
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@coredll_gtk_dcscreen.o: $(srcdir)/src/gtk/dcscreen.cpp $(COREDLL_ODEP)
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/gtk/dcscreen.cpp
+@@ -23989,8 +23547,6 @@
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@coredll_gtk1_dcclient.o: $(srcdir)/src/gtk1/dcclient.cpp $(COREDLL_ODEP)
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/gtk1/dcclient.cpp
+ 
+-@COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@coredll_gtk1_dcmemory.o: $(srcdir)/src/gtk1/dcmemory.cpp $(COREDLL_ODEP)
+-@COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/gtk1/dcmemory.cpp
+ 
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@coredll_gtk1_dcscreen.o: $(srcdir)/src/gtk1/dcscreen.cpp $(COREDLL_ODEP)
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/gtk1/dcscreen.cpp
+@@ -24136,11 +23692,7 @@
+ @COND_TOOLKIT_WINCE_USE_GUI_1@coredll_msw_dcclient.o: $(srcdir)/src/msw/dcclient.cpp $(COREDLL_ODEP)
+ @COND_TOOLKIT_WINCE_USE_GUI_1@	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/msw/dcclient.cpp
+ 
+-@COND_TOOLKIT_MSW_USE_GUI_1@coredll_msw_dcmemory.o: $(srcdir)/src/msw/dcmemory.cpp $(COREDLL_ODEP)
+-@COND_TOOLKIT_MSW_USE_GUI_1@	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/msw/dcmemory.cpp
+ 
+-@COND_TOOLKIT_WINCE_USE_GUI_1@coredll_msw_dcmemory.o: $(srcdir)/src/msw/dcmemory.cpp $(COREDLL_ODEP)
+-@COND_TOOLKIT_WINCE_USE_GUI_1@	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/msw/dcmemory.cpp
+ 
+ @COND_TOOLKIT_MSW_USE_GUI_1@coredll_msw_dcprint.o: $(srcdir)/src/msw/dcprint.cpp $(COREDLL_ODEP)
+ @COND_TOOLKIT_MSW_USE_GUI_1@	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/msw/dcprint.cpp
+@@ -24424,8 +23976,6 @@
+ @COND_TOOLKIT_X11_USE_GUI_1@coredll_x11_dcclient.o: $(srcdir)/src/x11/dcclient.cpp $(COREDLL_ODEP)
+ @COND_TOOLKIT_X11_USE_GUI_1@	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/x11/dcclient.cpp
+ 
+-@COND_TOOLKIT_X11_USE_GUI_1@coredll_x11_dcmemory.o: $(srcdir)/src/x11/dcmemory.cpp $(COREDLL_ODEP)
+-@COND_TOOLKIT_X11_USE_GUI_1@	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/x11/dcmemory.cpp
+ 
+ @COND_TOOLKIT_X11_USE_GUI_1@coredll_x11_dcscreen.o: $(srcdir)/src/x11/dcscreen.cpp $(COREDLL_ODEP)
+ @COND_TOOLKIT_X11_USE_GUI_1@	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/x11/dcscreen.cpp
+@@ -24505,8 +24055,6 @@
+ @COND_TOOLKIT_MGL_USE_GUI_1@coredll_mgl_dcclient.o: $(srcdir)/src/mgl/dcclient.cpp $(COREDLL_ODEP)
+ @COND_TOOLKIT_MGL_USE_GUI_1@	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/mgl/dcclient.cpp
+ 
+-@COND_TOOLKIT_MGL_USE_GUI_1@coredll_mgl_dcmemory.o: $(srcdir)/src/mgl/dcmemory.cpp $(COREDLL_ODEP)
+-@COND_TOOLKIT_MGL_USE_GUI_1@	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/mgl/dcmemory.cpp
+ 
+ @COND_TOOLKIT_MGL_USE_GUI_1@coredll_mgl_dcscreen.o: $(srcdir)/src/mgl/dcscreen.cpp $(COREDLL_ODEP)
+ @COND_TOOLKIT_MGL_USE_GUI_1@	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/mgl/dcscreen.cpp
+@@ -24568,8 +24116,6 @@
+ @COND_TOOLKIT_DFB_USE_GUI_1@coredll_dfb_dcclient.o: $(srcdir)/src/dfb/dcclient.cpp $(COREDLL_ODEP)
+ @COND_TOOLKIT_DFB_USE_GUI_1@	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/dfb/dcclient.cpp
+ 
+-@COND_TOOLKIT_DFB_USE_GUI_1@coredll_dfb_dcmemory.o: $(srcdir)/src/dfb/dcmemory.cpp $(COREDLL_ODEP)
+-@COND_TOOLKIT_DFB_USE_GUI_1@	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/dfb/dcmemory.cpp
+ 
+ @COND_TOOLKIT_DFB_USE_GUI_1@coredll_dfb_dcscreen.o: $(srcdir)/src/dfb/dcscreen.cpp $(COREDLL_ODEP)
+ @COND_TOOLKIT_DFB_USE_GUI_1@	$(CXXC) -c -o $@ $(COREDLL_CXXFLAGS) $(srcdir)/src/dfb/dcscreen.cpp
+@@ -25447,8 +24993,6 @@
+ corelib_event.o: $(srcdir)/src/common/event.cpp $(CORELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/common/event.cpp
+ 
+-corelib_fs_mem.o: $(srcdir)/src/common/fs_mem.cpp $(CORELIB_ODEP)
+-	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/common/fs_mem.cpp
+ 
+ corelib_msgout.o: $(srcdir)/src/common/msgout.cpp $(CORELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/common/msgout.cpp
+@@ -25744,8 +25288,6 @@
+ corelib_motif_dcclient.o: $(srcdir)/src/motif/dcclient.cpp $(CORELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/motif/dcclient.cpp
+ 
+-corelib_motif_dcmemory.o: $(srcdir)/src/motif/dcmemory.cpp $(CORELIB_ODEP)
+-	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/motif/dcmemory.cpp
+ 
+ corelib_motif_dcscreen.o: $(srcdir)/src/motif/dcscreen.cpp $(CORELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/motif/dcscreen.cpp
+@@ -25954,8 +25496,6 @@
+ corelib_carbon_dcclient.o: $(srcdir)/src/mac/carbon/dcclient.cpp $(CORELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/mac/carbon/dcclient.cpp
+ 
+-corelib_carbon_dcmemory.o: $(srcdir)/src/mac/carbon/dcmemory.cpp $(CORELIB_ODEP)
+-	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/mac/carbon/dcmemory.cpp
+ 
+ corelib_carbon_dcprint.o: $(srcdir)/src/mac/carbon/dcprint.cpp $(CORELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/mac/carbon/dcprint.cpp
+@@ -26227,8 +25767,6 @@
+ corelib_cocoa_dcclient.o: $(srcdir)/src/cocoa/dcclient.mm $(CORELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(CORELIB_OBJCXXFLAGS) $(srcdir)/src/cocoa/dcclient.mm
+ 
+-corelib_cocoa_dcmemory.o: $(srcdir)/src/cocoa/dcmemory.mm $(CORELIB_ODEP)
+-	$(CXXC) -c -o $@ $(CORELIB_OBJCXXFLAGS) $(srcdir)/src/cocoa/dcmemory.mm
+ 
+ corelib_cocoa_dcscreen.o: $(srcdir)/src/cocoa/dcscreen.cpp $(CORELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/cocoa/dcscreen.cpp
+@@ -26416,8 +25954,6 @@
+ corelib_os2_dcclient.o: $(srcdir)/src/os2/dcclient.cpp $(CORELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/os2/dcclient.cpp
+ 
+-corelib_os2_dcmemory.o: $(srcdir)/src/os2/dcmemory.cpp $(CORELIB_ODEP)
+-	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/os2/dcmemory.cpp
+ 
+ corelib_os2_dcprint.o: $(srcdir)/src/os2/dcprint.cpp $(CORELIB_ODEP)
+ 	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/os2/dcprint.cpp
+@@ -26866,8 +26402,6 @@
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@corelib_gtk_dcclient.o: $(srcdir)/src/gtk/dcclient.cpp $(CORELIB_ODEP)
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/gtk/dcclient.cpp
+ 
+-@COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@corelib_gtk_dcmemory.o: $(srcdir)/src/gtk/dcmemory.cpp $(CORELIB_ODEP)
+-@COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/gtk/dcmemory.cpp
+ 
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@corelib_gtk_dcscreen.o: $(srcdir)/src/gtk/dcscreen.cpp $(CORELIB_ODEP)
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION_2_USE_GUI_1@	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/gtk/dcscreen.cpp
+@@ -26953,8 +26487,6 @@
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@corelib_gtk1_dcclient.o: $(srcdir)/src/gtk1/dcclient.cpp $(CORELIB_ODEP)
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/gtk1/dcclient.cpp
+ 
+-@COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@corelib_gtk1_dcmemory.o: $(srcdir)/src/gtk1/dcmemory.cpp $(CORELIB_ODEP)
+-@COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/gtk1/dcmemory.cpp
+ 
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@corelib_gtk1_dcscreen.o: $(srcdir)/src/gtk1/dcscreen.cpp $(CORELIB_ODEP)
+ @COND_TOOLKIT_GTK_TOOLKIT_VERSION__USE_GUI_1@	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/gtk1/dcscreen.cpp
+@@ -27100,11 +26632,7 @@
+ @COND_TOOLKIT_WINCE_USE_GUI_1@corelib_msw_dcclient.o: $(srcdir)/src/msw/dcclient.cpp $(CORELIB_ODEP)
+ @COND_TOOLKIT_WINCE_USE_GUI_1@	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/msw/dcclient.cpp
+ 
+-@COND_TOOLKIT_MSW_USE_GUI_1@corelib_msw_dcmemory.o: $(srcdir)/src/msw/dcmemory.cpp $(CORELIB_ODEP)
+-@COND_TOOLKIT_MSW_USE_GUI_1@	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/msw/dcmemory.cpp
+ 
+-@COND_TOOLKIT_WINCE_USE_GUI_1@corelib_msw_dcmemory.o: $(srcdir)/src/msw/dcmemory.cpp $(CORELIB_ODEP)
+-@COND_TOOLKIT_WINCE_USE_GUI_1@	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/msw/dcmemory.cpp
+ 
+ @COND_TOOLKIT_MSW_USE_GUI_1@corelib_msw_dcprint.o: $(srcdir)/src/msw/dcprint.cpp $(CORELIB_ODEP)
+ @COND_TOOLKIT_MSW_USE_GUI_1@	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/msw/dcprint.cpp
+@@ -27388,8 +26916,6 @@
+ @COND_TOOLKIT_X11_USE_GUI_1@corelib_x11_dcclient.o: $(srcdir)/src/x11/dcclient.cpp $(CORELIB_ODEP)
+ @COND_TOOLKIT_X11_USE_GUI_1@	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/x11/dcclient.cpp
+ 
+-@COND_TOOLKIT_X11_USE_GUI_1@corelib_x11_dcmemory.o: $(srcdir)/src/x11/dcmemory.cpp $(CORELIB_ODEP)
+-@COND_TOOLKIT_X11_USE_GUI_1@	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/x11/dcmemory.cpp
+ 
+ @COND_TOOLKIT_X11_USE_GUI_1@corelib_x11_dcscreen.o: $(srcdir)/src/x11/dcscreen.cpp $(CORELIB_ODEP)
+ @COND_TOOLKIT_X11_USE_GUI_1@	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/x11/dcscreen.cpp
+@@ -27469,8 +26995,6 @@
+ @COND_TOOLKIT_MGL_USE_GUI_1@corelib_mgl_dcclient.o: $(srcdir)/src/mgl/dcclient.cpp $(CORELIB_ODEP)
+ @COND_TOOLKIT_MGL_USE_GUI_1@	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/mgl/dcclient.cpp
+ 
+-@COND_TOOLKIT_MGL_USE_GUI_1@corelib_mgl_dcmemory.o: $(srcdir)/src/mgl/dcmemory.cpp $(CORELIB_ODEP)
+-@COND_TOOLKIT_MGL_USE_GUI_1@	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/mgl/dcmemory.cpp
+ 
+ @COND_TOOLKIT_MGL_USE_GUI_1@corelib_mgl_dcscreen.o: $(srcdir)/src/mgl/dcscreen.cpp $(CORELIB_ODEP)
+ @COND_TOOLKIT_MGL_USE_GUI_1@	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/mgl/dcscreen.cpp
+@@ -27532,8 +27056,6 @@
+ @COND_TOOLKIT_DFB_USE_GUI_1@corelib_dfb_dcclient.o: $(srcdir)/src/dfb/dcclient.cpp $(CORELIB_ODEP)
+ @COND_TOOLKIT_DFB_USE_GUI_1@	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/dfb/dcclient.cpp
+ 
+-@COND_TOOLKIT_DFB_USE_GUI_1@corelib_dfb_dcmemory.o: $(srcdir)/src/dfb/dcmemory.cpp $(CORELIB_ODEP)
+-@COND_TOOLKIT_DFB_USE_GUI_1@	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/dfb/dcmemory.cpp
+ 
+ @COND_TOOLKIT_DFB_USE_GUI_1@corelib_dfb_dcscreen.o: $(srcdir)/src/dfb/dcscreen.cpp $(CORELIB_ODEP)
+ @COND_TOOLKIT_DFB_USE_GUI_1@	$(CXXC) -c -o $@ $(CORELIB_CXXFLAGS) $(srcdir)/src/dfb/dcscreen.cpp

@@ -1,0 +1,49 @@
+#!/bin/sh
+###########################################
+### A little smoke test for the krouter ###
+###########################################
+
+. ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+err () {
+    local CODE=$1
+    local MSG=$2
+    echo "error: $MSG" >&2
+    exit $CODE
+}
+
+
+########## check status of daemons ###############
+STATUS=$(streamboost status)
+if [ $? -eq 1 ]; then
+	# 1 means that one of the daemons isn't started
+	echo "$STATUS"
+	err 2 "One of the daemons isn't started"
+fi
+
+
+########## check internet connectivity ###############
+ping -c 1 yahoo.com > /dev/null || err 3 "Can't ping internet host"
+
+
+########## check streamboost update ###############
+streamboost update > /dev/null || err 4 "Streamboost update failed"
+streamboost restart > /dev/null || err 4 "Streamboost update failed"
+STATUS=$(streamboost status)
+if [ $? -eq 1 ]; then
+	# 1 means that one of the daemons isn't started
+	echo "$STATUS"
+	err 4 "Streamboost update failed"
+fi
+
+
+########## check bandwidth estimation  ###############
+streamboost measure > /dev/null || err 5 "bandwidth estimation failed"
+streamboost applybw > /dev/null || err 5 "bandwidth estimation failed"
+
+########## check upload ##############
+streamboost upload > /dev/null || err 6 "streamboost upload failed"
+
+
+echo "looks good"
+exit 0

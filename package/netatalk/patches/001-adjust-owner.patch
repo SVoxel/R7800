@@ -1,0 +1,30 @@
+--- netatalk-2.2.1/libatalk/adouble/ad_open.c.orig	2012-10-23 22:17:53.145538115 +0800
++++ netatalk-2.2.1/libatalk/adouble/ad_open.c	2012-10-23 22:20:59.115537739 +0800
+@@ -1017,6 +1017,19 @@
+     return lstat( p, stbuf );
+ }
+ 
++static void ad_adjust_owner(const char *path)
++{
++    struct stat st;
++    uid_t uid;
++    gid_t gid;
++    if (lstat(path, &st) < 0)
++        return;
++    uid = geteuid();
++    gid = getegid();
++    if (st.st_uid != uid)
++        lchown(path, uid, gid);
++}
++
+ /* ----------------
+    if we are root change path user/ group
+    It can be a native function for BSD cf. FAQ.Q10
+@@ -1030,6 +1043,7 @@
+ static int ad_chown(const char *path, struct stat *stbuf)
+ {
+     int ret = 0;
++    ad_adjust_owner(path);
+ #ifdef EMULATE_SUIDDIR
+     uid_t id;
+ 

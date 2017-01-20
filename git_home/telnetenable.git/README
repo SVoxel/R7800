@@ -1,0 +1,31 @@
+telnetenable
+
+This is a tool for activating the listening mode of the telnet console
+on some Netgear routers. For more information, please refer to
+  http://wiki.openwrt.org/OpenWrtDocs/Hardware/Netgear/TelnetConsole
+
+Please read the telnetenable.c header for additional information on 
+copyright and licensing terms.
+
+Please note that this tool is currently lacking a socket layer
+implementation, and is therefore only usable to craft individual magic
+packets, but not to send them to the router.
+
+To compile, use
+  gcc -o telnetenable telnetenable.c md5.c Blowfish.c
+
+To run it, pass the same parameters as you would pass to the original 
+tool (telnetEnable.exe by Netgear) upon command line invocation. You
+can see the usage by simply running
+  ./telnetenable
+
+Please note that this software is completely unsupported. 
+
+An updated version providing a network layer implementation may or may 
+not be provided in the future. If you would like to contribute any 
+patches or have crafted modified versions (you are welcome to do so
+under the terms of the GPL!), we would appreciate a hint.
+
+This software is made available by alsterwassermannATgmxD0Tde on 
+behalf of its author yoshacATmemberD0TfsfD0Torg. If you need to get in 
+touch for reasons other than usage support, please contact both of us.

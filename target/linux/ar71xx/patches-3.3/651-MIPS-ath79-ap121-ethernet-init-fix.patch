@@ -1,0 +1,22 @@
+diff -Nur a/arch/mips/ath79/mach-ap121.c linux-3.3.8/arch/mips/ath79/mach-ap121.c
+--- a/arch/mips/ath79/mach-ap121.c	2013-07-18 16:48:51.484726424 +0800
++++ linux-3.3.8/arch/mips/ath79/mach-ap121.c	2013-07-18 16:52:26.684732499 +0800
+@@ -106,11 +106,18 @@
+ 	ath79_init_mac(ath79_eth1_data.mac_addr, art + AP121_MAC1_OFFSET, 0);
+ 
+ 	ath79_register_mdio(0, 0x0);
++	ath79_register_mdio(1, 0x0);
+ 
+ 	/* LAN ports */
++	ath79_eth1_data.phy_if_mode = PHY_INTERFACE_MODE_GMII;
++	ath79_eth1_data.speed = SPEED_100;
++	ath79_eth1_data.duplex = DUPLEX_FULL;
+ 	ath79_register_eth(1);
+ 
+ 	/* WAN port */
++	ath79_eth0_data.phy_if_mode = PHY_INTERFACE_MODE_RGMII;
++	ath79_eth0_data.phy_mask = BIT(0);
++	ath79_eth0_pll_data.pll_1000 = 0x06000000;
+ 	ath79_register_eth(0);
+ }
+ 

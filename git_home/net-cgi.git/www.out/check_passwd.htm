@@ -1,0 +1,33 @@
+<% http_header("style/form.css", "/funcs.js", "/passwd.js") %>
+<% noload_header("_passwd") %>
+<div class="page_title">$passwd_head</div>
+<div id="main" class="main">
+<% table_header() %>
+<!--TR>
+	<TD nowrap colspan=2><H1>$passwd_head</H1></TD>
+</TR-->
+$bluebar
+</table>
+<div id="msg"></div>
+<script>
+
+function show_userpasswd_error()
+{
+	getObj("msg").innerHTML="";
+	getObj("msg").innerHTML="<table width=100% border=0 cellpadding=0 cellspacing=3>"+
+				"<TR><TD nowrap colspan=2 align=center><BR>$old_password_error<BR><BR></TD></TR>"+
+				"<TR><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR></table>";
+}
+
+function goback()
+{
+	location.href="PWD_password.htm";
+}
+
+show_userpasswd_error();
+setTimeout("goback();",3000);
+</script>
+</div>
+</FORM>
+</BODY>
+</HTML>

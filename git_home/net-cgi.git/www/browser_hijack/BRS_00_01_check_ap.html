@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<% hijack_language() %>
+<script language="javascript" type="text/javascript">
+<% ap_autodetection() %>
+var internet_type="";
+var delay_time=1000;
+var n=0;
+var port_status = "<% cat_file("/tmp/port_status") %>";
+var wanport=top.wan_port;
+function loadvalue()
+{
+        setTimeout("check_internet_type()",delay_time);
+}
+
+function check_internet_type()
+{
+	if(port_status == "0" && top.wan_port == 0)
+	{	
+		this.location.href = "BRS_00_01_noWan.html";
+	}
+	else if( n < 60)
+	{
+		if( internet_type == "0" )
+		{
+			location.href="BRS_00_02_ap_select.html";
+			return;
+		}
+		else if(internet_type == "1")
+		{
+			if(top.dsl_enable_flag == "1")
+				location.href="BRS_01_checkNet_ideth_ping.html";
+			else
+				location.href="BRS_01_checkNet_ping.html";
+			return;
+		}
+		n++;
+		setTimeout("check_internet_type()",delay_time);
+	}
+	else
+	{
+			if(top.dsl_enable_flag == "1")
+				location.href="BRS_01_checkNet_ideth_ping.html";
+			else
+				location.href="BRS_01_checkNet_ping.html";
+			return;
+	}
+}
+</script>
+
+</head>
+
+<body onLoad="loadvalue()">
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+		<div class="waiting_connect_div" align="center">
+			<h1>
+				<script>document.write(bh_check_ap);</script>
+			</h1>
+		</div>
+		
+		<div class="waiting_img_div" align="center">
+			<img src="image/wait30.gif" />
+		</div>
+	
+	</div>
+
+</div>
+<iframe name="check_frame" src="BRS_00_01_hid_checking.html" allowtransparency="true" scrolling="no" frameborder="0" style="display:none"></iframe>
+</body>
+
+</html>

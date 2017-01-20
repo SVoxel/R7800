@@ -1,0 +1,41 @@
+From 11c3f6fc6b0f772df7abe75467615208e5f37672 Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Fri, 7 Jun 2013 11:20:00 -0500
+Subject: [ag71xx] no-op for debug all optimization levels
+
+Debug code was still generating instructions at some debug levels; this
+change ensures that no debug code is needlessly generated with debug
+disabled.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+index 919e6e0..57c6191 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+@@ -29,6 +29,7 @@ static int ag71xx_msg_level = -1;
+ module_param_named(msg_level, ag71xx_msg_level, int, 0);
+ MODULE_PARM_DESC(msg_level, "Message level (-1=defaults,0=none,...,16=all)");
+ 
++#ifdef DEBUG
+ static void ag71xx_dump_dma_regs(struct ag71xx *ag)
+ {
+ 	DBG("%s: dma_tx_ctrl=%08x, dma_tx_desc=%08x, dma_tx_status=%08x\n",
+@@ -81,6 +82,11 @@ static inline void ag71xx_dump_intr(struct ag71xx *ag, char *label, u32 intr)
+ 		(intr & AG71XX_INT_RX_OF) ? "RXOF " : "",
+ 		(intr & AG71XX_INT_RX_BE) ? "RXBE " : "");
+ }
++#else /* !DEBUG */
++#define ag71xx_dump_dma_regs(__ag)
++#define ag71xx_dump_regs(__ag)
++#define ag71xx_dump_intr(__ag, __label, __intr)
++#endif /* DEBUG */
+ 
+ static void ag71xx_ring_free(struct ag71xx_ring *ring)
+ {
+-- 
+1.8.1.2
+

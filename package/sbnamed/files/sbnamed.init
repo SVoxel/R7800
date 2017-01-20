@@ -1,0 +1,54 @@
+#!/bin/sh
+
+. ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+#
+# Environment config
+#
+BINARY="sbnamed"
+NAME=${BINARY}
+DISPLAY_NAME="sbnamed"
+STOP_IS_BLOCKING=yes
+
+#
+# sbnamed config
+#
+# path to sbnamed binary
+SBNAMED_BIN="${BINDIR}/${BINARY}"
+
+# path to sbnamed pid file
+PIDFILE="${RUNDIR}/${BINARY}.pid"
+
+# Redis server port
+PORT=6379
+
+# Format the command line parameters
+CMDLINE_OPTS="--daemon -o ${PORT} -p ${PIDFILE} -l ${RUNDIR}/dhcp.leases"
+
+#
+# Functions
+#
+
+start() {
+	[ ! -d "${RUNDIR}" ] && {
+		mkdir ${RUNDIR}
+	}
+
+	[ -x ${SBNAMED_BIN} ] || {
+		echo "${BINARY} not found: ${SBNAMED_BIN}"
+		exit 2
+	}
+
+	echo -n "Starting ${NAME}: "
+	${SBNAMED_BIN} ${CMDLINE_OPTS} "$@"
+	retval=$?
+	echo
+	return ${retval}
+}
+
+boot() {
+	start "$@"
+}
+
+action "$@"
+exit $?

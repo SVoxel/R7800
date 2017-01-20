@@ -1,0 +1,122 @@
+<% http_header("style/form2.css", "/funcs.js", "/streamboost.js") %>
+<% body_header("_wmm", "QOS_wmm.htm", "apply_wmm") %>
+<div class="qospage_title">$home_net</div>
+<div class="fix_adv_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+    <TD nowrap colspan=2 align=center>
+    <script>
+        var master="<% cfg_get("http_loginname") %>";
+	if( master=="admin" )
+		document.write('<input class="new_cancel_bt ui-corner-all" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="wmmMain();"> &nbsp;&nbsp; <input class="new_apply_bt ui-corner-all" type="button" name="Apply" id="apply" value="$apply_mark" onClick="return check_wmm_apply(document.forms[0]);">');
+	else
+		document.write('<input class="new_greyapply_bt ui-corner-all" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled> &nbsp;&nbsp; <input class="new_greyapply_bt ui-corner-all" type="button" name="Apply" id="apply" value="$apply_mark" disabled>');
+    </script>
+    </TD>
+</TR>
+<tr id="labels"><td colspan=2>
+        <div id="streamboost_qos" class="label_unclick" onclick="select_lable(0)">
+                <div class="label_left"></div>
+                <div class="label_middle"><b><span>$home_net</span></b></div>
+                <div class="label_right"></div>
+        </div>
+        <div id="wmm" class="label_unclick" onclick="select_lable(1)">
+                <div class="label_left"></div>
+                <div class="label_middle"><b><span>  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;$wmm_mark  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;</span></b></div>
+                <div class="label_right"></div>
+        </div>
+</td>
+</tr>
+</table>
+
+</div>
+<div id="main" class="main_top_button" style="top: 105px;">
+<% table_header() %>
+
+<script>
+var ts='<% cfg_get("apply_wmm") %>';
+
+var endis_wl_wmm="<% cfg_get("endis_wl_wmm") %>";
+var endis_wla_wmm="<% cfg_get("endis_wla_wmm") %>";
+var ac_router_flag=top.ac_router_flag;
+var an_router_flag = parent.an_router_flag;
+
+var wps_alert="<% cfg_get("wps_alert") %>";
+<% cfg_set("wps_alert", "0") %>
+
+var select_num=0;
+/*function select_lable(num)
+{
+        if(num==0)
+                document.getElementById("streamboost_qos").className="label_click";
+        else
+                document.getElementById("streamboost_qos").className="label_unclick";
+        if(num==1)
+                document.getElementById("wmm").className="label_click";
+        else
+                document.getElementById("wmm").className="label_unclick";
+
+        select_num=num;
+        if(select_num==0)
+                this.location.href="QOS_dynamic.htm";
+        else if(select_num==1)
+                this.location.href="QOS_wmm.htm";
+}
+*/
+function change_web_format()
+{
+	if( an_router_flag == 1 )
+		document.getElementById("wmm_an").style.display="";
+	else
+		document.getElementById("wmm_an").style.display="none";
+
+}
+
+function loadvalue()
+{
+	var cf=document.forms[0];
+	document.getElementById("wmm").className="label_click";
+	document.getElementById("streamboost_qos").className="label_unclick";
+	change_web_format();
+
+	if( endis_wl_wmm == "1" )
+		cf.wmm_enable_2g.checked = true;
+	else
+		cf.wmm_enable_2g.checked = false;
+        if( endis_wla_wmm == "1" )
+                cf.wmm_enable_5g.checked = true;
+        else
+                cf.wmm_enable_5g.checked = false;
+
+	showWps_alert();
+}
+
+</script>
+<input type="hidden" name="qos_endis_wmm">
+<input type="hidden" name="qos_endis_wmm_a">
+<TR style="font-size:13px;">
+	<TD><b>$qos_wmm_note</b></TD>
+</TR>
+<tr>
+<td height="15px">
+</td>
+</tr>
+<TR>
+	<TD><input type="checkbox" name="wmm_enable_2g" id="wmm_enable_2g" value="1"><a tabindex=-1 href="javascript:loadhelp('_wmm','wifi')"><b>$qos_enable_wmm <script>if(an_router_flag) document.write("(2.4GHz b/g/n)");</script></b></a></TD>
+</TR>
+<TR id=wmm_an>
+	<TD><input type="checkbox" name="wmm_enable_5g" id="wmm_enable_5g" value="1"><a tabindex=-1 href="javascript:loadhelp('_wmm','wifi')"><b>
+	<script>
+		if( ac_router_flag == 1 )
+			document.write("$qos_enable_wmm (5GHz 802.11a/n/ac)")
+		else
+			document.write("$qos_enable_wmm (5GHz a/n)")
+	</script>
+	</b></a></TD>
+</TR>
+</TABLE>
+</div>
+<% help_box("0","_wmm") %>
+</FORM>
+</BODY>
+</HTML>

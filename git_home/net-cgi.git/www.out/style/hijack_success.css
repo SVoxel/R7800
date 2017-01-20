@@ -1,0 +1,20 @@
+#info_div { height:135px; width:700px; }
+#info_div_24 { height:90px; width:700px; }
+
+#allBtns_div { width:500px;  margin:10px auto;}
+
+#allBtns_div .success_buttons_split { height:30px; width:10%; margin:0px 0px; float:left; }
+
+#btnsContainer_div1 { width:30%; float:left; }
+
+#btnsContainer_div2 { width:30%; float:left; left:5px; }
+
+#btnsContainer_div3 { width:40%; float:right; left:10px; }
+
+#btnsContainer_div4 { width:30%; float:left; left:10px; }
+
+#words_div_success{  padding:30px 10% 0px 10%;}
+
+.tooltip { cursor: pointer }
+
+#a { color: blue; text-decoration: underline; cursor: pointer; }

@@ -1,0 +1,17 @@
+config 'stage' 'tccontroller'
+	option 'uplimit' '187500' # Bytes/s
+	option 'downlimit' '1875000' # Bytes/s
+	option 'ifup' 'eth0.2'
+	option 'ifdown' 'br-lan'
+	option 'listen_path' '/var/run/appflow/tccpipe'
+	option 'daemon' '1'
+	option 'enable_streamboost' 1
+	option 'enable_auto' 0
+	option 'uplimit_auto' '0'
+	option 'downlimit_auto' '0'
+
+config 'policy' 'policy'
+	option 'enable' 1 
+
+config 'bigdata' 'bigdata'
+	option 'enable' 1

@@ -1,0 +1,12 @@
+#
+# Copyright (c) 2013 Qualcomm Atheros, Inc.
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary.
+#
+
+sudo service network-manager stop
+sudo killall wpa_supplicant
+sudo rc.wlan up
+sudo setupp2p
+sudo p2p_cc.start
+sudo iwpriv wlan1 dbgLVL 0x280004

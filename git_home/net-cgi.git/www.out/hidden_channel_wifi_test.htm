@@ -1,0 +1,88 @@
+<% http_header("style/form.css") %>
+<% nohelp_header("hidden_channel_wifi_test.htm", "wifi_ntgr_hidden_channel") %>
+
+<script>
+var hidden_channel_flag="<% cfg_get("hidden_channel_flag") %>";
+var wl_get_channel="<% cfg_get("wl_hidden_channel") %>";
+function loadvalue()
+{
+	var form=document.forms[0];
+	if( hidden_channel_flag == 1 )
+		form.wifi_chan[0].checked = true;
+	else if( hidden_channel_flag == 2 )
+		form.wifi_chan[1].checked = true;
+	else
+		form.wifi_chan[2].checked = true;
+}
+function click_apply()
+{
+	var form=document.forms[0];
+	if(form.wifi_chan[0].checked == true)
+	{
+		form.hidd_chan.value=1;
+		if(wl_get_channel == 0)
+			form.hidd_simple_mod.value=6;
+		else
+		{
+			if(wl_get_channel > 6)
+				form.hidd_simple_mod.value=5;
+			else
+				form.hidd_simple_mod.value=3;
+		}
+	}
+	else if(form.wifi_chan[1].checked == true)
+	{
+		form.hidd_chan.value=2;
+		if(wl_get_channel == 0)
+			form.hidd_simple_mod.value=6;
+		else
+		{
+			if(wl_get_channel > 7)
+				form.hidd_simple_mod.value=5;
+			else
+				form.hidd_simple_mod.value=3;
+		}
+	}
+	else
+	{
+		form.hidd_chan.value=3;
+		if(wl_get_channel == 0)
+			form.hidd_simple_mod.value=6;
+		else
+		{
+			if(wl_get_channel > 4)
+				form.hidd_simple_mod.value=5;
+			else
+				form.hidd_simple_mod.value=3;
+		}
+	}
+	form.submit();
+}
+</script>
+<input type="hidden" name="hidd_chan">
+<input type="hidden" name="hidd_simple_mod">
+<table>
+<tr><td>$sec_chan_option</td></tr>
+<tr>
+<td><input type=radio name="wifi_chan" value="1">$default_channel</td>
+</tr>
+<tr>
+<td><input type=radio name="wifi_chan" value="2">$plus_channel</td>
+</tr>
+<tr>
+<td><input type=radio name="wifi_chan" value="3">$minus_channel</td>
+</tr>
+<tr>
+<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if( master == "admin" )
+		document.write('<td align=center><input class="apply_bt" type="button" name="Apply" value="$apply_mark" onClick="click_apply()">&nbsp;<input class="cancel_bt" type="button" name="Cancel" value="$cancel_mark" onClick="location.href=\'hidden_channel_wifi_test.htm\';"></td>');
+	else
+		document.write('<td align=center><input class="apply1_bt" type="button" name="Apply" value="$apply_mark" disabled>&nbsp;<input class="cancel1_bt" type="button" name="Cancel" value="$cancel_mark" disabled></td>');
+</script>
+
+</tr>
+</table>
+</form>
+</body>
+</html>

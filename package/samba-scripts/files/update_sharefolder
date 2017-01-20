@@ -1,0 +1,60 @@
+#!/bin/sh
+find /tmp/mnt/ -name .wndr3700_disk_share_info -exec rm -f {} \;
+echo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+path1=`df | grep ^/dev/sda | sed -n '1p' | awk {' print$6 '}`
+cat $path1/.wndr3700_disk_share_info
+echo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+drive_num=`df | sed -n '$p' | awk  {'print$1'} | cut -b 8-8`
+case $drive_num in 
+a)  drive_num=1
+;;
+b)  drive_num=2
+;; 
+c)  drive_num=3
+;;
+d)  drive_num=4
+;;
+e)  drive_num=5
+;;
+*)  drive_num=6
+;;
+esac
+echo drive_num is $drive_num
+parti_num1=$(df | grep ^/dev/sda | wc -l)
+parti_num2=$(df | grep ^/dev/sdb | wc -l)
+parti_num3=$(df | grep ^/dev/sdc | wc -l)
+parti_num4=$(df | grep ^/dev/sdd | wc -l)
+parti_num5=$(df | grep ^/dev/sde | wc -l)
+parti_num6=$(df | grep ^/dev/sdf | wc -l)
+/bin/config show |grep ^disk_sharefolder | while read oneline;
+do
+  echo $oneline>/tmp/tmp111.a
+  partition_code=`awk '{print$2}' /tmp/tmp111.a`
+  count=0;
+  while [ $partition_code -gt 0 ] 
+  do
+    let count++
+    tmp=parti_num${count}
+    let partition_code=partition_code-tmp
+  done
+  echo partition drive is $count
+  case $count in
+  1)  ch=a
+  ;;
+  2)  ch=b
+  ;;
+  3)  ch=c
+  ;;
+  4)  ch=d
+  ;;
+  5)  ch=e
+  ;;
+  *)  ch=f
+  ;;
+  esac
+  path=`df | grep ^/dev/sd${ch} | sed -n '1p' | awk {' print$6 '}`
+  echo path is $path
+  echo $oneline>>$path/.wndr3700_disk_share_info
+done
+ rm -f /tmp/tmp111.a

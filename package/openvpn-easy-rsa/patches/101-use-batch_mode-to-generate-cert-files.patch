@@ -1,0 +1,27 @@
+diff -Nur easy-rsa/2.0/build-ca easy-rsa/2.0/build-ca
+--- a/easy-rsa/2.0/build-ca	2014-08-17 02:21:46.110258433 +0800
++++ b/easy-rsa/2.0/build-ca	2014-08-17 02:22:13.740258446 +0800
+@@ -5,4 +5,4 @@
+ #
+ 
+ export EASY_RSA="${EASY_RSA:-.}"
+-"/usr/sbin/pkitool" --interact --initca $*
++"/usr/sbin/pkitool" --batch --initca $*
+diff -Nur easy-rsa/2.0/build-key easy-rsa/2.0/build-key
+--- a/asy-rsa/2.0/build-key	2014-08-17 02:21:46.110258433 +0800
++++ b/easy-rsa/2.0/build-key	2014-08-17 02:23:37.720258421 +0800
+@@ -4,4 +4,4 @@
+ # root certificate.
+ 
+ export EASY_RSA="${EASY_RSA:-.}"
+-"/usr/sbin/pkitool" --interact $*
++"/usr/sbin/pkitool" --batch $*
+diff -Nur easy-rsa/2.0/build-key-server easy-rsa/2.0/build-key-server
+--- a/easy-rsa/2.0/build-key-server	2014-08-17 02:21:46.110258433 +0800
++++ b/easy-rsa/2.0/build-key-server	2014-08-17 02:24:01.100258754 +0800
+@@ -7,4 +7,4 @@
+ # extension in the openssl.cnf file.
+ 
+ export EASY_RSA="${EASY_RSA:-.}"
+-"/usr/sbin/pkitool" --interact --server $*
++"/usr/sbin/pkitool" --batch --server $*

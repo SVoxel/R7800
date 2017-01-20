@@ -1,0 +1,98 @@
+<% ca_http_header("/funcs.js") %>
+
+<script>
+var info_get_wanproto = "<% cfg_get("wan_proto") %>";
+if ( info_get_wanproto == "pptp" || info_get_wanproto == "l2tp" )
+	var maxchars = 154;
+else if ( info_get_wanproto == "pppoe" )
+	var maxchars = 130;
+else
+	var maxchars = 115;
+	
+var delay_time = 350;
+var charcount = 0; 
+
+function updateProgress()
+{
+	
+	if (charcount < maxchars)
+	{
+		charcount ++;
+		var i;
+	  var tmp;
+	  var dark;
+	  var mid;
+	  var cor1="#BAD6F4";
+    var cor2="#D4E6F8";
+    var cor3="#EEF5FC"
+    
+	  if(parseInt(charcount) %10==0  )
+	  {
+	  	  dark=0;
+	      mid=100;
+	  }
+	  else if(parseInt(charcount) %10<=4)
+	  {
+	  	  dark=parseInt(charcount) %10;
+	      mid=parseInt(dark)-1;
+	  }
+	  else if(parseInt(charcount) %10==5)
+	  {
+	  	  dark=4;
+	      mid=100;
+	  }
+	  else
+	  {
+	  	  dark=9-parseInt(charcount) %10;
+	      mid=parseInt(dark)+1;
+	  }
+	  
+	  for(i=0;i<5;i++)
+	  {
+	      tmp="wps_bar"+i;
+	      if(i==dark)
+	      	  document.getElementById(tmp).style.background=cor1;
+	      else if(i==mid)
+	      	  document.getElementById(tmp).style.background=cor2;
+	      else
+	      	  document.getElementById(tmp).style.background=cor3;  
+	  	
+	  }
+		setTimeout("updateProgress()",delay_time);
+		
+		//if(charcount == (maxchars/5) *5 )
+		//	location.href="BSW_wan_wait.htm";
+
+	}
+	else
+		location.href="BSW_wan_wait.htm";
+}
+</script>
+</head>
+<body bgcolor="#ffffff" onLoad="updateProgress()">
+
+<div id=main style="margin:20px 0px 0px 20px">
+
+    <div id=head>
+    	  <p style="font-family: Verdana, Arial, Helvetica, sans-serif;	font-size: 16pt;	font-weight: bold;	color: #36019A;	line-height: 26px;">
+    	  	<script>document.write(Genie_18)</script>
+    	  </p>	
+    	  <p style="margin:20px 0px 0px 5px"><script>document.write(Genie_158)</script></p>    	  
+    </div>
+    
+    <script>
+    	  if(navigator.userAgent.indexOf("MSIE") != -1)
+    	      document.write("<div id=wps_bor style='width:164px;height:25px;border: 1px solid #09c; margin:20px 0px 0px 70px'>");
+    	  else    
+            document.write("<div id=wps_bor style='width:162px;height:22px;border: 1px solid #09c; margin:20px 0px 0px 70px'>");
+    </script>
+	      <div id=wps_bar0 style="position:absolute; height:18px;width:30px;background: #EEF5FC;margin: 2px 0 0px 2px;" ></div>
+	      <div id=wps_bar1 style="position:absolute; height:18px;width:30px;background: #EEF5FC;margin: 2px 0 0px 34px;" ></div>
+	      <div id=wps_bar2 style="position:absolute; height:18px;width:30px;background: #EEF5FC;margin: 2px 0 0px 66px;" ></div>
+	      <div id=wps_bar3 style="position:absolute; height:18px;width:30px;background: #D4E6F8;margin: 2px 0 0px 98px;" ></div>
+	      <div id=wps_bar4 style="position:absolute; height:18px;width:30px;background: #BAD6F4;margin: 2px 0 0px 130px;" ></div>
+    </div>
+
+</div>
+</BODY>
+</html>

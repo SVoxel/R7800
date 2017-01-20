@@ -1,0 +1,126 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% nohelp_header("hidden_manual_set_ant.html", "manual_set_ant") %>
+<div class="page_title">$Antenna_configurations</div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+
+<script>
+function loadvalue()
+{
+	var form=document.forms[0];
+	var ant_g_mode="<% cfg_get("ant_g_mode") %>";
+	var ant_a_mode="<% cfg_get("ant_a_mode") %>";
+	var ant_g_select="<% cfg_get("ant_g_select") %>";
+	var ant_a_select="<% cfg_get("ant_a_select") %>";
+
+	if( ant_g_mode == "0" )
+		form.gn_mode.options[0].selected = true;
+	else
+		form.gn_mode.options[1].selected = true;
+
+	if( ant_a_mode == "0" )
+		form.an_mode.options[0].selected = true;
+	else
+		form.an_mode.options[1].selected = true;
+
+	form.gn_group[parseInt(ant_g_select)-1].checked=true;
+	form.s_g_group.value=ant_g_select;
+	form.an_group[parseInt(ant_a_select)-1].checked=true;
+	form.s_a_group.value=ant_a_select;
+
+	chg_g_mode();
+	chg_a_mode();		
+}
+function chg_g_mode()
+{
+	var form=document.forms[0];
+	if( form.gn_mode.value == 0 )
+		setDisabled(true,form.gn_group[0],form.gn_group[1],form.gn_group[2],form.gn_group[3]);
+	else
+		setDisabled(false,form.gn_group[0],form.gn_group[1],form.gn_group[2],form.gn_group[3]);
+
+}
+function chg_a_mode()
+{
+	var form=document.forms[0];
+	if( form.an_mode.value == 0 )
+		setDisabled(true,form.an_group[0],form.an_group[1],form.an_group[2],form.an_group[3]);
+	else
+		setDisabled(false,form.an_group[0],form.an_group[1],form.an_group[2],form.an_group[3]);
+}
+function click_apply()
+{
+	var form=document.forms[0];
+	if( form.gn_mode.value == 1 )
+		for( i=0; i<4; i++ )
+			if(form.gn_group[i].checked == true)
+				form.s_g_group.value= i + 1;
+	if( form.an_mode.value == 1 )
+		for( i=0; i<4; i++ )
+			if(form.an_group[i].checked == true)
+				form.s_a_group.value= i + 1;
+	
+	return true;
+}
+</script>
+<input type="hidden" name="s_g_group">
+<input type="hidden" name="s_a_group">
+
+<TR>
+	<TD nowrap>$gn_antenna_mode</TD>
+	<TD nowrap>$an_antenna_mode</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<select name="gn_mode" size="1" onchange="chg_g_mode();" >
+		<option value=0>Auto</option>
+		<option value=1>Manual</option>
+	</select>
+	</TD>
+	<TD nowrap>
+	<select name="an_mode" size="1" onchange="chg_a_mode();">
+		<option value=0>Auto</option>
+		<option value=1>Manual</option>
+	</select>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$manual_selection</TD>
+	<TD nowrap>$manual_selection</TD>
+</TR>
+<TR>
+        <TD nowrap><input type="radio" name="gn_group" value="1">$antenna_group1</TD>
+        <TD nowrap><input type="radio" name="an_group" value="1">$antenna_group1</TD>
+</TR>
+<TR>
+        <TD nowrap><input type="radio" name="gn_group" value="2">$antenna_group2</TD>
+        <TD nowrap><input type="radio" name="an_group" value="2">$antenna_group2</TD>
+</TR>
+<TR>
+        <TD nowrap><input type="radio" name="gn_group" value="3">$antenna_group3</TD>
+        <TD nowrap><input type="radio" name="an_group" value="3">$antenna_group3</TD>
+</TR>
+<TR>
+        <TD nowrap><input type="radio" name="gn_group" value="4">$antenna_group4</TD>
+        <TD nowrap><input type="radio" name="an_group" value="4">$antenna_group4</TD>
+</TR>
+
+$bluebar
+
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" value="$cancel_mark" onClick="location.href=\'hidden_manual_set_ant.html\';">&nbsp;&nbsp;<input class="apply_bt" type="submit" name="Apply" value="$apply_mark" onClick="return click_apply();"></TD>');
+else
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit" name="Apply" value="$apply_mark" disabled></TD>');
+</script>
+</TR>
+
+</TABLE>
+</div>
+
+</FORM>
+</BODY>
+</HTML>

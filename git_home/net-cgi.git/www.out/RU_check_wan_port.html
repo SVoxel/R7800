@@ -1,0 +1,13 @@
+<HTML>
+<HEAD>
+<META http-equiv=content-type content='text/html; charset=UTF-8'>
+</HEAD>
+<BODY onLoad="loadvalue();" bgcolor=#ffffff>
+<script>
+var wan_phy_status="<% cat_file("/tmp/port_status") %>";
+if( wan_phy_status == "0" ){
+	location.href="BRS_03A_A_noWan.html";
+}else
+	location.href="RU_welcome.htm";
+</script>
+</BODY></HTML>

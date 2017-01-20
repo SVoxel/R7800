@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<% hijack_language() %>
+</head>
+
+<body>
+<% form_submit("apply", "BRS_success.html", "hijack_passwd") %>
+
+<script>
+function isValidChar_space(each_char)
+{
+	if( each_char < 32 || each_char > 127)
+		return false;
+}
+
+function check_pwd_format(str)
+{
+	var i,each_char;
+	var num = 0;
+	var letter =0;
+
+	for(i=0;i<str.length;i++)
+	{
+		each_char = str.charCodeAt(i);
+		if (isValidChar_space(each_char) == false)
+			return false;
+		if(each_char > 47 && each_char < 58)
+			num++;
+		if((each_char > 64 && each_char < 91) || (each_char > 96 && each_char < 123))
+			letter++;
+	}
+
+	if(num ==0 || letter ==0)
+		return false;
+	else
+		return true;
+}
+function checkpasswd(cf)
+{
+	/*if(check_pwd_format(cf.sysNewPasswd.value) == false)
+	{
+		alert(bh_pwd_error);
+		return false;
+	}*/
+	if(cf.sysNewPasswd.value == "")
+	{
+		alert(bh_passwd_not_blank);
+		return false;
+	}
+	if (cf.sysNewPasswd.value.length >= 33 || cf.sysConfirmPasswd.value.length >= 33)
+	{
+		alert(bh_max_pwd_len);
+		return false;
+	}
+	if(cf.sysNewPasswd.value != cf.sysConfirmPasswd.value)
+	{ 
+		alert(bh_pwd_no_match);
+		return false;	
+	}
+
+	cf.hidden_enable_recovery.value="1";
+	if( cf.question1.value == "0" || cf.question2.value == "0")
+	{
+		alert(bh_select_quest);
+		return false;
+	}
+	
+	if( cf.answer1.value == "" || cf.answer2.value == "" )
+	{
+		alert(bh_enter_answer);
+		return false;
+	}
+	if( cf.answer1.value.length > 64 || cf.answer2.value.length > 64 )/* to fix bug 26920 */
+	{
+		alert(bh_invalid_answer);
+		return false;
+	}
+	
+	for(i=0; i< cf.answer1.value.length; i++)/* to fix bug 26920 */
+	{
+		if( isValidChar_space(cf.answer1.value.charCodeAt(i))==false )
+		{
+			alert(bh_invalid_answer);
+			return false;
+		}
+	}
+	for(i=0; i< cf.answer2.value.length; i++)/* to fix bug 26920 */
+	{
+		if( isValidChar_space(cf.answer2.value.charCodeAt(i))==false )
+		{
+			alert(bh_invalid_answer);
+			return false;
+		}
+	}
+
+	cf.submit();
+
+	return true;
+}
+
+</script>
+<input type="hidden" name="hidden_enable_recovery" value="1" />
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+			<h2 id="message"><script>document.write(bh_admin_account);</script></h2>
+			<p><script>document.write(bh_account_discription);</script></p>
+			<div id="security">
+			<table cellpadding="2" cellspacing="0" border="0">
+			<TR>
+				<TD nowrap><script>document.write(bh_pppoe_login_name);</script></TD>
+				<TD nowrap><% cfg_get("http_loginname") %></TD>
+			</TR>
+			<TR>
+				<TD nowrap><script>document.write(bh_new_password);</script></TD>
+				<TD nowrap><input type="password" autocomplete="off" size="20" name="sysNewPasswd" id="sys_new_passwd" onFocus="this.select();" ></TD>
+			</TR>
+			<TR>
+				<TD nowrap><script>document.write(bh_passwd_repas);</script></TD>
+				<TD nowrap><input type="password" autocomplete="off" size="20" name="sysConfirmPasswd" id="sys_confirm_passwd" onFocus="this.select();" ></TD>
+			</TR>
+			</table>
+			<table cellpadding="2" cellspacing="0" border="0">
+			<TR>
+				<TD nowrap><script>document.write(bh_security_question_1+"*:");</script></TD>
+				<TD nowrap align="left">
+					<select  name="question1" id="question1" size=1 >
+						<option value="0" selected><script>document.write(bh_select_a_question);</script></option>
+						<option value="1"><script>document.write(bh_quest1_1);</script></option>
+						<option value="2"><script>document.write(bh_quest1_2);</script></option>
+                		<option value="3"><script>document.write(bh_quest1_3);</script></option>
+                		<option value="4"><script>document.write(bh_quest1_4);</script></option>
+                		<option value="5"><script>document.write(bh_quest1_5);</script></option>
+                		<option value="6"><script>document.write(bh_quest1_6);</script></option>
+                		<option value="7"><script>document.write(bh_quest1_7);</script></option>
+                		<option value="8"><script>document.write(bh_quest1_8);</script></option>
+                		<option value="9"><script>document.write(bh_quest1_9);</script></option>
+					</select>
+				</TD>
+			</TR>
+			<TR>
+				<TD nowrap align="right"><script>document.write(bh_answer+"*:");</script></TD>
+				<TD nowrap  align="left"><input type="text" autocomplete="off" maxLength="64" size="30" name="answer1" id="answer1"  onFocus="this.select();" ></TD>
+			</TR>
+			<TR>
+				<TD nowrap align="right"><script>document.write(bh_security_question_2+"*:");</script></TD>
+				<TD nowrap align="left">
+					<select  name="question2" id="question2" size=1>
+						<option value="0" selected><script>document.write(bh_select_a_question);</script></option>
+                		<option value="1"><script>document.write(bh_quest2_1);</script></option>
+                		<option value="2"><script>document.write(bh_quest2_2);</script></option>
+                		<option value="3"><script>document.write(bh_quest2_3);</script></option>
+                		<option value="4"><script>document.write(bh_quest2_4);</script></option>
+                		<option value="5"><script>document.write(bh_quest2_5);</script></option>
+                		<option value="6"><script>document.write(bh_quest2_6);</script></option>
+                		<option value="7"><script>document.write(bh_quest2_7);</script></option>
+                		<option value="8"><script>document.write(bh_quest2_8);</script></option>
+					</select>
+				</TD>
+			</TR>
+			<TR>
+				<TD nowrap align="right"><script>document.write(bh_answer+"*:");</script></TD>
+				<TD nowrap  align="left"><input type="text" autocomplete="off" maxLength="64" size="30" name="answer2" id="answer2" onFocus="this.select();" ></TD>
+			</TR>
+			<TR>
+        		<TD nowrap align="right"><script>document.write(bh_required_information);</script></TD>
+        		<TD nowrap  align="left"></TD>
+			</TR>
+			</table>
+			</div>
+	</div>
+	
+	<div id="allBtns_div" class="wizard_buttons_div" align="right">
+		<script>document.write('<input type="button" name="Next" id="next" class="purple_short_btn" value="'+bh_next_mark+'" onclick="checkpasswd(document.forms[0])">');</script>
+	</div>
+	
+
+</div>
+
+</form>
+</body>
+
+</html>

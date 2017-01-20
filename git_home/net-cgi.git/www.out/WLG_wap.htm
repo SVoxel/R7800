@@ -1,0 +1,411 @@
+<% http_header("style/form.css", "/funcs.js", "/basic.js", "/wlan_adv.js", "/advanced.js") %>
+<% body_header("_wladv", "ap_waiting.htm", "adv_wl_ap_mode") %>
+<div class="page_title">$ap_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'WLG_wap.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onClick="return checkap(document.forms[0]);"></TD>');
+else
+	document.write(' <TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="button" name="Apply" id="apply" value="$apply_mark" disabled></TD>');
+</script>       
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<script>
+//var gui_region="<% cfg_get("GUI_Region") %>";
+/*var netgear_region="<% get_firmware_region() %>";
+if(netgear_region == "")
+	netgear_region = "WW";*/
+//var netgear_region=top.netgear_region;
+var country="<% cfg_get("wl_country") %>";
+var wla_channel="<% cfg_get("wla_channel") %>";
+var wps_progress_status="<% wps_process_status() %>";
+
+//wireless schedule
+var ntp_updated = "<% access_file("/tmp/ntp_updated") %>";
+//var enable_schedule = "<% cfg_get("wladv_schedule_enable") %>";// b/g/n
+//var enalbe_shcedule_an = "<% cfg_get("wladv_schedule_enable_a") %>";// a/n
+
+// b/g/n
+var old_wds_endis_fun="<% cfg_get("wds_endis_fun") %>";
+var old_wla_wds_endis_fun="<% cfg_get("wla_wds_endis_fun") %>";
+var old_wds_repeater_basic="<% cfg_get("wds_repeater_basic") %>";
+var old_endis_wl_radio='<% enable_ap_orNot("bgn") %>';
+var old_endis_ssid_broadcast='<% cfg_get("endis_ssid_broadcast") %>';
+var security_mode='<% cfg_get("wl_sectype") %>';
+var wlan_adv_wpspin="<% pin_num() %>";
+var wlendis_pin='<% cfg_get("endis_pin") %>';
+var wlendis_pin_tmp='<% cfg_get("wps_lock_down") %>';
+var wps_status='<% cfg_get("wps_status") %>';
+var wla_wps_status='<% cfg_get("wla_wps_status") %>';
+var endis_wl_wmm="<% cfg_get("endis_wl_wmm") %>";
+
+// a/n
+var old_endis_wla_radio='<% enable_ap_orNot("an") %>';
+var old_wla_endis_ssid_broadcast='<% cfg_get("wla_endis_ssid_broadcast") %>';
+var security_an_mode='<% cfg_get("wla_sectype") %>';
+var endis_wla_wmm="<% cfg_get("endis_wla_wmm") %>";
+var an_router_flag = parent.an_router_flag;
+var qos_router_flag = parent.qos_router_flag;
+var transmit_router_flag = parent.transmit_router_flag;
+var guest_router_flag=parent.guest_router_flag;
+var apmode_flag=parent.apmode_flag;
+
+var enable_ap_flag="<% cfg_get("ap_mode") %>";//bug 22880 according to the page 128 of spec 2.0,add AP mode
+var dyn_get_ip_flag="<% cfg_get("ap_ether_ip_assign") %>";
+//var dyn_get_dns_flag="<% cfg_get("ap_ether_dns_assign") %>";
+
+function ap_display()
+{
+	var cf=document.forms[0];
+	if(cf.enable_apmode.checked == true)
+	{
+		document.getElementById("ap_dyn_getip").style.display="";
+		document.getElementById("ap_text_id1").style.display="";
+		if(an_router_flag==1)
+		{
+			if((old_endis_wl_radio==1 && security_mode==1) || (old_endis_wla_radio==1 && security_an_mode==1))
+			{
+				document.getElementById("ap_text_id1_1").style.display="none";
+				document.getElementById("ap_text_id1_2").style.display="none";
+				document.getElementById("ap_text_id1_11").style.display="none";
+				document.getElementById("ap_text_id1_21").style.display="none";
+				document.getElementById("ap_text_id1_211").style.display="";
+			}
+			else
+			{
+				document.getElementById("ap_text_id1_1").style.display="";
+				document.getElementById("ap_text_id1_2").style.display="";
+				document.getElementById("ap_text_id1_11").style.display="";
+				document.getElementById("ap_text_id1_21").style.display="";
+				document.getElementById("ap_text_id1_211").style.display="none";
+			}
+		}
+		else
+		{
+			if(old_endis_wl_radio==1 && security_mode==1)
+			{
+				document.getElementById("ap_text_id1_1").style.display="none";
+				document.getElementById("ap_text_id1_2").style.display="none";
+				document.getElementById("ap_text_id1_11").style.display="none";
+				document.getElementById("ap_text_id1_21").style.display="none";
+				document.getElementById("ap_text_id1_211").style.display="";
+			}
+			else
+			{
+				document.getElementById("ap_text_id1_1").style.display="";
+				document.getElementById("ap_text_id1_2").style.display="";
+				document.getElementById("ap_text_id1_11").style.display="none";
+				document.getElementById("ap_text_id1_21").style.display="none";
+				document.getElementById("ap_text_id1_211").style.display="none";
+			}
+		}
+		document.getElementById("ap_text_id1_3").style.display="";
+		document.getElementById("ap_text_id2").style.display="";
+		document.getElementById("ap_text_id3").style.display="";
+		document.getElementById("ap_text_id4").style.display="";
+		document.getElementById("ap_radio_1").style.display="";
+		document.getElementById("ap_radio_2").style.display="";
+		document.getElementById("ap_text_id5").style.display="";		
+	}
+	else
+	{
+		//cf.enable_fixed_ip_setting.checked = false;
+		document.getElementById("ap_dyn_getip").style.display="none";
+		document.getElementById("ap_text_id1").style.display="none";
+		document.getElementById("ap_text_id1_1").style.display="none";
+		document.getElementById("ap_text_id1_2").style.display="none";
+		document.getElementById("ap_text_id1_11").style.display="none";
+		document.getElementById("ap_text_id1_21").style.display="none";
+		document.getElementById("ap_text_id1_211").style.display="none";
+		document.getElementById("ap_text_id1_3").style.display="none";
+		document.getElementById("ap_text_id2").style.display="none";
+		document.getElementById("ap_text_id3").style.display="none";
+		document.getElementById("ap_text_id4").style.display="none";
+		document.getElementById("ap_radio_1").style.display="none";
+		document.getElementById("ap_radio_2").style.display="none";
+		document.getElementById("ap_text_id5").style.display="none";
+	}
+	
+	ap_notshow()
+}
+
+function ap_show()
+{
+		var cf=document.forms[0];
+		
+		document.getElementById("ap_addr").style.display="";
+		document.getElementById("ap_mask").style.display="";
+		document.getElementById("ap_daddr").style.display="";
+		document.getElementById("ap_pdaddr").style.display="";
+		document.getElementById("ap_gateway").style.display="";
+}
+
+function ap_notshow()
+{
+		var cf=document.forms[0];
+		
+		document.getElementById("ap_addr").style.display="none";
+		document.getElementById("ap_mask").style.display="none";
+		document.getElementById("ap_daddr").style.display="none";
+		document.getElementById("ap_pdaddr").style.display="none";
+		document.getElementById("ap_gateway").style.display="none";
+}
+
+function loadvalue()
+{
+	var form=document.forms[0];
+
+	top.enable_ap_flag="<% cfg_get("ap_mode") %>";
+	//menu_color_change('wlap');
+	
+	top.enabled_wps="<% wps_menu() %>";
+	top.enabled_wds="<% wds_enable() %>";
+		//top.enabled_wds=1;  //ma de zhongyu
+		
+		if( top.location.href.indexOf("adv_index.htm") != -1 )
+					menu_color_change('wlap');
+		else //bug23925 in basic page: if the radio is Off, the wireless button will link to wladv page.
+		{
+			top.endis_wl_radio=old_endis_wl_radio;
+			top.endis_wla_radio=old_endis_wla_radio;
+			basic_menu_color_change('wireless');
+		} 
+		
+	if(enable_ap_flag == '1')
+		form.enable_apmode.checked = true;
+	else
+		form.enable_apmode.checked = false;
+	ap_display();
+
+	/* fix bug32079,when user has checked the 'use the fixed ip' radio,the wireless AP page should show "Use fixed IP Address" not show "Get dynamically from existing router"
+	*/
+	if(dyn_get_ip_flag == '0')
+	{
+		form.enable_fixed_ip_setting[1].checked = true;
+		ap_show();
+	}
+	else
+		form.enable_fixed_ip_setting[1].checked = false;
+
+	//setIP(form);
+	var apmode_get_ip="<% ap_mode_ip() %>";
+	
+	if (apmode_get_ip!="")
+	{
+		if(apmode_get_ip=="0.0.0.0")
+			form.WPethr1.value=form.WPethr2.value=form.WPethr3.value=form.WPethr4.value="";
+		else
+		{
+			var ip_array=apmode_get_ip.split('.');
+			form.WPethr1.value=ip_array[0];
+			form.WPethr2.value=ip_array[1];
+			form.WPethr3.value=ip_array[2];
+			form.WPethr4.value=ip_array[3];
+		}
+	}
+	var apmode_get_subnet="<% ap_mode_netmask() %>";
+	if (apmode_get_subnet!="")
+	{
+		if(apmode_get_subnet=="0.0.0.0")
+			form.WMask1.value=form.WMask2.value=form.WMask3.value=form.WMask4.value=""; 
+		else
+		{
+			var mask_array=apmode_get_subnet.split('.');
+			form.WMask1.value=mask_array[0];
+			form.WMask2.value=mask_array[1];	
+			form.WMask3.value=mask_array[2];
+			form.WMask4.value=mask_array[3]; 
+		}
+	}
+	var apmode_get_gateway="<% ap_mode_gateway() %>";
+	if (apmode_get_gateway!="")
+	{
+		if(apmode_get_gateway=="0.0.0.0")
+		{
+			form.WGateway1.value=form.WGateway2.value=form.WGateway3.value=form.WGateway4.value="";
+		}
+		else
+		{
+			var gtw_array=apmode_get_gateway.split('.');
+			form.WGateway1.value=gtw_array[0];
+			form.WGateway2.value=gtw_array[1];
+			form.WGateway3.value=gtw_array[2];
+			form.WGateway4.value=gtw_array[3];	
+		}
+	}
+	//setDNS(form);
+	var apmode_get_dns1="<% ap_ether_dns() %>";
+	if (apmode_get_dns1!="" && apmode_get_dns1.indexOf(":")==-1)
+	{
+		if(apmode_get_dns1=="0.0.0.0")
+		form.DAddr1.value=form.DAddr2.value=form.DAddr3.value=form.DAddr4.value="";
+		else
+		{
+			var dns1_array=apmode_get_dns1.split('.');
+			form.DAddr1.value=dns1_array[0];
+			form.DAddr2.value=dns1_array[1];
+			form.DAddr3.value=dns1_array[2];
+			form.DAddr4.value=dns1_array[3];
+		}
+	}
+	var apmode_get_dns2="<% ap_ether_dns("1") %>";
+	if (apmode_get_dns2!="" && apmode_get_dns2.indexOf(":")==-1)
+	{
+		if(apmode_get_dns2=="0.0.0.0")
+		form.PDAddr1.value=form.PDAddr2.value=form.PDAddr3.value=form.PDAddr4.value="";
+		else
+		{
+			var dns2_array=apmode_get_dns2.split('.');
+			form.PDAddr1.value=dns2_array[0];
+			form.PDAddr2.value=dns2_array[1];
+			form.PDAddr3.value=dns2_array[2];
+			form.PDAddr4.value=dns2_array[3];
+		}
+	}
+}
+</script>
+<input type="hidden" name="hid_enable_apmode">
+<input type="hidden" name="hid_dyn_get_ip">
+<!--input type="hidden" name="hid_dyn_get_dns"-->
+<input type="hidden" name="hid_ap_ipaddr">
+<input type="hidden" name="hid_ap_subnet">
+<input type="hidden" name="hid_ap_gateway">
+<input type="hidden" name="ap_dnsaddr1">
+<input type="hidden" name="ap_dnsaddr2">
+
+<TR><TD nowrap colspan=4><b>&nbsp;$ap_mode_descript</b></TD></TR><!--$ap_descript-->
+<TR><td colspan=4>&nbsp;&nbsp;</td></TR>
+
+<TR id=apmode_checkbox>
+	<TD nowrap colspan=4 >
+	<input type="checkbox" name="enable_apmode" id="enable_apmode" onclick="ap_display()">$enable_ap_mode
+	</TD><!--$able_ap_mode-->
+</TR>
+<TR>
+<TD nowrap colspan=4 >
+<div class="ap_css">
+</div>
+</TD>
+</TR>
+
+<TR><td colspan=4>&nbsp;&nbsp;</td></TR>
+<TR id=ap_text_id1 style="display:none">
+	<TD>&nbsp;</TD><TD colspan=3>$ap_set</TD> <!--<b>$ap_instrut</b>-->
+</TR>
+<TR id=ap_text_id1_1 style="display:none">
+	<TD>&nbsp;</TD><TD colspan=3><script>if(an_router_flag==1) document.write("2.4GHz");</script> $ap_wireless_name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<% cfg_get_ssid_html("wl_ssid") %></TD>
+</TR>
+<TR id=ap_text_id1_11 style="display:none">
+	<TD>&nbsp;</TD><TD  colspan=3>5GHz $ap_wireless_name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<% cfg_get_ssid_html("wla_ssid") %></TD>
+</TR>
+<TR id=ap_text_id1_2 style="display:none">
+	<TD>&nbsp;</TD><TD  colspan=3><script>if(an_router_flag==1) document.write("2.4GHz");</script> $ap_wireless_passwd &nbsp;<% passphrase_bg_msg() %></TD>
+</TR>
+<TR id=ap_text_id1_21 style="display:none">
+        <TD>&nbsp;</TD><TD  colspan=3>5GHz $ap_wireless_passwd &nbsp;&nbsp;&nbsp;&nbsp;<% passphrase_ag_msg() %></TD>
+</TR>
+<TR id=ap_text_id1_211 style="display:none">
+        <TD>&nbsp;</TD><TD  colspan=3>$warning_head  $no_security</TD>
+</TR>
+<TR id=ap_text_id1_3 style="display:none">
+	<TD>&nbsp;</TD><TD colspan=3>$ap_wireless_change</TD>
+</TR>
+<TR><td colspan=4>&nbsp;&nbsp;</td></TR>
+<TR id=ap_text_id2 style="display:none">
+	<TD>&nbsp;</TD><TD  colspan=3>$ap_common</TD> <!--$ap_step1-->
+</TR>
+<TR><td colspan=4>&nbsp;&nbsp;</td></TR>
+<TR id=ap_text_id3 style="display:none">
+	<TD>&nbsp;</TD><TD colspan=3><b>$ap_add</b></TD><!--$ap_step2-->
+</TR>
+<TR><td colspan=4>&nbsp;&nbsp;</td></TR>
+<TR id=ap_text_id4 style="display:none">
+	<TD>&nbsp;</TD><TD>&nbsp;</TD><TD colspan=2>$ap_connect</TD>
+</TR>
+<TR><td colspan=4>&nbsp;&nbsp;</td></TR>
+<!--TR id=ap_dyn_getip>
+	<TD nowrap colspan=2 ><img src=/spacer.gif width=20 height=12 border=0>
+		<input type="checkbox" name="dyn_get_ip" checked="false" onclick="ap_display()">$ap_able_fixed_ip
+	</TD>
+</TR-->
+<TR id=ap_dyn_getip style="display:none">
+	<TD width=5%>&nbsp;</TD><TD width=5%>&nbsp;</TD><TD colspan=3>$ap_IP</TD>
+</TR>
+<TR id=ap_radio_1 style="display:none">
+	<TD>&nbsp;</TD><TD>&nbsp;</TD><TD nowrap colspan=2>
+	<input type="radio" name="enable_fixed_ip_setting" id="enable_dynamic_ip_setting" checked value="1" onclick="ap_notshow()">$dyn_get_dns
+	</TD>
+</TR>
+<TR id=ap_radio_2 style="display:none">
+	<TD>&nbsp;</TD><TD>&nbsp;</TD><TD nowrap colspan=2>
+	<input type="radio" name="enable_fixed_ip_setting" id="enable_fixed_ip_setting" value="0" onclick="ap_show()">$fix_dns
+	</TD>
+</TR>
+<TR id=ap_addr style="display:none">
+	<TD>&nbsp;</TD><TD>&nbsp;</TD>
+	<TD nowrap>$wds_ipaddr</TD>
+	<TD nowrap align=right>
+		<input type="text" name="WPethr1" id="wan_ipaddress1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+		<input type="text" name="WPethr2" id="wan_ipaddress2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+		<input type="text" name="WPethr3" id="wan_ipaddress3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+		<input type="text" name="WPethr4" id="wan_ipaddress4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR id=ap_mask style="display:none">
+	<TD>&nbsp;</TD><TD>&nbsp;</TD>
+	<TD nowrap>$lan_mark_subnet</TD>		
+	<TD nowrap align=right>
+		<input type="text" name="WMask1" id="wan_netmask1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+		<input type="text" name="WMask2" id="wan_netmask2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+		<input type="text" name="WMask3" id="wan_netmask3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+		<input type="text" name="WMask4" id="wan_netmask4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD> 
+</TR>
+<TR id=ap_gateway style="display:none">
+	<TD>&nbsp;</TD><TD>&nbsp;</TD>
+	<TD nowrap>$lan_mark_gateway</TD>		
+	<TD nowrap align=right>
+		<input type="text" name="WGateway1" id="wan_gateway1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+		<input type="text" name="WGateway2" id="wan_gateway2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+		<input type="text" name="WGateway3" id="wan_gateway3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+		<input type="text" name="WGateway4" id="wan_gateway4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR id=ap_daddr style="display:none">
+	<TD>&nbsp;</TD><TD>&nbsp;</TD>
+	<TD nowrap>$basic_int_primary_dns</TD>
+	<TD nowrap align=right>
+	<input type="text" name="DAddr1" id="primary_dns_address1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="DAddr2" id="primary_dns_address2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="DAddr3" id="primary_dns_address3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="DAddr4" id="primary_dns_address4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR id=ap_pdaddr style="display:none">
+	<TD>&nbsp;</TD><TD>&nbsp;</TD>
+	<TD nowrap>$basic_int_second_dns</TD>
+	<TD nowrap align=right>
+	<input type="text" name="PDAddr1" id="second_dns_address1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="PDAddr2" id="second_dns_address2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="PDAddr3" id="second_dns_address3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="PDAddr4" id="second_dns_address4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+
+<TR><td colspan=4>&nbsp;&nbsp;</td></TR>
+<TR id=ap_text_id5 style="display:none">
+	<TD>&nbsp;</TD><TD  colspan=3>$ap_work</TD>
+</TR>
+</TABLE>
+</div>
+<% help_box("0","_apmode") %>
+</FORM>
+</BODY>
+</HTML>

@@ -1,0 +1,121 @@
+#!/bin/sh
+
+. ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+#
+# Environment config
+#
+BINARY="sbsaved"
+NAME=${BINARY}
+DISPLAY_NAME="Persistence Daemon"
+STOP_IS_BLOCKING=yes
+
+#
+# config
+#
+# path to binary
+SAVED_BIN="${BINDIR}/${BINARY}"
+
+# path to pid file
+PIDFILE="${RUNDIR}/${BINARY}.pid"
+
+# path to nodedb save file
+SAVEFILE="/usr/lib/sbsaved/sb.redis"
+
+# Redis server port
+PORT=6379
+
+# event persistence settings
+STATSFILE="${RUNDIR}/stats.redis"
+STATSTREE='eventdb:*'
+
+# Format the command line parameters
+CMDLINE_OPTS="--daemon -o ${PORT} -p ${PIDFILE} -f ${SAVEFILE} --persist-data ${STATSFILE} ${STATSTREE}"
+
+
+#
+# Functions
+#
+
+set_default_max_zone_id() {
+	. $STREAMBOOST_USER_CFG
+
+	# note, zone ids are 0-based.
+	# default to 3 but override based on system and user config
+	local max=3
+
+	if [ -n "${max_zone_id}" ]; then
+		max="${max_zone_id}"
+	elif nss_qdisc_is_installed && [ "${nss_qdisc}" = "yes" ]; then
+		max=1
+	fi
+
+	redis-cli set "settings:max_zone_id" "${max}" >/dev/null
+}
+
+set_defaults() {
+	# setup sbsaved config for nodedb
+	redis-cli sadd settings:saved:channels "nodeevent.*"
+	redis-cli sadd settings:saved:keypats "nodedb:mac:%s:type"
+	redis-cli sadd settings:saved:keypats "nodedb:mac:%s:detection_finished"
+	redis-cli sadd settings:saved:keypats "nodedb:mac:%s:uidata"
+	redis-cli sadd settings:saved:keypats "nodedb:mac:%s:zone"
+	redis-cli set settings:saved:keyset "nodedb:nodeset"
+
+	# check zone config.  if any values are missing, supply defaults.
+	if [ $(redis-cli exists "settings:max_zone_id") = "0" ]; then
+		set_default_max_zone_id
+	fi
+	# a default zone config is required
+	local zkey="settings:zone:0"
+	if [ $(redis-cli exists "${zkey}") = "0" ]; then
+		redis-cli hset "${zkey}" "weight:up" 10000
+		redis-cli hset "${zkey}" "weight:down" 10000
+	else
+		if [ $(redis-cli hexists "${zkey}" "weight:up") = "0" ]; then
+			redis-cli hset "${zkey}" "weight:up" 10000
+		fi
+		if [ $(redis-cli hexists "${zkey}" "weight:down") = "0" ]; then
+			redis-cli hset "${zkey}" "weight:down" 10000
+		fi
+	fi
+}
+
+start() {
+	# restore generic data to redis
+	sh /etc/appflow/persistence.sh restore
+
+	# add default values to redis
+	set_defaults
+
+	# restore nodedb to redis
+	[ -e "${SAVEFILE}" ] && redis-cli --pipe < "${SAVEFILE}"
+
+	[ ! -d "${RUNDIR}" ] && {
+		mkdir ${RUNDIR}
+	}
+
+	[ -x ${SAVED_BIN} ] || {
+		echo "${BINARY} not found: ${SAVED_BIN}"
+		exit 2
+	}
+
+	echo -n "Starting ${NAME}: "
+	${SAVED_BIN} ${CMDLINE_OPTS} "$@"
+	retval=$?
+	echo
+	return ${retval}
+}
+
+boot() {
+	mkdir -p /usr/lib/sbsaved
+	start "$@"
+}
+
+stop() {
+	[ -f "${PIDFILE}" ] && sh /etc/appflow/persistence.sh persist
+	default_stop
+}
+
+action "$@"
+exit $?

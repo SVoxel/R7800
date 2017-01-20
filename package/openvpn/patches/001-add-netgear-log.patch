@@ -1,0 +1,44 @@
+--- openvpn-2.3.2/src/openvpn/ssl-old.c	2014-03-27 03:42:57.839799291 +0800
++++ openvpn-2.3.2/src/openvpn/ssl.c	2014-03-27 03:39:36.879799208 +0800
+@@ -2536,6 +2536,7 @@
+   tls_clear_error();
+   ks->state = S_ERROR;
+   msg (D_TLS_ERRORS, "TLS Error: TLS handshake failed");
++  syslog(4, "[OpenVPN, connection fail] from remote IP address: %s", inet_ntoa(ks->remote_addr.dest.addr.in4.sin_addr));
+   INCR_ERROR;
+   gc_free (&gc);
+   return false;
+
+--- openvpn-2.3.2/src/openvpn/push-old.c	2014-03-27 03:41:00.099793844 +0800
++++ openvpn-2.3.2/src/openvpn/push.c	2014-03-27 03:35:21.129799287 +0800
+@@ -242,7 +242,7 @@
+   bool push_sent = false;
+ 
+   msg( M_INFO, "send_push_reply(): safe_cap=%d", safe_cap );
+-
++  syslog(4, "[OpenVPN, connection successfully] from remote IP address: %s", inet_ntoa(c->c2.to_link_addr->dest.addr.in4.sin_addr));
+   buf_printf (&buf, "%s", cmd);
+ 
+   if ( c->c2.push_ifconfig_ipv6_defined )
+
+--- openvpn-2.3.2/src/openvpn/forward-old.c	2014-03-27 03:41:27.209809156 +0800
++++ openvpn-2.3.2/src/openvpn/forward.c	2014-03-27 03:50:17.699799522 +0800
+@@ -535,6 +535,9 @@
+ 
+   /* restart if ping not received */
+   check_ping_restart (c);
++  if(c->sig->signal_received == SIGUSR1)
++	  /* for udp connection drop */
++	  syslog(4, "[OpenVPN, connection drop] from remote IP address: %s", inet_ntoa(c->c2.to_link_addr->dest.addr.in4.sin_addr));
+   if (c->sig->signal_received)
+     return;
+ 
+@@ -678,6 +681,8 @@
+ 
+   if (socket_connection_reset (c->c2.link_socket, status))
+     {
++	  /* for tcp connection drop */ 
++	  syslog(4, "[OpenVPN, connection drop] from remote IP address: %s", inet_ntoa(c->c2.to_link_addr->dest.addr.in4.sin_addr));
+ #if PORT_SHARE
+       if (port_share && socket_foreign_protocol_detected (c->c2.link_socket))
+ 	{

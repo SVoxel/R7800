@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="/style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="/script/brs_hijack.js"></script>
+<% hijack_language() %>
+<script language="javascript" type="text/javascript">
+var do_fullscan = "1";
+var checking_result = "<% detwan_status() %>";
+</script>
+</head>
+<body>
+<% form_submit("apply", "BRS_04_applySettings.html", "hijack_dhcp") %>
+
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+			<h1><script>document.write(bh_quick_scan);</script></h1>
+		
+		<div class="waiting_img_div" align="center">
+			<img src="image/wait30.gif" alt="waiting" />
+		</div>
+		
+	</div>
+	<script>
+if( "<% cfg_get("wizard_debug") %>" == "1")
+{
+	document.write('<a href="BRS_quick_scan_failed.html" class="ui-corner-all">quick scan failed</a><br>');
+	document.write('<a href="BRS_04_vdsl_applySettings.html" class="ui-corner-all">DHCP</a><br>');
+	document.write('<a href="BRS_03A_B_vdsl_pppoe.html" class="ui-corner-all">PPPoE</a><br>');
+	document.write('<a href="BRS_03A_B_pppoa.html" class="ui-corner-all">PPPoA</a><br>');
+	document.write('<a href="BRS_03A_G_vlan_id.html" class="ui-corner-all">VLAN ID</a><br>');
+}	
+</script>
+</div>
+<iframe name="check_frame" src="BRS_03A_hid_checking.html" allowtransparency="true" scrolling="no" frameborder="0" style="display:none"></iframe>
+</form>
+</body>
+
+</html>

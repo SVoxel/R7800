@@ -1,0 +1,144 @@
+<% http_header("style/form.css", "/funcs.js", "/lan.js", "/hdd.js") %>
+<style type="text/css">
+<!--
+A {
+	COLOR: black; TEXT-DECORATION: underline
+}
+-->
+</style>
+<% body_header("_XXXXX", "hdd_usr_setup.htm", "setup_usr") %>
+<div class="page_title">$user_setup</div>
+<!--div class="fix_button"-->
+<div style="width: 100%; height: 50px; position: absolute; top: 40px; left: 0px;  background: url(/image/oneline.gif)0 -20px repeat-x;">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+        <TD align=center colSpan=2>
+	    <input class="cancel_bt" type='button' name="Cancel" value='$cancel_mark' onClick='location.href="hdd_usr_setup.htm";'>&nbsp;&nbsp;
+        <input class="apply_bt" type="submit" name="Apply" value="$apply_mark" onClick="return user_setup(document.forms[0])">
+        </TD>
+</TR>
+<TR> <TD align=right colSpan=2>$click <a  onclick='location.href="PWD_password.htm"; click_direct("admin","passwd");'><b style>$here</b></a> $change_ad_pw&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD></TR><!--href="PWD_password.htm";-->
+</TABLE>
+</div>
+<!--div id="main" class="main_top_button"--> 
+<div id="main" style="width: 100%; overflow: auto; position: absolute; top: 78px; left: 0px; bottom: 30px;"> 
+<% table_header() %> 
+<% refresh_timestamp("shname_add", "shname_edit") %>
+<script>
+<% userhdd_items_xss() %>
+<% save_timestamp("setup_usr","shname_editnum","shname_del") %>
+var ts='<% cfg_get("setup_usr") %>';
+
+function loadvalue()
+{
+
+}
+
+function isarrayfull(array_num)
+{
+	if (array_num == 4)
+	{
+		alert("the array num is full, could't add another one");
+		return false;
+	}
+	else
+	{	
+		location.href="hdd_add_user_wait.htm";
+	}
+}
+
+function click_direct(str1,str2)
+{
+   var sub_name= str1+"_sub";
+    if(top.document.getElementById(sub_name).style.display == "none")
+	parent.open_or_close_sub(str1);
+	
+	parent.click_adv_action(str2);
+}
+</script>
+<input type="hidden" name="select_edit">
+<input type="hidden" name="select_del">
+
+<TR>
+	<TD nowrap colspan=2>
+	<TABLE class=tables border=0 cellpadding=2 cellspacing=0 width=100%>
+	<TR class=table_header>
+		<TD nowrap align=center>&nbsp;</TD>
+		<TD nowrap align=center><span class="subhead">#</span></TD>
+		<TD nowrap align=center><span class="subhead">$ddns_username</span></TD>
+		<TD nowrap align=center><span class="subhead">$ddns_passwd</span></TD>
+	</TR>
+<script>
+
+	/*for admin item*/
+		var admin = '<% cfg_sed_xss("http_username") %>';
+		var password = '<% cfg_sed_xss("http_passwd") %>';
+		
+		document.write("<TR class=\"odd_line\">");
+		document.write('<TD nowrap align=center><input type="radio" disabled name="name_Select" value="0">'); 
+		document.write('</TD><TD nowrap align=center><span class="subhead">'+eval(1)+'</span></TD>');
+		document.write('<TD nowrap align=center> '+admin+'</TD><TD nowrap align=center> '+password+'</TD></TR>');
+		/*end for item one*/
+		
+if (array_num > 0)
+{
+	for(i=1;i<=array_num;i++)
+	{
+		var str = eval ( 'userhddArray' + i );
+		var each_info=str.split(' ');
+	
+		if(each_info[0]!="")
+		{
+		    if((i+1)%2== 0 )
+                    document.write("<TR class=\"even_line\">");
+               else
+                    document.write("<TR class=\"odd_line\">");
+			if(i==1)
+			document.write('<TD nowrap align=center><input type="radio" name="name_Select" value="'+i+'">');	
+			else
+			document.write('<TD nowrap align=center><input type="radio" name="name_Select" value="'+i+'">');
+			document.write('</TD><TD nowrap align=center><span class="subhead">'+eval(i+1)+'</span></TD>');
+			document.write('<TD nowrap align=center> '+each_info[0]+'</TD><TD nowrap align=center> '+each_info[1]+'</TD></TR>');
+		}
+		else
+		{
+		  /*  if( i%2== 0 )
+                    document.write("<TR class=\"even_line\">");
+               else
+                    document.write("<TR class=\"odd_line\">");
+			document.write('<TD nowrap align=center><input type="radio" name="MacSelect" value="'+i+'"></TD><TD nowrap align=center> &lt;unknown&gt;</TD><TD nowrap align=center> '+each_info[1]+'</TD></TR>');*/
+		}
+	}
+}		
+</script>
+	</TABLE>
+	</TD>
+</TR>
+
+<TR>
+	<TD nowrap colspan=2 align=center>
+	<input class="add_bt"  type="submit" name="Add" value="$add_mark" onClick="isarrayfull(array_num);return false;">
+	<input class="edit_bt" type="submit" name="Edit" value="$edit_mark" onClick="return hdd_user_editnum(document.forms[0]);">
+	<input class="delete_bt" type="submit" name="Delete" value="$delete_mark" onClick="return hdd_usr_del( document.forms[0]);">
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_user_setup") %>
+</FORM>
+</BODY>
+</HTML>
+
+
+
+
+
+
+
+
+
+
+
+
+

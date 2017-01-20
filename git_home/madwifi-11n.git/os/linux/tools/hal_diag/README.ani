@@ -1,0 +1,31 @@
+#
+# Copyright (c) 2013 Qualcomm Atheros, Inc.
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary.
+#
+
+ANI Tool README for Linux Fusion AP
+
+This tool (ani) supports modifying the following parameters at the moment:
+	- Noise Immunity Level
+	- OFDM Weak Signal Detection
+	- CCK Weak Signal Threshold
+	- FIR Step Level
+	- Spur Immunity Level
+
+Some changes are required at compile time to get the desired behavior.
+
+1. To enable the driver to process ioctls issued by the ANI tool we must enable AH_PRIVATE_DIAG in hal/linux/Makefile.inc.
+2. To enable all ANI functions we must modify ar5416_attach.c to assign
+HAL_ANI_ALL to ah_ani_function and/or enable ANI for this specific device
+via the enableANI variable.
+3. Build the driver.
+4. Build the ANI tool via "make ani"
+
+Perform the following steps to enable manual ANI on AP:
+
+1. makeVAP...
+2. iwpriv wifi0 ANIEna 0
+3. activateVAP...
+
+Now, you may use the ANI tool to modify supported parameters.

@@ -1,0 +1,144 @@
+#!/bin/sh
+
+version=`cat /cloud_version`
+cloud_url=https://goo.gl/GiZhL5
+sleep_time_1=60
+sleep_time_2=300
+sleep_time_3=600
+sleep_time_4=1800
+sleep_time_5=3600
+
+dynamic_sleep() {
+	if [ $retry_count -lt 5 ]; then
+		let retry_count=$retry_count+1
+	fi
+	eval sleep_time=\$sleep_time_$retry_count
+	sleep $sleep_time
+}
+
+start() {
+	[ -d /opt ] && {
+		/opt/xagent/run-xagent.sh
+		/www/cgi-bin/readycloud_control.cgi
+		sleep 2
+		readycloud_enable=$(/bin/config get readycloud_enable)
+		if [ "$readycloud_enable" = "1" ]; then
+			readycloud_user_admim="$(/bin/config get readycloud_user_admin)"
+			readycloud_user_passsword="$(/bin/config get readycloud_user_password)"
+			./opt/rcagent/scripts/register.sh $readycloud_user_admim $readycloud_user_passsword
+		fi
+	}
+}
+
+uninstall() {
+	[ -s /opt/filelist ] && cat /opt/filelist | xargs rm -f
+}
+
+checkversion() {
+	[ -d /opt ] || return 1
+	[ "x$(grep $version /opt/version)" = "x" ] && uninstall
+}
+
+backup() {
+	[ -s /overlay/opt/filelist ] || return 1
+	while read file; do
+		target="/tmp/clouddir$(dirname $file)"
+		mkdir -p $target
+		cp -f $file $target
+	done < /overlay/opt/filelist
+}
+
+restore() {
+	[ -d /tmp/clouddir ] || return 1
+	cp -fpR /tmp/clouddir/overlay/* /overlay
+	rm -rf /tmp/clouddir
+}
+
+install_local() {
+	wget --no-check-certificate -T 10 $cloud_url -O /tmp/readygeniecloud-r7800new-20161026-01.tar.gz
+	tar -zxvf /tmp/readygeniecloud-r7800new-20161026-01.tar.gz -C /
+	rm -f /tmp/readygeniecloud-r7800new-20161026-01.tar.gz
+	echo 20161026 > /opt/version
+	sed '2s/^/source \/etc\/profile\n/' /opt/rcagent/run_server.sh > /tmp/run_server.sh
+	cp /tmp/run_server.sh /opt/rcagent/run_server.sh
+
+	start
+}
+
+update() {
+	# Check if cloud is disabled
+	if [ -f /.nocloud ]; then
+		exit 0
+	fi
+
+	local cloud_binary_install=$(/bin/config get cloud_binary_install)
+	install_local
+	[ -f /tmp/.cloud_updated ] && return 1
+	PID_file=/var/run/cloud.pid
+	[ -f $PID_file ] && return 1
+	echo "$$" > $PID_file
+	echo "start to get info from ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/"
+	retry_count=0
+	while [ 1 ]; do
+		curl ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/ 2>/dev/null | grep readygeniecloud-r7800new-*-.*.tar.gz > /tmp/cloud_info
+		[ -s /tmp/cloud_info ] && break
+		echo "cannot access ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/ or don't find readygeniecloud tarball with version $version"
+		dynamic_sleep
+	done
+	fullversion=`tail -1 /tmp/cloud_info | awk '{print $9}'`
+	if [ -f /opt/version -a "x$(cat /opt/version)" = "x$fullversion" ]; then
+		rm -f /tmp/cloud_info
+		touch /tmp/.cloud_updated
+		rm -f $PID_file
+		echo "the readygeniecloud on update server is same as on R/W filesystem"
+		start
+		return 1
+	fi
+	size=`tail -1 /tmp/cloud_info | awk '{print $5}'`
+	echo "start to download ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/$fullversion"
+	retry_count=0
+	while [ 1 ]; do
+		curl ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/$fullversion -o /tmp/cloud.tar.gz 2>/dev/null
+		[ "$(wc -c /tmp/cloud.tar.gz | awk '{print $1}')" = "$size" ] && break
+		echo "fail to download ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/readygeniecloud-r7800-$fullversion"
+		dynamic_sleep
+	done
+	uninstall
+	mkdir /tmp/clouddir
+	tar xfz /tmp/cloud.tar.gz -C /tmp/clouddir
+	echo $fullversion > /tmp/clouddir/opt/version
+	touch /tmp/clouddir/opt/filelist
+	find /tmp/clouddir -type f | sed 's/\/tmp\/clouddir/\/overlay/' > /tmp/clouddir/opt/filelist
+	cp -fpR /tmp/clouddir/* /
+	rm -f /tmp/cloud_info
+	rm -f /tmp/cloud.tar.gz
+	rm -rf /tmp/clouddir
+	touch /tmp/.cloud_updated
+	# add newline "source /etc/profile" in file /opt/rcagent/run_server.sh
+	sed '2s/^/source \/etc\/profile\n/' /opt/rcagent/run_server.sh > /tmp/run_server.sh
+	cp /tmp/run_server.sh /opt/rcagent/run_server.sh
+
+	echo $fullversion | cut -d - -f 3 > /cloud_version
+	echo "install ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/$fullversion to R/W filesystem successfully"
+	start
+	rm -f $PID_file
+}
+
+case "$1" in
+	start)
+	start
+	;;
+	backup)
+	backup
+	;;
+	restore)
+	restore
+	;;
+	checkversion)
+	checkversion
+	;;
+	update)
+	update
+	;;
+esac
+

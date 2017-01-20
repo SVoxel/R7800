@@ -1,0 +1,19 @@
+#
+# msm network device configuration
+#
+
+config MSM_RMNET_SMUX
+	bool "RMNET SMUX Driver"
+	depends on N_SMUX
+	help
+	  Implements RMNET over SMUX interface.
+	  RMNET provides a virtual ethernet interface
+	  for routing IP packets within the MSM using
+	  HSUART as a physical transport.
+
+config MSM_RMNET_DEBUG
+	bool "MSM RMNET debug interface"
+	depends on MSM_RMNET
+	default n
+	help
+	  Debug stats on wakeup counts.

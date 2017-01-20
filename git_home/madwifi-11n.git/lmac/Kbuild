@@ -1,0 +1,15 @@
+#
+# Linux 2.6 Kbuild file for common modules
+# NB: HAL is build seperately
+#
+obj-m += ath_dev/ ath_pktlog/ ext/
+
+ifneq ($(strip ${ATH_WLAN_COMBINE}),1) 
+obj-m += ratectrl/
+endif
+ifneq ($(strip ${ATH_SUPPORT_DFS}),0)
+obj-m += dfs/
+endif
+ifneq ($(strip ${ATH_SUPPORT_SPECTRAL}),0)
+obj-m += spectral/
+endif

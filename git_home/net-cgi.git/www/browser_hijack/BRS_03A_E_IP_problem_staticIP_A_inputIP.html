@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_03A_E_IP_problem_staticIP_A_inputIP.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_hijack_03A_E_IP_problem_staticIP_A_inputIP.js"></script>
+<script language="javascript" type="text/javascript" src="script/funcs.js"></script>
+<% hijack_language() %>
+<script language="javascript" type="text/javascript">
+var lan_ip="<% cfg_get("lan_ipaddr") %>";
+var lan_subnet="<% cfg_get("lan_netmask") %>";
+var dns_third_flag=top.dns_third_flag;
+var master="<% cfg_get("http_loginname") %>";
+</script>
+<% wizlog_problem_ck10("0") %>
+</head>
+
+<body>
+<% form_submit("apply", "BRS_04_applySettings.html", "hijack_static") %>
+
+<input type="hidden" name="ip_address" value=""/>
+<input type="hidden" name="subnet_mask" value=""/>
+<input type="hidden" name="gateway" value=""/>
+<input type="hidden" name="preferred_dns" value=""/>
+<input type="hidden" name="alternate_dns" value=""/>
+<input type="hidden" name="third_dns" value=""/>
+
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+			<h2 id="message"><!--fix_ip_setting--></h2>
+			<p><script>document.write(bh_enter_ip_setting)</script></p>
+			
+			<div id="mainContent_div">
+				
+				<div id="IP_addr" class="input_left_div" align="right"><!--info_mark_ip--></div>
+				<div class="input_ip_div">
+					<input type="text" name="WPethr1" id="wpethr1" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="WPethr2" id="wpethr2" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="WPethr3" id="wpethr3" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="WPethr4" id="wpethr4" size="3" maxlength="3" onKeyPress="return getkey('num',event)">
+				</div>
+				
+				<div id="Sub_mask" class="input_left_div" align="right"><!--info_mark_mask--></div>
+				<div class="input_ip_div">
+					<input type="text" name="WMask1" id="wmask1" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="Wmask2" id="wmask2" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="Wmask3" id="wmask3" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="Wmask4" id="wmask4" size="3" maxlength="3" onKeyPress="return getkey('num',event)">
+				</div>
+				
+				<div id="GatewayAddr" class="input_left_div" align="right"><!--constatus_defgtw--></div>
+				<div class="input_ip_div">
+					<input type="text" name="WGateway1" id="wgateway1" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="Wgateway2" id="wgateway2" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="Wgateway3" id="wgateway3" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="Wgateway4" id="wgateway4" size="3" maxlength="3" onKeyPress="return getkey('num',event)">
+				</div>
+				
+				<div id="preDNS" class="input_left_div" align="right"><!--preferred_dns--></div>
+				<div class="input_ip_div">
+					<input type="text" name="DAddr1" id="daddr1" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="DAddr2" id="daddr2" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="DAddr3" id="daddr3" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="DAddr4" id="daddr4" size="3" maxlength="3" onKeyPress="return getkey('num',event)">
+				</div>
+				
+				<div id="alteDNS" class="input_left_div" align="right"><!--alternate_dns--></div>
+				<div class="input_ip_div">
+					<input type="text" name="PDAddr1" id="pdaddr1" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="PDAddr2" id="pdaddr2" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="PDAddr3" id="pdaddr3" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="PDAddr4" id="pdaddr4" size="3" maxlength="3" onKeyPress="return getkey('num',event)">
+				</div>
+
+                                <div id="thirdDNS" class="input_left_div" align="right"><!--third_dns--></div>
+                                <div id="third_dns_input" class="input_ip_div">
+					<input type="text" name="TDAddr1" id="tdaddr1" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="TDAddr2" id="tdaddr2" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="TDAddr3" id="tdaddr3" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="TDAddr4" id="tdaddr3" size="3" maxlength="3" onKeyPress="return getkey('num',event)">
+                                </div>
+				
+				<div style="clear:both"></div>
+			</div>
+		
+	</div>
+	
+	<div id="allBtns_div" class="wizard_buttons_div" align="center">
+		<input type="button" name="Next" id="next" class="purple_short_btn"><!--next_mark-->
+	</div>
+	
+</div>
+
+</form>
+</body>
+
+</html>

@@ -1,0 +1,104 @@
+#!/bin/sh  /etc/rc.common
+#
+# Copyright (c) 2014 The Linux Foundation. All rights reserved.
+#
+# The shebang above has an extra space intentially to avoid having
+# openwrt build scripts automatically enable this package starting
+# at boot.
+
+#START=70
+
+support_bridge() {
+	#NSS support bridge acceleration
+	[ -d /sys/kernel/debug/ecm/ecm_nss_conntrack_notifier ] && return 0
+	#SFE don't support bridge acceleration
+	[ -d /sys/kernel/debug/ecm/ecm_sfe_conntrack_notifier ] && return 1
+}
+
+load_sfe() {
+	[ -d /sys/module/shortcut_fe ] || insmod shortcut-fe
+	[ -d /sys/module/shortcut_fe_ipv6 ] || insmod shortcut-fe-ipv6
+	[ -d /sys/module/shortcut_fe_drv ] || insmod shortcut-fe-drv
+}
+
+load_ecm() {
+	[ -d /sys/module/ecm ] || {
+		load_sfe
+		insmod ecm
+	}
+
+	support_bridge && {
+		sysctl -w net.bridge.bridge-nf-call-ip6tables=1
+		sysctl -w net.bridge.bridge-nf-call-iptables=1
+	}
+
+	# Expect nf_conntrack_tcp_no_window_check=1
+	# For fix FTP like script throughput issue, details ref bug#54619
+	[ -f /tmp/.dni_ecm_store ] || sysctl net.netfilter.nf_conntrack_tcp_no_window_check>  /tmp/.dni_ecm_store
+	sysctl -w net.netfilter.nf_conntrack_tcp_no_window_check=1
+}
+
+vlan_iptv_wl_enable()
+{
+	local i
+	local value
+	local wl
+
+	local vlan_iptv_enable=$($CONFIG get i_opmode)
+
+	case $vlan_iptv_enable in
+	vlan)
+		for i in 1 2 3 4 5 6 7 8 9 10; do
+			value=$($CONFIG get vlan_tag_$i)
+			if [ "x$value" = "x" ] ;then
+				break
+			fi
+			wl=`echo $value|awk '{print $6}'`
+			[ "x$wl" != "x0" ] && return 0
+		done
+		;;
+	iptv)
+		[ "$($CONFIG get wan_brig_ssid1)" = "1" ] && return 0
+		[ "$($CONFIG get wan_brig_ssid2)" = "1" ] && return 0
+		[ "$($CONFIG get wan_brig_guest_ssid1)" = "1" ] && return 0
+		[ "$($CONFIG get wan_brig_guest_ssid2)" = "1" ] && return 0
+
+	;;
+	*) return 1 ;;
+	esac
+	return 1
+}
+
+unload_ecm() {
+	[ -d /sys/module/ecm ] && rmmod ecm
+
+	sysctl -w net.bridge.bridge-nf-call-ip6tables=0
+	sysctl -w net.bridge.bridge-nf-call-iptables=0
+
+	if [ -f /tmp/.dni_ecm_store ]; then
+		sysctl -w `cat /tmp/.dni_ecm_store | sed 's/ //g'`
+	fi
+}
+
+start() {
+	proto=`/bin/config get wan_proto`
+	if [ "$proto" = "pptp" ] || [ "$proto" = "l2tp" ] || vlan_iptv_wl_enable ; then
+		echo "pptp,l2tp or streamboost_enable not start NSS." > /dev/console
+		return
+	fi
+	pppmod=`lsmod |grep pppoe`
+	[ "x$pppmod" = "x" ] && insmod pppox && insmod pppoe
+	load_ecm
+
+	support_bridge && {
+		echo 'net.bridge.bridge-nf-call-ip6tables=1' >> /etc/sysctl.d/qca-nss-ecm.conf
+		echo 'net.bridge.bridge-nf-call-iptables=1' >> /etc/sysctl.d/qca-nss-ecm.conf
+	}
+}
+
+stop() {
+	unload_ecm
+
+	sed '/net.bridge.bridge-nf-call-ip6tables=1/d' -i /etc/sysctl.d/qca-nss-ecm.conf
+	sed '/net.bridge.bridge-nf-call-iptables=1/d' -i /etc/sysctl.d/qca-nss-ecm.conf
+}

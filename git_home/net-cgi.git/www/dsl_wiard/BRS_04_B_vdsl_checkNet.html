@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<% hijack_language() %>
+<script language="javascript" type="text/javascript">
+var ping_result = "<% hijack_apply_result("/tmp/ping_result") %>";
+function initPage()
+{
+	var head_tag  = document.getElementsByTagName("h1");
+	var connect_text = document.createTextNode(bh_internet_checking);
+	head_tag[0].appendChild(connect_text);
+
+        var image = document.getElementById("waiting_img");
+        image.setAttribute("src", "image/wait30.gif");
+	
+	loadValue();
+}
+
+function loadValue()
+{
+	var forms = document.getElementsByTagName("form");
+	var cf = forms[0];
+
+	if(ping_result == "failed")	//failed
+	{
+		if (((top.netgear_region.toUpperCase() == "WW" || top.netgear_region == "") && top.gui_region == "Russian" ) || top.netgear_region.toUpperCase() == "RU")
+			this.location.href = "RU_welcome.htm";
+		else
+			this.location.href = "BRS_06_networkIssue.html";
+	}
+	else if(ping_result == "success") //success
+		this.location.href = "BRS_success.html";
+	setTimeout("loadValue();", 1000);
+}
+
+addLoadEvent(initPage);
+
+</script>
+
+</head>
+
+<body>
+<% form_submit("func", "BRS_03A_detcInetType.html", "wizard_detwan")  %>
+
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+
+		<div class="waiting_connect_div" align="center">
+			<h1 class="h1_black"><!--please waite a moment--></h1>
+		</div>
+
+		<div class="waiting_img_div" align="center">
+			<img id="waiting_img" />
+		</div>
+
+	</div>
+
+</div>
+
+</form>
+<iframe name="ping_result_frame" src="BRS_ping_result.html" allowtransparency="true" scrolling="no" frameborder="0" style="display:none"></iframe>
+</body>
+
+</html>
+
+

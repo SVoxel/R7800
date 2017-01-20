@@ -1,0 +1,12 @@
+diff -Nur ssmtp-2.64-old//ssmtp.c ssmtp-2.64/ssmtp.c
+--- ssmtp-2.64-old//ssmtp.c	2014-07-10 04:59:40.470358509 +0800
++++ ssmtp-2.64/ssmtp.c	2014-07-11 02:54:44.510377371 +0800
+@@ -176,7 +176,7 @@
+ 	memcpy (path, pw->pw_dir, strlen (pw->pw_dir));
+ 	memcpy (path + strlen (pw->pw_dir), DEAD_LETTER, sizeof (DEAD_LETTER));
+ 	
+-	if((fp = fopen(path, "a")) == (FILE *)NULL) {
++	if((fp = fopen(path, "w")) == (FILE *)NULL) {
+ 		/* Perhaps the person doesn't have a homedir... */
+ 		if(log_level > 0) {
+ 			log_event(LOG_ERR, "Can't open %s failing horribly!", path);

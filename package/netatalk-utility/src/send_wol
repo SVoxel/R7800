@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if [ $# -ne 1 ]; then
+	echo "Usage: /usr/sbin/send_wol <interval in sec>"
+	exit 1
+fi
+
+interval="$1"
+
+while [ 1 ]; do
+	/usr/sbin/wol
+	sleep $interval
+done

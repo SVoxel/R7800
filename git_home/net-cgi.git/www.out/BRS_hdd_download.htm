@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<!--link rel="stylesheet" type="text/css" href="hdd_cd_less.css" /-->
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/form.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+</head>
+<style type="text/css">
+.wizard_words_div .st_header_font{font-family:Arial; font-size:12pt; font-weight:bold; color:#9D98FF;}
+.wizard_words_div tr td {font-family:Arial; font-size:10pt; font-weight:normal; color:#404040;}
+</style>
+<% form_submit("apply", "BRS_hdd_download_href.htm", "hdd_download")  %>
+<input type="hidden" name="download_desktop_genie" value="1" />
+<input type="hidden" name="download_readyshare" value="1" />
+<% hijack_language() %>
+<script language="javascript" type="text/javascript">
+var ts="";
+var is_Mac = detectOS();
+
+var RS_num=1;
+var genie_mac_num=1;
+var genie_num=1;
+var usb_router_flag = top.usb_router_flag;
+</script>
+	
+<div id="choices_div" class="wizard_words_div">
+	<TABLE align="center" width=80% border=0 cellpadding=0 cellspacing=1>
+		<TR height=40px;> <TD colspan=2 class="st_header_font"><script>document.write(bh_download_apps);</script> </TD></TR>
+		<tr height=40px;>
+		<script>
+                                if( is_Mac == "Mac")
+                                {
+                                        document.write(' <td nowrap height=25px; width=25px;>')
+                                        document.write(' <div id="genie_mac" class="checked" onclick="genie_mac_choose(genie_mac_num, document.forms[0]);genie_mac_num++;"> </div> ')
+                                        document.write('</td>')
+				document.write('<td height=40px;>'+bh_genie_app+'</td>');
+                                }
+                                else
+                                {
+                                        document.write('<td nowrap height=25px; width=25px; >')
+                                        document.write('<div id="genie_choice" class="checked" onclick="genie_choose(genie_num, document.forms[0]);genie_num++;"></div>')
+                                        document.write('</td>')
+                                        document.write('<td height=40px;>'+ bh_genie_app+'</td>');
+                                }
+                                </script>
+				<!--input type="checkbox" name="help_choice"  checked="checked" /><b class="choice_font">Yes, Install ReadySHARE Vault</b-->
+			</tr>
+			<tr>			
+			<script>
+			if( is_Mac != "Mac" && usb_router_flag == 1)
+			{
+				document.write('<td nowrap height=25px; width=25px;>');
+				 document.write('<div id="rs_choose" class="checked"  onclick="choose_RS(RS_num, document.forms[0]);RS_num++;"></div>');
+				document.write('</td>');
+				document.write('<td height=40px;>'+bh_rs_vault_app+'</td>');
+			}	
+			</script>
+			</tr>
+			</TABLE>
+</div>
+
+	<div id="buttons_div_02" class="wizard_buttons_div" align="center">
+		<TABLE align=center width="90%" border=0 cellpadding=0 cellspacing=2>
+         <TR>
+		 <TD nowrap  align=left>
+		 <script>
+		document.write('<INPUT  class="short_common_hdd" type="button" name="Exit" id="exit" value='+bh_exit_mark+' onClick="click_exit()">');
+		</script>
+		</TD>
+	   <TD nowrap  align=right>
+	   <script>
+		  document.write('<INPUT class="short_common_hdd" type="button" name="Previous" id="previous" value="'+'< '+ bh_previous+'" onClick="click_pre()">&nbsp;&nbsp;&nbsp;&nbsp;<INPUT class="short_common_hdd" type="button" name="Next" id="next" value="'+ bh_next_mark+' >'+'" onClick="readshare_next( document.forms[0])"');
+	   </script>    
+		<TD>
+       </TR>
+
+      </TABLE>
+	</div>
+	
+<!--/div-->
+<script>
+function choose_RS(n, cf)
+{
+	if(  document.getElementById("rs_choose").className == "checked")
+	{
+		document.getElementById("rs_choose").className = "uncheck"
+		cf.download_readyshare.value = "0";
+	}
+	else
+	{
+		document.getElementById("rs_choose").className = "checked"
+		cf.download_readyshare.value = "1";
+	}	
+		//alert(RS_num);
+}
+function genie_mac_choose(n, cf)
+{
+	if( document.getElementById("genie_mac").className == "checked")
+	{
+		document.getElementById("genie_mac").className = "uncheck"
+		cf.download_desktop_genie.value = "0";
+	}
+	else
+	{
+		document.getElementById("genie_mac").className = "checked"
+		cf.download_desktop_genie.value = "1";
+	}
+}
+
+function genie_choose(n, cf)
+{
+        if( document.getElementById("genie_choice").className == "checked")
+        {
+                document.getElementById("genie_choice").className = "uncheck"
+                cf.download_desktop_genie.value = "0";
+        }
+        else
+        {
+                document.getElementById("genie_choice").className = "checked"
+                cf.download_desktop_genie.value = "1";
+        }
+}
+
+function click_exit(cf)
+{
+ 	top.location.href="to_internet_no_auth.htm"; 
+}
+
+function click_pre(cf)
+{		
+	location.href="BRS_success.html"; // i think it is direct to success page is good,this page can show you disk state.
+}
+
+function readshare_next(cf)
+{
+	if( is_Mac == "Mac" || usb_router_flag == 0 )
+		cf.download_readyshare.value = "0";
+	
+	cf.submit();
+}
+</script>
+</form>
+</body>
+</html>

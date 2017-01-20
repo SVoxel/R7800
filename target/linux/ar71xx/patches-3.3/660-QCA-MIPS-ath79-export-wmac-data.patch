@@ -1,0 +1,43 @@
+--- a/arch/mips/ath79/dev-wmac.c	2013-06-21 16:53:14.000000000 +0800
++++ b/arch/mips/ath79/dev-wmac.c	2013-07-03 15:01:46.147481826 +0800
+@@ -25,7 +25,7 @@
+ 
+ static u8 ath79_wmac_mac[ETH_ALEN];
+ 
+-static struct ath9k_platform_data ath79_wmac_data = {
++struct ath9k_platform_data ath79_wmac_data = {
+ 	.led_pin = -1,
+ };
+ 
+@@ -302,7 +302,7 @@
+ 	return &ath79_wmac_data;
+ }
+ 
+-void __init ath79_register_wmac(u8 *cal_data, u8 *mac_addr)
++void ath79_init_wmac_pdata(u8 *cal_data, u8 *mac_addr)
+ {
+ 	if (soc_is_ar913x())
+ 		ar913x_wmac_setup();
+@@ -323,6 +323,10 @@
+ 		memcpy(ath79_wmac_mac, mac_addr, sizeof(ath79_wmac_mac));
+ 		ath79_wmac_data.macaddr = ath79_wmac_mac;
+ 	}
++}
+ 
++void __init ath79_register_wmac(u8 *cal_data, u8 *mac_addr)
++{
++	ath79_init_wmac_pdata(cal_data, mac_addr);
+ 	platform_device_register(&ath79_wmac_device);
+ }
+--- a/arch/mips/ath79/dev-wmac.h	2013-06-21 16:53:14.000000000 +0800
++++ b/arch/mips/ath79/dev-wmac.h	2013-06-24 09:58:14.945935314 +0800
+@@ -14,6 +14,9 @@
+ 
+ #include <linux/ath9k_platform.h>
+ 
++extern struct ath9k_platform_data ath79_wmac_data;
++
++void ath79_init_wmac_pdata(u8 *cal_data, u8 *mac_addr);
+ void ath79_register_wmac(u8 *cal_data, u8 *mac_addr);
+ void ath79_wmac_disable_2ghz(void);
+ void ath79_wmac_disable_5ghz(void);

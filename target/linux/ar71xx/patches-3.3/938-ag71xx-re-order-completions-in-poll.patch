@@ -1,0 +1,37 @@
+From 28ce5a3a43207c34e5e14222df4539cd9039de00 Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Tue, 11 Jun 2013 17:13:58 -0500
+Subject: [ag71xx] re-order completions in poll
+
+We are reordering the RX/TX completion handlers to give the TX
+completions a chance to provide us warm SKBs to use for RX.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+index 5293a95..a397538 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+@@ -1125,8 +1125,15 @@ static int ag71xx_poll(struct napi_struct *napi, int limit)
+ 
+ 	pdata->ddr_flush();
+ 
+-	rx_done = ag71xx_rx_packets(ag, dev, limit);
++	/*
++	 * First empty any packets that we have transmitted!  In theory it might
++	 * seem better to handle packets that we've received but we
++	 * really want to get packets that completed TX to be used to replenish
++	 * the RX descriptor ring and keeping those two operations adjacent
++	 * will help keep any recycled skbs hotter in the D-cache.
++	 */
+ 	tx_done = ag71xx_tx_packets(ag, dev, pdata->is_ar7240);
++	rx_done = ag71xx_rx_packets(ag, dev, limit);
+ 	rx_replenished = ag71xx_rx_packets_replenish(ag, dev);
+ 
+ 	ag71xx_debugfs_update_napi_stats(ag, rx_done, tx_done);
+-- 
+1.8.1.2
+

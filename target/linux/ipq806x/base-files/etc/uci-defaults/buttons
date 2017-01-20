@@ -1,0 +1,20 @@
+#!/bin/sh
+#
+# Copyright (c) 2013 The Linux Foundation. All rights reserved.
+#
+
+. /lib/functions/gpio-button-hotplug.sh
+. /lib/ipq806x.sh
+
+board=$(ipq806x_board_name)
+
+case "$board" in
+ap148)
+	button_add_range_uci_config "released" "reset" "reboot" "0" "3"
+	button_add_range_uci_config "released" "reset" "reset_to_factory_settings.sh" "3" "10"
+	;;
+*)
+	;;
+esac
+
+exit 0

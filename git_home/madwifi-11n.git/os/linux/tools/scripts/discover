@@ -1,0 +1,35 @@
+#!/bin/bash
+# script to run discovery  for a specified time
+
+#
+# Copyright (c) 2013 Qualcomm Atheros, Inc.
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary.
+#
+
+TIMEOUT=10
+
+args=($*)       
+i=0
+
+
+function usage ()
+{
+   echo usage: discover [timeout]
+   exit 1
+}
+
+if [ $# -gt  1 ]
+then
+   usage;
+fi
+
+if  [ $# -eq  1 ]
+then
+  TIMEOUT=${args[0]};
+fi
+
+echo "Run wlan event in a sepate window to see  the events from driver !!"
+
+wlanconfig p2p0 p2pdiscover  $TIMEOUT
+sleep $TIMEOUT 

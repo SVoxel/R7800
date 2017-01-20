@@ -1,0 +1,145 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_INIT(Makefile)
+AC_CONFIG_HEADER(config.h)
+
+# Checks for programs.
+
+# Checks for libraries.
+
+# Checks for header files.
+
+# Checks for typedefs, structures, and compiler characteristics.
+
+# Checks for library functions.
+
+AC_ARG_ENABLE(dhcpd_static_lease,
+	[AC_HELP_STRING(
+		[--enable-dhcpd_static_lease],
+		[Support fixed IP settings via editing the Address Reservation Table to specific clients])
+	],
+	if test x"$enableval" = xyes ; then
+		AC_DEFINE(DHCPD_STATIC_LEASE)
+	fi
+)
+
+AC_ARG_ENABLE(dhcpd_show_hostname,
+	[AC_HELP_STRING(
+		[--enable-dhcpd_show_hostname],
+		[List all DHCP clients host names for showing attached devices name if unknown by 'net-scan'])
+	],
+	if test x"$enableval" = xyes ; then
+		AC_DEFINE(DHCPD_SHOW_HOSTNAME)
+	fi
+)
+
+AC_ARG_ENABLE(wan_lan_ipconflict,
+	[AC_HELP_STRING(
+		[--enable-wan_lan_ipconflict],
+		[Do IP conflict detection when wan port in dhcp client mode get ip])
+	],
+	if test x"$enableval" = xyes ; then
+		AC_DEFINE(WAN_LAN_IPCONFLICT)
+		if test "${with_ip_conflict_cmd+set}" != set; then
+			AC_MSG_ERROR([You must specify the ipconflict command with --with-ip_conflict_cmd option!])
+		fi
+	fi
+)
+
+AC_ARG_WITH(ip_conflict_cmd,
+	[AC_HELP_STRING(
+		[--with-ip_conflict_cmd=CMD],
+		[Specify your own ipconflict command])
+	],
+	if test x"$enable_wan_lan_ipconflict" != xyes ; then
+		AC_MSG_ERROR([option --with-ip_conflict_cmd must be used with --enable-wan_lan_ipconflict together!])
+	fi
+	if test x"$withval" = xyes || test x"$withval" = x ; then
+		AC_MSG_ERROR([Must specify some value for --with-ip_conflict_cmd!])
+	else
+		AC_DEFINE_UNQUOTED(IP_CONFLICT_CMD, "$withval", [define your own ipconflict command, such as /sbin/ipconflict])
+	fi
+)
+
+AC_ARG_ENABLE(rfc3442_121_support,
+	[AC_HELP_STRING(
+		[--enable-rfc3442_121_support],
+		[Support option 121 (RFC 3442) in dhcpc])
+	],
+	if test x"$enableval" = xyes ; then
+		AC_DEFINE(RFC3442_121_SUPPORT)
+	fi
+)
+
+AC_ARG_ENABLE(rfc2132_33_support,
+	[AC_HELP_STRING(
+		[--enable-rfc2132_33_support],
+		[Support option 33 (RFC 2132) in dhcpc])
+	],
+	if test x"$enableval" = xyes ; then
+		AC_DEFINE(RFC2132_33_SUPPORT)
+	fi
+)
+
+AC_ARG_ENABLE(dhcpd_check_server_ip,
+	[AC_HELP_STRING(
+		[--enable-dhcpd_check_server_ip],
+		[Check whether the request IP is the same with sever's IP])
+	],
+	if test x"$enableval" = xyes ; then
+		AC_DEFINE(DHCPD_CHECK_SERVER_IP)
+	fi
+)
+
+AC_ARG_ENABLE(support_option_60,
+	[AC_HELP_STRING(
+		[--enable-support_option_60],
+		[Support changing the Vendor ID by "-V [YOU_ID]" in dhcpc])
+	],
+	if test x"$enableval" = xyes ; then
+		AC_DEFINE(SUPPORT_OPTION_60)
+	fi
+)
+
+AC_ARG_ENABLE(support_option_43,
+	[AC_HELP_STRING(
+		[--enable-support_option_43],
+		[Obtain the parameter ManagementServer.URL in option 43 and recognize it as ACS URL address and query it IP address via DNS again])
+	],
+	if test x"$enableval" = xyes ; then
+		AC_DEFINE(SUPPORT_OPTION_43)
+	fi
+)
+
+AC_ARG_ENABLE(dhcpc_choose_oldip,
+	[AC_HELP_STRING(
+		[--enable-dhcpc_choose_oldip],
+		[The client may choose to wait for multiple responses, like to select the information including old IP address, DNS primary & secondary, gateway address])
+	],
+	if test x"$enableval" = xyes ; then
+		AC_DEFINE(DHCPC_CHOOSE_OLDIP)
+	fi
+)
+
+AC_ARG_ENABLE(dhcp_packet_resize,
+	[AC_HELP_STRING(
+		[--enable-dhcp_packet_resize],
+		[Dynamic resize the DHCP packet according to it's real payload size and make sure their size are not larger than 576 octets before send out])
+	],
+	if test x"$enableval" = xyes ; then
+		AC_DEFINE(DHCP_PACKET_RESIZE)
+	fi
+)
+
+AC_ARG_ENABLE(rfc3442_249_support,
+	[AC_HELP_STRING(
+		[--enable-rfc3442_249_support],
+		[Support option 249 (RFC 3442) - Microsoft Classless Static Route in dhcpc])
+	],
+	if test x"$enableval" = xyes ; then
+		AC_DEFINE(RFC3442_249_SUPPORT)
+	fi
+)
+
+AC_OUTPUT

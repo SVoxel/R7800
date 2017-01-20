@@ -1,0 +1,24 @@
+#!/bin/sh
+
+ori_chan=`config get wl_hidden_channel`
+last_chan=`config get last_channel`
+[ "$last_chan" = "0" ] && last_chan=$ori_chan
+now_chan=$(iwlist ath0 channel | grep "Frequency" | awk '/Channel/{print $5}' | awk -F"\)" '{print $1}')
+wireless_mode=`config get wl_simple_mode`
+if [ "$last_chan" != "$now_chan" ]; then
+    if [ "$wireless_mode" -ge "3" ]; then
+	ifconfig ath0 down
+	if [ "$now_chan" -le "6" ]; then
+		iwpriv ath0 extoffset 1
+	else
+		iwpriv ath0 extoffset -1
+	fi
+	iwconfig ath0 channel $now_chan
+	ifconfig ath0 up
+    else
+    ifconfig ath0 down
+    iwconfig ath0 freq $now_chan 
+    ifconfig ath0 up
+    fi
+fi
+config set last_channel=$now_chan

@@ -1,0 +1,13 @@
+#
+# Copyright (c) 2013 Qualcomm Atheros, Inc.
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary.
+#
+
+apple80211 en1 --power=off
+sleep 1
+apple80211 en1 --power=on,rx,on
+sudo ifconfig en1 inet 10.0.2.1 netmask 255.255.255.0 up
+apple80211 en1 --phymode=n --physubmode=ht,5,20-40
+apple80211 en1 --channel=157,1 --hostap=mb-softap 
+

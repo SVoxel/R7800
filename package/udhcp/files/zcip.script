@@ -1,0 +1,54 @@
+#!/bin/sh
+
+CONFIG="/bin/config"
+IFCONFIG="/sbin/ifconfig"
+DEFAULT_NETMASK="255.255.0.0"
+FIREWALL="/www/cgi-bin/firewall.sh"
+RESOLV_CONF="/tmp/resolv.conf"
+
+# only for use as a "zcip" callback script
+if [ "x$interface" = "x" ]; then
+	exit 1
+fi
+
+case "$1" in
+init)
+	exit 0
+	;;
+config)
+	if [ "x$ip" = "x" ]; then
+		exit 1
+	fi
+
+	local ori_ip=$($IFCONFIG $interface | grep 'inet addr' | cut -f2 -d':' | cut -f1 -d' ')
+	if [ "${ip%% *}" = "$ori_ip" ]; then
+		exit 0
+	fi
+
+	$IFCONFIG $interface $ip netmask $DEFAULT_NETMASK
+	$CONFIG set ap_dhcp_ipaddr=$ip
+	$CONFIG set ap_dhcp_netmask=$DEFAULT_NETMASK
+	$CONFIG set ap_dhcp_gateway="0.0.0.0"
+	$CONFIG set ap_dhcp_server="0.0.0.0"
+	$CONFIG set dhcpc_lease_obtain=0
+	$CONFIG set dhcpc_lease_time=0
+	/bin/echo -n > $RESOLV_CONF
+	
+	# Restart DLNA
+	/sbin/cmddlna ip_restart
+
+	# Restart samba
+	/usr/bin/killall smbd
+	/usr/sbin/update_smb
+	$FIREWALL restart
+	;;
+deconfig)
+	if [ "x$ip" = "x" ]; then
+		exit 1
+	fi
+
+	# exec ip address del dev $interface local $ip
+	echo "zcip deconfig: delete $ip to $interface..." >/dev/console
+	;;
+esac
+exit 0

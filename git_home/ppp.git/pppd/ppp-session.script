@@ -1,0 +1,39 @@
+#!/bin/sh
+# ppp-session.script used for pppoe connection
+
+CONFIG="/bin/config"
+ECHO="/bin/echo"
+PPPOE_LST_SESSION="/tmp/ppp/pppoe_lst_session"
+PPPOE_SESSION="/tmp/ppp/pppoe_session"
+
+pppoe_ses_set(){
+        #set value
+        $CONFIG set pppoe_sessionID=$(cat $PPPOE_SESSION  | cut -d ':' -f 1)
+        $CONFIG set pppoe_peer_mac=$(cat $PPPOE_SESSION  | cut -d ':' -f 2,3,4,5,6,7)
+        $CONFIG commit
+}
+pppoe_ses_reset(){
+        $CONFIG set pppoe_sessionID=0
+        $CONFIG set pppoe_peer_mac=0:0:0:0:0:0
+        $CONFIG commit
+}
+pppoe_ses_load(){
+        #reload config value
+        sesID=$($CONFIG get pppoe_sessionID)
+        mac=$($CONFIG get pppoe_peer_mac)
+        [ "x$sesID" != "x" -a "$sesID" != "0" ] && $ECHO "Kill the last session at first:pppoe_sessionID=$sesID, peer_mac=$mac"
+
+        $ECHO 0:0:0:0:0:0:0 > $PPPOE_LST_SESSION
+        [ "x$sesID" != "x" -a "x$mac" != "x" ] && $ECHO "$sesID:$mac" > $PPPOE_LST_SESSION
+}
+
+case $1 in
+        pppoe_ses_set)
+                pppoe_ses_set
+                ;;
+        pppoe_ses_load)
+                pppoe_ses_load
+                ;;
+        pppoe_ses_reset)
+                pppoe_ses_reset
+esac

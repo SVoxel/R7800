@@ -1,0 +1,100 @@
+#!/bin/sh
+
+WAN_IF=brwan
+CONFIG=/bin/config
+
+DDNS_STATUS=/tmp/ez-ipupd.status
+DDNS_CONF=/tmp/ez-ipupd.conf
+DDNS_CACHE=/tmp/ez-ipupd.cache
+
+print_ddns_conf() {
+	local user_agent="NETGEAR - $(cat /module_name) - $(cat /firmware_version)"
+
+cat <<EOF
+#!/usr/sbin/ez-ipupdate -c
+service-type=dyndns
+user=$1:$2
+host=$3
+interface=$4
+max-interval=86400
+resolv-period=30
+period=10
+retrys=7
+pid-file=/tmp/ddnspid
+user-agent=$user_agent
+daemon
+execute=/etc/ez-ipupdate.script
+EOF
+}
+
+get_wan_ifname() {
+	local proto=$($CONFIG get wan_proto)
+
+	if [ "$proto" = "pppoe" -o "$proto" = "pptp" -o "$proto" = "mulpppoe1" ]; then
+		echo -n "ppp0"
+	else
+		echo -n $WAN_IF
+	fi
+}
+
+ddns_start() {
+	local start_flag wl_radio wds_repeater_basic wds_endis_fun
+
+	echo -n "0" > $DDNS_STATUS
+
+	wl_radio=$($CONFIG get endis_wl_radio)
+	wds_repeater_basic=$($CONFIG get wds_repeater_basic)
+	wds_endis_fun=$($CONFIG get wds_endis_fun)
+
+	if [ "$wl_radio" = "1" -a "$wds_repeater_basic" = "0" -a "$wds_endis_fun" = "1" ]; then
+		exit
+	fi
+
+	[ "$($CONFIG get endis_ddns)" != "1" ] && exit
+
+	local ipaddr=$($CONFIG get update_ddns_ipaddr)
+	local time=$($CONFIG get update_ddns_time)
+	local format_time=$($CONFIG get update_ddns_format_time)
+	echo $time,$ipaddr>$DDNS_CACHE
+	# Produce /tmp/ez-ipupd.time when reboot. then when we check status on GUI,it will display.
+	if [ $time -gt 0 -a ! -f /tmp/ez-ipupd.time ] ;then
+		echo $format_time>/tmp/ez-ipupd.time
+	fi
+	if [ -f /tmp/ez-ipupd.time ] ;then
+		echo "1">/tmp/ez-ipupd.status
+	fi
+
+	print_ddns_conf "$($CONFIG get sysDNSUser)" "$($CONFIG get sysDNSPassword)" "$($CONFIG get sysDNSHost)" "$(get_wan_ifname)" > $DDNS_CONF
+
+	if [ "$($CONFIG get endis_wildcards)" = "1" ]; then
+		/usr/sbin/ez-ipupdate -w wildcard -c $DDNS_CONF -b $DDNS_CACHE
+	else
+		/usr/sbin/ez-ipupdate -c $DDNS_CONF -b $DDNS_CACHE
+	fi
+}
+
+ddns_stop() {
+	if [ -f /tmp/ddnspid ]; then
+		kill -9 $(cat /tmp/ddnspid)
+		rm -f /tmp/ddnspid
+		sleep 2
+	fi
+}
+
+ddns_restart() {
+	ddns_stop
+	ddns_start
+}
+
+export TZ=$($CONFIG get time_zone)
+case "$1" in
+	stop)
+		ddns_stop
+	;;
+	start)
+		ddns_start
+	;;
+	restart)
+		ddns_restart
+	;;
+esac

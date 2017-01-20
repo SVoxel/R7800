@@ -1,0 +1,24 @@
+diff -Nur netatalk-2.2.1-old/etc/afpd/fork.c netatalk-2.2.1/etc/afpd/fork.c
+--- netatalk-2.2.1-old/etc/afpd/fork.c	2011-08-15 18:25:58.000000000 +0800
++++ netatalk-2.2.1/etc/afpd/fork.c	2013-03-07 15:48:41.000000000 +0800
+@@ -296,6 +296,20 @@
+     if (*s_path->m_name == '\0') {
+        /* it's a dir ! */
+        return  AFPERR_BADTYPE;
++    } else {
++	    LOG(log_info, logtype_afpd, "[afp_openfork] s_path->m_name is %s \n", s_path->m_name);
++	    // when the name is "com.apple.TimeMachine.MachineID.plist", it means the Time Machine is running up.
++	    if (strncmp(s_path->m_name , "com.apple.TimeMachine", 21) == 0) {
++		    LOG(log_info, logtype_afpd, "[afp_openfork] Time Machine is running up!!!!!!!!!!!!!!!!\n");
++		    int ret = system("/bin/pidof send_wol > /dev/zero 2>&1");
++		    if (ret == 0){
++			    LOG(log_info, logtype_afpd, "[afp_openfork] daemon send_wol is run normally......\n");
++		    }else {
++			    LOG(log_info, logtype_afpd, "[afp_openfork] daemon send_wol is NOT running, we need to start it.....\n");
++			    system("/usr/sbin/send_wol 300 &");
++		    }
++		    system("/bin/pidof afpd | awk '{print $1}' > /tmp/pid_time_machine");
++	    }
+     }
+ 
+     /* stat() data fork st is set because it's not a dir */

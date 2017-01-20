@@ -1,0 +1,56 @@
+// PhEmbedCom.idl : IDL source for PhEmbedCom.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (PhEmbedCom.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+	[
+		object,
+		uuid(B27BDD74-1AF4-469B-97FD-CD5E871DBBAF),
+		dual,
+		helpstring("IPhDDNS Interface"),
+		pointer_default(unique)
+	]
+	interface IPhDDNS : IDispatch
+	{
+		[id(1), helpstring("method Initialize")] HRESULT Initialize([in] BSTR Host, [in] BSTR Account, [in] BSTR Password, [in] long clientInfo, [in] long embedKey, [out, retval] VARIANT_BOOL *pRet);
+		[id(2), helpstring("method Step")] HRESULT Step([out, retval] long *Next);
+		[id(3), helpstring("method Stop")] HRESULT Stop();
+	};
+
+[
+	uuid(5CE20F14-F268-4198-899F-4D1AFA140686),
+	version(1.0),
+	helpstring("PHDDNS TypeLib")
+]
+library PHEMBEDCOMLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(F835598B-7780-4BF7-92FC-F20FDF81CE92),
+		helpstring("_IPhDDNSEvents Interface")
+	]
+	dispinterface _IPhDDNSEvents
+	{
+		properties:
+		methods:
+		[id(1), helpstring("method StatusChanged")] HRESULT StatusChanged(BSTR Status, BSTR Data);
+		[id(2), helpstring("method DomainRegistered")] HRESULT DomainRegistered(BSTR DomainName);
+		[id(3), helpstring("method UserInfoCome")] HRESULT UserInfoCome(BSTR UserInfo);
+		[id(4), helpstring("method DomainInfoCome")] HRESULT DomainInfoCome(BSTR DomainInfo);
+	};
+
+	[
+		uuid(260F073F-F564-499C-B7C3-0020F0330C7D),
+		helpstring("PhDDNS Class")
+	]
+	coclass PhDDNS
+	{
+		[default] interface IPhDDNS;
+		[default, source] dispinterface _IPhDDNSEvents;
+	};
+};

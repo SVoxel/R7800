@@ -1,0 +1,327 @@
+<% http_header("style/form.css", "/funcs.js", "/ddns.js") %>
+<% body_header("_DNS_ddns", "DNS_ddns.htm", "ddns") %>
+<div class="page_title">$ddns_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+        <TD nowrap colspan=2 align=center>
+	<input class="common_bt" id="show_status" type="button" name="Show Status" value="$show_status_mark" onClick="window.open('DNS_status_wait.htm','show_ddns','width=600,height=400,top=200,left=200,status=yes,resizable=yes');">&nbsp;
+	<script>
+		var master="<% cfg_get("http_loginname") %>";
+		if( master="admin" )
+		{
+			document.write('<input class="cancel_bt" type="reset" name="Cancel" value="$cancel_mark" onClick="location.href=\'DNS_ddns.htm\'";>&nbsp;');
+			document.write('<input class="apply_bt" type="submit" name="Apply" value="$apply_mark" onClick="return click_ddns(document.forms[0]);">');
+		}
+		else
+		{
+			document.write('<input class="cancel1_bt" type="reset" name="Cancel" value="$cancel_mark" disabled>&nbsp;');
+			document.write('<input class="apply1_bt" type="submit" name="Apply" value="$apply_mark" disabled>');
+		}
+	</script>
+        </TD>
+</TR>
+</TABLE>
+
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<script>
+var old_endis_ddns="<% cfg_get("endis_ddns") %>";
+var old_sysDNSHost="<% cfg_sed_xss("sysDNSHost") %>";
+var old_sysDNSUser="<% cfg_sed_xss("sysDNSUser")%>";
+var vpn_enable="<% cfg_get("vpn_enable") %>";
+var vpn_flag="<% cfg_get("vpn_detect_ddns_change_flag") %>";
+
+var old_sysDNSHost_1="<% cfg_sed_xss("sysDNSHost_1") %>";
+var old_sysDNSUser_1="<% cfg_sed_xss("sysDNSUser_1")%>";
+
+var old_sysDNSHost_2="<% cfg_sed_xss("sysDNSHost_2") %>";
+var old_sysDNSUser_2="<% cfg_sed_xss("sysDNSUser_2")%>";
+
+var old_sysDNSHost_3="<% cfg_sed_xss("sysDNSHost_3") %>";
+var old_sysDNSUser_3="<% cfg_sed_xss("sysDNSUser_3")%>";
+
+var old_sysDNSHost_4="<% cfg_sed_xss("sysDNSHost_4") %>";
+var old_sysDNSUser_4="<% cfg_sed_xss("sysDNSUser_4")%>";
+var old_sysDNSPassword_1="<% password_convert("sysDNSPassword_1") %>";
+var old_sysDNSPassword_2="<% password_convert("sysDNSPassword_2") %>";
+var old_sysDNSPassword_3="<% password_convert("sysDNSPassword_3") %>";
+var old_sysDNSPassword_4="<% password_convert("sysDNSPassword_4") %>";
+var changed="<% cfg_get("dns_changed")%>";
+
+var dns_list="<% cfg_get("sysDNSProviderlist") %>";
+var old_endis_wildcards="<% cfg_get("endis_wildcards") %>";
+var ddns_oray_router_flag=parent.ddns_oray_router_flag;
+var ddns_3322_router_flag=parent.ddns_3322_router_flag;
+var gui_region="<% cfg_get("GUI_Region") %>"
+var netgear_region=top.netgear_region;
+var ddns_wildcards_flag=parent.ddns_wildcards_flag;
+var pr_flag = (( gui_region == "Chinese" && (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "PR") ? 1 : 0
+var pr_oray_flag=( ddns_oray_router_flag == 1  && pr_flag == 1) ? 1 : 0;
+var pr_3322_flag=( ddns_3322_router_flag == 1  && pr_flag == 1) ? 1 : 0;
+var no_ip_flag=parent.ddns_no_ip_flag;
+<% list_domain_name() %>
+
+function changemode()
+{
+	var cf=document.forms[0];
+	
+	var username=document.getElementsByName("sysDNSUser")[0];
+	var passwd=document.getElementsByName("sysDNSPassword")[0];
+	var show_status=document.getElementById("show_status");
+	var password_click=0;
+    if((cf.hidden_pwd_change_1.value == "1") || (cf.hidden_pwd_change_2.value == "1") ||
+      (cf.hidden_pwd_change_3.value == "1") || (cf.hidden_pwd_change_4.value == "1"))
+        password_click=1;
+	if( cf.sysDNSProviderlist.value == 'www/var/www.oray.cn')
+	{
+		cf.sysDNSHost.value = "";
+		cf.sysDNSHost.disabled = true; //37032
+		username.maxLength = 16; //37034
+		passwd.maxLength = 16; //37035
+		cf.sysDNSUser.value = old_sysDNSUser_2;
+		cf.sysDNSPassword.value = old_sysDNSPassword_2;
+		if( cf.hidden_pwd_change_2.value == "1")
+            		cf.sysDNSPassword.value = old_sysDNSPassword_2;
+        	if( password_click ==1 )
+            		cf.sysDNSPassword.type = "password";
+		show_status.className="common_gray_bt"; //37036
+		show_status.disabled = true;
+		document.getElementById("oray_status").style.display="";
+	}
+	else
+	{
+		cf.sysDNSHost.disabled = false;
+		username.maxLength = 64;
+		passwd.maxLength = 64;
+		show_status.className="common_bt";
+		show_status.disabled = false;
+		document.getElementById("oray_status").style.display="none";
+		if( cf.sysDNSProviderlist.value == 'www/var/www.DynDNS.org' )
+		{
+			cf.sysDNSHost.value = old_sysDNSHost_1;
+			cf.sysDNSUser.value = old_sysDNSUser_1;
+			cf.sysDNSPassword.value = old_sysDNSPassword_1;
+			if( cf.hidden_pwd_change_1.value == "1" )
+				cf.sysDNSPassword.value = old_sysDNSPassword_1;
+            		if( password_click ==1 )
+				cf.sysDNSPassword.type = "password";
+		}
+		else if( cf.sysDNSProviderlist.value == 'www/var/www.3322.org' )
+		{
+			cf.sysDNSHost.value = old_sysDNSHost_3;
+			cf.sysDNSUser.value = old_sysDNSUser_3;
+			cf.sysDNSPassword.value = old_sysDNSPassword_3;
+			if( cf.hidden_pwd_change_3.value == "1" )
+				cf.sysDNSPassword.value = old_sysDNSPassword_3;
+           		 if( password_click ==1 )
+				cf.sysDNSPassword.type = "password";
+		}
+		else if( cf.sysDNSProviderlist.value == 'www/var/dynupdate.no-ip.com' )
+		{
+			cf.sysDNSHost.value = old_sysDNSHost_4;
+			cf.sysDNSUser.value = old_sysDNSUser_4;
+			cf.sysDNSPassword.value = old_sysDNSPassword_4;
+			if( cf.hidden_pwd_change_4.value == "1" )
+				cf.sysDNSPassword.value = old_sysDNSPassword_4;
+            		if( password_click ==1 )
+				cf.sysDNSPassword.type = "password";
+		}
+	}
+	if( ddns_wildcards_flag==1 && cf.sysDNSProviderlist.value == 'www/var/www.3322.org')
+		document.getElementById("wildcards").style.display="";
+	else
+		document.getElementById("wildcards").style.display="none";
+
+}
+
+function Chgmode()
+{
+	var cf = document.forms[0];
+
+	if( cf.sysDNSProviderlist.value == 'www/var/www.DynDNS.org' )
+	{
+		old_sysDNSHost_1 = cf.sysDNSHost.value;
+		old_sysDNSUser_1 = cf.sysDNSUser.value;
+		old_sysDNSPassword_1 = cf.sysDNSPassword.value;
+	}
+	else if( cf.sysDNSProviderlist.value == 'www/var/www.oray.cn')
+	{
+		old_sysDNSUser_2 = cf.sysDNSUser.value;
+		old_sysDNSPassword_2 = cf.sysDNSPassword.value;
+	}
+	else if( cf.sysDNSProviderlist.value == 'www/var/www.3322.org' )
+	{
+		old_sysDNSHost_3 = cf.sysDNSHost.value;
+		old_sysDNSUser_3 = cf.sysDNSUser.value;
+		old_sysDNSPassword_3 = cf.sysDNSPassword.value;
+	}
+	else if( cf.sysDNSProviderlist.value == 'www/var/dynupdate.no-ip.com' )
+	{
+		old_sysDNSHost_4 = cf.sysDNSHost.value;
+		old_sysDNSUser_4 = cf.sysDNSUser.value;
+		old_sysDNSPassword_4 = cf.sysDNSPassword.value;
+	}
+}
+
+function loadvalue()
+{
+	var cf = document.forms[0];
+	if(vpn_flag == "1" && vpn_enable == "1" && parent.ddns_post_flag == 1){
+		parent.ddns_post_flag = 0;
+		alert("$warn_change_ddns");
+	}
+
+	if(old_endis_ddns == "1")
+		cf.sysDNSActive.checked =true;
+	else
+		cf.sysDNSActive.checked=false;
+	if(old_endis_wildcards == "1")
+		cf.sysDNSWildCard.checked =true;
+	else if(ddns_wildcards_flag == 1)
+		cf.sysDNSWildCard.checked = false;
+
+	if( dns_list == "www/var/www.DynDNS.org" )
+		cf.sysDNSProviderlist.value = "www/var/www.DynDNS.org";
+	else if( dns_list == "www/var/www.oray.cn" && pr_oray_flag == 1 )
+		cf.sysDNSProviderlist.value = "www/var/www.oray.cn";
+	else if( dns_list == "www/var/www.3322.org" && pr_3322_flag == 1 )
+		cf.sysDNSProviderlist.value = "www/var/www.3322.org";
+	else if( dns_list == "www/var/dynupdate.no-ip.com" && no_ip_flag == 1 )
+		cf.sysDNSProviderlist.value = "www/var/dynupdate.no-ip.com";
+	else
+		cf.sysDNSProviderlist.value = "www/var/www.DynDNS.org";
+
+	parse_xss_str();
+	changemode();
+}
+</script>
+<input type="hidden" name="ddns_enabled" value="">
+<input type="hidden" name="wildcards_enabled" value="">
+<input type="hidden" name="change_wan_type">
+<input type="hidden" name="hidden_sysDNSHost">
+<input type="hidden" name="hid_vpn_detect_ddns_change">
+<input type="hidden" name="hidden_sysDNSProviderlist">
+<input type="hidden" name="hidden_pwd_change_1" value="0">
+<input type="hidden" name="hidden_pwd_change_2" value="0">
+<input type="hidden" name="hidden_pwd_change_3" value="0">
+<input type="hidden" name="hidden_pwd_change_4" value="0">
+<TR>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="sysDNSActive" id="sysDNSActive" value="0">
+	<A tabindex=-1 href="javascript:loadhelp('_DNS_ddns','setup')"><B>$ddns_use_dnsser</B></A>
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_DNS_ddns','provider')"><B>$ddns_serpro</B></A>
+	</TD>
+	<TD nowrap align=right>
+	<select name="sysDNSProviderlist" onChange="changemode()" onfocus="Chgmode()">
+<script>
+	if( no_ip_flag == 1 )
+		document.write('<option value="www/var/dynupdate.no-ip.com">www.No-IP.com</option>');
+</script>
+
+		<option value="www/var/www.DynDNS.org" selected>www.Dyn</option>
+<script>
+if( pr_3322_flag == 1 )
+		document.write('<option value="www/var/www.3322.org">www.3322.org</option>');
+if( pr_oray_flag == 1 )
+		document.write('<option value="www/var/www.oray.cn" >www.oray.cn</option>');
+</script>
+	</select>
+	</TD>
+</TR>
+<TR id="sysDNShost_id">
+	<TD nowrap>$ddns_hostname</TD>
+	<TD nowrap align=right>
+	<input type="text" name="sysDNSHost" size="32" maxlength="255" value="<% cfg_sed_xss("sysDNSHost") %>" onKeyPress="return getkey('ddns_hostname',event)">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$ddns_username</TD>
+	<TD nowrap align=right>
+	<input type="text" name="sysDNSUser" size="32" maxlength="64" value="<% cfg_sed_xss("sysDNSUser")%>">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$ddns_passwd</TD>
+	<TD nowrap align=right>
+	<input type="password" name="sysDNSPassword" onfocus="change_ddns_password(this);" size="32" maxlength="64">
+	</TD>
+</TR>
+<TR id="oray_status" style="display:none">
+<TD colspan=2>
+	<table width=100% border=0 cellpadding=0 cellspacing=2>
+		<TR><TD nowrap width=75%>$router_mac_link_status</TD>
+		<TD>
+		<script>
+			var link_status="<% cat_file("/tmp/ez-ipupd.status") %>";
+			var enable_oray=(old_endis_ddns=="1" && dns_list == "www/var/www.oray.cn")? 1 :0;
+			if (enable_oray==0 || link_status == "0")
+                		document.write("$oray_status_offline");
+        		else if(link_status=="1")
+                		document.write("$oray_status_online");
+        		else if(link_status=="2")
+                		document.write("$oray_status_connect");
+        		else if(link_status=="3")
+                		document.write("$oray_status_auth_fail");
+       			else if(link_status=="4")
+                		document.write("$oray_status_reg_fail");
+        		else
+                		document.write("$oray_status_con_fail");
+		</script>
+		</TD></TR>
+		<TR><TD nowrap>$block_ser_service_type</TD>
+		<TD>
+		<script>
+			var ser_type="<% cat_file("/tmp/ez-ipupd.usertp") %>";
+			if(enable_oray==1 && link_status=="1")
+			{
+				if(ser_type=="0")
+					document.write("$oray_standard");
+				else if(ser_type=="1")
+					document.write("$oray_professional");
+				else if(ser_type=="2")
+					document.write("$oray_enterprise");
+			}
+		</script>
+		</TD></TR>
+		<TR><TD nowrap>$oray_domain_info</TD>
+		<script>
+			if(enable_oray==1 && link_status=="1" && domain_name_num>0)
+			{
+				for(i=0;i<domain_name_num;i++)
+				{	
+					var str=eval ( 'domain_name' + i );
+					if(i==0)
+						document.write("<TD>"+str+"</TD>");
+					else
+						document.write("</TR><TR><TD></TD><TD>"+str+"</TD>");
+				}
+			}	
+		</script>
+		</TR>
+		<TR><TD nowrap>$oray_link</TD>
+		<TD nowrap><a class="linktype" href="http://www.oray.cn/passport/register.php" target="_blank">$oray_link_reg</a></TD></TR>
+		<TR><TD nowrap></TD><TD nowrap><a class="linktype" href="http://www.oray.cn/peanuthull/service.php" target="_blank">$oray_link_upg</a></TD></TR>
+		<TR><TD nowrap></TD><TD nowrap><a class="linktype" href="http://www.oray.cn/ask/" target="_blank">$oray_link_help</a></TD></TR>
+	</table>
+</TD>
+</TR>
+<TR id="wildcards" style="display:none">
+	<TD nowrap colspan=2><input type="checkbox" name="sysDNSWildCard" value="1">
+	<A tabindex=-1 href="javascript:loadhelp('_DNS_ddns','wildcards')"><B>$ddns_use_wildcards</B></A>
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_DNS_ddns") %>
+</FORM>
+</BODY>
+</HTML>

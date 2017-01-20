@@ -1,0 +1,72 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% body_header("", "device_mode_setting.htm", "dev_mode") %>
+<div class="page_title">$dsl_device_mode</div>
+<div class="fix_button">
+<table width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+	if( master != "guest" )
+        document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" value="$cancel_mark" onClick="location.href=\'device_mode_setting.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="submit" name="Apply" value="$apply_mark" onClick="return check_devmode(document.forms[0]);"></TD></TR>');
+	else
+        document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit" name="Apply" value="$apply_mark" disabled></TD></TR>');
+</script>
+</table>
+</div>
+<div id="main" class="main_top_button">
+<input type="hidden" name="hid_dev_mode" value="0">
+<table width="100%" cellspacing="3" cellpadding="0" border="0">
+<tr><td><h1></h1></td></tr>
+<tr>
+	<td width="55%">$edit_devname</td>
+	<td ><% cfg_get("Device_name") %></td>
+</tr>
+<tr>
+	<td>$dsl_device_mode</td>
+	<td><select name="dev_mode">
+		<option value="0">$dsl_devmode_option_1</option>
+		<option value="1">$dsl_devmode_option_2</option>
+	</select>
+	</td>
+</tr>
+<td colspan="2">
+	<img width="100%" height="12" src="/liteblue.gif">
+</td>
+</table>
+</div>
+<% help_box("0","_device_mode") %>
+</form>
+<script>
+var dev_mode = "<% cfg_get("modem_mode") %>";
+var dev_mode_change = "<% cfg_get("modem_mode_change") %>";
+
+function loadvalue()
+{
+	var cf = document.forms[0];
+	if(dev_mode == "1")
+		cf.dev_mode.value = "1";
+	else
+		cf.dev_mode.value = "0";
+	if(dev_mode_change == "1"){
+		load_adv_menu();//afert apply the mode change, should show adv_menu change.
+		<% cfg_set("modem_mode_change", "0") %>;
+	}	
+}
+
+function check_devmode(cf)
+{
+	cf.hid_dev_mode.value = cf.dev_mode.value;
+	return true;
+}
+
+function load_adv_menu()
+{
+	top.device_mode = dev_mode;
+	top.menu_class_default();
+	if(dev_mode == "0" && dev_mode_change == "1"){//afert apply dev_mode=0, the advanced_sub items still grey, but it should be black.
+		top.open_or_close_sub("advanced");
+		top.open_or_close_sub("advanced");
+	}
+}
+</script>
+</body>
+</html>

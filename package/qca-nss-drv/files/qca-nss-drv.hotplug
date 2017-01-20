@@ -1,0 +1,36 @@
+#!/bin/sh
+
+load_nss_fw () {
+	echo 1 > /sys/class/firmware/$DEVICENAME/loading
+	cat $1 > /sys/class/firmware/$DEVICENAME/data
+	echo 0 > /sys/class/firmware/$DEVICENAME/loading
+}
+
+[ "$ACTION" != "add" ] && exit
+[ "$DEVICENAME" = "qca-nss.0" -o "$DEVICENAME" = "qca-nss.1" ] || exit
+
+# dev name for UCI, since it doesn't let you use . or -
+SDEVNAME=$(echo ${DEVICENAME} | sed s/[.-]/_/g)
+
+SELECTED_FW=$(uci get nss.${SDEVNAME}.firmware 2>/dev/null)
+[ -e "${SELECTED_FW}" ] && {
+	load_nss_fw ${SELECTED_FW}
+	exit
+}
+
+NSS_FNAME=$(echo ${DEVICENAME} | sed s/[.]//g)
+source /etc/openwrt_release
+case $DISTRIB_CODENAME in
+	enterpris*)
+		load_nss_fw /lib/firmware/${NSS_FNAME}-enterprise.bin
+		exit
+		;;
+	standar*)
+		load_nss_fw /lib/firmware/${NSS_FNAME}-retail.bin
+		exit
+		;;
+esac
+
+# try loading anything that's present
+DEFAULT_FW=/lib/firmware/${NSS_FNAME}*.bin | awk '{print $1}'
+load_nss_fw ${DEFAULT_FW}

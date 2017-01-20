@@ -1,0 +1,66 @@
+#!/bin/sh /etc/rc.common
+START=30
+
+start() {
+	[ "$($CONFIG get i_opmode)" = "normal" ] && $CONFIG set old_enable_acl_status=$($CONFIG get enable_block_device)
+
+	if [ "x$($CONFIG get enable_block_device)" = "x" ]; then
+		echo "No valid configuration for NETGEAR blocking function, please reset to factory default!"
+		exit 0
+	fi
+
+	if [ "x$($CONFIG get enable_block_device)" = "x0" ]; then
+		aclctl status off
+		exit 0
+	fi
+
+	if [ "x$($CONFIG get new_device_statue_by_default)" = "xAllow" ]; then
+		aclctl type allow
+		num=1
+		while [ 1 ]; do
+			ACCESS_CONTROL=$($CONFIG get access_control$num)
+			type_value=`echo $ACCESS_CONTROL | cut -f 1 -d ' '`
+			mac=`echo $ACCESS_CONTROL | cut -f 2 -d ' '`
+			if [ "x$mac" = "x" ]; then
+				break
+			fi
+			if [ "$type_value" = "1" ]; then
+				aclctl add $mac
+			fi
+			num=$(($num + 1))
+		done
+	else
+		aclctl type block
+		num=1
+		while [ 1 ]; do
+			ACCESS_CONTROL=$($CONFIG get access_control$num)
+			type_value=`echo $ACCESS_CONTROL | cut -f 1 -d ' '`
+			mac=`echo $ACCESS_CONTROL | cut -f 2 -d ' '`
+			if [ "x$mac" = "x" ]; then
+				break
+			fi
+			if [ "$type_value" = "0" ]; then
+				aclctl add $mac
+			fi
+			num=$(($num + 1))
+		done
+	fi
+	aclctl status on
+}
+
+boot() {
+	acld
+	aclhijackdns &
+	start
+}
+
+stop() {
+	aclctl status off
+	aclctl clean
+}
+
+restart() {
+	killall -SIGUSR1 acld
+	stop
+	start
+}

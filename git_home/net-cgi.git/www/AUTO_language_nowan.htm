@@ -1,0 +1,26 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<script language="javascript" type="text/javascript">
+parent.charcount=0;
+</script>
+
+<body bgcolor="#ffffff" onload="loadvalue();">
+<div class="page_title">$auto_upg_nowan_head</div>
+
+<div id="main" class="main">
+	<img src="/liteblue.gif" width="100%" height="12" />
+	<div align="center">$auto_upg_nowan </div>
+	<img src="/liteblue.gif" width="100%" height="12" />
+
+	<div align="center">
+	<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if( master == "admin" )
+		document.write('<input class="short_common_bt" type="button" value="$ok_mark " onClick="location.href=\'index.htm\';">');
+	else
+		document.write('<input class="short_common1_bt" type="button" value="$ok_mark " disabled>');
+	</script>
+	
+	</div>
+</div>
+</body>
+</html>

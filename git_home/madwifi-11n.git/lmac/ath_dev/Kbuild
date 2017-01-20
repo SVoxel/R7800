@@ -1,0 +1,272 @@
+ifeq ($(obj),)
+obj := .
+endif
+
+DEPTH := ../..
+
+ifeq ($(strip ${QCA_PARTNER_MAKE_F_SUPPORT}),1)
+export QCA_PARTNER_MAKE_F_INC=1
+endif
+include $(obj)/$(DEPTH)/os/linux/Makefile-linux.common
+OSDEP_SRC := $(DEPTH)/os/linux/src
+
+ifneq ($(strip ${ATH_WLAN_COMBINE}),1)
+INCS += -I$(HAL) -I$(HAL)/$(OS) -I$(ATH) -I$(ATH_RATE) -I$(ATH_PKTLOG) -I$(ATH_DFS) 
+INCS += -I$(obj)/$(DEPTH)/umac/include -I$(obj)/$(DEPTH)/umac/if_lmac
+else
+INCS +=	-I$(obj)/$(DEPTH)/include -I$(obj)/$(DEPTH)/umac/include \
+		-I$(obj)/$(DEPTH)/umac/if_lmac -I$(obj)/$(DEPTH)/umac/crypto \
+		-I$(obj)/$(DEPTH)/umac/scan -I$(obj)/$(DEPTH)/umac/resmgr \
+		-I$(obj)/$(DEPTH)/umac/pm -I$(obj)/$(DEPTH)/umac/txrx \
+		-I$(obj)/$(DEPTH)/umac/acs \
+		-I$(obj)/$(DEPTH)/umac/wnm \
+		-I$(obj)/$(DEPTH)/hal -I$(obj)/$(DEPTH)/lmac/ath_dev \
+		-I$(obj)/$(DEPTH)/hal/$(OS) -I$(obj)/$(DEPTH)/os/$(OS)/ath_hal \
+		-I$(ATH_RATE) -I$(ATH_PKTLOG) -I$(ATH_DFS) -I$(ATH_SPECTRAL)
+endif 
+
+
+obj-m += ath_dev.o
+
+EXTRA_CFLAGS+= $(INCS) $(COPTS) -Wno-unused-function
+
+ifeq ($(strip ${QCA_PARTNER_MAKE_F_SUPPORT}),1)
+MOD_CFLAGS = -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(ath_dev.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(ath_dev)" 
+endif
+
+ifeq ($(strip ${BUS}),GMAC)
+EXTRA_CFLAGS+= -DATH_HTC_TX_SCHED
+endif
+
+ifeq ($(strip ${ATH_VAP_PAUSE_SUPPORT}),1)
+EXTRA_CFLAGS+= -DATH_VAP_PAUSE_SUPPORT=1
+COPTS+= -DATH_VAP_PAUSE_SUPPORT=1
+endif
+
+ifeq ($(strip ${ATH_SUPPORT_SPECTRAL}),1)
+EXTRA_CFLAGS+= -DATH_SUPPORT_SPECTRAL=1
+INCS +=	-I$(ATH_SPECTRAL) -I$(obj)/$(DEPTH)/../../apps/spectral/common
+endif
+
+ifneq ($(strip ${UMAC_SUPPORT_APONLY}),0)
+ath_dev-objs := ath_beacon.o ath_desc.o ath_led.o \
+		ath_uapsd.o ath_main.o ath_power.o ath_recv.o ath_recv_ht.o \
+		ath_timer.o ath_xmit.o ath_xmit_ht.o ath_ppm.o ath_config.o ath_rb.o \
+		ath_edma_recv.o ath_edma_xmit.o ath_cfend.o raw_adc_capture.o ath_txbf.o ath_notify_tx_bcn.o \
+        ath_hwtimer.o ath_vap_info.o ath_paprd.o ath_aponly.o
+else
+ath_dev-objs := ath_beacon.o ath_desc.o ath_led.o \
+		ath_uapsd.o ath_main.o ath_power.o ath_recv.o ath_recv_ht.o \
+		ath_timer.o ath_xmit.o ath_xmit_ht.o ath_ppm.o ath_config.o ath_rb.o \
+		ath_edma_recv.o ath_edma_xmit.o ath_cfend.o raw_adc_capture.o ath_txbf.o ath_notify_tx_bcn.o \
+        ath_hwtimer.o ath_vap_info.o ath_paprd.o
+endif        
+
+ifeq ($(strip ${ATH_SUPPORT_PAPRD}),1)
+EXTRA_CFLAGS+= -DATH_SUPPORT_PAPRD=1
+endif
+
+ifeq ($(strip ${ATH_SUPPORT_RAW_ADC_CAPTURE}),1)
+EXTRA_CFLAGS+= -DATH_SUPPORT_RAW_ADC_CAPTURE=1
+INCS +=	-I$(ATH_SPECTRAL)
+endif
+
+ifeq ($(strip ${ATH_TRAFFIC_FAST_RECOVER}),1)
+EXTRA_CFLAGS+= -DATH_TRAFFIC_FAST_RECOVER=1
+else
+EXTRA_CFLAGS+= -DATH_TRAFFIC_FAST_RECOVER=0
+endif
+
+ifeq ($(strip ${LMAC_SUPPORT_POWERSAVE_QUEUE}),1)
+ath_dev-objs += ath_legacy_ps.o
+endif
+
+ifeq ($(strip ${ATH_VAP_PAUSE_SUPPORT}),1)
+ath_dev-objs += ath_vap_pause.o
+endif
+
+ifeq ($(strip ${ATH_SWRETRY}),1)
+ath_dev-objs += ath_swretry.o
+endif
+ifeq ($(strip ${ATH_RFKILL}),1)
+ath_dev-objs += ath_rfkill.o
+endif
+ifeq ($(strip ${QCA_AIRTIME_FAIRNESS}),1)
+ath_dev-objs += ath_airtime_fairness.o
+endif
+ifeq ($(strip ${ATH_SUPPORT_GREEN_AP}),1)
+ath_dev-objs += ath_green_ap.o
+endif
+ifeq ($(strip ${ATH_SUPPORT_ANT_DIV_COMB}),1)
+ath_dev-objs += ath_antdiv.o
+endif
+ifeq ($(strip ${ATH_SUPPORT_HTC}),1)
+ath_dev-objs += ath_htc_wmi.o ath_usb.o
+endif
+
+ath_dev-y := $(OSDEP_SRC)/ath_osdep.o $(OSDEP_SRC)/ath_iw_handler.o $(OSDEP_SRC)/ath_wbuf.o $(OSDEP_SRC)/ath_netlink.o
+
+ifeq ($(strip ${ATH_SUPPORT_AOW}),1)
+ath_dev-objs += ath_aow.o
+endif
+
+ifeq ($(strip ${ATH_SUPPORT_HYFI_ENHANCEMENTS}),1)
+ath_dev-objs += ath_ald.o
+endif
+
+ifeq ($(strip ${BUS}),AHB)
+ath_dev-y += $(OSDEP_SRC)/ath_ahb.o
+ath_dev-y += $(OSDEP_SRC)/if_bus.o
+endif
+
+ifeq ($(strip ${BUS}),PCI)
+ath_dev-y += $(OSDEP_SRC)/ath_pci.o
+ath_dev-y += $(OSDEP_SRC)/if_bus.o
+endif
+
+ifeq ($(strip ${BUS}),dual)
+ath_dev-y += $(OSDEP_SRC)/ath_ahb.o
+ath_dev-y += $(OSDEP_SRC)/ath_pci.o
+ath_dev-y += $(OSDEP_SRC)/if_bus.o
+endif
+
+ifeq ($(strip ${BUS}),SDIO)
+ath_dev-y += $(OSDEP_SRC)/if_bus.o
+endif
+
+
+ifeq ($(strip ${ATH_WLAN_COMBINE}),1)
+
+UMACDIR := $(DEPTH)/umac
+RATECTRLDIR := $(DEPTH)/lmac/ratectrl
+
+ifeq ($(strip $(BUSNAME)),ahb)
+BUS_OBJ = $(OSDEP_SRC)/if_ath_ahb.o
+endif
+
+ifeq ($(strip $(BUSNAME)),pci)
+BUS_OBJ = $(OSDEP_SRC)/if_ath_pci.o
+endif
+
+ifeq ($(strip $(BUSNAME)),dual)
+BUS_OBJ = $(OSDEP_SRC)/if_ath_ahb.o $(OSDEP_SRC)/if_ath_pci.o
+endif
+
+OSDEP_OBJS := 	$(OSDEP_SRC)/ath_linux.o $(BUS_OBJ) \
+				$(OSDEP_SRC)/ieee80211_wireless.o $(OSDEP_SRC)/osif_umac.o \
+				$(OSDEP_SRC)/if_media.o
+
+ifeq ($(ATH_SUPPORT_VLAN), 1)
+OSDEP_OBJS +=  $(OSDEP_SRC)/adf_net_vlan.o
+endif
+
+# combine the ratectrl module with the ath_dev
+
+AH_SUPPORT_AR5416?=1        # 5416 support
+
+ifeq ($(strip ${AH_SUPPORT_AR5212}),1)
+COPTS += -DAH_SUPPORT_AR5212=1
+endif
+
+ifeq ($(strip ${AH_SUPPORT_AR5416}),1)
+COPTS += -DAH_SUPPORT_AR5416=1
+endif
+
+ifeq ($(strip $(AH_SUPPORT_AR5212)),1)
+ath_rate_objs += $(RATECTRLDIR)/ar5212Phy.o
+endif
+
+ifeq ($(strip $(AH_SUPPORT_AR5416)),1)
+ath_rate_objs += $(RATECTRLDIR)/ar5416Phy.o
+endif
+
+ifeq ($(strip $(AH_SUPPORT_AR9300)),1)
+ath_rate_objs += $(RATECTRLDIR)/ar5416Phy.o
+endif
+
+ath_dev-y +=	$(RATECTRLDIR)/ratectrl.o $(RATECTRLDIR)//ratectrl_11n.o \
+				$(RATECTRLDIR)/ratectrl_11nViVo.o $(RATECTRLDIR)/if_athrate.o \
+				$(ath_rate_objs)
+
+# combine the umac module with the ath_dev
+
+ath_dev-y +=	$(UMACDIR)/base/ieee80211_channel.o $(UMACDIR)/base/ieee80211_common.o \
+				$(UMACDIR)/base/ieee80211_config.o $(UMACDIR)/base/ieee80211_node.o \
+				$(UMACDIR)/base/ieee80211_node_ap.o $(UMACDIR)/base/ieee80211_node_sta.o \
+				$(UMACDIR)/base/ieee80211_node_ibss.o $(UMACDIR)/base/ieee80211_rateset.o \
+				$(UMACDIR)/base/ieee80211_vap.o $(UMACDIR)/base/ieee80211_msg.o \
+				$(UMACDIR)/crypto/ieee80211_crypto.o $(UMACDIR)/crypto/ieee80211_crypto_ccmp.o \
+                $(UMACDIR)/crypto/ieee80211_crypto_ccmp_sw.o\
+				$(UMACDIR)/crypto/ieee80211_crypto_none.o $(UMACDIR)/crypto/ieee80211_crypto_tkip.o \
+				$(UMACDIR)/crypto/ieee80211_crypto_wep.o $(UMACDIR)/crypto/ieee80211_rsn.o \
+				$(UMACDIR)/crypto/ieee80211_crypto_rijndael.o $(UMACDIR)/crypto/ieee80211_wps.o \
+				$(UMACDIR)/crypto/ieee80211_wapi.o $(UMACDIR)/crypto/ieee80211_crypto_wpi_sms4.o \
+				$(UMACDIR)/if_lmac/if_ath.o $(UMACDIR)/if_lmac/if_ath_amsdu.o \
+				$(UMACDIR)/if_lmac/ath_cwm.o $(UMACDIR)/if_lmac/ath_cwm_project.o \
+				$(UMACDIR)/if_lmac/if_ath_uapsd.o \
+				$(UMACDIR)/if_lmac/if_ath_dfs.o \
+				$(UMACDIR)/mlme/ieee80211_beacon.o $(UMACDIR)/mlme/ieee80211_ie.o \
+				$(UMACDIR)/mlme/ieee80211_mgmt.o $(UMACDIR)/mlme/ieee80211_mgmt_ap.o \
+				$(UMACDIR)/mlme/ieee80211_mgmt_sta.o $(UMACDIR)/mlme/ieee80211_mlme.o \
+				$(UMACDIR)/mlme/ieee80211_proto.o $(UMACDIR)/mlme/ieee80211_mlme_ap.o \
+				$(UMACDIR)/mlme/ieee80211_mlme_sta.o $(UMACDIR)/mlme/ieee80211_mlme_ibss.o  \
+				$(UMACDIR)/mlme/ieee80211_mgmt_ibss.o  $(UMACDIR)/mlme/ieee80211_mgmt_bss.o \
+				$(UMACDIR)/mlme/ieee80211_mlme_app_ie.o \
+				$(UMACDIR)/mlme/ieee80211_mlme_sw_bmiss.o $(UMACDIR)/mlme/ieee80211_ie_utils.o \
+				$(UMACDIR)/pm/ieee80211_ap_power.o $(UMACDIR)/pm/ieee80211_power.o \
+				$(UMACDIR)/pm/ieee80211_sta_power.o $(UMACDIR)/pm/ieee80211_power_queue.o \
+				$(UMACDIR)/regdmn/ieee80211_regdmn.o $(UMACDIR)/resmgr/ieee80211_resmgr.o \
+				$(UMACDIR)/resmgr/ieee80211_resmgr_sm.o \
+				$(UMACDIR)/scan/ieee80211_scan.o $(UMACDIR)/scan/ieee80211_aplist.o \
+				$(UMACDIR)/scan/ieee80211_scanentry.o \
+				$(UMACDIR)/acs/ieee80211_acs.o \
+				$(UMACDIR)/sme/ieee80211_sm.o $(UMACDIR)/sme/ieee80211_assoc_sm.o \
+				$(UMACDIR)/sme/ieee80211_connection_sm.o \
+				$(UMACDIR)/txrx/ieee80211_input.o $(UMACDIR)/txrx/ieee80211_output.o \
+				$(UMACDIR)/txrx/ieee80211_frag.o \
+				$(UMACDIR)/wds/ieee80211_wds.o \
+				$(UMACDIR)/wnm/ieee80211_wnm.o  $(UMACDIR)/wnm/ieee80211_wnm_ap.o \
+				$(UMACDIR)/wnm/ieee80211_wnm_sta.o \
+				$(UMACDIR)/acl/ieee80211_acl.o \
+				$(UMACDIR)/ique/ieee80211_hbr.o \
+				$(UMACDIR)/ique/ieee80211_me.o \
+                $(UMACDIR)/wds/ieee80211_wds.o \
+				$(UMACDIR)/ique/ieee80211_hbr.o $(UMACDIR)/ique/ieee80211_me.o \
+                $(UMACDIR)/p2p/ieee80211_notify_tx_bcn.o $(UMACDIR)/p2p/ieee80211_p2p_client.o \
+                $(UMACDIR)/p2p/ieee80211_p2p_device.o $(UMACDIR)/p2p/ieee80211_p2p_go.o \
+                $(UMACDIR)/p2p/ieee80211_p2p_go_schedule.o $(UMACDIR)/p2p/ieee80211_p2p_ie.o \
+                $(UMACDIR)/p2p/ieee80211_p2p_kernel.o $(UMACDIR)/p2p/ieee80211_p2p_client_power.o  \
+                $(UMACDIR)/p2p/ieee80211_p2p_go_power.o $(UMACDIR)/base/ieee80211_vap_ath_info.o
+
+ifeq ($(ATH_EXT_AP), 1) 
+  ath_dev-y += $(UMACDIR)/extap/ieee80211_extap.o $(UMACDIR)/extap/ieee80211_mitbl.o  
+endif
+
+ath_dev-y += $(OSDEP_OBJS)
+                                          
+# combine DFS with the ath_dev
+
+ifeq ($(strip ${ATH_SUPPORT_DFS}),1)
+ath_dev-y +=	$(DEPTH)/lmac/dfs/dfs.o
+endif
+
+endif
+
+clean-files := modules.order ../modules.order
+
+ifeq ($(strip ${QCA_PARTNER_MAKE_F_SUPPORT}),1)
+all: ath_dev.ko
+
+ath_dev.mod.o: ath_dev.mod.c
+	${CC} -c -o $@ ${EXTRA_CFLAGS} ${MOD_CFLAGS} $<
+
+ath_dev.o: ${ath_dev-objs} ${ath_dev-y}
+	$(LD) -m elf32btsmip -r -o ath_dev.o $(ath_dev-objs) ${ath_dev-y}
+	$(KERNELPATH)/scripts/mod/modpost ath_dev.o
+
+ath_dev.ko: ath_dev.o ath_dev.mod.o
+	$(LD) $(LDOPTS) -o ath_dev.ko ath_dev.o ath_dev.mod.o
+
+%.o: %.c
+	${CC} -c -o $@ ${EXTRA_CFLAGS} $< 
+endif

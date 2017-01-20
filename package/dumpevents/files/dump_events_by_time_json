@@ -1,0 +1,61 @@
+#!/bin/sh
+
+PROG=`basename $0`
+
+usage() {
+	echo "usage: $PROG begin_time end_time [keys...]"
+}
+
+if [ $# -lt 2 ]; then
+	usage
+	exit 1
+fi
+
+begin=$1
+end=$2
+
+shift 2
+keys="${@:-eventdb:events}"
+
+entries_per_call=300
+begin_index=0
+end_index=$(($begin_index+$entries_per_call-1))
+comma=""
+
+# process_step return values
+FLAG_DONE=0
+FLAG_COMMA=1
+FLAG_NOTHING=2
+
+process_step() {
+	redis-cli -s /var/run/appflow/redis.sock --eval /usr/bin/filter_events_by_time.lua $keys , $begin $end $begin_index $end_index | \
+	{
+		local setcomma=$FLAG_NOTHING
+		local empty_output=yes
+		while read line; do
+			empty_output=no
+			[ -z "$line" ] && continue
+			[ "$line" = "done" ] && return $FLAG_DONE
+			if [ $setcomma -eq $FLAG_NOTHING ]; then
+				echo $comma
+				setcomma=$FLAG_COMMA
+			else
+				echo ,
+			fi
+			echo $line
+		done
+		[ $empty_output = yes ] && return $FLAG_DONE
+		return $setcomma
+	}
+}
+
+echo "{\"events\": ["
+
+while true; do
+	process_step && break
+	[ $? -eq $FLAG_COMMA ] && comma=","
+	begin_index=$((end_index+1))
+	end_index=$(($begin_index+$entries_per_call-1))
+done
+
+echo "]}"

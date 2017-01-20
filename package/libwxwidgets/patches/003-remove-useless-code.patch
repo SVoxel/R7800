@@ -1,0 +1,396 @@
+--- wxWidgets-2.8.12/src/common/appbase.cpp	2011-03-22 07:59:40.000000000 -0400
++++ wxWidgets-2.8.12/src/common/appbase.cpp	2012-05-07 13:29:14.028175530 -0400
+@@ -81,27 +81,6 @@
+ #error "wxABI_VERSION should not be defined when compiling the library"
+ #endif
+ 
+-// ----------------------------------------------------------------------------
+-// private functions prototypes
+-// ----------------------------------------------------------------------------
+-
+-#ifdef __WXDEBUG__
+-    // really just show the assert dialog
+-    static bool DoShowAssertDialog(const wxString& msg);
+-
+-    // prepare for showing the assert dialog, use the given traits or
+-    // DoShowAssertDialog() as last fallback to really show it
+-    static
+-    void ShowAssertDialog(const wxChar *szFile,
+-                          int nLine,
+-                          const wxChar *szFunc,
+-                          const wxChar *szCond,
+-                          const wxChar *szMsg,
+-                          wxAppTraits *traits = NULL);
+-
+-    // turn on the trace masks specified in the env variable WXTRACE
+-    static void LINKAGEMODE SetTraceMasks();
+-#endif // __WXDEBUG__
+ 
+ // ----------------------------------------------------------------------------
+ // global vars
+@@ -243,21 +222,21 @@
+ #if WXWIN_COMPATIBILITY_2_4
+ 
+ #if wxUSE_LOG
+-
++/*
+ wxLog *wxAppConsole::CreateLogTarget()
+ {
+     wxAppTraits *traits = GetTraits();
+     return traits ? traits->CreateLogTarget() : NULL;
+ }
+-
++*/
+ #endif // wxUSE_LOG
+-
++/*
+ wxMessageOutput *wxAppConsole::CreateMessageOutput()
+ {
+     wxAppTraits *traits = GetTraits();
+     return traits ? traits->CreateMessageOutput() : NULL;
+ }
+-
++*/
+ #endif // WXWIN_COMPATIBILITY_2_4
+ 
+ // ----------------------------------------------------------------------------
+@@ -434,27 +413,6 @@
+     return true;
+ }
+ 
+-#ifdef __WXDEBUG__
+-
+-void wxAppConsole::OnAssertFailure(const wxChar *file,
+-                                   int line,
+-                                   const wxChar *func,
+-                                   const wxChar *cond,
+-                                   const wxChar *msg)
+-{
+-    ShowAssertDialog(file, line, func, cond, msg, GetTraits());
+-}
+-
+-void wxAppConsole::OnAssert(const wxChar *file,
+-                            int line,
+-                            const wxChar *cond,
+-                            const wxChar *msg)
+-{
+-    OnAssertFailure(file, line, NULL, cond, msg);
+-}
+-
+-#endif // __WXDEBUG__
+-
+ #if WXWIN_COMPATIBILITY_2_4
+ 
+ bool wxAppConsole::CheckBuildOptions(const wxBuildOptions& buildOptions)
+@@ -501,13 +459,6 @@
+     return NULL;
+ }
+ 
+-#ifdef __WXDEBUG__
+-bool wxConsoleAppTraitsBase::ShowAssertDialog(const wxString& msg)
+-{
+-    return wxAppTraitsBase::ShowAssertDialog(msg);
+-}
+-#endif
+-
+ bool wxConsoleAppTraitsBase::HasStderr()
+ {
+     // console applications always have stderr, even under Mac/Windows
+@@ -531,98 +482,6 @@
+ }
+ #endif
+ 
+-// ----------------------------------------------------------------------------
+-// wxAppTraits
+-// ----------------------------------------------------------------------------
+-
+-#ifdef __WXDEBUG__
+-
+-bool wxAppTraitsBase::ShowAssertDialog(const wxString& msgOriginal)
+-{
+-    wxString msg = msgOriginal;
+-
+-#if wxUSE_STACKWALKER
+-#if !defined(__WXMSW__)
+-    // on Unix stack frame generation may take some time, depending on the
+-    // size of the executable mainly... warn the user that we are working
+-    wxFprintf(stderr, wxT("[Debug] Generating a stack trace... please wait"));
+-    fflush(stderr);
+-#endif
+-
+-    const wxString stackTrace = GetAssertStackTrace();
+-    if ( !stackTrace.empty() )
+-        msg << _T("\n\nCall stack:\n") << stackTrace;
+-#endif // wxUSE_STACKWALKER
+-
+-    return DoShowAssertDialog(msg);
+-}
+-
+-#if wxUSE_STACKWALKER
+-wxString wxAppTraitsBase::GetAssertStackTrace()
+-{
+-    wxString stackTrace;
+-
+-    class StackDump : public wxStackWalker
+-    {
+-    public:
+-        StackDump() { }
+-
+-        const wxString& GetStackTrace() const { return m_stackTrace; }
+-
+-    protected:
+-        virtual void OnStackFrame(const wxStackFrame& frame)
+-        {
+-            m_stackTrace << wxString::Format
+-                            (
+-                              _T("[%02d] "),
+-                              wx_truncate_cast(int, frame.GetLevel())
+-                            );
+-
+-            wxString name = frame.GetName();
+-            if ( !name.empty() )
+-            {
+-                m_stackTrace << wxString::Format(_T("%-40s"), name.c_str());
+-            }
+-            else
+-            {
+-                m_stackTrace << wxString::Format(_T("%p"), frame.GetAddress());
+-            }
+-
+-            if ( frame.HasSourceLocation() )
+-            {
+-                m_stackTrace << _T('\t')
+-                             << frame.GetFileName()
+-                             << _T(':')
+-                             << frame.GetLine();
+-            }
+-
+-            m_stackTrace << _T('\n');
+-        }
+-
+-    private:
+-        wxString m_stackTrace;
+-    };
+-
+-    // don't show more than maxLines or we could get a dialog too tall to be
+-    // shown on screen: 20 should be ok everywhere as even with 15 pixel high
+-    // characters it is still only 300 pixels...
+-    static const int maxLines = 20;
+-
+-    StackDump dump;
+-    dump.Walk(2, maxLines); // don't show OnAssert() call itself
+-    stackTrace = dump.GetStackTrace();
+-
+-    const int count = stackTrace.Freq(wxT('\n'));
+-    for ( int i = 0; i < count - maxLines; i++ )
+-        stackTrace = stackTrace.BeforeLast(wxT('\n'));
+-
+-    return stackTrace;
+-}
+-#endif // wxUSE_STACKWALKER
+-
+-
+-#endif // __WXDEBUG__
+-
+ // ============================================================================
+ // global functions implementation
+ // ============================================================================
+@@ -649,198 +508,3 @@
+     //else: do nothing, what can we do?
+ }
+ 
+-#ifdef  __WXDEBUG__
+-
+-// wxASSERT() helper
+-bool wxAssertIsEqual(int x, int y)
+-{
+-    return x == y;
+-}
+-
+-// break into the debugger
+-void wxTrap()
+-{
+-#if defined(__WXMSW__) && !defined(__WXMICROWIN__)
+-    DebugBreak();
+-#elif defined(__WXMAC__) && !defined(__DARWIN__)
+-    #if __powerc
+-        Debugger();
+-    #else
+-        SysBreak();
+-    #endif
+-#elif defined(_MSL_USING_MW_C_HEADERS) && _MSL_USING_MW_C_HEADERS
+-    Debugger();
+-#elif defined(__UNIX__)
+-    raise(SIGTRAP);
+-#else
+-    // TODO
+-#endif // Win/Unix
+-}
+-
+-// this function is called when an assert fails
+-void wxOnAssert(const wxChar *szFile,
+-                int nLine,
+-                const char *szFunc,
+-                const wxChar *szCond,
+-                const wxChar *szMsg)
+-{
+-    // FIXME MT-unsafe
+-    static int s_bInAssert = 0;
+-
+-    wxRecursionGuard guard(s_bInAssert);
+-    if ( guard.IsInside() )
+-    {
+-        // can't use assert here to avoid infinite loops, so just trap
+-        wxTrap();
+-
+-        return;
+-    }
+-
+-    // __FUNCTION__ is always in ASCII, convert it to wide char if needed
+-    const wxString strFunc = wxString::FromAscii(szFunc);
+-
+-    if ( !wxTheApp )
+-    {
+-        // by default, show the assert dialog box -- we can't customize this
+-        // behaviour
+-        ShowAssertDialog(szFile, nLine, strFunc, szCond, szMsg);
+-    }
+-    else
+-    {
+-        // let the app process it as it wants
+-        wxTheApp->OnAssertFailure(szFile, nLine, strFunc, szCond, szMsg);
+-    }
+-}
+-
+-#endif // __WXDEBUG__
+-
+-// ============================================================================
+-// private functions implementation
+-// ============================================================================
+-
+-#ifdef __WXDEBUG__
+-
+-static void LINKAGEMODE SetTraceMasks()
+-{
+-#if wxUSE_LOG
+-    wxString mask;
+-    if ( wxGetEnv(wxT("WXTRACE"), &mask) )
+-    {
+-        wxStringTokenizer tkn(mask, wxT(",;:"));
+-        while ( tkn.HasMoreTokens() )
+-            wxLog::AddTraceMask(tkn.GetNextToken());
+-    }
+-#endif // wxUSE_LOG
+-}
+-
+-bool DoShowAssertDialog(const wxString& msg)
+-{
+-    // under MSW we can show the dialog even in the console mode
+-#if defined(__WXMSW__) && !defined(__WXMICROWIN__)
+-    wxString msgDlg(msg);
+-
+-    // this message is intentionally not translated -- it is for
+-    // developpers only
+-    msgDlg += wxT("\nDo you want to stop the program?\n")
+-              wxT("You can also choose [Cancel] to suppress ")
+-              wxT("further warnings.");
+-
+-    switch ( ::MessageBox(NULL, msgDlg, _T("wxWidgets Debug Alert"),
+-                          MB_YESNOCANCEL | MB_ICONSTOP ) )
+-    {
+-        case IDYES:
+-            wxTrap();
+-            break;
+-
+-        case IDCANCEL:
+-            // stop the asserts
+-            return true;
+-
+-        //case IDNO: nothing to do
+-    }
+-#else // !__WXMSW__
+-    wxFprintf(stderr, wxT("%s\n"), msg.c_str());
+-    fflush(stderr);
+-
+-    // TODO: ask the user to enter "Y" or "N" on the console?
+-    wxTrap();
+-#endif // __WXMSW__/!__WXMSW__
+-
+-    // continue with the asserts
+-    return false;
+-}
+-
+-// show the assert modal dialog
+-static
+-void ShowAssertDialog(const wxChar *szFile,
+-                      int nLine,
+-                      const wxChar *szFunc,
+-                      const wxChar *szCond,
+-                      const wxChar *szMsg,
+-                      wxAppTraits *traits)
+-{
+-    // this variable can be set to true to suppress "assert failure" messages
+-    static bool s_bNoAsserts = false;
+-
+-    wxString msg;
+-    msg.reserve(2048);
+-
+-    // make life easier for people using VC++ IDE by using this format: like
+-    // this, clicking on the message will take us immediately to the place of
+-    // the failed assert
+-    msg.Printf(wxT("%s(%d): assert \"%s\" failed"), szFile, nLine, szCond);
+-
+-    // add the function name, if any
+-    if ( szFunc && *szFunc )
+-        msg << _T(" in ") << szFunc << _T("()");
+-
+-    // and the message itself
+-    if ( szMsg )
+-    {
+-        msg << _T(": ") << szMsg;
+-    }
+-    else // no message given
+-    {
+-        msg << _T('.');
+-    }
+-
+-#if wxUSE_THREADS
+-    // if we are not in the main thread, output the assert directly and trap
+-    // since dialogs cannot be displayed
+-    if ( !wxThread::IsMain() )
+-    {
+-        msg += wxT(" [in child thread]");
+-
+-#if defined(__WXMSW__) && !defined(__WXMICROWIN__)
+-        msg << wxT("\r\n");
+-        OutputDebugString(msg );
+-#else
+-        // send to stderr
+-        wxFprintf(stderr, wxT("%s\n"), msg.c_str());
+-        fflush(stderr);
+-#endif
+-        // He-e-e-e-elp!! we're asserting in a child thread
+-        wxTrap();
+-    }
+-    else
+-#endif // wxUSE_THREADS
+-
+-    if ( !s_bNoAsserts )
+-    {
+-        // send it to the normal log destination
+-        wxLogDebug(_T("%s"), msg.c_str());
+-
+-        if ( traits )
+-        {
+-            // delegate showing assert dialog (if possible) to that class
+-            s_bNoAsserts = traits->ShowAssertDialog(msg);
+-        }
+-        else // no traits object
+-        {
+-            // fall back to the function of last resort
+-            s_bNoAsserts = DoShowAssertDialog(msg);
+-        }
+-    }
+-}
+-
+-#endif // __WXDEBUG__

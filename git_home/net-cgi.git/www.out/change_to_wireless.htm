@@ -1,0 +1,22 @@
+<% http_header("style/form.css") %>
+<% nohelp_header("welcomeok.htm", "hijack_set_wireless") %>
+<script>
+//fix bug 28798 clicking "Click here" should go to wireless setup page
+function loadvalue()
+{
+	var cf=document.forms[0];
+	cf.hid_wireless_tag.value="1";
+	cf.target="_self";
+	cf.submit();
+}
+</script>
+<input type="hidden" name="hid_wireless_tag">
+<% table_header() %>
+<TR><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+<TR><TD><BR><BR>$wizard_pls_wait<BR><BR></TD></TR>
+<TR><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+</table>
+</FORM>
+</BODY>
+</HTML>
+

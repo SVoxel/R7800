@@ -1,0 +1,14 @@
+#!/bin/sh
+
+ip=$(/bin/config get lan_ipaddr)
+name=$(/bin/config get netbiosname)
+if [ "x$name" = "x" ]; then
+	name=$(/bin/config get Device_name)
+	[ "x$name" = "x" ] && name=R7800
+fi
+
+[ "x$ip" = "x" ] && ip=192.168.1.1
+cat <<EOF >/tmp/hosts
+127.0.0.1 localhost
+$ip $name
+EOF

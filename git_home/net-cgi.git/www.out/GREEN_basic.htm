@@ -1,0 +1,22 @@
+<HTML>
+<HEAD></HEAD>
+
+<script>
+var download_type = "<% cfg_get("download_type") %>";
+
+function loadvalue()
+{
+	if( download_type == "http" )
+		this.location.href="GREEN_http_basic.htm";
+	else if( download_type == "bt" )
+		this.location.href="GREEN_bt_basic.htm";
+	else if( download_type == "emule" )
+		this.location.href="GREEN_emule_basic.htm";
+	else
+		this.location.href="GREEN_http_basic.htm";
+}
+</script>
+
+<BODY onLoad="loadvalue();">
+</BODY>
+</HTML>

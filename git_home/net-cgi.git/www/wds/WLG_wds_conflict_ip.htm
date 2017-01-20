@@ -1,0 +1,21 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<body>
+<% table_header("$failure_head") %>
+$bluebar
+
+<script>
+var wds_endis_fun="<% cfg_get("wds_endis_fun") %>";
+var wds_repeater_basic="<% cfg_get("wds_repeater_basic") %>";
+var endis_wl_radio="<% enable_ap_orNot("bgn") %>";
+
+top.enable_action=1;
+top.enabled_wds="<% wds_enable() %>";
+top.menu_color_change('wds');
+setTimeout('location.href="WLG_wds.htm"', 5000);
+</script>
+<TR><TD nowrap><B>$invalid_ip</B></TD></TR>
+$bluebar
+<TR><TD nowrap>$few_second</TD></TR> 
+</TABLE>
+</BODY>
+</HTML>

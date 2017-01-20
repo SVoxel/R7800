@@ -1,0 +1,156 @@
+#!/bin/sh /etc/rc.common
+
+setup_hostname() # $1: apmode/brmode/extmode/factory
+{
+	local hostname
+
+	case "$1" in
+	apmode) hostname=$($CONFIG get ap_netbiosname)
+		;;
+	brmode)	hostname=$($CONFIG get bridge_netbiosname)
+		;;
+	*) hostname="$($CONFIG get netbiosname)" ;;
+	esac
+	[ -z "$hostname" ] && hostname="$($CONFIG get Device_name)"
+
+	echo "$hostname" > /proc/sys/kernel/hostname
+}
+
+setup_interface_static() # $1: apmode/brmode/extmode/factory
+{
+	case "$1" in
+	apmode)
+		ifconfig br0 $($CONFIG get ap_ipaddr) netmask $($CONFIG get ap_netmask)
+		route add default gw $($CONFIG get ap_gateway)
+		echo "nameserver $($CONFIG get ap_ether_dns1)" > /tmp/resolv.conf
+		echo "nameserver $($CONFIG get ap_ether_dns2)" >> /tmp/resolv.conf
+		;;
+	brmode)
+		ifconfig br0 $($CONFIG get bridge_ipaddr) netmask $($CONFIG get bridge_netmask)
+		route add default gw $($CONFIG get bridge_gateway)
+		echo "nameserver $($CONFIG get bridge_ether_dns1)" > /tmp/resolv.conf
+		echo "nameserver $($CONFIG get bridge_ether_dns2)" >> /tmp/resolv.conf
+		;;
+	extmode)
+		ifconfig br0 $($CONFIG get extender_ipaddr) netmask $($CONFIG get extender_netmask)
+		route add default gw $($CONFIG get extender_gateway)
+		echo "nameserver $($CONFIG get extender_ether_dns1)" > /tmp/resolv.conf
+		echo "nameserver $($CONFIG get extender_ether_dns2)" >> /tmp/resolv.conf
+		;;
+	factory)
+		ifconfig br0 $($CONFIG get lan_ipaddr) netmask $($CONFIG get lan_netmask)
+		;;
+	esac
+	/sbin/ledcontrol -n wan -c green -s on
+}
+
+setup_interface_dhcp() # $1: apmode/brmode/extmode
+{
+	hostname=$(cat /proc/sys/kernel/hostname)
+	
+	# hostapd always need a lan ip to up.
+	[ "$1" = "apmode" ] && ifconfig br0 $($CONFIG get lan_ipaddr)
+
+	/sbin/udhcpc -a -b -i br0 -h "$hostname" -r $($CONFIG get ap_dhcp_ipaddr) &
+
+	case "$1" in
+	apmode) echo "ap mode start udhcp" ;; 
+	brmode) /etc/init.d/net-br-dhcpc-helper & ;;
+	extmode) sleep 10
+		/etc/init.d/net-br-dhcpc-helper & ;;
+	esac
+}
+
+setup_interface() # $1: apmode/brmode/extmode/factory
+{
+	local dhcp=1
+
+	case "$1" in
+	apmode) [ "$($CONFIG get ap_ether_ip_assign)" = "0" ] && dhcp=0 ;;
+	brmode) [ "$($CONFIG get bridge_ether_ip_assign)" = "0" ] && dhcp=0 ;;
+	extmode) [ "$($CONFIG get extender_ether_ip_assign)" = "0" ] && dhcp=0 ;;
+	factory) dhcp=0 ;;
+	esac
+
+	[ "$dhcp" = "1" ] && setup_interface_dhcp $1 || setup_interface_static $1
+}
+
+start0() # $1: boot/start
+{
+	local opmode=$($CONFIG get i_opmode)
+
+	# Stop Traffic Meter
+	/sbin/cmd_traffic_meter stop
+	/usr/bin/killall tfm_led
+
+	setup_hostname $opmode
+
+	ifconfig ethlan up
+	ifconfig ethwan up
+	ifconfig br0 up
+
+	/etc/init.d/wlan-common start &
+
+	# Pull low PHY 9 seconds then pull high PHY to let wired client re-obtain IP address
+	echo -n '911111' > /proc/switch_phy && sleep 10
+	setup_interface $opmode 
+
+	/sbin/cmd_ebtables start
+	/etc/init.d/net-scan $1      # daemon for getting attached devices
+	/etc/init.d/lltd $1          # Link Layer Topology Discovery Daemon
+	/etc/init.d/telnet $1        # telnet daemon for Router Debugging Mode ...
+	/usr/sbin/update_smb
+	/sbin/cmddlna ip_restart &   # dlan daemon
+	/etc/init.d/upnp $1
+	if [ "$opmode" = "apmode" ]; then
+ 	    /usr/sbin/brctl stp br0 1
+	fi
+}
+
+start()
+{
+	start0 start
+	/etc/init.d/ntpclient start
+	/etc/init.d/cron start
+	/etc/init.d/dnsmasq start
+}
+
+stop()
+{
+	# wan service
+	/etc/init.d/dnsmasq stop
+	/etc/init.d/cron stop
+	/etc/init.d/ntpclient stop
+
+	# lan service
+#	/etc/init.d/samba stop
+	/etc/init.d/upnp stop
+	/etc/init.d/telnet stop
+	/etc/init.d/lltd stop
+	/etc/init.d/net-scan stop
+	/sbin/cmd_ebtables stop
+	if [ "$($CONFIG get i_opmode)" = "apmode" ]; then
+ 	    /usr/sbin/brctl stp br0 0
+	fi
+
+	/sbin/ledcontrol -n wan -c amber -s on
+	killall net-br-dhcpc-helper
+	killall zcip
+	killall -SIGUSR2 udhcpc; killall udhcpc; killall udhcpc; sleep 1
+
+	ifconfig br0 down
+	ifconfig ethwan down
+	ifconfig ethlan down
+}
+
+restart()
+{
+	stop
+	start
+}
+
+boot()
+{
+	/sbin/ledcontrol -n wan -c amber -s on
+	start0 boot
+}

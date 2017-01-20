@@ -1,0 +1,67 @@
+#!/bin/sh
+
+RECORD_FILE="/tmp/ppp1_dns_records.file"
+PPP1_DNS_FILE="/etc/ppp/pppoe2-dns.conf"
+mulpppoe_ifname=ppp1
+
+check_route_exist(){
+	local ip_addr=$1
+	local tmp_ip
+	route -n | grep $mulpppoe_ifname | grep $ip_addr 1>/tmp/check_route.tmp 2>/dev/null
+	for tmp_ip in `cat /tmp/check_route.tmp 2>/dev/null | awk {'print$1'}`; do
+		if [ $tmp_ip = $ip_addr ]; then
+			echo "1"
+			#echo -n 1>/tmp/check_route.tmp 2>/dev/null 
+			return
+		fi
+	done
+	echo "0"
+	#echo -n 1>/tmp/check_route.tmp 2>/dev/null
+}
+
+add_record(){
+	local dname=$1
+	local ip_addr=$2
+	local rcstring="#$dname#$ip_addr#"
+	echo "mul_pppoe_dns add_record $dname $ip_addr"
+	if [ `grep "$rcstring" $RECORD_FILE -c 2>/dev/null` -gt 0 ]; then
+		return
+	fi
+	echo "$rcstring" >> $RECORD_FILE
+	if [ `check_route_exist $ip_addr 2>/dev/null` = "1" ]; then
+		return
+	fi
+	route add $ip_addr dev $mulpppoe_ifname
+}
+
+clear_all_record(){
+	local tmp_ip
+	local ex_dnslist=`cat $PPP1_DNS_FILE 2>/dev/null`
+	local ex_dns1=`echo $ex_dnslist | awk {'print$1'}`
+	local ex_dns2=`echo $ex_dnslist | awk {'print$2'}`
+	local ppp1_rtaddr=`ifconfig ppp1 2>/dev/null | grep "P-t-P:" | awk {'print$3'} | awk -F":" {'print$2'}`
+	for tmp_ip in `cat $RECORD_FILE 2>/dev/null | awk -F"#" {'print$3'}`; do
+		if [ $tmp_ip = $ex_dns1 -o $tmp_ip = $ex_dns2 -o $tmp_ip = $ppp1_rtaddr ]; then
+			continue
+		fi
+		if [ `check_route_exist $tmp_ip 2>/dev/null` = "1" ]; then
+			route del $tmp_ip dev $mulpppoe_ifname
+		fi
+	done
+	echo -n > $RECORD_FILE
+}
+
+[ -f $RECORD_FILE ] || touch $RECORD_FILE
+# See how we were called.
+case "$1" in
+  add_record)
+	add_record $2 $3
+	;;
+  clear_all_record)
+	clear_all_record
+	;;
+  *)
+	echo $"Usage: $0 {add_record | clear_all_record}"
+	exit 1
+esac
+

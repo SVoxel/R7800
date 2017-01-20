@@ -1,0 +1,13 @@
+/*#allBtns_div { width:60%; }
+
+#btnsContainer_div1 { width:60%; float:left; }
+
+#btnsContainer_div2 { width:25%; float:right; }*/
+
+ul { list-style:none; margin:0 auto 20px;  }
+
+li { margin:0 auto 10px; }
+
+#radio_choice_divs { width:60%; }
+
+#btnsContainer_div { width:15%; margin:0 0 0 350px; }

@@ -1,0 +1,112 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+CACHE	buffer.c	/^} CACHE;$/;"	t	typeref:struct:cache	file:
+CC	Makefile	/^CC = gcc$/;"	m
+CFLAGS	Makefile	/^CFLAGS   = -Wall$/;"	m
+CHUNK	buffer.c	/^} CHUNK;$/;"	t	typeref:struct:chunk	file:
+CHUNKBITS	buffer.c	37;"	d	file:
+CHUNKMASK	buffer.c	39;"	d	file:
+CHUNKSIZE	buffer.c	38;"	d	file:
+CPPFLAGS	Makefile	/^CPPFLAGS = -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64$/;"	m
+DEBUG_SIZE	file.c	31;"	d	file:
+FILE_SOURCE	file.c	/^} FILE_SOURCE;$/;"	t	typeref:struct:file_source	file:
+FLAG_IN_DISKLABEL	global.h	47;"	d
+HASHFUNC	buffer.c	47;"	d	file:
+HASHSIZE	buffer.c	46;"	d	file:
+LDFLAGS	Makefile	/^LDFLAGS  =$/;"	m
+LIBS	Makefile	/^LIBS     =$/;"	m
+MAXIMUM	buffer.c	51;"	d	file:
+MINBLOCKSIZE	buffer.c	43;"	d	file:
+MINIMUM	buffer.c	50;"	d	file:
+OBJS	Makefile	/^OBJS   = main.o lib.o detect.o dos.o file.o buffer.o$/;"	m
+PROFILE	buffer.c	30;"	d	file:
+PROGNAME	global.h	28;"	d
+RM	Makefile	/^RM = rm -f$/;"	m
+SECTION	global.h	/^} SECTION;$/;"	t	typeref:struct:section
+SOURCE	global.h	/^} SOURCE;$/;"	t	typeref:struct:source
+TARGET	Makefile	/^TARGET = disktype$/;"	m
+USE_BINARY_SEARCH	file.c	30;"	d	file:
+analyze	global.h	/^  int (*analyze)(struct source *s);$/;"	m	struct:source
+analyze_file	main.c	/^static void analyze_file(const char *filename)$/;"	f	file:
+analyze_source	detect.c	/^void analyze_source(SOURCE *s)$/;"	f
+bailout	lib.c	/^void bailout(const char *msg, ...)$/;"	f
+blocksize	global.h	/^  int blocksize;$/;"	m	struct:source
+buf	buffer.c	/^  void *buf;$/;"	m	struct:chunk	file:
+c	file.c	/^  SOURCE c;$/;"	m	struct:file_source	file:
+cache	buffer.c	/^typedef struct cache {$/;"	s	file:
+cache_head	global.h	/^  void *cache_head;$/;"	m	struct:source
+check_position	file.c	/^static int check_position(int fd, u8 pos)$/;"	f	file:
+chunk	buffer.c	/^typedef struct chunk {$/;"	s	file:
+close	global.h	/^  void (*close)(struct source *s);$/;"	m	struct:source
+close_file	file.c	/^static void close_file(SOURCE *s)$/;"	f	file:
+close_source	buffer.c	/^void close_source(SOURCE *s)$/;"	f
+detect_dos_partmap	dos.c	/^void detect_dos_partmap(SECTION *section)$/;"	f
+detect_dos_partmap_ext	dos.c	/^static void detect_dos_partmap_ext(SECTION *section, u8 extbase,$/;"	f	file:
+detect_gpt_partmap	dos.c	/^void detect_gpt_partmap(SECTION *section)$/;"	f
+end	buffer.c	/^  u8 start, end, len;$/;"	m	struct:chunk	file:
+ensure_chunk	buffer.c	/^static CHUNK * ensure_chunk(SOURCE *s, CACHE *cache, u8 start)$/;"	f	file:
+error	lib.c	/^void error(const char *msg, ...)$/;"	f
+errore	lib.c	/^void errore(const char *msg, ...)$/;"	f
+fd	file.c	/^  int fd;$/;"	m	struct:file_source	file:
+file_source	file.c	/^typedef struct file_source {$/;"	s	file:
+flags	global.h	/^  int flags;$/;"	m	struct:section
+format_blocky_size	lib.c	/^void format_blocky_size(char *buf, u8 count, u4 blocksize,$/;"	f
+format_guid	lib.c	/^void format_guid(void *guid, char *to)$/;"	f
+format_raw_size	lib.c	/^static int format_raw_size(char *buf, u8 size)$/;"	f	file:
+format_utf16_le	lib.c	/^void format_utf16_le(void *from, u4 len, char *to)$/;"	f
+foundation	global.h	/^  struct source *foundation;$/;"	m	struct:source	typeref:struct:source::source
+get_be_long	lib.c	/^u4 get_be_long(void *from)$/;"	f
+get_be_quad	lib.c	/^u8 get_be_quad(void *from)$/;"	f
+get_be_short	lib.c	/^u2 get_be_short(void *from)$/;"	f
+get_buffer	buffer.c	/^u8 get_buffer(SECTION *section, u8 pos, u8 len, void **buf)$/;"	f
+get_buffer_real	buffer.c	/^u8 get_buffer_real(SOURCE *s, u8 pos, u8 len, void *inbuf, void **outbuf)$/;"	f
+get_chunk_alloc	buffer.c	/^static CHUNK * get_chunk_alloc(CACHE *cache, u8 start)$/;"	f	file:
+get_le_long	lib.c	/^u4 get_le_long(void *from)$/;"	f
+get_le_quad	lib.c	/^u8 get_le_quad(void *from)$/;"	f
+get_le_short	lib.c	/^u2 get_le_short(void *from)$/;"	f
+get_name_for_guid	dos.c	/^static char * get_name_for_guid(void *guid)$/;"	f	file:
+get_name_for_mbrtype	dos.c	/^char * get_name_for_mbrtype(int type)$/;"	f
+gpt_types	dos.c	/^struct gpttypes gpt_types[] = {$/;"	v	typeref:struct:gpttypes
+gpttypes	dos.c	/^struct gpttypes {$/;"	s	file:
+guid	dos.c	/^  char *guid;$/;"	m	struct:gpttypes	file:
+hashtab	buffer.c	/^  CHUNK *hashtab[HASHSIZE];$/;"	m	struct:cache	file:
+i386_sys_types	dos.c	/^struct systypes i386_sys_types[] = {$/;"	v	typeref:struct:systypes
+init_file_source	file.c	/^SOURCE *init_file_source(int fd, int filekind)$/;"	f
+len	buffer.c	/^  u8 start, end, len;$/;"	m	struct:chunk	file:
+line_akku	lib.c	/^static char line_akku[4096];$/;"	v	file:
+main	main.c	/^int main(int argc, char *argv[])$/;"	f
+name	dos.c	/^  char *name;$/;"	m	struct:gpttypes	file:
+name	dos.c	/^  char *name;$/;"	m	struct:systypes	file:
+next	buffer.c	/^  struct chunk *next, *prev;$/;"	m	struct:chunk	typeref:struct:chunk::chunk	file:
+pos	global.h	/^  u8 pos, size;$/;"	m	struct:section
+prev	buffer.c	/^  struct chunk *next, *prev;$/;"	m	struct:chunk	typeref:struct:chunk::	file:
+print_line	lib.c	/^void print_line( const char *fmt, ...)$/;"	f
+read_block	global.h	/^  int (*read_block)(struct source *s, u8 pos, void *buf);$/;"	m	struct:source
+read_bytes	global.h	/^  u8 (*read_bytes)(struct source *s, u8 pos, u8 len, void *buf);$/;"	m	struct:source
+read_file	file.c	/^static u8 read_file(SOURCE *s, u8 pos, u8 len, void *buf)$/;"	f	file:
+s1	global.h	/^typedef signed char s1;$/;"	t
+s2	global.h	/^typedef short int s2;$/;"	t
+s4	global.h	/^typedef long int s4;$/;"	t
+s8	global.h	/^typedef long long int s8;$/;"	t
+section	global.h	/^typedef struct section {$/;"	s
+seq_pos	global.h	/^  u8 seq_pos;$/;"	m	struct:source
+sequential	global.h	/^  int sequential;$/;"	m	struct:source
+size	global.h	/^  u8 pos, size;$/;"	m	struct:section
+size	global.h	/^  u8 size;$/;"	m	struct:source
+size_known	global.h	/^  int size_known;$/;"	m	struct:source
+source	global.h	/^  SOURCE *source;$/;"	m	struct:section
+source	global.h	/^typedef struct source {$/;"	s
+start	buffer.c	/^  u8 start, end, len;$/;"	m	struct:chunk	file:
+systypes	dos.c	/^struct systypes {$/;"	s	file:
+tempbuf	buffer.c	/^  void *tempbuf;$/;"	m	struct:cache	file:
+type	dos.c	/^  unsigned char type;$/;"	m	struct:systypes	file:
+u1	global.h	/^typedef unsigned char u1;$/;"	t
+u2	global.h	/^typedef unsigned short int u2;$/;"	t
+u4	global.h	/^typedef unsigned long int u4;$/;"	t
+u64	file.c	113;"	d	file:
+u64	file.c	124;"	d	file:
+u8	global.h	/^typedef unsigned long long int u8;$/;"	t

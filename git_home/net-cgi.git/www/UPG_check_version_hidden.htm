@@ -1,0 +1,94 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% nohelp_header("AUTO_download_image.htm", "download_image") %>
+<div class="page_title">$wait_upg_head</div>
+<div id="main" class="main">
+<script>
+<% check_version() %>
+<% save_timestamp("download_image", "download_language", "download_all") %>
+
+var str_lang="";
+var str_firm="";
+var ts='<% cfg_get("download_image") %>';
+
+function clickYes()
+{
+        var cf=document.forms[0];
+        if ( updateLanguage == 1 && updateFirmware == 0 ){
+                cf.submit_flag.value="download_language";
+                cf.action="/func.cgi?/pls_wait_updateLanguage.html timestamp="+ts;
+                cf.submit();
+        }
+        else if ( updateLanguage == 0 && updateFirmware == 1 ){
+                cf.submit_flag.value="download_image";
+                cf.action="/func.cgi?/AUTO_download_image.htm timestamp="+ts;
+                cf.submit();
+        }
+        else if ( updateLanguage == 1 && updateFirmware == 1 ){
+                cf.submit_flag.value="download_all";
+                cf.action="/func.cgi?/AUTO_download_image.htm timestamp="+ts;
+                cf.submit();
+        }
+}
+
+function loadvalue()
+{
+        str_lang=getObj("show_lang").innerHTML;
+        str_firm=getObj("show_firm").innerHTML;
+        getObj("show_lang").innerHTML="";
+        getObj("show_firm").innerHTML="";
+
+        if( updateLanguage == 1 )
+                getObj("lang").innerHTML=str_lang;
+        if( updateFirmware == 1 )
+                getObj("firm").innerHTML=str_firm;
+	
+}
+</script>
+<% table_header() %>
+$bluebar
+
+<TR>
+	<TD nowrap colspan=2><B>$wait_new_version</B><BR><BR></TD>
+</TR>
+</table>
+<div id=firm>
+</div>
+<div align="center" ID="show_firm" style="position:absolute;top:0;left:0;visibility:hidden">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR><TD nowrap><b>$current_firmware:</B></TD><TD><% cat_file("/firmware_version") %><% get_firmware_region("single_blank", "ww_blank") %></TD></TR>
+<TR><TD nowrap><b>$new_firmware:</B></TD><TD><% cat_file("/tmp/auto_version") %></TD></TR>
+</TABLE>
+</div>
+<div id=lang>
+</div>
+<div align="center" ID="show_lang" style="position:absolute;top:0;left:0;visibility:hidden">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR><TD nowrap><b>$current_language:</B></TD><TD><% get_language_version() %></TD></TR>
+<TR><TD nowrap><B>$new_language:</B></TD><TD><% cat_file("/tmp/lang_version") %></TD></TR>
+
+</TABLE>
+</div>
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+$bluebar
+
+<TR>
+	<TD nowrap colspan=2 align=center>
+	<BR><BR>
+	<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if( master=="admin" )
+		document.write('<input class="short_common_bt" type="button" name="Yes" value="$yes_mark" onclick="clickYes();">&nbsp;');
+	else
+		document.write('<input class="short_common1_bt" type="button" name="Yes" value="$yes_mark" disabled>&nbsp;');
+	</script>
+	<input class="short_common_bt" type="button" name="No" value="$no_mark" onclick="location.href='UPG_upgrade.htm';">
+	<BR><BR>
+	</TD>
+</TR>
+</TABLE>
+
+</div>
+
+</FORM>
+</BODY>
+</HTML>

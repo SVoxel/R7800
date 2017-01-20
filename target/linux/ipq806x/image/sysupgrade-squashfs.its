@@ -1,0 +1,28 @@
+
+/dts-v1/;
+
+/ {
+        description = "IPQ8066/NOR Sysupgrade image";
+        images {
+
+                kernel {
+                        description = "openwrt-ipq806x-3.4-uImage";
+                        data = /incbin/("./openwrt-ipq806x-3.4-uImage");
+                        type = "firmware";
+                        arch = "arm";
+                        compression = "none";
+                        hash@1 { algo = "crc32"; };
+                };
+
+                fs {
+                        description = "openwrt-ipq806x-squashfs-root.img";
+                        data = /incbin/("./openwrt-ipq806x-squashfs-root.img");
+                        type = "firmware";
+                        arch = "arm";
+                        compression = "none";
+                        hash@1 { algo = "crc32"; };
+                };
+
+        };
+};
+

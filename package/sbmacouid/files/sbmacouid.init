@@ -1,0 +1,53 @@
+#!/bin/sh
+
+. ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+#
+# Environment config
+#
+BINARY="sbmacouid"
+NAME=${BINARY}
+DISPLAY_NAME="sbmacouid"
+
+#
+# sbmacouid config
+#
+# path to sbmacouid binary
+SBMACOUID_BIN="${BINDIR}/${BINARY}"
+
+# path to sbmacouid pid file
+PIDFILE="${RUNDIR}/${BINARY}.pid"
+
+# Redis server port
+PORT=6379
+
+# Format the command line parameters
+CMDLINE_OPTS="--daemon -p ${PIDFILE} --redis-port=${PORT}"
+
+#
+# Functions
+#
+
+start() {
+	[ ! -d "${RUNDIR}" ] && {
+		mkdir ${RUNDIR}
+	}
+
+	[ -x ${SBMACOUID_BIN} ] || {
+		echo "${BINARY} not found: ${SBMACOUID_BIN}"
+		exit 2
+	}
+
+	echo -n "Starting ${NAME}: "
+	${SBMACOUID_BIN} ${CMDLINE_OPTS} "$@"
+	retval=$?
+	echo
+	return ${retval}
+}
+
+boot() {
+	start "$@"
+}
+
+action "$@"
+exit $?

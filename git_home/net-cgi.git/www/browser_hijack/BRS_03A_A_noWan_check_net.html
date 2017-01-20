@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta http-equiv="refresh" content="6; url=BRS_03A_A_noWan_check_net.html" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_hijack_03A_A_check_net.js"></script>
+<% hijack_language() %>
+
+<script language="javascript" type="text/javascript">
+var hijack_process = "<% cfg_get("hijack_process") %>";
+var checking_result = "<% hijack_apply_result("/tmp/ping_result") %>";
+</script>
+</head>
+
+<body>
+<% form_submit("func", "BRS_03A_detcInetType.html", "wizard_detwan")  %>
+<div class="wizard_content_div">
+
+        <div class="wizard_words_div">
+
+                        <h1><!--detecting_connection--></h1>
+                        <p><!--plz_wait_process--></p>
+
+                <div class="waiting_img_div" align="center">
+                        <img src="image/wait30.gif" />
+                </div>
+
+        </div>
+
+</div>
+<iframe name="ping_frame" src="BRS_ping.html" allowtransparency="true" scrolling="no" frameborder="0" style="display:none"></iframe>
+</form>
+</body>
+
+</html>

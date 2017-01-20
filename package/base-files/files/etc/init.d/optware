@@ -1,0 +1,45 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+STOP=20
+
+start() {
+	# Socket buffers
+	echo 1048576 > /proc/sys/net/core/rmem_max
+	echo 1048576 > /proc/sys/net/core/wmem_max
+
+	# Enable swap if swap file exists in /opt or /mnt/sda1 or /mnt/sdb1
+	if [ -e /opt/swap ]; then
+		chmod 0600 /opt/swap
+		/sbin/swapon /opt/swap
+	elif [ -e /mnt/sda1/swap ]; then
+		chmod 0600 /mnt/sda1/swap
+		/sbin/swapon /mnt/sda1/swap
+	elif [ -e /mnt/sdb1/swap ]; then
+		chmod 0600 /mnt/sdb1/swap
+		/sbin/swapon /mnt/sdb1/swap
+	fi
+	
+	# Start optware services if /opt is linked
+	if [ -x /opt/etc/init.d/rc.unslung ]; then
+
+		# Start optware services
+		/opt/etc/init.d/rc.unslung start
+	fi
+}
+
+stop() {
+	# Stop optware services if /opt is linked
+	if [ -x /opt/etc/init.d/rc.unslung ]; then
+		/opt/etc/init.d/rc.unslung stop
+	fi
+
+	# Disable swap if swap file exists in /opt or /mnt/sda1 or /mnt/sdb1
+	if [ -e /opt/swap ]; then
+		/sbin/swapoff /opt/swap
+	elif [ -e /mnt/sda1/swap ]; then
+		/sbin/swapoff /mnt/sda1/swap
+	elif [ -e /mnt/sdb1/swap ]; then
+		/sbin/swapoff /mnt/sdb1/swap
+	fi
+}

@@ -1,0 +1,288 @@
+<% http_header("style/form.css", "/funcs.js", "/email.js") %>
+<% body_header("_FW_email", "FW_email.htm", "email") %>
+<style>
+.input_width { width:201px; }
+</style>
+
+<script>
+var gui_region="<% cfg_get("GUI_Region") %>";
+var netgear_region=top.netgear_region;
+var hour_24_flag=((gui_region == "German" &&  (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "GR") ? 1 : 0;
+var master="<% cfg_get("http_loginname") %>";
+</script>
+<div class="page_title">$email_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+	<script>
+		if( master == "admin" )
+			document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" name="Cancel" type="button" id="cancel" value="$cancel_mark" onClick="location.href=\'/FW_email.htm\';return false;">&nbsp;&nbsp;<input class="apply_bt" name="Apply" id="apply" type="button" value="$apply_mark" onClick="return check_email(document.forms[0],hour_24_flag)"></TD>');
+		else
+			document.write('<TD nowrap colspan=2 align=center><input class="cancel1_bt" name="Cancel" type="submit" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" name="Apply" type="submit" value="$apply_mark" disabled></TD>');
+	</script>
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<script>
+<% forward_items_xss() %>
+<% trigger_items_xss() %>
+<% upnp_items() %>
+<% check_ftp() %>
+var block_sites_flag = parent.block_sites_flag;
+var have_green_download = parent.have_green_download;
+var email_notify = "<% cfg_get("email_notify") %>";
+var green_download_email_noti = "<% cfg_get("green_download_email_noti") %>";
+var port_status = "<% cfg_get("email_autodet") %>";
+var remote_port="<% cfg_get("remote_port") %>";
+var show_enableHTTP="<% cfg_get("usb_enableHTTP") %>";
+var show_enableHvia="<% cfg_get("usb_enableHvia") %>";
+var show_HTTP_via_port="<% cfg_get("usb_HTTP_via_port") %>";
+var show_enableFTP="<% cfg_get("usb_enableFTP") %>";
+var show_enableFvia="<% cfg_get("usb_enableFvia") %>";
+var usb_router_flag=parent.usb_router_flag;
+var auto_det_result="<% cat_file("/tmp/autodet") %>";
+var show_FTP_via_port="<% cfg_get("usb_FTP_via_port") %>";
+
+function loadvalue()
+{
+	var cf=document.forms[0];
+	if(cf.portnum_auto){
+		if((port_status == "0" && email_notify == "1") || (port_status == "1" && auto_det_result == "0"))
+			cf.email_notify.checked =true;
+		else
+			cf.email_notify.checked =false;	
+	}else
+		if(email_notify == "1")
+                        cf.email_notify.checked =true;
+                else
+                        cf.email_notify.checked =false;
+	if("<% cfg_get("email_endis_auth") %>" == "1")
+		cf.smtp_auth.checked = true;
+	else
+		cf.smtp_auth.checked =false;
+	 if( cf.portnum_auto){
+		//alert("ssss");
+		if(port_status == "1"){
+			cf.portnum_auto[0].checked = true;
+			cf.email_port.disabled = true;
+			if(auto_det_result == "0"){
+				document.getElementById("auto_detect_result").style.display="";
+			}
+			if(parent.smtp_auto_detect == 1){
+				if(auto_det_result == "1")
+					alert("$smtp_auto_det_warn1");
+				else if(auto_det_result == "2")
+					alert("$smtp_auto_det_warn2");
+				else if(auto_det_result == "3")
+					alert("$smtp_auto_det_warn3");
+				parent.smtp_auto_detect = 0;
+			}
+			
+			}
+		else
+			cf.portnum_auto[1].checked = true;
+		//setPort(cf);
+	}
+	if(have_green_download == 1)
+	{
+		document.getElementById("download_send").style.display = "";
+		if(green_download_email_noti == "1")
+		{
+			document.getElementById("download_send").style.color="black";		
+			cf.send_email_noti.checked =true;
+			cf.send_email_noti.disabled = false;
+		}
+		else
+		{
+			document.getElementById("download_send").style.color="grey";
+			cf.send_email_noti.checked =false;
+			cf.send_email_noti.disabled = true;
+		}
+	}
+	else
+		document.getElementById("download_send").style.display = "none";
+
+	if('<% cfg_get("email_send_alert") %>' == 1)
+		cf.block_site.checked = true;
+	else
+		cf.block_site.checked =false;
+	time=parseInt('<% cfg_get("email_schedule_hour") %>');
+	if(hour_24_flag == 0)
+	{
+
+		if(time > 11)
+		{
+			time = time-12;
+			cf.cfAlert_am[1].checked = true;
+		}
+		else
+			cf.cfAlert_am[0].checked =true;
+	}
+	cf.cfAlert_Select.selectedIndex="<% cfg_get("email_cfAlert_Select") %>";
+	cf.cfAlert_Day.selectedIndex="<% cfg_get("email_cfAlert_Day") %>";
+	cf.cfAlert_Hour.selectedIndex=time;
+	OnAlertChange(cf,hour_24_flag);
+	setAuth(cf);
+	setGray(cf,0,hour_24_flag);
+	
+	if(block_sites_flag == 1)
+	{
+		document.getElementById("block_site_checkbox").style.display = "";
+		document.getElementById("block_site_email_visit").style.display = "";
+	}
+	else
+	{
+		document.getElementById("block_site_checkbox").style.display = "none";
+		document.getElementById("block_site_email_visit").style.display = "none";
+	}
+}
+</script>
+<input type="hidden" name="email_notify_enabled">
+<input type="hidden" name="send_alert_immediately">
+<input type="hidden" name="schedule_hour">
+<input type="hidden" name="email_endis_auth">
+<input type="hidden" name="email_addr_hid">
+<input type="hidden" name="email_smtp_hid">
+<input type="hidden" name="email_port_num">
+<input type="hidden" name="email_port_sta">
+<input type="hidden" name="email_addr_hid1">
+<input type="hidden" name="email_addr_hid2">
+<input type="hidden" name="auth_user_hid">
+<input type="hidden" name="auth_pwd_hid">
+<input type="hidden" name="cfAlert_Select_hid">
+<input type="hidden" name="cfAlert_Day_hid">
+<input type="hidden" name="send_email_noti_hid">
+<TR>
+	<TD nowrap>
+	<input type="checkbox" name="email_notify" id="email_notify" value="1" onclick="setGray(document.forms[0],1,hour_24_flag);">
+	<A tabindex=-1 href="javascript:loadhelp('_FW_email','receive')"><B>$email_turn_on</B></A>
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_FW_email','receive')"><B>$email_sent_logs</B></A>
+	</TD>
+</TR>
+<% email_ssl() %>
+<TR>
+	<TD nowrap colspan=2>
+	<input type=checkbox name="smtp_auth" id="smtp_auth" value=1 onclick="setAuth(document.forms[0]);"><A tabindex=-1 href="javascript:loadhelp('_FW_email','receive')"><B>$email_authen</B></a>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$ddns_username</TD>
+	<TD nowrap align=right>
+	<input type="text" class="input_width" name="auth_user" id="auth_user" value="<% cfg_sed_xss("email_username") %>" size="24" maxlength="50" onKeyPress="return getkey('ssid', event)">
+	</TD>
+</TR>
+<TR>	
+	<TD nowrap>$ddns_passwd</TD>
+	<TD nowrap align=right>
+	<input type="password" class="input_width" name="auth_pwd" id="auth_pwd" value="<% cfg_sed_xss("email_password") %>" size="24" maxlength="50" onKeyPress="return getkey('ssid', event)">
+	</TD>
+</TR>
+<script>
+if (have_green_download == 1)
+	document.write('$bluebar');
+</script>
+<TR id="download_send" style="display:none;">
+	<TD nowrap colspan="2">
+		<input type="checkbox" name="send_email_noti" id="send_email_noti" value="0"><b>$greendl_basic_send_email_noti</b>
+	</TD>
+</TR>
+<script>
+if(block_sites_flag == 1)
+	document.write('$bluebar');
+</script>
+<TR id="block_site_checkbox">
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="block_site" id="alert_blocksite" value="1">
+	<A tabindex=-1 href="javascript:loadhelp('_FW_email','alert')"><B>$email_sent_immediately</B></A>
+	</TD>
+</TR>	
+<TR id="block_site_email_visit">
+	<TD nowrap colspan=2>$email_visit_block</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_FW_email','schedule')"><B>$email_schedule</B></A>
+	</TD>
+</TR>	
+<TR>
+	<TD nowrap colspan=2>
+	<select name="cfAlert_Select" id="alert_schedule_type" size="1"onChange="OnAlertChange(document.forms[0],hour_24_flag);" disabled>
+		<option value=0 selected>$email_full</option>
+		<option value=1 >$email_hourly</option>
+		<option value=2 >$email_daily</option>
+		<option value=3 >$email_weekly</option>
+		<option value=4 >$email_none</option>
+	</select>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>$email_day &nbsp;
+	<select name="cfAlert_Day" id="alert_day" size="1" tabindex="8" onFocus="if (AlertTimeDisabled) this.blur()" disabled>
+		<option value=0 selected>$schedule_sun</option>
+		<option value=1 >$schedule_mon</option>
+		<option value=2 >$schedule_tue</option>
+		<option value=3 >$schedule_wed</option>
+		<option value=4 >$schedule_thu</option>
+		<option value=5 >$schedule_fri</option>
+		<option value=6 >$schedule_sat</option>
+	</select>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>$email_time
+	<select name="cfAlert_Hour" id="alert_hour" size="1" tabindex="9" onFocus="if (AlertHourDisabled) this.blur()" disabled>
+		<option value=0 selected>0:00</option>
+		<option value=1>1:00</option>
+		<option value=2>2:00</option>
+		<option value=3>3:00</option>
+		<option value=4>4:00</option>
+		<option value=5>5:00</option>
+		<option value=6>6:00</option>
+		<option value=7>7:00</option>
+		<option value=8>8:00</option>
+		<option value=9>9:00</option>
+		<option value=10>10:00</option>
+		<option value=11>11:00</option>
+		<script>
+		if (hour_24_flag == 1)
+		{
+			document.write("<option value=12>12:00</option>");
+			document.write("<option value=13>13:00</option>");
+			document.write("<option value=14>14:00</option>");
+			document.write("<option value=15>15:00</option>");
+			document.write("<option value=16>16:00</option>");
+			document.write("<option value=17>17:00</option>");
+			document.write("<option value=18>18:00</option>");
+			document.write("<option value=19>19:00</option>");
+			document.write("<option value=20>20:00</option>");
+			document.write("<option value=21>21:00</option>");
+			document.write("<option value=22>22:00</option>");
+			document.write("<option value=23>23:00</option>");
+		}
+		</script>
+	</select>
+	<script>
+	if(hour_24_flag == 0)
+	{
+		document.write('<input type="radio" checked name="cfAlert_am" id="alert_am" value="am" disabled>a.m.');
+		document.write('<input type="radio" checked name="cfAlert_am" id="alert_pm" value="pm" disabled>p.m.');
+	}
+	</script>
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_FW_email") %>
+</FORM>
+</BODY>
+</HTML>

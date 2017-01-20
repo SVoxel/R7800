@@ -1,0 +1,32 @@
+From f82462a08a6e88329028a70aed86d43c23b4c63c Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Fri, 7 Jun 2013 09:39:13 -0500
+Subject: [ag71xx] remove double NET_SKB_PAD
+
+We were reserving NET_SKB_PAD in the driver, and it has already
+been reserved by the skb allocator.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+index abe7efe..f685da7 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+@@ -595,9 +595,9 @@ static int ag71xx_open(struct net_device *dev)
+ 	 * so we don't need any extra alignment in that case.
+ 	 */
+ 	if (!ag71xx_get_pdata(ag)->is_ar724x || ag71xx_has_ar8216(ag)) {
+-		ag->rx_buf_offset = NET_SKB_PAD;
++		ag->rx_buf_offset = 0;
+ 	} else {
+-		ag->rx_buf_offset = NET_SKB_PAD + NET_IP_ALIGN;
++		ag->rx_buf_offset = NET_IP_ALIGN;
+ 	}
+ 
+ 	ret = ag71xx_rings_init(ag);
+-- 
+1.8.1.2
+

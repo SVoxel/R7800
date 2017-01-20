@@ -1,0 +1,64 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+NAME=sched_updates
+
+## You will see the value 4 instead of 24 for the hours.  The
+## idea is that we only check for updates during 4 hours in the
+## middle of the night.
+## So....
+##     4 * 60 ==  240
+
+
+
+
+##============================================================
+## Get the last bytes of the mac address to use as a 
+## seed for checking the update site.
+get_seed() {
+	awk 'BEGIN {srand(); printf("%d\n", rand()*240)}'
+}
+
+
+##============================================================
+## Build a valid crontab line that we can append to the crontab
+build_cron() {
+	local command=$1
+
+	local seed=$(get_seed)
+
+	local hour=$(expr ${seed} / 60)
+	local minute=$(expr ${seed} % 60)
+
+	echo " ${minute} ${hour}  *   *   *     ${command}"
+}
+
+
+##============================================================
+## Append the new crontab line to the old crontab file.
+add_to_cron() {
+	local tempfile=/tmp/tempfile
+
+	build_cron "$1" > ${tempfile}
+	crontab -l | cat - ${tempfile} | crontab -
+	rm -rf ${tempfile}
+}
+
+##============================================================
+## Remove this script so that it is not run at every boot.
+delete_self() {
+	echo "Deleting /etc/rc.d/S${START}${NAME}"
+	rm -rf /etc/rc.d/S${START}${NAME}
+}
+
+
+boot() {
+## QCA orignal code start
+#	add_to_cron "streamboost auto_upload; streamboost auto_update && streamboost restart"
+#	delete_self
+## QCA orignal code end
+
+## Because DNI has /sbin/cmdsched to manage sched task such as website
+## block, wifi,so we also use /sbin/cmdsched to manage SB auto update 
+	echo "DNI streamboost auto_update"
+}

@@ -1,0 +1,53 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% body_header("_upgrade", "enable_string_table.html", "enable_change_string") %>
+<div class="page_title">Enable String</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" type="reset" name="Cancel" value="$cancel_mark" onClick="location.href=\'enable_string_table.html\';">&nbsp;<input class="apply_bt" type="submit" name="Apply" value="$apply_mark" onClick="return click_apply(document.forms[0]);"></TD>');
+else
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel1_bt" type="reset" name="Cancel" value="$cancel_mark" disabled>&nbsp;<input class="apply1_bt" type="submit" name="Apply" value="$apply_mark" disabled></TD>');
+</script>
+        
+</TR>
+</TABLE>
+
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<script>
+var enable_str="<% cfg_get("Enable_GUIStringTable") %>";
+function loadvalue()
+{
+	var cf = document.forms[0];
+	if( enable_str == "1" )
+		cf.change_string.checked = true;
+	else
+		cf.change_string.checked = false;
+
+}
+function click_apply()
+{
+	var cf = document.forms[0];
+	if( cf.change_string.checked == true )
+		cf.string_enabled.value = "1";
+	else
+		cf.string_enabled.value = "0";
+
+}
+</script>
+<input type="hidden" name="string_enabled" value="">
+<TR><TD nowrap colspan=2>
+<input type="checkbox" name="change_string" value="1"><B>Enable change language</B>
+</TD></TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_upgrade") %>
+</FORM>
+</BODY>
+</HTML>

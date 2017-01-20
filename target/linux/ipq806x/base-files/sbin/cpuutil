@@ -1,0 +1,272 @@
+#!/bin/sh
+
+# This script displays the per-cpu utilization values.
+# The utilization value is fetched from the cpufreq driver with the file:
+# /sys/devices/system/cpu/cpu%d/cpufreq/cpu_utilization
+# The utilization value in this file is the cpu utilization scaled to the max CPU frequency.
+# So, this script converts this value to the current utilization levels.
+#
+# USAGE: cpuutil [-i <interval>] [-n <samples>] [-m <mask>]
+#
+
+help()
+{
+	echo "USAGE: cpuutil [-i <interval>] [-n <samples>] [-m <mask>]"
+	printf "\n"
+	echo "		i - Specifies the interval between two sucessive polls in seconds"
+	echo "			Default: 1 second"
+	echo "		n - Specifies the total number of samples to be polled"
+	echo "			Default: No limit. User must terminate with ctrl-c"
+	echo "		m - Specifies the CPU mask. Must be prefixed with '0x'"
+	echo "			Default: All CPUs"
+	echo ""
+	echo "		E.g. cpuutil -i 10 -n 5 -m 0x2"
+	echo "			Display utilization of CPU1 every 10 seconds, 5 times"
+}
+
+usage()
+{
+	echo "Error: Invalid usage! Option: $1"
+	printf "\n"
+	help
+	exit 1
+}
+
+# The the total number of CPUs
+getMaxCpuCount()
+{
+	local val
+	val=`cat /proc/cpuinfo | grep processor | tail -1 | awk '{print $3}'`
+	echo $((val + 1))
+}
+
+# Get the CPU Mask for all CPUs
+getAllCpuMask()
+{
+	local val=""
+	local i=0
+	local max=$(getMaxCpuCount)
+	local shiftval
+
+	while [ $i -lt $max ];
+	do
+		shiftval=1
+		shiftval=$((shiftval << $i))
+		val=$((val | shiftval))
+		i=$((i + 1))
+	done
+
+	echo $val
+}
+
+# Get mask for specific CPU
+getCpuMask()
+{
+	local shiftval=1
+	echo $((shiftval << $1))
+}
+
+# Poll and display values
+pollValues()
+{
+	local i=0
+	local utilfile="/sys/devices/system/cpu/cpu%d/cpufreq/cpu_utilization"
+	local curfreqfile="/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_cur_freq"
+	local maxfreqfile="/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq"
+	local util
+	local curfreq
+	local maxfreq
+	local fname
+	local val
+	local tmp
+
+	printf "%8s" "."
+
+	while [ $i -lt $(getMaxCpuCount) ];do
+		if [ $(( cmask & $(getCpuMask $i) )) != 0 ]; then
+			fname=$(printf $utilfile $i)
+			util=`cat $fname`
+
+			fname=$(printf $curfreqfile $i)
+			curfreq=`cat $fname`
+
+			fname=$(printf $maxfreqfile $i)
+			maxfreq=`cat $fname`
+
+			val=$(( $((util * maxfreq)) / curfreq))
+			printf "%8d" $val
+			eval avg$i=\$\(\(\ avg$i\ \+\ val\ \)\)
+		fi
+		if [ $i = 0 ]; then
+			avgcount=$((avgcount + 1))
+		fi
+		i=$((i + 1))
+	done
+
+	printf "\n"
+
+	sleep $1
+}
+
+# Display the average values
+showAvg()
+{
+	local i=0
+	local tmp
+	local rem
+
+	printf "\n\n%8s" "Avg:"
+
+	while [ $i -lt $(getMaxCpuCount) ];do
+		if [ $((cmask & $(getCpuMask $i) )) != 0 ]; then
+			eval tmp=\$avg$i
+			rem=`expr $tmp % $avgcount`
+			if [ $rem -gt $((avgcount / 2)) ]; then
+				tmp=$((tmp + avgcount))
+			fi
+			tmp=$((tmp / avgcount))
+			printf "%8d" $tmp
+		fi
+		i=$((i + 1))
+	done
+
+	printf "\n"
+}
+
+# ctrl-c handler
+sigHandler()
+{
+	showAvg
+	exit 0
+}
+
+avgcount=0
+echo "/-------------------------------------------------------------------------------------\\"
+echo "| This script uses the values exported by the cpufreq driver via the sys interface.   |"
+echo "| And values exported by the cpufreq driver are scaled by the driver to               |"
+echo "| 'utilization at max-freq'. This script converts these values to current utilization |"
+echo "| levels using the current CPU frequency. So please expect some loss in accuracy due  |"
+echo "| to rounding off occuring twice.                                                     |"
+echo "\\-------------------------------------------------------------------------------------/"
+printf "\n"
+
+# Parse the command line arguments
+for i in "$@"; do
+	case $i in
+		-i)
+			if [ -n "$currarg" ]; then
+				usage $currarg
+			fi
+			currarg="-i"
+			;;
+		-n)
+			if [ -n "$currarg" ]; then
+				usage $currarg
+			fi
+			currarg="-n"
+			;;
+		-m)
+			if [ -n "$currarg" ]; then
+				usage $currarg
+			fi
+			currarg="-m"
+			;;
+		-h|--help)
+			if [ -n "$currarg" ]; then
+				usage $currarg
+			fi
+			help
+			exit 0
+			;;
+		*)
+			if [ "$currarg" = "-i" -o "$currarg" = "-n" ]; then
+				parameter=`echo $i | sed 's/[0-9]*//'`
+				if [ -n "$parameter" ]; then
+					usage $currarg
+				else
+					if [ "$currarg" = "-i" ]; then
+						pinterval=$i
+					else
+						maxsamples=$i
+					fi
+					currarg=""
+				fi
+			elif [ "$currarg" = "-m" ]; then
+				parameter=`echo $i | sed 's/0[xX][0-9]*//'`
+				if [ -n "$parameter" ]; then
+					usage $currarg
+				else
+					cmask=`echo $i | sed 's/0[xX]//'`
+					currarg=""
+				fi
+			else
+				usage $i
+			fi
+			;;
+	esac
+done
+
+# Set default values if no arguments are specified
+if [ -z $pinterval ]; then
+	pinterval=1
+elif [ $pinterval -gt 3600 ];then
+	echo "Limiting polling interval to 1 hour"
+	pinterval=3600
+fi
+if [ -z $maxsamples ]; then
+	maxsamples=0
+fi
+
+
+if [ -z "$cmask" ]; then
+	cmask=$(getAllCpuMask)
+else
+	allcpumask=$(getAllCpuMask)
+	maskresult=$((cmask & ~allcpumask))
+	if [ $maskresult != 0 ]; then
+		echo "Error: Invalid CPU Mask"
+		printf "Total CPUs is: %d, Mask for all CPUs is 0x%x\n" $(getMaxCpuCount) $(getAllCpuMask)
+		exit 1
+	fi
+fi
+
+# Display the actual values
+printf "\n"
+echo "Polling interval: $pinterval seconds"
+if [ $maxsamples = 0 ];then
+	echo "Max Samples: 0 (No limit set)"
+else
+	echo "Max Samples: $maxsamples"
+fi
+printf "CPU Mask: 0x%x\n" $cmask
+printf "\n"
+
+i=0
+printf "%8s" "CPU:"
+while [ $i -lt $(getMaxCpuCount) ]; do
+	if [ $((cmask & $(getCpuMask $i) )) != 0 ]; then
+		printf "%8d" $i
+	fi
+	eval avg$i=0
+	i=$((i + 1))
+done
+printf "\n"
+
+trap sigHandler INT
+
+if [ $maxsamples -eq 0 ];then
+	while [ 1 ]; do
+		pollValues $pinterval
+	done
+else
+	while [ $maxsamples -ne 1 ]; do
+		pollValues $pinterval
+		maxsamples=$((maxsamples - 1))
+	done
+
+	# We dont want to sleep after the last poll
+	pollValues 0
+	showAvg
+fi
+
+exit 0

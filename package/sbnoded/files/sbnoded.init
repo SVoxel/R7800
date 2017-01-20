@@ -1,0 +1,54 @@
+#!/bin/sh
+
+. ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+#
+# Environment config
+#
+BINARY="sbnoded"
+NAME=${BINARY}
+DISPLAY_NAME="sbnoded"
+
+#
+# sbnoded config
+#
+# path to sbnoded binary
+SBNODED_BIN="${BINDIR}/${BINARY}"
+
+# path to sbnoded pid file
+PIDFILE="${RUNDIR}/${BINARY}.pid"
+
+# Redis server
+PORT=6379
+REDIS_UNIXSOCK=/var/run/appflow/redis.sock
+
+# Format the command line parameters
+CMDLINE_OPTS="--daemon -p ${PIDFILE} --redis-unixsocket=${REDIS_UNIXSOCK}"
+
+#
+# Functions
+#
+
+start() {
+	[ ! -d "${RUNDIR}" ] && {
+		mkdir ${RUNDIR}
+	}
+
+	[ -x ${SBNODED_BIN} ] || {
+		echo "${BINARY} not found: ${SBNODED_BIN}"
+		exit 2
+	}
+
+	echo -n "Starting ${NAME}: "
+	${SBNODED_BIN} ${CMDLINE_OPTS} "$@"
+	retval=$?
+	echo
+	return ${retval}
+}
+
+boot() {
+	start "$@"
+}
+
+action "$@"
+exit $?

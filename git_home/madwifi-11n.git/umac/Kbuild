@@ -1,0 +1,664 @@
+#
+# Linux 2.6 Kbuild file for common modules
+# NB: HAL is build seperately
+#
+
+ifeq ($(obj),)
+obj := .
+endif
+
+DEPTH := ..
+
+#include $(obj)/Makefile.inc
+
+ifeq ($(strip ${QCA_PARTNER_MAKE_F_SUPPORT}),1)
+export QCA_PARTNER_MAKE_F_INC=1
+endif
+include $(obj)/$(DEPTH)/os/linux/Makefile-linux.common
+
+INCS += -I$(obj)/$(DEPTH)/include -I$(obj)/$(DEPTH)/umac/include \
+        -I$(obj)/$(DEPTH)/umac/if_lmac -I$(obj)/$(DEPTH)/umac/crypto \
+        -I$(obj)/$(DEPTH)/umac/scan -I$(obj)/$(DEPTH)/umac/resmgr \
+        -I$(obj)/$(DEPTH)/umac/pm -I$(obj)/$(DEPTH)/umac/txrx \
+        -I$(obj)/$(DEPTH)/umac/acs -I$(obj)/$(DEPTH)/umac/txbf \
+        -I$(obj)/$(DEPTH)/umac/wnm \
+        -I$(obj)/$(DEPTH)/umac/tdls -I$(obj)/$(DEPTH)/umac/dfs \
+        -I$(obj)/$(DEPTH)/umac/rpt_placement \
+        -I$(obj)/$(DEPTH)/umac/wifipos \
+        -I$(obj)/$(DEPTH)/umac/wds -I$(obj)/$(DEPTH)/umac/ique \
+        -I$(obj)/$(DEPTH)/hal -I$(obj)/$(DEPTH)/lmac/ath_dev \
+        -I$(obj)/$(DEPTH)/lmac/dfs \
+        -I$(obj)/$(DEPTH)/hal/$(OS) \
+        -I$(obj)/$(DEPTH)/umac/aow  \
+        -I$(obj)/$(DEPTH)/umac/vi_dbg \
+        -I$(obj)/$(DEPTH)/umac/smart_antenna \
+        -I$(obj)/$(DEPTH)/umac/smart_ant \
+        -I$(obj)/$(DEPTH)/umac/ald \
+        -I$(obj)/$(DEPTH)/lmac/ath_pktlog \
+        -I$(obj)/$(DEPTH)/lmac/ratectrl
+
+
+obj-m += umac.o
+
+OSDEP_SRC := $(DEPTH)/os/linux/src
+
+ifeq ($(strip $(BUSNAME)),ahb)
+BUS_OBJ = $(OSDEP_SRC)/if_ath_ahb.o
+endif
+
+ifeq ($(strip $(BUSNAME)),pci)
+ifneq ($(strip $(ATH_HIF_TYPE)),sdio)
+BUS_OBJ = $(OSDEP_SRC)/if_ath_pci.o
+endif
+endif
+
+ifeq ($(strip $(ATH_HIF_TYPE)),pci)
+EXTRA_CFLAGS += -DHIF_PCI
+endif
+
+ifeq ($(strip $(ATH_HIF_TYPE)),sim)
+EXTRA_CFLAGS += -DA_SIMOS_DEVHOST -DHIF_SIM
+endif
+
+ifeq ($(strip $(ATH_HIF_TYPE)),sdio)
+EXTRA_CFLAGS += -DHIF_SDIO
+ifeq ($(ATH_TGT_TYPE),AR6320)
+EXTRA_CFLAGS += -DSDIO_3_0
+endif
+endif
+
+ifeq ($(strip $(BUSNAME)),usb)
+BUS_OBJ = $(OSDEP_SRC)/usb_eth.o
+endif
+
+ifeq ($(strip $(BUSNAME)),gmac)
+BUS_OBJ = $(OSDEP_SRC)/if_ath_gmac.o
+endif
+
+ifeq ($(strip $(BUSNAME)),dual)
+BUS_OBJ = $(OSDEP_SRC)/if_ath_ahb.o $(OSDEP_SRC)/if_ath_pci.o
+endif
+
+ifeq ($(strip $(ATH_IF_TYPE)),hl)
+EXTRA_CFLAGS += -DCONFIG_HL_SUPPORT
+endif
+
+ifneq ($(strip $(UMAC_SUPPORT_APONLY)),0)
+OSDEP_OBJS := $(OSDEP_SRC)/ath_linux.o $(BUS_OBJ) $(OSDEP_SRC)/ieee80211_wireless.o $(OSDEP_SRC)/osif_umac.o $(OSDEP_SRC)/if_media.o $(OSDEP_SRC)/ieee80211_aponly.o 
+else
+OSDEP_OBJS := $(OSDEP_SRC)/ath_linux.o $(BUS_OBJ) $(OSDEP_SRC)/ieee80211_wireless.o $(OSDEP_SRC)/osif_umac.o $(OSDEP_SRC)/if_media.o 
+endif
+
+ifeq ($(QCA_NSS_PLATFORM), 1)
+OSDEP_OBJS +=$(OSDEP_SRC)/osif_nss.o
+endif
+
+ifeq ($(QCA_NSS_WIFI_OFFLOAD_SUPPORT), 1)
+OSDEP_OBJS +=$(OSDEP_SRC)/osif_nss_wifiol_vdev_if.o
+OSDEP_OBJS +=$(OSDEP_SRC)/osif_nss_wifiol_if.o
+endif
+
+
+
+ifeq ($(HOST_SW_LRO_ENABLE), 1)
+OSDEP_OBJS += $(OSDEP_SRC)/ath_lro.o
+endif
+
+ifeq ($(ATH_BAND_STEERING), 1)
+OSDEP_OBJS += $(OSDEP_SRC)/ath_band_steering.o
+endif
+
+ifeq ($(ATH_SSID_STEERING),1)
+OSDEP_OBJS += $(OSDEP_SRC)/ath_ssid_steering.o
+endif
+
+ifeq ($(QCA_AIRTIME_FAIRNESS), 1)
+OSDEP_OBJS += airtime_fairness/airtime_fairness_directattach.o
+endif
+
+ifeq ($(UMAC_SUPPORT_ACFG), 1)
+OSDEP_OBJS += $(OSDEP_SRC)/ieee80211_ioctl_acfg.o
+OSDEP_OBJS += $(OSDEP_SRC)/acfg_net_event.o
+endif
+
+ifeq ($(ATH_SUPPORT_VLAN), 1)
+OSDEP_OBJS +=  $(OSDEP_SRC)/adf_net_vlan.o
+endif
+
+ifeq ($(ATH_SUPPORT_WRAP), 1)
+OSDEP_OBJS +=  $(OSDEP_SRC)/osif_wrap.o
+endif
+
+ifeq ($(QCA_OL_SUPPORT_RAWMODE_TXRX), 1)
+OSDEP_OBJS +=  $(OSDEP_SRC)/osif_rawmode.o
+endif
+
+ifeq ($(ATH_SUPPORT_HTC), 1)
+OSDEP_OBJS += $(OSDEP_SRC)/ath_htc.o \
+              $(OSDEP_SRC)/htc_thread.o
+OSDEP_OBJS += base/ieee80211_target.o \
+              if_lmac/if_ath_htc.o
+endif
+
+ifeq ($(ATH_SUPPORT_LINUX_VENDOR), 1)
+OSDEP_OBJS += $(OSDEP_OBJS_VENDOR)
+endif
+
+ifeq ($(ATH_RXBUF_RECYCLE), 1)
+OSDEP_OBJS += $(OSDEP_SRC)/ath_skbrecycle.o
+endif
+
+ifeq ($(ATH_SUPPORT_HYFI_ENHANCEMENTS), 1)
+OSDEP_OBJS += $(OSDEP_SRC)/ald_netlink.o
+endif
+
+ifeq ($(QCA_THIRDPARTY), 1)
+PLTFRM_OBJS = $(DEPTH)/thirdparty/$(THIRDPARTY_VENDOR)/ath_carr_pltfrm.o
+endif
+
+ifeq ($(AUTO_START_WIFI_SIM_DEVICE),1)
+EXTRA_CFLAGS += -DAUTO_START_WIFI_SIM_DEVICE=1
+endif
+
+ifeq ($(DIRECT_ATTACH),1)
+EXTRA_CFLAGS += -DATH_DIRECT_ATTACH=1
+endif
+
+ifeq ($(ATH_PERF_PWR_OFFLOAD), 1)
+# config
+EXTRA_CFLAGS += -DWLAN_HEADERS=1 -DSUPPORT_11N=1 -DSUPPORT_VHT=1
+EXTRA_CFLAGS += -DCONVERGED_SW=1
+# ATH_PERF_PWR_OFFLOAD is the replacement for CONVERGED_SW,
+# but CONVERGED_SW is still needed temporarily until cleanups are completed.
+EXTRA_CFLAGS += -DATH_PERF_PWR_OFFLOAD=1
+# enable TEMP aggregation configuration
+EXTRA_CFLAGS += -DTEMP_AGGR_CFG=1
+
+ifeq ($(BUILD_X86), y)
+ifeq ($(QCA_THIRDPARTY), 1)
+PERF_PWR_OFFLOAD_SRC := $(DEPTH)/$(FIRMWARE_REL_PATH)
+else
+PERF_PWR_OFFLOAD_SRC := $(DEPTH)/offload
+endif
+else
+PERF_PWR_OFFLOAD_SRC := $(DEPTH)/$(FIRMWARE_REL_PATH)
+endif
+PERF_PWR_OFFLOAD_WMI_SRC := $(PERF_PWR_OFFLOAD_SRC)/wmi
+PERF_PWR_OFFLOAD_REGDMN_SRC := $(PERF_PWR_OFFLOAD_SRC)/wlan/regdmn
+
+PERF_PWR_OFFLOAD_INC := -I$(PERF_PWR_OFFLOAD_DIR_PATH)/wlan/include \
+            -I$(PERF_PWR_OFFLOAD_DIR_PATH)/wlan/ath_pktlog/include \
+			-I$(PERF_PWR_OFFLOAD_DIR_PATH)/htt/include \
+			-I$(PERF_PWR_OFFLOAD_DIR_PATH)/wlan/txrx/include \
+			-I$(PERF_PWR_OFFLOAD_DIR_PATH)/include \
+			-I$(PERF_PWR_OFFLOAD_DIR_PATH)/include \
+			-I$(PERF_PWR_OFFLOAD_DIR_PATH)/hif/pci \
+			-I$(PERF_PWR_OFFLOAD_DIR_PATH)/hif/pci/linux   \
+			-I$(PERF_PWR_OFFLOAD_DIR_PATH)/os/linux/include \
+            -I$(PERF_PWR_OFFLOAD_DIR_PATH)/wlan/regdmn
+ifeq ($(ATH_TGT_TYPE),AR9888)
+   EXTRA_CFLAGS += -DCONFIG_AR9888_SUPPORT
+   EXTRA_CFLAGS += -DCONFIG_11AC_SUPPORT
+   EXTRA_CFLAGS += -DAR9888_HEADERS_DEF=1
+   EXTRA_CFLAGS += -DCONFIG_AR900B_SUPPORT
+   EXTRA_CFLAGS += -DAR900B_HEADERS_DEF=1
+endif
+
+
+ifeq ($(ATH_TGT_TYPE),AR9888)
+# We build the host driver against the v1 headers - the registers that the host driver
+# uses had better be compatible across v1/v2
+PERF_PWR_OFFLOAD_INC += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/include
+#PERF_PWR_OFFLOAD_INC += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/include/AR9888/v1/extra/hw
+#PERF_PWR_OFFLOAD_INC += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/include/AR9888/v1/extra/
+#PERF_PWR_OFFLOAD_INC += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/include/AR9888/v1
+endif
+
+ifeq ($(ATH_TGT_TYPE),AR6320)
+   EXTRA_CFLAGS += -DCONFIG_AR6320_SUPPORT
+   EXTRA_CFLAGS += -DCONFIG_11AC_SUPPORT
+   EXTRA_CFLAGS += -DAR6320_HEADERS_DEF=1
+#   EXTRA_CFLAGS += -DEPPING_TEST
+endif
+
+
+ifeq ($(ATH_TGT_TYPE),AR6320)
+PERF_PWR_OFFLOAD_INC += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/include/AR6320/extra/hw
+PERF_PWR_OFFLOAD_INC += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/include/AR6320/extra/
+PERF_PWR_OFFLOAD_INC += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/include/AR6320
+endif
+
+ifeq ($(ATH_TGT_TYPE),AR6004)
+   EXTRA_CFLAGS += -DCONFIG_AR6004_SUPPORT
+   EXTRA_CFLAGS += -DAR6004_HEADERS_DEF=1
+endif
+
+ifeq ($(ATH_TGT_TYPE),AR6004)
+PERF_PWR_OFFLOAD_INC += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/include/AR6004/hw
+PERF_PWR_OFFLOAD_INC += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/include/AR6004
+endif
+
+ifeq ($(ATH_TGT_TYPE),AR900B)
+   EXTRA_CFLAGS += -DCONFIG_AR900B_SUPPORT
+   EXTRA_CFLAGS += -DCONFIG_11AC_SUPPORT
+   EXTRA_CFLAGS += -DAR900B_HEADERS_DEF=1
+   EXTRA_CFLAGS += -DCONFIG_AR9888_SUPPORT
+   EXTRA_CFLAGS += -DAR9888_HEADERS_DEF=1
+   EXTRA_CFLAGS += -DIPQ4019_HEADERS_DEF=1
+   EXTRA_CFLAGS += -DQCA9984_HEADERS_DEF=1
+   EXTRA_CFLAGS += -DQCA9888_HEADERS_DEF=1
+#   EXTRA_CFLAGS += -DEPPING_TEST
+endif
+
+ifeq ($(ATH_TGT_TYPE),AR900B)
+PERF_PWR_OFFLOAD_INC += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/include
+#PERF_PWR_OFFLOAD_INC += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/include/AR900B/extra/hw
+#PERF_PWR_OFFLOAD_INC += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/include/AR900B/extra/
+#PERF_PWR_OFFLOAD_INC += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/include/AR900B
+endif
+PERF_PWR_OFFLOAD_INC += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/hw/include
+
+
+ifeq ($(ATH_SUPPORT_MCAST2UCAST), 1)
+EXTRA_CFLAGS += -DATH_SUPPORT_MCAST2UCAST
+endif
+
+# TBD: Check if this is required for Dakota
+ifeq ($(ATH_WAR_AR900B_MPHYR), 1)
+EXTRA_CFLAGS += -DHOST_SUPPORT_BEELINER_MPHYR
+endif
+
+ifeq ($(ATH_AR900B_LEGACY_INT), 1)
+EXTRA_CFLAGS += -DATH_AR900B_LEGACY_INT
+endif
+
+ifeq ($(QCA_OL_TX_CACHEDHDR), 1)
+EXTRA_CFLAGS += -DQCA_OL_TX_CACHEDHDR=1
+endif
+
+INCS += $(PERF_PWR_OFFLOAD_INC)
+
+PERF_PWR_OFFLOAD_OBJS := $(PERF_PWR_OFFLOAD_SRC)/wlan/lmac_offload_if/ol_if_ath.o \
+			        $(PERF_PWR_OFFLOAD_SRC)/wlan/lmac_offload_if/ol_if_rates.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/lmac_offload_if/ol_if_athutf.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/lmac_offload_if/ol_if_vap.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/lmac_offload_if/ol_if_node.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/lmac_offload_if/ol_if_cwm.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/lmac_offload_if/ol_if_dfs.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/lmac_offload_if/ol_if_phyerr.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/lmac_offload_if/ol_if_spectral.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/lmac_offload_if/ol_if_greenap.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/lmac_offload_if/ol_helper.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/lmac_offload_if/ol_if_ath_config.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/lmac_offload_if/ol_if_stats.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/lmac_offload_if/ol_if_smart_ant.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/lmac_offload_if/ol_if_eeprom.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/lmac_offload_if/ol_if_thermal.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/umac_offload_if/ol_if_beacon.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/umac_offload_if/ol_if_mgmt.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/umac_offload_if/ol_if_power.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/umac_offload_if/ol_if_scan.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/umac_offload_if/ol_if_nl.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/umac_offload_if/ol_if_rtt.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/umac_offload_if/ol_if_resmgr.o \
+				$(PERF_PWR_OFFLOAD_SRC)/misc/dbglog_host.o \
+				$(PERF_PWR_OFFLOAD_SRC)/os/linux/ol_ath_linux.o \
+				$(PERF_PWR_OFFLOAD_SRC)/os/linux/ol_ath_iw_handler.o \
+				$(PERF_PWR_OFFLOAD_SRC)/os/linux/netbuf.o \
+				$(PERF_PWR_OFFLOAD_SRC)/regtable/regtable.o \
+				$(PERF_PWR_OFFLOAD_SRC)/regtable/AR6004def.o \
+				$(PERF_PWR_OFFLOAD_SRC)/regtable/AR9888def.o \
+				$(PERF_PWR_OFFLOAD_SRC)/regtable/AR6320def.o \
+				$(PERF_PWR_OFFLOAD_SRC)/regtable/AR900Bdef.o \
+				$(PERF_PWR_OFFLOAD_SRC)/regtable/QCA9984def.o \
+				$(PERF_PWR_OFFLOAD_SRC)/regtable/QCA9888def.o \
+				$(PERF_PWR_OFFLOAD_SRC)/bmi/bmi.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wlan/lmac_offload_if/ol_if_me.o \
+				$(PERF_PWR_OFFLOAD_SRC)/wds/wds_addr.o
+
+ifeq (1, ${QVIT})
+PERF_PWR_OFFLOAD_OBJS += $(PERF_PWR_OFFLOAD_SRC)/wlan/lmac_offload_if/ol_if_athqvit.o
+PERF_PWR_OFFLOAD_OBJS += $(PERF_PWR_OFFLOAD_SRC)/os/linux/qvit_functions.o
+endif
+
+ifeq (1, ${EPPING_TEST})
+PERF_PWR_OFFLOAD_OBJS += $(PERF_PWR_OFFLOAD_SRC)/wlan/lmac_offload_if/ol_if_eppingtest.o
+endif
+
+PERF_PWR_OFFLOAD_WMI_OBJS := $(PERF_PWR_OFFLOAD_WMI_SRC)/wmi_unified.o
+PERF_PWR_OFFLOAD_OBJS += $(PERF_PWR_OFFLOAD_WMI_OBJS)
+
+PERF_PWR_OFFLOAD_REGDMN_OBJS := $(PERF_PWR_OFFLOAD_REGDMN_SRC)/ol_regdomain.o
+PERF_PWR_OFFLOAD_OBJS += $(PERF_PWR_OFFLOAD_REGDMN_OBJS)
+
+ifeq (1, ${UMAC_SUPPORT_ACFG})
+PERF_PWR_OFFLOAD_OBJS += $(PERF_PWR_OFFLOAD_SRC)/os/linux/ol_ioctl_acfg.o
+endif
+
+#htc
+HTC_OBJS := $(PERF_PWR_OFFLOAD_SRC)/htc/htc_send.o       \
+            $(PERF_PWR_OFFLOAD_SRC)/htc/htc_recv.o       \
+            $(PERF_PWR_OFFLOAD_SRC)/htc/htc_services.o   \
+            $(PERF_PWR_OFFLOAD_SRC)/htc/htc.o
+PERF_PWR_OFFLOAD_OBJS += $(HTC_OBJS)
+
+#hif-pci
+ifeq ($(strip $(ATH_HIF_TYPE)),pci)
+EXTRA_CFLAGS += -DHIF_MESSAGE_BASED
+
+ATH_HIF_MESSAGE_BASED =yes
+HIF_PCI_OBJS :=  $(PERF_PWR_OFFLOAD_SRC)/hif/pci/copy_engine.o   \
+				 $(PERF_PWR_OFFLOAD_SRC)/hif/pci/hif_pci.o       \
+				 $(PERF_PWR_OFFLOAD_SRC)/hif/pci/linux/ath_pci.o \
+				 $(PERF_PWR_OFFLOAD_SRC)/hif/pci/linux/ath_sysfs.o
+
+ifneq (,$(findstring $(BUSNAME),dual,ahb))
+HIF_PCI_OBJS +=  $(PERF_PWR_OFFLOAD_SRC)/hif/pci/linux/ath_ahb.o
+HIF_PCI_OBJS +=  $(PERF_PWR_OFFLOAD_SRC)/regtable/IPQ4019def.o
+endif #end BUSNAME
+
+PERF_PWR_OFFLOAD_OBJS += $(HIF_PCI_OBJS)
+
+endif # end hif-pci
+
+ifeq ($(strip $(ATH_HIF_TYPE)),sim)
+EXTRA_CFLAGS += -DHIF_MESSAGE_BASED
+
+ATH_HIF_MESSAGE_BASED =yes
+HIF_SIM_OBJS := $(PERF_PWR_OFFLOAD_SRC)/hif/sim/linux/hif_pipe.o   \
+                 $(PERF_PWR_OFFLOAD_SRC)/hif/sim/linux/simnetlink.o
+
+PERF_PWR_OFFLOAD_OBJS += $(HIF_SIM_OBJS)
+
+endif # end hif-sim
+
+#hif-sdio
+ifeq ($(strip $(ATH_HIF_TYPE)),sdio)
+
+ATH_HIF_MESSAGE_BASED =yes
+
+ifeq ($(NATIVE_SDIO),1)
+#NATIVE_SDIO
+HIF_SDIO_INC += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/host/hif/sdio/linux/native_sdio/include
+HIF_SDIO_INC += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/host/hif/sdio/linux
+HIF_SDIO_OBJS :=  $(PERF_PWR_OFFLOAD_SRC)/hif/sdio/linux/native_sdio/src/hif.o   \
+		          $(PERF_PWR_OFFLOAD_SRC)/hif/sdio/linux/native_sdio/src/hif_scatter.o \
+                  $(PERF_PWR_OFFLOAD_SRC)/hif/sdio/linux/if_ath_sdio.o \
+                  $(PERF_PWR_OFFLOAD_SRC)/hif/sdio/linux/ath_sysfs.o \
+                  $(PERF_PWR_OFFLOAD_SRC)/hif/common/hif_bmi_reg_access.o \
+                  $(PERF_PWR_OFFLOAD_SRC)/hif/common/hif_diag_reg_access.o
+else
+#ATH_SDIO
+HIF_SDIO_INC += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/host/hif/sdio/linux/linux_athsdio/include
+HIF_SDIO_INC += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/host/hif/sdio/linux
+HIF_SDIO_INC += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/host/sdiostack/src/include
+HIF_SDIO_OBJS :=  $(PERF_PWR_OFFLOAD_SRC)/hif/sdio/linux/linux_athsdio/src/hif.o   \
+		          $(PERF_PWR_OFFLOAD_SRC)/hif/sdio/linux/linux_athsdio/src/hif_scatter.o \
+                  $(PERF_PWR_OFFLOAD_SRC)/hif/sdio/linux/if_ath_sdio.o \
+                  $(PERF_PWR_OFFLOAD_SRC)/hif/sdio/linux/ath_sysfs.o \
+                  $(PERF_PWR_OFFLOAD_SRC)/hif/common/hif_bmi_reg_access.o \
+                  $(PERF_PWR_OFFLOAD_SRC)/hif/common/hif_diag_reg_access.o
+endif #NATIVE_SDIO
+HIF_SDIO_OBJS += $(PERF_PWR_OFFLOAD_SRC)/hif/sdio/hif_sdio.o \
+          $(PERF_PWR_OFFLOAD_SRC)/hif/sdio/hif_sdio_dev.o \
+          $(PERF_PWR_OFFLOAD_SRC)/hif/sdio/hif_sdio_send.o \
+          $(PERF_PWR_OFFLOAD_SRC)/hif/sdio/hif_sdio_recv.o
+
+INCS += $(HIF_SDIO_INC)
+PERF_PWR_OFFLOAD_OBJS += $(HIF_SDIO_OBJS)
+
+PERF_PWR_OFFLOAD_OBJS += $(HTC_OBJS)
+
+endif #end hif-sdio
+
+# txrx
+TXRX_OBJS := $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_rx.o  \
+             $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_rx_fwd.o \
+             $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_rx_defrag.o \
+             $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_txrx_peer_find.o \
+             $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_rx_pn.o \
+             $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_rx_reorder.o \
+             $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_tx.o \
+             $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_tx_desc.o \
+             $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_txrx.o \
+             $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_tx_send.o \
+             $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_txrx_prot_an.o \
+             $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_txrx_event.o \
+             $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_tx_me.o \
+             $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_ratetable.o
+
+ifeq ($(QCA_OL_SUPPORT_RAWMODE_TXRX), 1)
+TXRX_OBJS += $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_rawmode_rx.o
+TXRX_OBJS += $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_rawmode_tx.o
+ifeq ($(QCA_SUPPORT_RAWMODE_PKT_SIMULATION),1)
+    TXRX_OBJS += $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_rawmode_sim.o
+endif
+endif
+
+ifeq ($(HOST_SW_TSO_ENABLE),1)
+PERF_PWR_OFFLOAD_OBJS += $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_tx_tso.o
+endif
+
+ifeq ($(HOST_SW_TSO_SG_ENABLE),1)
+PERF_PWR_OFFLOAD_OBJS += $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_tx_tso_sg.o
+endif
+
+ifeq ($(HOST_SW_SG_ENABLE),1)
+PERF_PWR_OFFLOAD_OBJS += $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_tx_sg.o
+endif
+
+ifeq (1, ${ATH_SUPPORT_WRAP})
+TXRX_OBJS += $(PERF_PWR_OFFLOAD_SRC)/wlan/txrx/ol_if_mat.o
+endif
+
+PERF_PWR_OFFLOAD_OBJS += $(TXRX_OBJS)
+PERF_PWR_OFFLOAD_OBJS += $(PERF_PWR_OFFLOAD_SRC)/ol_cfg/ol_cfg.o
+
+# htt
+HTT_OBJS := $(PERF_PWR_OFFLOAD_SRC)/htt/htt.o \
+            $(PERF_PWR_OFFLOAD_SRC)/htt/htt_h2t.o \
+            $(PERF_PWR_OFFLOAD_SRC)/htt/htt_rx.o \
+            $(PERF_PWR_OFFLOAD_SRC)/htt/htt_t2h.o \
+            $(PERF_PWR_OFFLOAD_SRC)/htt/htt_fw_stats.o \
+            $(PERF_PWR_OFFLOAD_SRC)/htt/htt_tx.o
+
+PERF_PWR_OFFLOAD_OBJS += $(HTT_OBJS)
+
+
+HW_OBJS := $(PERF_PWR_OFFLOAD_SRC)/hw/ar.o
+HW_OBJS += $(PERF_PWR_OFFLOAD_SRC)/hw/QCA9984/rx_desc.o
+HW_OBJS += $(PERF_PWR_OFFLOAD_SRC)/hw/AR900B/rx_desc.o
+HW_OBJS += $(PERF_PWR_OFFLOAD_SRC)/hw/AR9888/rx_desc.o
+
+PERF_PWR_OFFLOAD_OBJS += $(HW_OBJS)
+
+PKTLOG_AC_OBJS := $(PERF_PWR_OFFLOAD_SRC)/wlan/ath_pktlog/linux_ac.o \
+                   $(PERF_PWR_OFFLOAD_SRC)/wlan/ath_pktlog/pktlog_ac.o \
+                   $(PERF_PWR_OFFLOAD_SRC)/wlan/ath_pktlog/pktlog_internal.o \
+                   $(PERF_PWR_OFFLOAD_SRC)/wlan/ath_pktlog/linux_remote_pktlog.o \
+
+ifeq ($(strip $(DUMP_FW_RAM)),1)
+COPTS += -DDUMP_FW_RAM=1
+endif #TARGET CORE DUMP
+
+ifneq ($(strip $(REMOVE_PKT_LOG)),1)
+PERF_PWR_OFFLOAD_OBJS += $(PKTLOG_AC_OBJS)
+endif #REMOVE_PKT_LOG
+
+endif #end perf_pwr_offload
+
+ifeq ($(strip $(WDI_EVENT_ENABLE)),1)
+COPTS += -DWDI_EVENT_ENABLE
+endif
+
+ifeq ($(strip $(QCA_OL_TX_CACHEDHDR)),1)
+COPTS += -DQCA_OL_TX_CACHEDHDR=1
+endif
+
+ifeq ($(TARGET),ANDROID)
+EXTRA_CFLAGS+= -Wframe-larger-than=4096
+endif
+
+ifeq ($(TARGET),i386-elf)
+EXTRA_CFLAGS+= -Wframe-larger-than=1190
+endif #x86 stack frame limit
+
+ifeq ($(TARGET),armv4-le-elf)
+EXTRA_CFLAGS+= -Wframe-larger-than=1190
+endif #arm stack frame limit
+
+ifeq ($(strip $(ATH_TX_OVERFLOW_IND)),1)
+COPTS += -DATH_TX_OVERFLOW_IND=1
+endif
+
+ifeq ($(strip $(ATH_RX_INFO_EN)),1)
+COPTS += -DATH_RX_INFO_EN=1
+endif
+
+ifeq ($(strip $(ATH_TX_PRI_OVERRIDE)),1)
+COPTS += -DATH_TX_PRI_OVERRIDE=1
+endif
+
+ifeq ($(strip $(ATH_RX_PRI_SAVE)),1)
+COPTS += -DATH_RX_PRI_SAVE=1
+endif
+
+ifeq ($(strip $(ATH_SUPPORT_11N_CHANWIDTH_SWITCH)),1)
+COPTS += -DATH_SUPPORT_11N_CHANWIDTH_SWITCH=1
+endif
+
+ifeq ($(strip $(ATH_NON_BEACON_AP)),1)
+COPTS += -DATH_NON_BEACON_AP=1
+endif
+
+ifeq ($(strip $(ATH_DATA_RX_INFO_EN)),1)
+COPTS += -DATH_DATA_RX_INFO_EN=1
+endif
+
+ifeq ($(strip $(ATH_DATA_TX_INFO_EN)),1)
+COPTS += -DATH_DATA_TX_INFO_EN=1
+endif
+
+EXTRA_CFLAGS+= $(INCS) $(COPTS) -Wno-unused-function
+
+ifeq ($(strip ${QCA_PARTNER_MAKE_F_SUPPORT}),1)
+EXTRA_CFLAGS+= -DKBUILD_MODNAME=\"umac\"
+MOD_CFLAGS = -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(umac.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(umac)"
+endif
+
+umac-objs := base/ieee80211_channel.o base/ieee80211_common.o base/ieee80211_config.o \
+             base/ieee80211_node.o base/ieee80211_node_ap.o base/ieee80211_node_sta.o \
+             base/ieee80211_node_ibss.o base/ieee80211_rateset.o base/ieee80211_vap.o \
+             base/ieee80211_msg.o base/ieee80211_tsftimer.o base/ieee80211_vap_ath_info.o \
+             base/ieee80211_node_tdls.o \
+             crypto/ieee80211_crypto.o crypto/ieee80211_crypto_ccmp.o crypto/aes-gcm.o\
+             crypto/ieee80211_crypto_ccmp_sw.o crypto/ieee80211_crypto_pmf.o \
+             crypto/ieee80211_crypto_none.o crypto/ieee80211_crypto_tkip.o \
+             crypto/ieee80211_crypto_tkip_sw.o \
+             crypto/ieee80211_crypto_wep.o crypto/ieee80211_rsn.o \
+             crypto/ieee80211_crypto_rijndael.o crypto/ieee80211_wps.o \
+             crypto/ieee80211_wapi.o crypto/ieee80211_crypto_wpi_sms4.o \
+             crypto/ieee80211_crypto_wep_mbssid.o \
+             if_lmac/if_ath.o if_lmac/if_ath_amsdu.o if_lmac/ath_cwm.o if_lmac/ath_cwm_project.o if_lmac/if_ath_uapsd.o if_lmac/if_ath_dfs.o \
+             mlme/ieee80211_beacon.o mlme/ieee80211_ie.o mlme/ieee80211_mgmt.o \
+             mlme/ieee80211_mgmt_ap.o mlme/ieee80211_mgmt_sta.o mlme/ieee80211_mlme.o mlme/ieee80211_proto.o \
+             mlme/ieee80211_mlme_ap.o mlme/ieee80211_mlme_sta.o mlme/ieee80211_mlme_ibss.o  \
+             mlme/ieee80211_mgmt_ibss.o  mlme/ieee80211_mgmt_bss.o mlme/ieee80211_mlme_sw_bmiss.o \
+             mlme/ieee80211_mlme_app_ie.o  mlme/ieee80211_ie_utils.o \
+             mlme/ieee80211_bssload.o \
+             pm/ieee80211_ap_power.o pm/ieee80211_power.o pm/ieee80211_sta_power.o \
+             pm/ieee80211_power_queue.o \
+             regdmn/ieee80211_regdmn.o resmgr/ieee80211_resmgr.o resmgr/ieee80211_resmgr_sm.o \
+             resmgr/ieee80211_resmgr_oc_scheduler.o \
+             scan/ieee80211_scan.o scan/ieee80211_scan_api.o scan/ieee80211_aplist.o scan/ieee80211_scanentry.o \
+             network_listner/ieee80211_nl.o \
+             acs/ieee80211_acs.o \
+             acl/ieee80211_acl.o \
+             dfs/ieee80211_csa.o \
+             dfs/ieee80211_dfs.o \
+             tdls/ieee80211_tdls.o \
+             tdls/ieee80211_tdls_power.o \
+             tdls/ieee80211_tdls_chan_switch.o \
+             tdls/ieee80211_tdls_notifier.o \
+             wds/ieee80211_wds.o \
+             txbf/ieee80211_txbf.o \
+             sme/ieee80211_sm.o sme/ieee80211_assoc_sm.o \
+             sme/ieee80211_connection_sm.o sme/ieee80211_ibss_sm.o \
+             txrx/ieee80211_input.o txrx/ieee80211_output.o txrx/ieee80211_frag.o $(OSDEP_OBJS) $(PLTFRM_OBJS) \
+             ique/ieee80211_me.o ique/ieee80211_hbr.o base/ieee80211_vap_pause.o \
+             rpt_placement/ieee80211_rptplacement.o \
+             admctl/ieee80211_admctl.o admctl/ieee80211_admctl_ap.o \
+             wnm/ieee80211_wnm.o wnm/ieee80211_wnm_ap.o wnm/ieee80211_wnm_sta.o\
+             vi_dbg/ieee80211_vi_dbg.o \
+             base/ieee80211_node_proxyarp.o $(OSDEP_SRC)/osif_proxyarp.o \
+             smart_antenna/ieee80211_smartantenna.o \
+             smart_ant/ieee80211_smart_ant_api.o \
+             base/ieee80211_prdperfstats.o
+
+ifeq ($(ATH_SUPPORT_WIFIPOS),1)
+umac-objs += wifipos/ieee80211_wifipos.o
+endif
+
+ifeq ($(UMAC_SUPPORT_RRM), 1)
+umac-objs += rrm/ieee80211_rrm.o rrm/ieee80211_rrm_ie.o rrm/ieee80211_rrm_ap.o rrm/ieee80211_rrm_sta.o rrm/ieee80211_rrm_misc.o
+endif
+
+ifeq ($(ATH_PERF_PWR_OFFLOAD), 1)
+umac-objs += $(PERF_PWR_OFFLOAD_OBJS)
+endif
+
+ifeq ($(ATH_SUPPORT_AOW), 1)
+umac-objs += aow/ieee80211_aow.o aow/ieee80211_aow_ctrl.o if_lmac/if_ath_aow.o
+endif
+
+ifeq ($(ATH_BAND_STEERING), 1)
+umac-objs +=band_steering/band_steering.o band_steering/band_steering_direct_attach.o
+endif
+
+ifeq ($(UMAC_SUPPORT_QUIET), 1)
+umac-objs += if_lmac/if_ath_quiet.o \
+             mlme/ieee80211_quiet.o
+endif
+
+ifeq ($(ATH_SUPPORT_WRAP), 1)
+umac-objs += if_lmac/if_ath_mat.o
+endif
+
+ifeq ($(strip ${ATH_SUPPORT_P2P}),1)
+umac-objs +=  p2p/ieee80211_notify_tx_bcn.o p2p/ieee80211_p2p_client.o \
+              p2p/ieee80211_p2p_client_power.o \
+              p2p/ieee80211_p2p_device.o p2p/ieee80211_p2p_go.o \
+              p2p/ieee80211_p2p_go_schedule.o p2p/ieee80211_p2p_ie.o \
+              p2p/ieee80211_p2p_kernel.o p2p/ieee80211_p2p_go_power.o \
+              p2p/ieee80211_p2p_prot_go.o p2p/ieee80211_p2p_prot.o \
+              p2p/ieee80211_p2p_prot_client.o p2p/ieee80211_p2p_prot_utils.o
+INCS += -I$(obj)/$(DEPTH)/umac/p2p
+endif
+
+
+ifeq ($(ATH_EXT_AP), 1)
+umac-objs += extap/ieee80211_mitbl.o extap/ieee80211_extap.o
+endif
+
+ifeq ($(ATH_SUPPORT_HYFI_ENHANCEMENTS), 1)
+umac-objs += ald/ieee80211_ald.o
+endif
+
+clean-files := modules.order
+
+ifeq ($(strip ${QCA_PARTNER_MAKE_F_SUPPORT}),1)
+all: umac.ko
+
+umac.mod.o: umac.mod.c
+	${CC} -c -o $@ ${EXTRA_CFLAGS} ${MOD_CFLAGS} $<
+
+umac.o: ${umac-objs}
+	$(LD) -m elf32btsmip -r -o umac.o $(umac-objs)
+	$(KERNELPATH)/scripts/mod/modpost umac.o
+
+umac.ko: umac.o umac.mod.o
+	$(LD) $(LDOPTS) -o umac.ko umac.o umac.mod.o
+
+%.o: %.c
+	${CC} -c -o $@ ${EXTRA_CFLAGS} $<
+endif

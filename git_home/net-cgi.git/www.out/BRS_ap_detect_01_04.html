@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_02_genieHelp.css" />
+<script language="javascript" type="text/javascript" src="funcs.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_ap_detect_01_04.js"></script>
+<% hijack_language() %>
+</head>
+<body>
+<script>
+var router_or_ap = "<% cfg_get("router_ap_selected") %>";
+</script>
+<div id="wait_div" class="wizard_content_div">
+	<div class="wizard_words_div">
+		<div class="waiting_connect_div" align="center">
+			<h1 class="h1_black"><script>document.write(bh_plz_wait_moment);</script></h1>
+		</div>
+		<div class="waiting_img_div" align="center">
+			<img id="waiting_img" src="image/wait30.gif" />
+		</div>
+	</div>
+</div>
+<div id="content_div"  class="wizard_content_div" style="display:none">
+	<div class="ap_words_div">
+	<p><script>document.write(bh_wl_setting_finish);</script></p>
+	</div>
+	<div class="ap_doc_div" style="height:180px;">	
+		<div class="left_div">
+				<script>document.write(bh_wl_ssid_name);</script>
+		</div>
+		<div class="right_div"><% cfg_get_ssid_html("wl_ssid") %></div>
+		<div class="left_div">
+				<script>document.write(bh_wl_password);</script>
+		</div>
+		<div class="right_div"><% passphrase_bg_msg("wl_wpas_spk") %></div>
+		<div class="line_div"><script>document.write("or");</script></div>
+		<div class="left_div">
+			<script>document.write(bh_wla_ssid_name);</script>
+		</div>
+		<div class="right_div"><% cfg_get_ssid_html("wla_ssid") %></div>	
+		<div class="left_div">
+			<script>document.write(bh_wl_password);</script>
+		</div>
+		<div class="right_div"><% passphrase_ag_msg("wla_wpas_spk")%></div>	
+	</div>
+	
+	<div id="buttons_div_02" class="wizard_buttons_div" align="center">
+	<script>
+		var master="<% cfg_get("http_loginname") %>";
+		if( master == "admin" ){
+			document.write('<div id="btnsContainer_div" class="buttons_img_div"  align="center">');
+			document.write('<img src="image/ca-little-purple-button.gif" /><div id="btn_div" class="buttons_words_div"></div></div>');
+		}
+		else{
+			document.write('<div id="btnsContainer1_div" class="buttons_img_div"  align="center">');
+			document.write('<img src="image/ca-little-grey-button.png" /><div id="btn_div1" class="buttons_words_div"></div></div>');
+		}
+	</script>
+	</div>
+	<div class="ap_warning_div"><p><script>document.write(bh_wl_finish_warning);</script></p></div>
+</div>
+</body>
+</html>

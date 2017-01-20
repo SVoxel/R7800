@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<% cfg_set("from_setting", "") %>
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_hijack_04_applySettings_ping.js"></script>
+<% hijack_language() %>
+<script language="javascript" type="text/javascript">
+var curr_country = "<% cfg_get("dsl_wan_country") %>";
+var curr_isp = "<% cfg_get("dsl_wan_isp") %>";
+var wan_type = "<% cfg_get("dsl_wan_type") %>";
+showFirmVersion("none");
+var apmode_flag = top.apmode_flag;
+var ap_mode_detection_flag = top.ap_mode_detection_flag;
+<% cfg_set("hijack_refresh_counter", "0") %>
+var ap_mode = "<% cfg_get("ap_mode") %>";
+var ping_result = "<% hijack_apply_result("/tmp/ping_result") %>"
+var wan_proto="<% cfg_get("wan_proto") %>";
+var select_basic="<% cfg_get("internet_type") %>";  //select_basic = 1 dhcp or static, select_basic=0 pppoe or pptp 
+var select_type = "<% cfg_get("internet_ppp_type") %>"; //select_type = 0 pppoe ,select_type = 1 pptp
+if(top.dsl_enable_flag == 1)
+{
+  var ping_ip_result = "<% hijack_apply_result("/tmp/ping_ip_result") %>"
+  var ping_gate_result = "<% hijack_apply_result("/tmp/ping_gateway_result") %>"
+  var country="<% cfg_get("dsl_wan_country") %>";  //select_basic = 1 dhcp or static, select_basic=0 pppoe or pptp 
+  var isp = "<% cfg_get("dsl_wan_isp") %>"; //select_type = 0 pppoe ,select_type = 1 pptp
+  var debug="<% cfg_get("wizard_debug") %>";
+}
+</script>
+
+</head>
+
+<body>
+
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+		<h1><script language="javascript" type="text/javascript">document.write(bh_apply_connection);</script></h1>
+			
+		<p><script language="javascript" type="text/javascript">document.write(bh_plz_waite_apply_connection);</script></p>
+		
+		<div id="applySettings_wait" class="waiting_img_div" align="center">
+			<img src="image/wait30.gif" />
+		</div>
+		
+	</div>
+		
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,178 @@
+<% http_header("style/form.css", "/funcs.js", "/green_download.js") %>
+<% body_header("_green_download", "green_download.htm", "green_download") %>
+<div class="page_title">$greendl_common_title</div>
+<div id="main" class="main">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+        <TD nowrap colspan=2 align=center>
+	<div id="msg_line_1" class="msg_nousb" style="display:none"><b>$greendl_common_plug_usb</b></div>
+	<div id="msg_line_2" class="msg_nousb" style="display:none"><b>$greendl_common_usb_removed</b></div>
+	<div class="download_bts">
+	<input class="cancel_bt" type='button' name="Cancel" value='$cancel_mark' onClick='location.href="green_download.htm";'>&nbsp;&nbsp;
+	<input class="apply_bt" type='submit' name="Apply" value='$apply_mark' onclick='return click_basic_green();'>
+        </div>
+	</TD>
+</TR>
+</TABLE>
+<% table_header() %> 
+
+<script>
+<% save_timestamp("green_download","download_email")%>
+var ts = "<% cfg_get("green_download") %>";
+<% list_download_item() %>
+var max_concurrent_tasks="<% cfg_get("green_download_max_tasks_run")%>";
+var green_download_path = "<% cfg_sed("green_download_path") %>";
+var green_disk_lable = "<% cfg_get("green_disk_lable") %>";
+var enable_autorefresh_status="<% cfg_get("green_enable_autorefresh_status")%>";
+var greendl_open = 0;
+var refresh_time="<% cfg_get("green_download_refresh_time")%>";
+<% show_devices() %>
+<% usb_initTree() %>
+<% green_download_changed() %>
+
+function loadvalue()
+{
+	if(disk_num == 0)
+	{
+		if( green_download_changed == "1")
+			document.getElementById("msg_line_2").style.display="";
+		else
+			document.getElementById("msg_line_1").style.display="";
+	}
+	
+	var cf = document.forms[0];
+
+	cf.max_tasks.value = max_concurrent_tasks;
+	chg_max_task();
+
+	if( enable_autorefresh_status == "1")
+		cf.enable_autorefresh_status.checked = true;
+	else
+		cf.enable_autorefresh_status.checked = false;
+
+	setGray(cf);
+
+	cf.refresh_time.value=refresh_time;
+	cf.greendl_save_path.value = green_download_path;
+	cf.greendl_disk_lable.value = green_disk_lable;
+
+	show_Graypage();
+}
+
+function click_basic_green()
+{
+	var cf = document.forms[0];
+
+	if(cf.greendl_disk_lable.value != green_disk_lable && top.green_download_item_num > 0 && confirm("$greendl_basic_change_path_warning") == false)
+	{
+		this.location.href="green_download.htm";
+		return false;
+	}
+	if(cf.enable_autorefresh_status.checked) {
+		cf.enable_autorefresh_status_hid.value = "1";
+		alert("$greendl_basic_enable_autorefresh_warning");
+	} else
+		cf.enable_autorefresh_status_hid.value = "0";
+
+	cf.refresh_time_hid.value = cf.refresh_time.value;
+	return true;
+}
+
+
+</script>
+<input type="hidden" name="enable_autorefresh_status_hid">
+<input type="hidden" name="refresh_time_hid">
+<input type="hidden" name="greendl_save_path">
+<input type="hidden" name="greendl_disk_lable">
+
+<TR id="save_path"><TD nowrap><b>$greendl_common_showSavedPath</b></TD></TR>
+<TR id="path"><TD nowrap colspan=2>$greendl_manager_foldpath</TD></TR>
+<TR>
+	<TD nowrap colspan=2>
+		<input type="text" name="save_folder" size="50" value="" disabled>
+		<input type="button" name="browser" value="$browse_mark" onClick='open_all_browser(document.forms[0],1);'>
+	</TD>
+</TR>
+$bluebar
+<TR id="max_id1">
+	<TD nowrap width="50%"><A tabindex=-1 href="javascript:loadhelp('_green_download','green_max_task')"><b>$greendl_basic_max_tasks</b></A></TD>
+	<TD nowrap>
+		<select id="max_tasks" name="max_tasks" size="1">
+			<option value=1 >1</option>
+			<option value=2 >2</option>
+			<option value=3 >3</option>
+			<option value=4 >4</option>
+			<option value=5 >5</option>
+			<option value=6 selected>6</option>
+			<option value=7 >7</option>
+			<option value=8 >8</option>
+		</select>
+	</TD>
+</TR>
+<TR id="max_id2"><TD colspan="2">$greendl_basic_max_tasks_description</TD></TR>
+<TR><TD colspan="2">&nbsp;</TD></TR>
+$bluebar
+
+<TR id="max_id3">
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_green_download','green_max_downrate')"><b>$greendl_basic_max_downrate</b></A></TD>
+	<TD nowrap>
+	<input type="text" name="green_download_max_downrate" size="8" maxlength="8" value="<% cfg_get("green_download_max_downrate") %>" onKeyPress="return getkey('num',event)"> KB/s
+	</TD>
+</TR>
+
+<TR id="max_id4">
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_green_download','green_max_uprate')"><b>$greendl_basic_max_uprate</b></A></TD>
+	<TD nowrap>
+	<input type="text" name="green_download_max_uprate" size="8" maxlength="8" value="<% cfg_get("green_download_max_uprate") %>" onKeyPress="return getkey('num',event)"> KB/s
+	</TD>
+</TR>
+<TR id="max_id5"><TD colspan=2>$greendl_basic_max_rate_description</TD></TR>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+$bluebar
+
+<TR id="max_id6"><TD nowrap colspan="2"><input type="checkbox" name="enable_autorefresh_status" value="0" onclick="setGray(document.forms[0]);">
+<A tabindex=-1 href="javascript:loadhelp('_green_download','green_auto_refresh')"><b>$greendl_basic_enable_auto_refresh</b></A></TD></TR>
+<TR id="max_id7"><TD nowrap colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$greendl_basic_refresh_description</TD></TR>
+<TR id="max_id8"><TD nowrap>$greendl_basic_refresh_rate&nbsp;&nbsp;&nbsp;
+		<select name="refresh_time" size="1">
+			<option value=1 >1</option>
+			<option value=2 >2</option>
+			<option value=3 selected >3</option>
+			<option value=4 >4</option>
+			<option value=5 >5</option>
+			<option value=6 >6</option>
+			<option value=7 >7</option>
+			<option value=8 >8</option>
+			<option value=9 >9</option>
+			<option value=10 >10</option>
+		</select>
+	$greendl_basic_refresh_time
+</TD></TR>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+$bluebar
+
+<TR id="max_id9"><TD nowrap colspan="2"><A tabindex=-1 href="javascript:loadhelp('_green_download','green_send_email')"><b>$greendl_basic_send_email_noti</b></A></TD></TR>
+
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD colspan=2>
+	<input class="long_edit_bt" type="submit" name="edit" value="$greendl_basic_config_email_mark" onClick='email_redirect();'>
+</TD></TR>
+<script>
+function email_redirect()
+{
+	var cf=document.forms[0];	
+	cf.submit_flag.value="download_email";
+	cf.action="/apply.cgi?/FW_email.htm timestamp=" + ts;
+	if( top.location.href.indexOf("adv_index.htm") != -1 )
+	{
+		top.open_or_close_sub("security");
+		top.menu_color_change('email');
+	}
+}
+</script>
+</TABLE>
+</div>
+<% help_box("0","_green_download") %>
+</FORM>
+</BODY>
+</HTML>

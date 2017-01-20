@@ -1,0 +1,383 @@
+<% http_header("style/form.css", "/funcs.js", "/AccessControl.js") %>
+<% body_header("_access_control", "access_control.htm", "apply_acc_control") %>
+<div class="page_title">$acc_control</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if(master=="admin")
+document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="access_cancel();"> &nbsp;&nbsp;<input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onClick="access_control_apply(document.forms[0], \'1\');"></TD></TR>');
+else
+document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled> &nbsp;&nbsp;<input class="apply1_bt" type="button" name="Apply" id="apply" value="$apply_mark" disabled></TD></TR>');
+</script>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<script>
+<% save_timestamp("apply_acc_control", "acc_control_allow", "acc_control_block", "delete_acc","editnum_acc_allow","editnum_acc_block","editnum_connect_device") %>
+var ts='<%cfg_get("acc_control_allow")%>';
+
+var wan_remote_mac="<% cfg_get("wan_remote_mac") %>";
+var enable_block_device="<% cfg_get("enable_block_device") %>";
+var new_device_statue_by_default="<% cfg_get("new_device_statue_by_default") %>";
+var allow_no_con_sta="<% cfg_get("allow_no_connect_sta") %>";
+var block_no_con_sta="<% cfg_get("block_no_connect_sta") %>";
+<% list_access_control_device() %>
+<% list_access_no_connect_devices() %>
+var have_connect=0;
+var an_router_flag = parent.an_router_flag;
+var show_edit_button = top.show_edit_button;
+function show_allow_no_connect()
+{
+	var cf=document.forms[0];
+	var open_sta=document.getElementById("allow_0").style.display;
+	
+	if( open_sta == "none")
+	{
+		document.getElementById("allow_pic").src="/image/open_list.gif";
+		document.getElementById("allow_0").style.display="";
+		document.getElementById("allow_1").style.display="";
+		document.getElementById("allow_2").style.display="";
+		document.getElementById("allow_3").style.display="";
+		cf.hid_allow_no_connect_sta.value="show";
+	}
+	else
+	{
+		document.getElementById("allow_pic").src="/image/close_list.gif";
+		document.getElementById("allow_0").style.display="none";
+		document.getElementById("allow_1").style.display="none";
+		document.getElementById("allow_2").style.display="none";
+		document.getElementById("allow_3").style.display="none";
+		cf.hid_allow_no_connect_sta.value="hidden";
+	}
+}
+
+function show_block_no_connect()
+{
+	var cf=document.forms[0];
+	var open_sta=document.getElementById("block_0").style.display;
+
+	if( open_sta == "none" )
+	{
+		document.getElementById("block_pic").src="/image/open_list.gif";
+		document.getElementById("block_0").style.display="";
+		document.getElementById("block_1").style.display="";
+		document.getElementById("block_2").style.display="";
+		document.getElementById("block_3").style.display="";
+		cf.hid_block_no_connect_sta.value="show";
+	}
+	else{
+		document.getElementById("block_pic").src="/image/close_list.gif";
+		document.getElementById("block_0").style.display="none";
+		document.getElementById("block_1").style.display="none";
+		document.getElementById("block_2").style.display="none";
+		document.getElementById("block_3").style.display="none";
+		cf.hid_block_no_connect_sta.value="hidden";
+	}
+}
+
+function add_access(type)
+{
+	var next;
+	if(type=="allow")
+		next="add_allowed.htm";
+	else
+		next="add_blocked.htm";
+
+	var cf = document.forms[0];
+	access_control_apply(cf, '0');
+	cf.submit_flag.value = "apply_acc_control";
+	cf.action="/apply.cgi?/"+next+" timestamp="+ts;
+	cf.submit();
+	return true;
+}
+
+function loadvalue()
+{
+	cf=document.forms[0];
+
+	if( show_edit_button== 1)
+	{
+		document.getElementById("edit_attached").style.display="";
+		document.getElementById("edit_white").style.display="";
+		document.getElementById("edit_black").style.display="";
+	}
+	
+	
+	if(enable_block_device == 0)
+		cf.enable_acl.checked = false;
+	else
+		cf.enable_acl.checked = true;
+		
+	if(new_device_statue_by_default == "Block")
+		cf.access_all[1].checked = true;
+	else
+		cf.access_all[0].checked = true;
+
+	if( allow_no_con_sta == "show")
+		show_allow_no_connect();
+	//else, when page load, the list is hidden, if the status is "hidden", not need change.
+
+	if( block_no_con_sta == "show")
+		show_block_no_connect();
+	//else, when page load, the list is hidden, if the status is "hidden", not need change.
+	var master="<% cfg_get("http_loginname") %>";
+	var cf = document.forms[0];
+	var flag;
+	flag = (!(cf.enable_acl.checked));
+	setDisabled(flag, cf.access_all[0], cf.access_all[1], cf.Allow, cf.Block, cf.checkbox_index);
+	setDisabled(flag, document.getElementById("delete_white"), document.getElementById("delete_black"), cf.checkbox_index_white, cf.checkbox_index_black,document.getElementById("add_black"),document.getElementById("add_white"));
+	if(master=="guest")
+	{
+		enable_block_device = 0;
+		cf.enable_acl.disabled = true;
+		cf.Allow.className = "common_gray_bt";
+		cf.Block.className = "common_gray_bt";
+		for(i=1;i<=access_control_device_num;i++)
+			document.getElementById("checkbox_index"+i).disabled = true;
+
+		document.getElementById("delete_white").className= "common_big_gray_bt";
+		document.getElementById("add_white").className = "common_gray_bt";
+		for(i=1;i<=allowed_no_connect_num;i++)
+			document.getElementById("checkbox_index_white"+i).disabled = true;
+
+		document.getElementById("delete_black").className= "common_big_gray_bt";
+		document.getElementById("add_black").className = "common_gray_bt";
+		for(i=1;i<=blocked_no_connect_num;i++)
+			document.getElementById("checkbox_index_black"+i).disabled = true;
+	}
+	else if(cf.enable_acl.checked == false)
+	{
+		enable_block_device = 0;
+		cf.Allow.className = "common_gray_bt";
+		cf.Block.className = "common_gray_bt";
+		for(i=1;i<=access_control_device_num;i++)
+			document.getElementById("checkbox_index"+i).disabled = true;
+
+		document.getElementById("delete_white").className= "common_big_gray_bt";
+		document.getElementById("add_white").className = "common_gray_bt";
+		for(i=1;i<=allowed_no_connect_num;i++)
+			document.getElementById("checkbox_index_white"+i).disabled = true;
+
+		document.getElementById("delete_black").className= "common_big_gray_bt";
+		document.getElementById("add_black").className = "common_gray_bt";
+		for(i=1;i<=blocked_no_connect_num;i++)
+			document.getElementById("checkbox_index_black"+i).disabled = true;
+	}
+	else
+	{
+		enable_block_device = 1;
+		cf.Allow.className = "common_bt";
+		cf.Block.className = "common_bt";
+		for(i=1;i<=access_control_device_num;i++)
+			document.getElementById("checkbox_index"+i).disabled = false;
+
+		document.getElementById("delete_white").className= "common_big_bt";
+		document.getElementById("add_white").className = "common_bt";
+		for(i=1;i<=allowed_no_connect_num;i++)
+			document.getElementById("checkbox_index_white"+i).disabled = false;
+		document.getElementById("delete_black").className= "common_big_bt";
+		document.getElementById("add_black").className = "common_bt";
+
+		for(i=1;i<=blocked_no_connect_num;i++)
+			document.getElementById("checkbox_index_black"+i).disabled = false;
+	}
+	
+	
+	sortTable('control_table', 1, 1);
+	load_sortTable('control_table', 1, 3, 'int', 1);
+}
+
+</script>
+<input type="hidden" name="hid_able_block_device">
+<input type="hidden" name="hid_new_device_status">
+<input type="hidden" name="hid_allow_no_connect_sta">
+<input type="hidden" name="hid_block_no_connect_sta">
+<input type="hidden" name="hidden_del_list" value="" />
+<input type="hidden" name="hidden_del_num" value="0" />
+<input type="hidden" name="hidden_change_list" value="" />
+<input type="hidden" name="hidden_change_num" value="0" />
+<input type="hidden" name="select_edit" value=""/>
+<table width="100%" border="0" cellpadding="0" cellspacing="3">
+<TR>
+	<TD nowrap colSpan="4"><b>$acc_control_allow_or_block</b></TD>
+</TR>
+<TR>
+	<TD nowrap colSpan="4"><input type="checkbox" name="enable_acl" id="enable_acl" value="1" onclick="return check_status()"><a tabindex=-1 href="javascript:loadhelp('_access_control','enable_acc_control')">$turn_on_access</a></TD>
+</TR>
+<TR>
+	<TD nowrap colSpan="3"><a tabindex=-1 href="javascript:loadhelp('_access_control','access_rule')">$acc_rule</a></TD>
+</TR>
+<TR>
+	<TD nowrap colSpan="4"><input type=radio name="access_all" id="allow_all" value="allow_all">$allow_connect</TD>
+</TR>
+<TR>
+	<TD nowrap colSpan="4"><input type=radio name="access_all" id="block_all" value="block_all">$block_connect</TD>
+</TR>
+
+<TR><TD colspan=4><img src=/liteblue.gif width=100% height=12></TD></TR>
+<TR>
+	<TD width="227px" align=left>
+		<input class="common_bt" type="button" name="Allow" id="allow" value="$allow_mark" onclick="return set_allow_block(document.forms[0],1);">
+	</TD>
+	<TD align=left>
+		<input class="common_bt" type="button" name="Block" id="block" value="$block_mark" onclick="return set_allow_block(document.forms[0],0);">
+	</TD>
+	<TD align=left>
+		<input class="common_gray_bt" type="button" name="Edit" id="edit_attached" value="$edit_mark" style="display:none" onclick="return check_edit(document.forms[0]);" disabled>
+	</TD>
+	<TD align=right>
+		<input class="common_bt" type="button" name="Refresh" id="refresh" value="$refresh_mark" onclick='location.href="access_control.htm";'>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=4>
+		<TABLE class=tables border=0 cellpadding=2 cellspacing=0 width=100% id="control_table">
+			<thead>
+			<TR class=table_header>
+				<TD nowrap align=center><span class="subhead"><input type=checkbox name="checkbox_index" id="checkbox_index" Onclick="check_all_device(this, 1, 'checkbox_index');"></span></TD>
+				<TD nowrap align=left><a href=#  onclick="sortTable('control_table',1)" class="subhead_acc_control">$stalist_Status</a></TD>
+				<TD nowrap align=left><a href=#  onclick="sortTable('control_table',2)" class="subhead_acc_control">$adva_wlan_devicename</a></TD>
+				<TD nowrap align=left><a href=#  onclick="sortTable('control_table',3, 'int')" class="subhead_acc_control">$block_ser_setup_ip_jp</a></TD>
+				<TD nowrap align=left><a href=#  onclick="sortTable('control_table',4)" class="subhead_acc_control">$info_mark_mac</a></TD>
+				<TD nowrap align=left><a href=#  onclick="sortTable('control_table',5)" class="subhead_acc_control">$trigger_contype</a></TD>
+			</TR>
+			</thead>
+		<script>
+			if(access_control_device_num > 0)
+			{
+				for(i=0;i<access_control_device_num;i++)
+				{
+					var str = eval ( 'access_control_device' + i );
+					var str_name = eval ( 'access_control_device_name' + i );
+					var each_info = str.split("*");
+					if( i%2== 1 )  // add if else for bug 26608
+						document.write("<TR class=\"even_line\">");
+					else
+						document.write("<TR class=\"odd_line\">");
+
+					document.write("<td nowrap align=center><input type='checkbox' name='checkbox_index"+(i+1)+"'  id='checkbox_index"+(i+1)+"' value='"+each_info[2]+"' onClick='toggle_edit();'></td>");
+					if(each_info[0] == "Allowed")
+						document.write("<td nowrap><font color=green>$acc_allow</font></td>")
+					else
+						document.write("<td nowrap><font color=red>$acc_block</font></td>")
+					document.write("<td nowrap>"+str_name.replace(/\s/g, '&nbsp;')+"</td>")
+					document.write("<td nowrap>"+each_info[1]+"</td>")
+					document.write("<td nowrap>"+each_info[2]+"</td>")
+					if(each_info[3]=="primary")
+						document.write("<td nowrap>$acc_wireless("+wl_ssid+")</td></TR>");
+					else if(each_info[3]=="primary_an")
+						document.write("<td nowrap>$acc_wireless("+wla_ssid+")</td></TR>");
+					else if(each_info[3]=="guest")
+						document.write("<td nowrap>$acc_wireless("+wlgl_ssid+")</td></TR>");
+					else if(each_info[3]=="guest_an")
+						document.write("<td nowrap>$acc_wireless("+wlal_ssid+")</td></TR>");
+					else if(each_info[3]=="repeater" || each_info[3]=="repeater_an")
+						document.write("<td nowrap>$acc_wireless</td></TR>");
+					else
+						document.write("<td nowrap>$acc_wired</td></TR>");
+
+				}
+			}
+		</script>
+		</TABLE>
+	</TD>
+</TR>
+<TR><TD nowrap colspan=4>&nbsp;</TD></TR>
+<TR>
+	<TD nowrap colspan=4>
+		&nbsp;<img id="allow_pic" src="/image/close_list.gif"  onClick="show_allow_no_connect();" />&nbsp;<a href="javascript:show_allow_no_connect();"><b>$acc_allow_not_connect</b></a>
+	</TD>
+</TR>
+<TR id="allow_0" style="display: none"><TD colspan=4><img src=/liteblue.gif width=100% height=12></TD></TR>
+<TR id="allow_1" style="display: none">
+	<TD nowrap colspan=4>
+		<input class="common_big_bt" type="button" name="delete_white" id="delete_white" value="$acc_remove" onClick="return delete_allow();">
+		&nbsp;&nbsp;
+		<input class="common_bt" type="button" value="$add_mark" onClick="return add_access('allow');" name="Add" id="add_white">
+		<input class="common_gray_bt" type="button" value="$edit_mark" id="edit_white" style="display:none" onClick="return check_allow_edit()" name="Edit" disabled>
+	</TD>
+</TR>
+<TR id="allow_2" style="display: none">
+	<TD nowrap colspan=4>
+		<TABLE  id="white_control_table" border=0 cellpadding=2 cellspacing=0 width=70%>
+			<thead><TR class=table_header>
+				<TD><input type="checkbox" name="checkbox_index_white" id="checkbox_index_white" Onclick="check_all_device(this, 1, 'checkbox_index_white');"></TD>
+				<TD><a href=# onclick="sortTable('white_control_table',1)" class="subhead_acc_control">$adva_wlan_devicename</a></TD>
+				<TD><a href=# onclick="sortTable('white_control_table',2)" class="subhead_acc_control">$info_mark_mac</a></TD>
+				<TD><a href=# onclick="sortTable('white_control_table',3)" class="subhead_acc_control">$trigger_contype</a></TD>
+			</TR></thead>
+			<script>
+				for(i=0; i<allowed_no_connect_num; i++)
+				{
+					var allow_dev = eval('allowed_no_connect'+i);
+					var each_info = allow_dev.split(" ");
+					if( i%2== 1 )
+						document.write("<TR class=\"even_line\">");
+					else
+						document.write("<TR class=\"odd_line\">");
+					document.write('<TD><input type="checkbox" name="checkbox_index_white'+(i+1)+'" id="checkbox_index_white'+(i+1)+'" value="'+each_info[1]+'" onClick="toggle_edit_allow();"></TD>');
+						document.write('<TD>'+each_info[0]+'</TD>');
+						document.write('<TD>'+each_info[1]+'</TD>');
+						document.write('<TD>'+each_info[2]+'</TD>');
+						document.write('</TR>');
+				}
+
+			</script>
+		</table>
+	</TD>
+</TR>
+<TR id="allow_3" style="display: none"><TD colspan=4><img src=/liteblue.gif width=100% height=12></TD></TR>
+<TR>
+	<TD nowrap colspan=4>
+		&nbsp;<img  id="block_pic" src="/image/close_list.gif" onClick="show_block_no_connect();" />&nbsp;<a href="javascript:show_block_no_connect();"><b>$acc_block_not_connect</b></a>
+	</TD>
+</TR>
+
+<TR id="block_0" style="display: none"><TD colspan=4><img src=/liteblue.gif width=100% height=12></TD></TR>
+<TR id="block_1" style="display: none">
+	<TD nowrap colspan=4>
+		<input class="common_big_bt" type="button" name="delete_black" id="delete_black" value="$acc_remove" onClick="return delete_block();">
+		&nbsp;&nbsp;
+		<input class="common_bt" type="button" value="$add_mark" onClick="return add_access('block');" name="Add" id="add_black">
+		<input class="common_gray_bt" type="button" value="$edit_mark" id="edit_black" style="display:none" onClick="return check_block_edit(document.forms[0])" name="Edit" disabled>
+	</TD>
+</TR>
+<TR id="block_2" style="display: none">
+	<TD nowrap colspan=4>
+		<TABLE  id="black_control_table" border=0 cellpadding=2 cellspacing=0 width=70%>
+			<thead><TR class=table_header>
+				<TD><input type="checkbox" name="checkbox_index_black" id="checkbox_index_black" Onclick="check_all_device(this, 1, 'checkbox_index_black');"></TD>
+				<TD><a href=# onclick="sortTable('black_control_table',1)" class="subhead_acc_control">$adva_wlan_devicename</a></TD>
+				<TD><a href=# onclick="sortTable('black_control_table',2)" class="subhead_acc_control">$info_mark_mac</a></TD>
+				<TD><a href=# onclick="sortTable('black_control_table',3)" class="subhead_acc_control">$trigger_contype</a></TD>
+			</TR></thead>
+                        <script>
+				for(i=0; i<blocked_no_connect_num; i++)
+				{
+					var block_dev = eval('blocked_no_connect'+i);
+					var each_info = block_dev.split(" ");
+					if( i%2== 1 )
+						document.write("<TR class=\"even_line\">");
+					else
+						document.write("<TR class=\"odd_line\">");
+					document.write('<TD><input type="checkbox" name="checkbox_index_black'+(i+1)+'" id="checkbox_index_black'+(i+1)+'" value="'+each_info[1]+'" onClick="toggle_edit_block();"></TD>');
+						document.write('<TD>'+each_info[0]+'</TD>');
+						document.write('<TD>'+each_info[1]+'</TD>');
+						document.write('<TD>'+each_info[2]+'</TD>');
+						document.write('</TR>');
+				}
+			</script>
+
+			 </table>
+		 </TD>
+	 </TR>
+<TR id="block_3" style="display: none"><TD colspan=4><img src=/liteblue.gif width=100% height=12></TD></TR>
+
+
+</TABLE>
+</div>
+<% help_box("0","_access_control") %>
+</FORM>
+</BODY>
+</HTML>

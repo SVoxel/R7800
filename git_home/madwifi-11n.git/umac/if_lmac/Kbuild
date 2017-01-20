@@ -1,0 +1,15 @@
+ifeq ($(obj),)
+obj := .
+endif
+
+DEPTH := ../common
+
+include $(obj)/$(DEPTH)/Makefile.inc
+
+INCS += -I$(HAL) -I$(HAL)/$(OS) -I$(ATH) -I$(ATH_RATE) -I$(ATH_PKTLOG) -I$(WLAN) -I$(IF_WLAN)
+
+obj-y += if_wlan.o
+
+EXTRA_CFLAGS+= $(INCS) $(COPTS) -Wno-unused-function 
+
+if_wlan-objs := if_ath.o ath_cwm.o ath_cwm_project.o if_ath_amsdu.o if_ath_uapsd.o if_ath_mat.o

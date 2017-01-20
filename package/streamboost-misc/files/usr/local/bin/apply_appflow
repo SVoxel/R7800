@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# This script is triggered when "luci-reload appflow" is executed (as
+# referenced in /etc/config/ucitrack), usually as a result of newly committed
+# values by the UI.
+
+. /etc/appflow/streamboost.sys.conf
+
+sync
+
+${CFGDIR}/uci2streamboost ${RUNDIR}/streamboost.user.conf
+
+/etc/init.d/streamboost restart

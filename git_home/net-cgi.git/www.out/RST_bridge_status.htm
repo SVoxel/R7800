@@ -1,0 +1,159 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<BODY onLoad="loadvalue();please_wait(false);" style="background-color: #ffffff;">
+<style>
+
+.bridge_status_info tr td{font:12px arial; color: #404040; line-height: 13px;}
+.bridge_status_info tr td b{font: bold 12px arial; position:relative; left: 5px; line-height: 13px;};
+.bridge_status_table{ margin: 0 5px 5px 5px; }
+		
+
+
+</style>
+<script>
+var enable_bridge_flag="<% cfg_get("bridge_mode") %>";
+var wl_mode="<% cfg_get("bridge_band_choose") %>";
+var dyn_get_bridge_ip_flag="<% cfg_get("bridge_ether_ip_assign") %>";
+
+var bridgemode_get_ip="<% bridge_mode_ip() %>";
+var bridgemode_get_subnet="<% bridge_mode_netmask() %>";
+var bridgemode_get_gateway="<% bridge_mode_gateway() %>";
+var bridgemode_get_dns1="<% bridge_ether_dns() %>";
+var bridgemode_get_dns2="<% bridge_ether_dns("1") %>";
+
+var bridge_dhcp_ip="<% cfg_get("ap_dhcp_ipaddr") %>";
+var bridge_dhcp_netmask="<% cfg_get("ap_dhcp_netmask") %>";
+var bridge_ssid="<% cfg_get_ssid_value("bridge_wl_ssid") %>";
+var bridge_ssid_an="<% cfg_get_ssid_value("bridge_wla_ssid") %>";
+
+var bridge_dhcp_gateway= "<% cfg_get("ap_dhcp_gateway") %>"
+
+var lan_mac="<% lan_mac() %>";
+
+<% bridge_link_rate() %>
+
+function loadvalue()
+{
+	if(dyn_get_bridge_ip_flag == '1')
+					document.getElementById("dhcp_dns").style.display="";
+			else{
+					if(bridgemode_get_dns1 != "")
+						document.getElementById("static_primary_dns").style.display="";
+					if(basic_int_second_dns != "")
+						document.getElementById("static_second_dns").style.display="";
+			}
+}
+
+
+</script>
+<div class="page_title">$bridge_status</div>
+<div id="main" class="main_top_button" style="top:30px">
+		<table class="bridge_status_table" width=100% border=0 cellpadding=0 cellspacing=6 >
+		$bluebar
+		<tr>
+			<td width="50%"><b>$router_status_hwversion</b></td>
+			<td><% cat_file("/hardware_version")%></td>
+		</tr>
+		<tr>
+			<td><b>$info_mark_ver</b></td>
+			<td><% cat_file("/firmware_version")%></td>
+		</tr>
+		<tr>
+			<td><b>$info_language_ver</b></td>
+			<td><% get_language_version() %></td>
+		</tr>
+		$bluebar
+		<tr>
+			<td><span class="subhead_blue">$wlan_mark &nbsp
+			<script>if (wl_mode == "5g")
+						document.write("(5.0GHz)");
+					else
+						document.write("(2.4GHz)");</script></span></td>
+		</tr>
+		<tr>
+			<td><b>$info_mark_ssid</b></td>
+			<td><script>if (wl_mode == "5g")
+                                                document.write(bridge_ssid_an);
+                                        else
+                                                document.write(bridge_ssid);</script></td>
+		</tr>
+		<tr>
+			<td><b>$link_rate</b></td>
+			<td><script>document.write(link_rate+" Mbps")</script></td>
+		</tr>
+		<tr>
+			<td><b>$con_status</b></td>
+			<td><script>if(link_rate != "0")
+					document.write("connected");
+				else
+					document.write("unconnected");</script></td>
+		</tr>
+		$bluebar
+		<tr>
+			<td><span class="subhead_blue">$client_status</span></td>
+		</tr>
+		<tr>
+			<td><b>$info_mark_mac</b></td>
+			<td><script>document.write(lan_mac)</script></td>
+		</tr>
+		<tr>
+			<td><b>$info_mark_ip</b></td>
+			<td><script>if(dyn_get_bridge_ip_flag == '1')
+							document.write(bridge_dhcp_ip);
+						else
+							document.write(bridgemode_get_ip);
+						
+			</script></td>
+		</tr>
+		<tr>
+			<td><b>$dhcp_client</b></td>
+			<td><script>if(dyn_get_bridge_ip_flag == '1')
+							document.write("ON");
+						else
+							document.write("OFF");</script></td>
+		</tr>
+		<tr>
+			<td><b>$router_status_ip_sub</b></td>
+			<td><script>if(dyn_get_bridge_ip_flag == '1')
+							document.write(bridge_dhcp_netmask);
+						else
+							document.write(bridgemode_get_subnet);
+						
+			</script>
+			</td>
+		</tr>
+		<tr>
+			<td><b>$lan_mark_gateway</b></td>
+			<td><script>if(dyn_get_bridge_ip_flag == '1')
+							document.write(bridge_dhcp_gateway);
+						else
+							document.write(bridgemode_get_gateway);
+						
+			</script>
+			</td>
+		</tr>
+		<script>
+			
+							
+		</script>
+		<tr id="dhcp_dns" style="display:none">
+			<td><b>$router_status_domain_ser</b></td>
+			<td><% cfg_get("ap_dhcp_gateway") %></td>
+		</tr>
+		<tr id="static_primary_dns" style="display:none">
+			<td><b>$basic_int_primary_dns</b></td>
+			<td><script>document.write(bridgemode_get_dns1)</script></td>
+		</tr>
+		<tr id="static_second_dns" style="display:none">
+			<td>$basic_int_second_dns</b></td>
+			<td><script>document.write(bridgemode_get_dns2)</script></td>
+		</tr>
+		$bluebar
+		<tr><td colspan=2 align=center>
+			<input class="common_show_stat_bt" type="button" name="Show Statistics" value="$show_sta_mark" onClick="window.open('RST_statistic.htm', 'show_statistic', 'width=961,height=400,top=200,left=200,status=yes,resizable=yes');"></td></tr>
+		
+		</table>
+</div>
+
+</div>
+</BODY>
+</HTML>

@@ -1,0 +1,76 @@
+#
+# Copyright (c) 2013 The Linux Foundation. All rights reserved.
+#
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+config SND_IPQ_SOC
+	tristate "SoC Audio for IPQ based platforms"
+	depends on ARCH_IPQ806X
+	help
+	  Say Y or M if you want to add support for IPQ platforms
+
+config SND_IPQ_SOC_IPQ806X
+	tristate "SoC Audio support for IPQ806x (Akronite) based platforms"
+	depends on ARCH_IPQ806X && SND_IPQ_SOC
+	select SND_IPQ_SOC_DMLITE
+	select SND_IPQ_SOC_PCM_I2S
+	select SND_IPQ_SOC_PCM_SPDIF
+	select SND_IPQ_SOC_PCM_VOIP
+	select SND_IPQ_SOC_SPDIF
+	select SND_IPQ_SOC_LPASS_CODEC
+	select SND_IPQ_SOC_CPU_DAI
+	select SND_IPQ_SOC_LPAIF
+	select SND_IPQ_SOC_CLK
+	select SND_IPQ_SOC_PCM_RAW
+	help
+	  Say Y or M if you want to add support for IPQ platforms
+
+config SND_IPQ_SOC_CLK
+	tristate
+	depends on SND_IPQ_SOC
+
+config SND_IPQ_SOC_PCM_RAW
+	tristate
+	depends on SND_IPQ_SOC
+
+config SND_IPQ_SOC_DMLITE
+	tristate
+	depends on SND_IPQ_SOC
+
+config SND_IPQ_SOC_PCM_I2S
+	tristate
+	depends on SND_IPQ_SOC
+
+config SND_IPQ_SOC_PCM_SPDIF
+	tristate
+	depends on SND_IPQ_SOC
+
+config SND_IPQ_SOC_PCM_VOIP
+	tristate
+	depends on SND_IPQ_SOC
+
+config SND_IPQ_SOC_SPDIF
+	tristate
+	depends on SND_IPQ_SOC
+
+config SND_IPQ_SOC_LPASS_CODEC
+	tristate
+	depends on SND_IPQ_SOC
+
+config SND_IPQ_SOC_CPU_DAI
+	tristate
+	depends on SND_IPQ_SOC
+
+config SND_IPQ_SOC_LPAIF
+	tristate
+	depends on SND_IPQ_SOC

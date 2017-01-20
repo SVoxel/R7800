@@ -1,0 +1,72 @@
+From 24993647d36b127a57079362194d8e6165be32f1 Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Fri, 7 Jun 2013 10:57:28 -0500
+Subject: [ag71xx] cluster/align structs for cache perf
+
+Cluster the frequently used, per-packet structures in ag71xx near
+to each other, and cacheline-align them.  Some other re-ordering
+occurred to move "warmer" structures near the per-packet structures.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx.h | 27 +++++++++++++++++++--------
+ 1 file changed, 19 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+index c0f0ad1..f3e6a42 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+@@ -99,6 +99,9 @@ struct ag71xx_buf {
+ 	};
+ };
+ 
++/*
++ * RX or TX descriptor ring.
++ */
+ struct ag71xx_ring {
+ 	/*
+ 	 * "Hot" fields in the data path.
+@@ -156,12 +159,25 @@ struct ag71xx_debug {
+ };
+ 
+ struct ag71xx {
+-	void __iomem		*mac_base;
++	/*
++	 * Critical data related to the per-packet data path are clustered
++	 * early in this structure to help improve the D-cache footprint.
++	 */
++	struct ag71xx_ring	rx_ring ____cacheline_aligned;
++	struct ag71xx_ring	tx_ring ____cacheline_aligned;
++
++	unsigned int		rx_buf_offset;
++	unsigned int		rx_buf_size;
+ 
+-	spinlock_t		lock;
+-	struct platform_device	*pdev;
+ 	struct net_device	*dev;
++	struct platform_device	*pdev;
++	spinlock_t		lock;
+ 	struct napi_struct	napi;
++
++	/*
++	 * From this point onwards we're not looking at per-packet fields.
++	 */
++	void __iomem		*mac_base;
+ 	u32			msg_enable;
+ 
+ 	struct ag71xx_desc	*stop_desc;
+@@ -169,11 +185,6 @@ struct ag71xx {
+ 
+ 	bool			tx_stopped;
+ 
+-	struct ag71xx_ring	rx_ring;
+-	struct ag71xx_ring	tx_ring;
+-	unsigned int		rx_buf_offset;
+-	unsigned int		rx_buf_size;
+-
+ 	struct mii_bus		*mii_bus;
+ 	struct phy_device	*phy_dev;
+ 	void			*phy_priv;
+-- 
+1.8.1.2
+

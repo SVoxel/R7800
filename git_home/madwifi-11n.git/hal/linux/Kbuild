@@ -1,0 +1,954 @@
+#
+# Copyright (c) 2002-2005 Sam Leffler, Errno Consulting
+# Copyright (c) 2002-2005 Atheros Communications, Inc.
+# All rights reserved.
+#
+# $Id: //depot/sw/qca_main/drivers/wlan_modules/hal/linux/Makefile.inc#7 $
+#
+HAL=	..
+PUBLIC=	public
+#
+# Makefile for building the Atheros/MADWIFI HAL from source code on Linux.
+#
+# This file is intended to be called by the Makefile in the hal
+# directory with TARGET set to the desired target platform.
+#
+# There is support for 4 "generations" of Atheros hardware devices:
+#
+# AH_SUPPORT_AR5210	802.11a only MAC
+# AH_SUPPORT_AR5211	802.11a+802.11b MAC (also pure g, but not yet supported)
+# AH_SUPPORT_AR5212	802.11a+802.11b+802.11g MAC
+# AH_SUPPORT_AR5312     5212 MAC WiSoC (requires AH_SUPPORT_AR5212)
+# AH_SUPPORT_AR5416	802.11a+802.11b+802.11g+802.11n-ready MAC
+# AH_SUPPORT_AR9300	802.11a+802.11b+802.11g+802.11n-ready MAC
+#
+# AH_SUPPORT_5111	5111 RF support for 5212 et. al.
+# AH_SUPPORT_5112	5112 RF support for 5212 et. al.
+# AH_SUPPORT_2413	2413 RF support for 5212 et. al.
+# AH_SUPPORT_5413	5413 RF support for 5212 et. al.
+# AH_SUPPORT_2316	2416 RF (Cobra) support for 5212 et. al.
+# AH_SUPPORT_2317	2417 RF (Cobra) support for 5212 et. al.
+# AH_SUPPORT_2425       2425 RF (Swan/Nala) support for 5212 et. al.
+# AH_SUPPORT_2133	2133 RF support for 5416 et. al.
+#
+# Within the AR5416 generation, there is support for specific chips within
+# revisions the generation, and sometimes specific revisions within the chip:
+# AH_SUPPORT_HOWL      support for Howl chips (9130,9132)
+# AH_SUPPORT_OWL       support for Owl  chips (5416,5418)
+# AH_SUPPORT_SOWL      support for Sowl chips (9160,9161)
+# AH_SUPPORT_KIWI_10   support for Kiwi chips (9287) version 1.0
+# AH_SUPPORT_KIWI_11   support for Kiwi chips (9287) versions 1.1 and beyond
+# AH_SUPPORT_K2        support for K2 chips (9271)
+# AH_SUPPORT_KITE_10   support for Kite chips (9285) versions 1.0 and 1.1
+# AH_SUPPORT_KITE_12   support for Kite chips (9285) versions 1.2 and beyond
+# AH_SUPPORT_MERLIN_10 support for Merlin (928x,922x) vers 1.0 - (not incl) 2.0
+# AH_SUPPORT_MERLIN_20 support for Merlin (928x,922x) versions 2.0 and beyond
+# AH_SUPPORT_HORNET    support for HORNET chips (9330)
+#
+# AH_SUPPORT_EEPROM_4K  support the minimal (4 KB) EEPROM map
+# AH_SUPPORT_EEPROM_DEF support the full EEPROM map
+# AH_SUPPORT_EEPROM_AR9330 support the Hornet EEPROM map
+#
+# AH_SUPPORT_MAGPIE    support for Magpie SoC (7010)
+#
+# There is support for numerous optional debugging facilities
+# (typically named AH_DEBUG_*):
+#
+# AH_DEBUG		enables debugging stuff that's controlled by the sysctl:
+# 			hw.ath.hal.debug
+# AH_ASSERT 		enables assertions that panic or trap into the debugger.
+# AH_DEBUG_ALQ 		enables support for tracing register reads+writes
+#			via alq
+# AH_DEBUG_COUNTRY	accept the CTR_DEBUG country code (for debugging
+#			the regulatory domain support)
+# AH_REGOPS_FUNC	arrange for OS_REG_READ and OS_REG_WRITE to be function
+#			calls and not inline expanded to memory references
+# AH_ENABLE_AP_SUPPORT	enables AP-specific support not publicly available
+#			(e.g. don't cap turbo power limits)
+# AH_DISABLE_WME	disable HAL_TXQ_USE_LOCKOUT_BKOFF_DIS support
+#
+# AH_PRIVATE_DIAG	enable private diagnostic support
+# AH_WRITE_EEPROM	permit EEPROM writes (use with AH_PRIVATE_DIAG)
+# AH_WRITE_REGDOMAIN	permit EEPROM writes of the regulatory domain through
+#			ah_setRegulatoryDomain (implies AH_WRITE_EEPROM)
+# AR5416_INT_MITIGATION  use WLAN chip feature to batch interrupts rather
+#           than sending them all individually
+#
+#
+# Default settings...
+#
+AH_SUPPORT_AR5210?=0		# 5210 support
+AH_SUPPORT_AR5211?=0		# 5211 support
+AH_SUPPORT_AR5212?=1		# 5212 support
+AH_SUPPORT_AR5312?=0		# 5312 support
+AH_SUPPORT_AR5416?=1		# 5416 support
+AH_SUPPORT_AR9300?=1		# 9300 support
+AH_SUPPORT_5111?=1		# 5111 RF support
+AH_SUPPORT_5112?=1		# 5112 RF support
+AH_SUPPORT_2413?=1		# 2413 RF support
+AH_SUPPORT_5413?=1		# 5413 RF support
+AH_SUPPORT_2316?=1		# 2316 RF support
+AH_SUPPORT_2317?=1		# 2317 RF support
+AH_SUPPORT_2425?=1		# 2425 RF support
+AH_SUPPORT_2133?=1              # 2133 RF Support
+
+
+# AH_SUPPORT_HOWL and AH_SUPPORT_OWL cannot currently be both enabled,
+# due to name collisions within their respective .ini files.
+AH_SUPPORT_HOWL?=1      # 9130,9132 support
+AH_SUPPORT_OWL?=0       # 5416,5418 support
+
+AH_SUPPORT_SOWL?=1      # 9160,9161 support
+AH_SUPPORT_KITE_10?=0   # 9285 versions 1.0 and 1.1 support
+AH_SUPPORT_KITE_12?=1   # 9285 versions 1.2 and beyond support
+AH_SUPPORT_MERLIN_10?=0 # 928x,922x versions 1.0 to (not incl.) 2.0 support
+AH_SUPPORT_MERLIN_20?=1 # 928x,922x versions 2.0 and beyond support
+AH_SUPPORT_KIWI_10?=1   # 9287 version 1.0 support
+AH_SUPPORT_KIWI_11?=1   # 9287 version 1.1 and beyond support
+AH_SUPPORT_K2?=1        # 9271 support
+AH_SUPPORT_OSPREY?=1    # 9380 support
+AH_SUPPORT_HORNET?=1    # 9330 support
+AH_SUPPORT_WASP?=1      # 9340 support
+AH_SUPPORT_POSEIDON?=1  # 9485 support
+AH_SUPPORT_SCORPION?=0  # 955x support
+
+AH_SUPPORT_EEPROM_4K?=1  # 4 KB EEPROM support
+AH_SUPPORT_EEPROM_DEF?=1 # full-size EEPROM support
+AH_SUPPORT_EEPROM_AR9287?=1  # Kiwi EEPROM support
+AH_SUPPORT_EEPROM_AR9330?=1 # Hornet EEPROM support
+
+AH_SUPPORT_MAGPIE?=0    # Magpie SoC support
+
+AH_DEBUG?=0			# debugging (e.g. hw.ath.hal.debug)
+AH_ASSERT?=0			# assertions (pretty lame)
+AH_DEBUG_ALQ?=0			# ALQ register tracing support
+AH_REGOPS_FUNC?=0		# use inline memory references
+AH_WRITE_REGDOMAIN?=0		# support EEPROM writes of the regulatory domain
+AH_DEBUG_COUNTRY?=0		# accept CTR_DEBUG country code
+AH_DISABLE_WME?=0		# disable HAL_TXQ_USE_LOCKOUT_BKOFF_DIS
+AH_ENABLE_AP_SUPPORT?=0		# enable AP-specific support
+AH_WRITE_EEPROM?=1		# support EEPROM writes
+AH_CAL_IN_FLASH?=0			# Calibration data in flash
+AH_SUPPORT_11D?=1		# support 802.11D
+AH_PRIVATE_DIAG?=0		# non-public diagnostic support
+AH_NEED_DESC_SWAP?=0		# Need to swap TX descriptor
+AH_NEED_TX_DATA_SWAP?=0		# Need to swap TX data
+AH_NEED_RX_DATA_SWAP?=0		# Need to swap RX data
+AR5416_ISR_READ_CLEAR_SUPPORT?=0	# AR5416 ISR READ and CLEAR support
+AR5416_EMULATION?=0		# AR5416 emulation specific code
+AR9300_EMULATION?=0		# AR9300 emulation specific code
+AR9300_EMULATION_BB?=0		# AR9300 BB emulation specific code
+AR9330_EMULATION?=0		# AR9330 emulation specific code
+AR9340_EMULATION?=0		# AR9330 emulation specific code
+AR9550_EMULATION?=0		# AR9550 emulation specific code
+ATH_FORCE_PPM?=0		# Force Ppm workaround code
+ATH_FORCE_BIAS?=1		# Force Bias current workaround code
+#ATH_SUPPORT_DFS?=1              # Support DFS
+ATH_SUPPORT_TxBF?=0             # support TxBF
+ATH_DEBUG?=1            #ATH_DEBUG 
+ATH_SUPPORT_CRDC?=0
+
+
+AR5416_INT_MITIGATION?=0        	# Support AR5416 interrupt mitigation
+
+AH_AR5416_OVRD_TGT_PWR_5G?=0    	# specific override target power for 11a legacy
+AH_AR5416_OVRD_TGT_PWR_5GHT20?=0	# specific override target power for 11na HT20
+AH_AR5416_OVRD_TGT_PWR_5GHT40?=0	# specific override target power for 11na HT40
+AH_AR5416_OVRD_TGT_PWR_CCK?=0		# specific override target power for 11b legacy
+AH_AR5416_OVRD_TGT_PWR_2G?=0		# specific override target power for 11g legacy
+AH_AR5416_OVRD_TGT_PWR_2GHT20?=0	# specific override target power for 11ng HT20
+AH_AR5416_OVRD_TGT_PWR_2GHT40?=0 	# specific override target power for 11ng HT40
+
+AH_NEED_PRIV_REGDMN?=0			# disable platform specific regdomain database
+
+ATH_NO_5G_SUPPORT?=0            # remove 11a support
+ATH_REMOVE_2G_TURBO_RD_TABLE?=0 # remove 11g-turbo regulatory domain tables
+ATH_IBSS_DFS_CHANNEL_SUPPORT?=0 # Support IBSS DFS channel
+ATH_SWRETRY?=0			# Support SW Retry
+#ATH_SUPPORT_SPECTRAL?=0        # Support SPECTRAL
+ATH_SUPPORT_LED?=0              # Support WLAN LED
+ifndef ATH_SUPPORT_SPECTRAL
+export ATH_SUPPORT_SPECTRAL=0
+endif
+
+ifeq ($(strip ${ATH_SUPPORT_SPECTRAL}),1)
+COPTS+= -DATH_SUPPORT_SPECTRAL=1
+endif
+
+ifndef ATH_SUPPORT_DFS
+export ATH_SUPPORT_DFS=0
+endif
+
+ifeq ($(strip ${ATH_SUPPORT_DFS}),1)
+COPTS+= -DATH_SUPPORT_DFS=1
+endif
+
+ifndef ATH_SUPPORT_VOWEXT
+export ATH_SUPPORT_VOWEXT=0
+endif
+
+ifeq ($(strip ${ATH_SUPPORT_VOWEXT}),1)
+COPTS+= -DATH_SUPPORT_VOWEXT=1
+endif
+
+ifndef UMAC_SUPPORT_SMARTANTENNA
+export UMAC_SUPPORT_SMARTANTENNA=0
+endif
+
+ifndef ATH_SMARTANTENNA_DISABLE_JTAG
+export ATH_SMARTANTENNA_DISABLE_JTAG=0
+endif
+
+
+ifeq ($(strip ${UMAC_SUPPORT_SMARTANTENNA}),1)
+COPTS+= -DUMAC_SUPPORT_SMARTANTENNA=1
+COPTS+= -DATH_GPIOPIN_ANTCHAIN0=${ATH_GPIOPIN_ANTCHAIN0}
+COPTS+= -DATH_GPIOFUNC_ANTCHAIN0=${ATH_GPIOFUNC_ANTCHAIN0}
+
+COPTS+= -DATH_GPIOPIN_ANTCHAIN1=${ATH_GPIOPIN_ANTCHAIN1}
+COPTS+= -DATH_GPIOFUNC_ANTCHAIN1=${ATH_GPIOFUNC_ANTCHAIN1}
+
+COPTS+= -DATH_GPIOPIN_ANTCHAIN2=${ATH_GPIOPIN_ANTCHAIN2}
+COPTS+= -DATH_GPIOFUNC_ANTCHAIN2=${ATH_GPIOFUNC_ANTCHAIN2}
+endif
+
+ifeq ($(strip ${ATH_SMARTANTENNA_DISABLE_JTAG}),1)
+COPTS+= -DATH_SMARTANTENNA_DISABLE_JTAG=1
+endif
+ifndef ATH_SUPPORT_VOW_DCS
+export ATH_SUPPORT_VOW_DCS=0
+endif
+
+ifeq ($(strip ${ATH_SUPPORT_VOW_DCS}),1)
+COPTS+= -DATH_SUPPORT_VOW_DCS=1
+endif    
+
+ifndef ATH_HAL_WAR_REG16284_APH128
+export ATH_HAL_WAR_REG16284_APH128=0
+endif
+
+ifeq ($(strip ${ATH_HAL_WAR_REG16284_APH128}),1)
+COPTS+= -DATH_HAL_WAR_REG16284_APH128=1
+endif
+
+ifndef ATH_HAL_DFS_CHIRPING_FIX_APH128
+export ATH_HAL_DFS_CHIRPING_FIX_APH128=0
+endif
+
+ifeq ($(strip ${ATH_HAL_DFS_CHIRPING_FIX_APH128}),1)
+COPTS+= -DATH_HAL_DFS_CHIRPING_FIX_APH128=1
+endif
+
+ifndef ATH_SUPPORT_CFEND
+export ATH_SUPPORT_CFEND=0
+endif
+
+ifeq ($(strip ${ATH_SUPPORT_CFEND}),1)
+COPTS+= -DATH_SUPPORT_CFEND=1
+endif
+
+ifeq ($(strip ${ATH_SUPPORT_ANT_DIV_COMB}),1)
+COPTS+= -DATH_ANT_DIV_COMB=1
+endif
+
+ifndef ATH_SUPPORT_DESCFAST
+export ATH_SUPPORT_DESCFAST=0
+endif
+
+ifeq ($(strip ${ATH_SUPPORT_DESCFAST}),1)
+COPTS+= -DATH_SUPPORT_DESCFAST=1
+endif
+
+ifndef ATH_LOW_POWER_ENABLE
+export ATH_LOW_POWER_ENABLE=0
+endif
+
+ifneq ($(strip ${ATH_LOW_POWER_ENABLE}),0)
+COPTS+= -DATH_LOW_POWER_ENABLE=1
+endif
+
+ifeq ($(strip ${BUS}),GMAC)
+COPTS+= -DENCAP_OFFLOAD -DMAGPIE_HIF_GMAC
+endif
+
+
+ifndef ATH_BUS_PM
+export ATH_BUS_PM=0
+endif
+
+ifeq ($(strip ${ATH_BUS_PM}),1)
+COPTS += -DATH_BUS_PM
+endif
+
+ifeq ($(TARGET),ANDROID)
+### not build all the arXXXX chip
+AH_SUPPORT_AR5212=0
+AH_SUPPORT_AR5416=0
+AH_SUPPORT_AR9300=1
+
+AH_SUPPORT_5111=0
+AH_SUPPORT_5112=0
+AH_SUPPORT_2413=0
+AH_SUPPORT_5413=0
+AH_SUPPORT_2316=0
+AH_SUPPORT_2317=0
+AH_SUPPORT_2425=0
+AH_SUPPORT_2133=0
+endif
+
+#
+# If 5312 support is enabled it's almost certain we're not going
+# to use the 5210 or 5211 support so disable it to save some space.
+#
+ifeq ($(strip ${AH_SUPPORT_AR5312}),1)
+AH_SUPPORT_AR5210=0
+AH_SUPPORT_AR5211=0
+AH_SUPPORT_AR5414=0
+endif
+
+ifdef AR9100
+AH_SUPPORT_AR5212=0     # 5212 support
+AH_SUPPORT_5111=0       # 5111 RF support
+AH_SUPPORT_5112=0       # 5112 RF support
+AH_SUPPORT_2413=0       # 2413 RF support
+AH_SUPPORT_5413=0       # 5413 RF support
+AH_SUPPORT_2417=0       # 2417 RF support
+AH_SUPPORT_2425=0       # 2425 RF support
+endif
+
+#
+# Basic build components.
+#
+#OBJDIR= obj/${TARGET}
+
+OBJDIR = $(ATH_DRIVER_TOPDIR)/drivers/wlan_modules/hal/linux
+
+#include $(OBJDIR)/../../os/linux/BuildCaps.inc
+
+ifneq ($(BUILD_X86),y)
+ifeq ($(AP71_DEBUG),1)
+COPTS+=	-Wall -g
+else
+ifeq ($(BUILD_OPTIMIZED),y)
+COPTS+= -Wall
+else
+COPTS+=	-Wall -g -O2
+endif
+endif
+ifneq ($(USE_WLAN_PBO_DATA),y)
+COPTS += -Werror 
+endif
+else
+
+ifeq ($(AP71_DEBUG),1)
+COPTS+=	-Wall -g
+else
+ifeq ($(BUILD_OPTIMIZED),y)
+COPTS+= -Wall
+else
+COPTS+=	-Wall -g -O2 
+endif
+endif
+endif
+
+INCS=	-I$(OBJDIR) -I$(OBJDIR)/. -I$(OBJDIR)/.. -I$(OBJDIR)/../ar5416 -I$(OBJDIR)/../../include
+
+INCS+= -I$(OBJDIR)/../../asf/include
+INCS+= -I$(OBJDIR)/../../adf/include/os -I$(OBJDIR)/../../adf/include/nbuf -I$(OBJDIR)/../../adf/include/net
+INCS+= -I$(OBJDIR)/../../adf/os/linux -I$(OBJDIR)/../../adf/nbuf/linux -I$(OBJDIR)/../../adf/net/linux/
+
+ifdef ATH_CARR_DIR
+INCS+= -I$(PLATFORM)/carrier/${ATH_CARR_DIR}/
+COPTS+= -DQCA_PARTNER_PLATFORM=1
+include $(PLATFORM)/carrier/${ATH_CARR_DIR}/Makefile.cust.inc
+endif
+
+ifeq ($(KERNELARCH),ubicom32)
+INCS+= -I${KERNELPATH}/arch/ubicom32/include
+endif
+ifeq ($(BUILD_X86),y)
+INCS+= -I${KERNELPATH}/include/linux -I${KERNELPATH}/include/asm/mach-default -I${KERNELPATH}/include/asm/mach-generic -I${KERNELPATH}/include -I${KERNELPATH}/arch/x86/include/ -I${KERNELPATH}/arch/x86/include/asm -I${KERNELPATH}/arch/x86/include/asm/mach-generic 
+else
+INCS+= -I${KERNELPATH}/arch/${KERNELARCH}/include/asm/mach-generic -I${KERNELPATH}/arch/${KERNELARCH}/include -I${KERNELPATH}/include/asm/mach-generic -I${KERNELPATH}/include -I${KERNELPATH}/include/linux -I${KERNELPATH}/arch/mips/include/asm/mach-ar7240
+endif
+ifneq ($(KERNEL_KBUILD_SOURCE),)
+INCS+= -I${KERNEL_KBUILD_SOURCE}/arch/${KERNELARCH}/include/asm/mach-generic -I${KERNEL_KBUILD_SOURCE}/arch/${KERNELARCH}/include -I${KERNEL_KBUILD_SOURCE}/include/asm/mach-generic -I${KERNEL_KBUILD_SOURCE}/include -I${KERNEL_KBUILD_SOURCE}/include/linux -I${KERNEL_KBUILD_SOURCE}/arch/mips/include/asm/mach-ar7240
+endif
+
+CLEANFILES=	${OBJDIR}/.depend
+
+#include ${PUBLIC}/${TARGET}.inc
+
+EXTRA_CFLAGS +=	-DBUILD_HAL -D__KERNEL__ $(INCS) $(COPTS)
+
+##### extra defined for compile pass.
+EXTRA_CFLAGS += -D_MAVERICK_STA_=0 -DATH_TEST_LOW_RATE_POWER_BOOST=0 -DATH_ANT_DIV_COMB=0 -D__PKT_SERIOUS_ERRORS__=0 -DATH_SUPPORT_PAPRD=0 -Wno-unused-variable -Wno-undef 
+
+ifneq ($(CONFIG_FRAME_WARN),0) 
+EXTRA_CFLAGS += $(call cc-option,-Wframe-larger-than=4096)
+endif
+
+NOSTDINC_FLAGS += $(INCS)
+
+# Tell GCC not to insert stack protection codes, especially for Ubuntu
+ifeq ($(strip ${AH_SUPPORT_LINUX_STA}),1)
+EXTRA_CFLAGS+= -fno-stack-protector
+endif
+
+ifeq ($(BUILD_OPTIMIZED),y)
+ifeq ($(KERNELARCH),mips)
+EXTRA_CFLAGS += -Os -funit-at-a-time -pipe -mips32r2 -mtune=mips32r2
+else
+ifeq ($(KERNELARCH),powerpc)
+EXTRA_CFLAGS += -Os -funit-at-a-time -pipe -mpowerpc
+else
+EXTRA_CFLAGS += -Os -funit-at-a-time -pipe
+endif
+endif
+endif
+
+ifeq ($(strip ${AH_SUPPORT_SCORPION}),1)
+CFLAGS += -mdspr2
+endif
+
+HAL_SRCS=${HAL}/ah.c ${HAL}/ah_eeprom.c ${HAL}/ah_regdomain.c \
+	${HAL}/ah_pktlog.c
+HAL_OBJS=${OBJDIR}/ah.o ${OBJDIR}/ah_eeprom.o ${OBJDIR}/ah_regdomain.o \
+	${OBJDIR}/ah_pktlog.o
+
+ifeq ($(strip ${ATH_SUPPORT_HTC}),1)
+HAL_SRCS+=${HAL}/linux/ah_wmi.c
+HAL_OBJS+=${HAL}/linux/ah_wmi.o
+endif
+
+ifeq ($(ATH_SUPPORT_TX99),1)
+ifeq ($(strip ${ATH_SUPPORT_HTC}),1)
+HAL_SRCS+=${HAL}/linux/ah_tx99.c
+HAL_OBJS+=${HAL}/linux/ah_tx99.o
+endif
+endif
+
+ifeq ($(strip ${AH_SUPPORT_AR5210}),1)
+AR5210=	${HAL}/ar5210
+HAL_SRCS+=${AR5210}/ar5210_attach.c ${AR5210}/ar5210_beacon.c \
+	${AR5210}/ar5210_interrupts.c ${AR5210}/ar5210_keycache.c \
+	${AR5210}/ar5210_misc.c ${AR5210}/ar5210_power.c \
+	${AR5210}/ar5210_phy.c ${AR5210}/ar5210_recv.c \
+	${AR5210}/ar5210_reset.c ${AR5210}/ar5210_xmit.c
+HAL_OBJS+=${OBJDIR}/ar5210_attach.o ${OBJDIR}/ar5210_beacon.o \
+	${OBJDIR}/ar5210_interrupts.o ${OBJDIR}/ar5210_keycache.o \
+	${OBJDIR}/ar5210_misc.o ${OBJDIR}/ar5210_power.o \
+	${OBJDIR}/ar5210_phy.o ${OBJDIR}/ar5210_recv.o \
+	${OBJDIR}/ar5210_reset.o ${OBJDIR}/ar5210_xmit.o
+endif
+
+ifeq ($(strip ${AH_SUPPORT_AR5211}),1)
+AR5211=	${HAL}/ar5211
+HAL_SRCS+=${AR5211}/ar5211_attach.c ${AR5211}/ar5211_beacon.c \
+	${AR5211}/ar5211_interrupts.c ${AR5211}/ar5211_keycache.c \
+	${AR5211}/ar5211_misc.c ${AR5211}/ar5211_power.c \
+	${AR5211}/ar5211_phy.c ${AR5211}/ar5211_recv.c \
+	${AR5211}/ar5211_reset.c ${AR5211}/ar5211_xmit.c
+HAL_OBJS+=${OBJDIR}/ar5211_attach.o ${OBJDIR}/ar5211_beacon.o \
+	${OBJDIR}/ar5211_interrupts.o ${OBJDIR}/ar5211_keycache.o \
+	${OBJDIR}/ar5211_misc.o ${OBJDIR}/ar5211_power.o \
+	${OBJDIR}/ar5211_phy.o ${OBJDIR}/ar5211_recv.o \
+	${OBJDIR}/ar5211_reset.o ${OBJDIR}/ar5211_xmit.o
+endif
+
+ifeq ($(strip ${AH_SUPPORT_AR5212}),1)
+AR5212=	${HAL}/ar5212
+HAL_SRCS+=${AR5212}/ar5212_attach.c ${AR5212}/ar5212_beacon.c \
+	${AR5212}/ar5212_eeprom.c ${AR5212}/ar5212_gpio.c \
+	${AR5212}/ar5212_interrupts.c ${AR5212}/ar5212_keycache.c \
+	${AR5212}/ar5212_misc.c ${AR5212}/ar5212_power.c \
+	${AR5212}/ar5212_phy.c ${AR5212}/ar5212_recv.c \
+	${AR5212}/ar5212_reset.c ${AR5212}/ar5212_xmit.c \
+	${AR5212}/ar5212_ani.c ${AR5212}/ar5212_radar.c
+HAL_OBJS+=${OBJDIR}/ar5212_attach.o ${OBJDIR}/ar5212_beacon.o \
+	${OBJDIR}/ar5212_eeprom.o ${OBJDIR}/ar5212_gpio.o \
+	${OBJDIR}/ar5212_interrupts.o ${OBJDIR}/ar5212_keycache.o \
+	${OBJDIR}/ar5212_misc.o ${OBJDIR}/ar5212_power.o \
+	${OBJDIR}/ar5212_phy.o ${OBJDIR}/ar5212_recv.o \
+	${OBJDIR}/ar5212_reset.o ${OBJDIR}/ar5212_xmit.o \
+	${OBJDIR}/ar5212_ani.o ${OBJDIR}/ar5212_radar.o
+endif
+
+ifeq ($(strip ${AH_SUPPORT_AR5312}),1)
+AR5312=	${HAL}/ar5312
+HAL_SRCS+=${AR5312}/ar5312_attach.c ${AR5312}/ar5312_interrupts.c \
+	${AR5312}/ar5312_eeprom.c ${AR5312}/ar5312_gpio.c \
+	${AR5312}/ar5312_misc.c ${AR5312}/ar5312_power.c \
+	${AR5312}/ar5312_reset.c \
+	${AR5312}/ar5312_bsp.c
+HAL_OBJS+=${OBJDIR}/ar5312_attach.o ${OBJDIR}/ar5312_interrupts.o \
+	${OBJDIR}/ar5312_eeprom.o ${OBJDIR}/ar5312_gpio.o \
+	${OBJDIR}/ar5312_misc.o ${OBJDIR}/ar5312_power.o \
+	${OBJDIR}/ar5312_reset.o \
+	${OBJDIR}/ar5312_bsp.o
+endif
+
+ifeq ($(strip ${AH_SUPPORT_5111}),1)
+HAL_SRCS+=${AR5212}/ar5111.c
+HAL_OBJS+=${OBJDIR}/ar5111.o
+endif
+
+ifeq ($(strip ${AH_SUPPORT_5112}),1)
+HAL_SRCS+=${AR5212}/ar5112.c
+HAL_OBJS+=${OBJDIR}/ar5112.o
+endif
+
+ifeq ($(strip ${AH_SUPPORT_2413}),1)
+HAL_SRCS+=${AR5212}/ar2413.c
+HAL_OBJS+=${OBJDIR}/ar2413.o
+endif
+
+ifeq ($(strip ${AH_SUPPORT_5413}),1)
+HAL_SRCS+=${AR5212}/ar5413.c
+HAL_OBJS+=${OBJDIR}/ar5413.o
+endif
+
+ifeq ($(strip ${AH_SUPPORT_2316}),1)
+HAL_SRCS+=${AR5212}/ar2316.c
+HAL_OBJS+=${OBJDIR}/ar2316.o
+endif
+
+ifeq ($(strip ${AH_SUPPORT_2317}),1)
+HAL_SRCS+=${AR5212}/ar2317.c
+HAL_OBJS+=${OBJDIR}/ar2317.o
+endif
+
+ifeq ($(strip ${AH_SUPPORT_2425}),1)
+HAL_SRCS+=${AR5212}/ar2425.c
+HAL_OBJS+=${OBJDIR}/ar2425.o
+endif
+
+ifeq ($(strip ${AH_SUPPORT_AR5416}),1)
+AR5416=	${HAL}/ar5416
+HAL_SRCS+=${AR5416}/ar5416_attach.c ${AR5416}/ar5416_beacon.c \
+    ${AR5416}/ar5416_eeprom_def.c ${AR5416}/ar5416_eeprom_4k.c \
+    ${AR5416}/ar5416_eeprom_ar9287.c \
+	${AR5416}/ar5416_eeprom.c ${AR5416}/ar5416_gpio.c \
+	${AR5416}/ar5416_interrupts.c ${AR5416}/ar5416_keycache.c \
+	${AR5416}/ar5416_misc.c ${AR5416}/ar5416_power.c \
+	${AR5416}/ar5416_phy.c \
+	${AR5416}/ar5416_recv_ds.c ${AR5416}/ar5416_recv.c \
+	${AR5416}/ar5416_reset.c \
+	${AR5416}/ar5416_timer.c \
+	${AR5416}/ar5416_xmit_ds.c ${AR5416}/ar5416_xmit.c \
+	${AR5416}/ar5416_ani.c ${AR5416}/ar5416_radar.c ${AR5416}/ar5416_spectral.c \
+	${AR5416}/ar2133.c
+HAL_OBJS+=${OBJDIR}/ar5416_attach.o ${OBJDIR}/ar5416_beacon.o \
+    ${OBJDIR}/ar5416_eeprom_def.o ${OBJDIR}/ar5416_eeprom_4k.o \
+    ${OBJDIR}/ar5416_eeprom_ar9287.o \
+	${OBJDIR}/ar5416_eeprom.o ${OBJDIR}/ar5416_gpio.o \
+	${OBJDIR}/ar5416_interrupts.o ${OBJDIR}/ar5416_keycache.o \
+	${OBJDIR}/ar5416_misc.o ${OBJDIR}/ar5416_power.o \
+	${OBJDIR}/ar5416_phy.o \
+	${OBJDIR}/ar5416_recv_ds.o ${OBJDIR}/ar5416_recv.o \
+	${OBJDIR}/ar5416_reset.o \
+	${OBJDIR}/ar5416_timer.o \
+	${OBJDIR}/ar5416_xmit_ds.o ${OBJDIR}/ar5416_xmit.o \
+	${OBJDIR}/ar5416_ani.o ${OBJDIR}/ar5416_radar.o $(OBJDIR)/ar5416_spectral.o \
+	${OBJDIR}/ar2133.o
+endif
+
+ifeq ($(strip ${AH_SUPPORT_AR9300}),1)
+AR9300=	${HAL}/ar9300
+HAL_SRCS+=${AR9300}/ar9300_attach.c ${AR9300}/ar9300_beacon.c \
+	${AR9300}/ar9300_eeprom.c ${AR9300}/ar9300_gpio.c \
+	${AR9300}/ar9300_interrupts.c ${AR9300}/ar9300_keycache.c \
+	${AR9300}/ar9300_misc.c ${AR9300}/ar9300_power.c \
+	${AR9300}/ar9300_phy.c ${AR9300}/ar9300_radio.c\
+	${AR9300}/ar9300_recv_ds.c ${AR9300}/ar9300_recv.c \
+	${AR9300}/ar9300_reset.c ${AR9300}/ar9300_spectral.c \
+	${AR9300}/ar9300_timer.c ${AR9300}/ar9300_txbf.c\
+	${AR9300}/ar9300_xmit_ds.c ${AR9300}/ar9300_xmit.c \
+	${AR9300}/ar9300_ani.c ${AR9300}/ar9300_radar.c \
+	${AR9300}/ar9300_txbf_cal.c ${AR9300}/ar9300_paprd.c
+HAL_OBJS+=${OBJDIR}/ar9300_attach.o ${OBJDIR}/ar9300_beacon.o \
+	${OBJDIR}/ar9300_eeprom.o ${OBJDIR}/ar9300_gpio.o \
+	${OBJDIR}/ar9300_interrupts.o ${OBJDIR}/ar9300_keycache.o \
+	${OBJDIR}/ar9300_misc.o ${OBJDIR}/ar9300_power.o \
+	${OBJDIR}/ar9300_phy.o ${OBJDIR}/ar9300_radio.o\
+	${OBJDIR}/ar9300_recv_ds.o ${OBJDIR}/ar9300_recv.o \
+	${OBJDIR}/ar9300_reset.o ${OBJDIR}/ar9300_spectral.o\
+	${OBJDIR}/ar9300_timer.o ${OBJDIR}/ar9300_txbf.o\
+	${OBJDIR}/ar9300_xmit_ds.o ${OBJDIR}/ar9300_xmit.o \
+	${OBJDIR}/ar9300_ani.o ${OBJDIR}/ar9300_radar.o    \
+	${OBJDIR}/ar9300_txbf_cal.o ${OBJDIR}/ar9300_paprd.o
+endif
+
+#if(!(test -e opt_ah.h)){
+EXISTED   :=   $(wildcard   $(OBJDIR)/opt_ah.h)
+ifneq ($(strip $(EXISTED)),)
+$(shell rm -f $(OBJDIR)/opt_ah.h)
+endif
+
+#ifeq ($(strip $(EXISTED)),)
+
+ifeq ($(strip ${AH_SUPPORT_AR5210}),1)
+$(shell echo "#define AH_SUPPORT_AR5210	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+
+ifneq ($(strip ${ATH_DEFINE_ENDIAN}), 0)
+ifeq ($(strip ${ENDIAN}),AH_LITTLE_ENDIAN)
+$(shell echo "#define AH_BYTE_ORDER AH_LITTLE_ENDIAN"	>> ${OBJDIR}/opt_ah.h)
+else
+$(shell echo "#define AH_BYTE_ORDER AH_BIG_ENDIAN" >> ${OBJDIR}/opt_ah.h)
+endif
+endif
+
+
+ifeq ($(strip ${ATH_SUPPORT_WAPI}), 1)
+$(shell echo "#define ATH_SUPPORT_WAPI	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+
+ifeq ($(strip ${ATH_SUPPORT_IQUE}), 1)
+$(shell echo "#define ATH_SUPPORT_IQUE	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+
+ifeq ($(strip ${ATH_SUPPORT_IQUE_EXT}), 1)
+$(shell echo "#define ATH_SUPPORT_IQUE_EXT	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+
+ifeq ($(strip ${AH_REGREAD_DEBUG}), 1)
+$(shell echo "#define AH_REGREAD_DEBUG	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+
+ifeq ($(strip ${ATH_SUPPORT_LINUX_STA}), 1)
+$(shell echo "#define ATH_SUPPORT_LINUX_STA	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+
+ifeq ($(strip ${AH_SUPPORT_AR5211}),1)
+$(shell echo "#define AH_SUPPORT_AR5211	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+
+ifeq ($(strip ${AH_SUPPORT_AR5212}),1)
+$(shell echo "#define AH_SUPPORT_AR5212	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_AR5312}),1)
+$(shell echo "#define AH_SUPPORT_AR5312	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_AR5416}),1)
+$(shell echo "#define AH_SUPPORT_AR5416	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_AR9300}),1)
+$(shell echo "#define AH_SUPPORT_AR9300	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_5111}),1)
+$(shell echo "#define AH_SUPPORT_5111	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_5112}),1)
+$(shell echo "#define AH_SUPPORT_5112	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_2133}),1)
+$(shell echo "#define AH_SUPPORT_2133	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_2413}),1)
+$(shell echo "#define AH_SUPPORT_2413	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_5413}),1)
+$(shell echo "#define AH_SUPPORT_5413	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_2316}),1)
+$(shell echo "#define AH_SUPPORT_2316	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_2317}),1)
+$(shell echo "#define AH_SUPPORT_2317	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_2425}),1)
+$(shell echo "#define AH_SUPPORT_2425	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_HOWL}),1)
+$(shell echo "#define AH_SUPPORT_HOWL	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_OWL}),1)
+$(shell echo "#define AH_SUPPORT_OWL	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_SOWL}),1)
+$(shell echo "#define AH_SUPPORT_SOWL	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_KITE_10}),1)
+$(shell echo "#define AH_SUPPORT_KITE_10	1"	>> ${OBJDIR}/opt_ah.h)
+$(shell echo "#define AH_SUPPORT_KITE_ANY	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_KITE_12}),1)
+$(shell echo "#define AH_SUPPORT_KITE_12	1"	>> ${OBJDIR}/opt_ah.h)
+$(shell echo "#define AH_SUPPORT_KITE_ANY	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_MERLIN_10}),1)
+$(shell echo "#define AH_SUPPORT_MERLIN_10	1"	>> ${OBJDIR}/opt_ah.h)
+$(shell echo "#define AH_SUPPORT_MERLIN_ANY	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_MERLIN_20}),1)
+$(shell echo "#define AH_SUPPORT_MERLIN_20	1"	>> ${OBJDIR}/opt_ah.h)
+$(shell echo "#define AH_SUPPORT_MERLIN_ANY	1"	>> ${OBJDIR}/opt_ah.h)
+ifeq ($(strip ${AH_SUPPORT_MAGPIE}),1)
+$(shell echo "#define AH_SUPPORT_MAGPIE		1"	>> ${OBJDIR}/opt_ah.h)
+endif
+endif
+ifeq ($(strip ${AH_SUPPORT_KIWI_10}),1)
+$(shell echo "#define AH_SUPPORT_KIWI_10	1"	>> ${OBJDIR}/opt_ah.h)
+$(shell echo "#define AH_SUPPORT_KIWI_ANY	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_KIWI_11}),1)
+$(shell echo "#define AH_SUPPORT_KIWI_11	1"	>> ${OBJDIR}/opt_ah.h)
+$(shell echo "#define AH_SUPPORT_KIWI_ANY	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_K2}),1)
+$(shell echo "#define AH_SUPPORT_K2	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_HORNET}),1)
+$(shell echo "#define AH_SUPPORT_HORNET	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_OSPREY}),1)
+$(shell echo "#define AH_SUPPORT_OSPREY	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_WASP}),1)
+$(shell echo "#define AH_SUPPORT_WASP	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_POSEIDON}),1)
+$(shell	echo "#define AH_SUPPORT_POSEIDON	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_SCORPION}),1)
+$(shell	echo "#define AH_SUPPORT_SCORPION	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_EEPROM_4K}),1)
+$(shell echo "#define AH_SUPPORT_EEPROM_4K	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_EEPROM_DEF}),1)
+$(shell echo "#define AH_SUPPORT_EEPROM_DEF	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_EEPROM_AR9287}),1)
+$(shell echo "#define AH_SUPPORT_EEPROM_AR9287	1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_EEPROM_AR9330}),1)
+$(shell echo "#define AH_SUPPORT_EEPROM_AR9330  1"      >> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_ASSERT}),1)
+$(shell echo "#define AH_ASSERT	1"		>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_DEBUG_ALQ}),1)
+$(shell echo "#define AH_DEBUG_ALQ 1"		>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_DEBUG}),1)
+$(shell echo "#define AH_DEBUG	1"		>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AR5416_EMULATION}),1)
+$(shell echo "#define AR5416_EMULATION	1"		>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AR9300_EMULATION}),1)
+$(shell echo "#define AR9300_EMULATION	1"		>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AR9300_EMULATION_BB}),1)
+$(shell echo "#define AR9300_EMULATION_BB  1"      >> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AR9330_EMULATION}),1)
+$(shell echo "#define AR9330_EMULATION  1"      >> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AR9340_EMULATION}),1)
+$(shell	echo "#define AR9340_EMULATION  1"      >> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AR9550_EMULATION}),1)
+$(shell	echo "#define AR9550_EMULATION  1"      >> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AR5416_2_CHAIN}),1)
+$(shell echo "#define AR5416_2_CHAIN	1"		>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AR5416_3_CHAIN}),1)
+$(shell echo "#define AR5416_3_CHAIN	1"		>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AR5416_CES_DEMO}),1)
+$(shell echo "#define AR5416_CES_DEMO	1"		    >> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${ATH_FORCE_PPM}),1)
+$(shell echo "#define ATH_FORCE_PPM	1"		>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${ATH_FORCE_BIAS}),1)
+$(shell echo "#define ATH_FORCE_BIAS	1"		>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${ATH_SUPPORT_HTC}),1)
+$(shell echo "#define ATH_SUPPORT_HTC	1"		>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${ATH_SUPPORT_TX99}),1)
+$(shell echo "#define ATH_TX99_DIAG	1"		>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_WRITE_REGDOMAIN}),1)
+$(shell echo "#define AH_SUPPORT_WRITE_REGDOMAIN 1" >>${OBJDIR}/opt_ah.h)
+$(shell echo "#define AH_SUPPORT_WRITE_EEPROM 1">>${OBJDIR}/opt_ah.h)
+else
+ifeq ($(strip ${AH_WRITE_EEPROM}),1)
+$(shell echo "#define AH_SUPPORT_WRITE_EEPROM 1">>${OBJDIR}/opt_ah.h)
+endif
+endif
+ifeq ($(strip ${AH_CAL_IN_FLASH}),1)
+$(shell echo "#define AH_CAL_IN_FLASH 1">>${OBJDIR}/opt_ah.h)
+$(shell echo "#define AH_CAL_RADIOS ${AH_CAL_RADIOS}">>${OBJDIR}/opt_ah.h)
+$(shell echo "#define AH_CAL_LOCATIONS ${AH_CAL_LOCATIONS}">>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${UMAC_SUPPORT_SMARTANTENNA}),1)
+$(shell echo  "#define UMAC_SUPPORT_SMARTANTENNA 1">>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_DEBUG_COUNTRY}),1)
+$(shell echo "#define AH_DEBUG_COUNTRY 1"	>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_REGOPS_FUNC}),1)
+$(shell echo "#define AH_REGOPS_FUNC 1"		>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_DISABLE_WME}),1)
+$(shell echo "#define AH_DISABLE_WME 1"		>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_ENABLE_AP_SUPPORT}),1)
+$(shell echo "#define AH_ENABLE_AP_SUPPORT 1"	>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_PRIVATE_DIAG}),1)
+$(shell echo "#define AH_PRIVATE_DIAG 1"	>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_NEED_DESC_SWAP}),1)
+$(shell echo "#define AH_NEED_DESC_SWAP 1"	>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_NEED_TX_DATA_SWAP}),1)
+$(shell echo "#define AH_NEED_TX_DATA_SWAP 1"	>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_NEED_RX_DATA_SWAP}),1)
+$(shell echo "#define AH_NEED_RX_DATA_SWAP 1"	>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AR5416_ISR_READ_CLEAR_SUPPORT}),1)
+$(shell echo "#define AR5416_ISR_READ_CLEAR_SUPPORT 1"	>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_XR}),1)
+$(shell echo "#define AH_SUPPORT_XR	1"	>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_SUPPORT_11D}),1)
+$(shell echo "#define AH_SUPPORT_11D	1"	>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AR9100}),1)
+$(shell echo "#define AR9100	1"	>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AR5416_INT_MITIGATION}),1)
+$(shell echo "#define AR5416_INT_MITIGATION	1"	>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_AR5416_OVRD_TGT_PWR_5G}),1)
+$(shell echo "#define AH_AR5416_OVRD_TGT_PWR_5G	1"	>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_AR5416_OVRD_TGT_PWR_5GHT20}),1)
+$(shell echo "#define AH_AR5416_OVRD_TGT_PWR_5GHT20	1"	>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_AR5416_OVRD_TGT_PWR_5GHT40}),1)
+$(shell echo "#define AH_AR5416_OVRD_TGT_PWR_5GHT40	1"	>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_AR5416_OVRD_TGT_PWR_CCK}),1)
+$(shell echo "#define AH_AR5416_OVRD_TGT_PWR_CCK	1"	>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_AR5416_OVRD_TGT_PWR_2G}),1)
+$(shell echo "#define AH_AR5416_OVRD_TGT_PWR_2G	1"	>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_AR5416_OVRD_TGT_PWR_2GHT20}),1)
+$(shell echo "#define AH_AR5416_OVRD_TGT_PWR_2GHT20	1"	>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_AR5416_OVRD_TGT_PWR_2GHT40}),1)
+$(shell echo "#define AH_AR5416_OVRD_TGT_PWR_2GHT40	1"	>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${AH_NEED_PRIV_REGDMN}),1)
+$(shell echo "#define AH_NEED_PRIV_REGDMN	1"	>>${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${ATH_NO_5G_SUPPORT}),1)
+$(shell echo "#define ATH_NO_5G_SUPPORT 1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${ATH_IBSS_DFS_CHANNEL_SUPPORT}),1)
+$(shell echo "#define ATH_IBSS_DFS_CHANNEL_SUPPORT 1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${ATH_SWRETRY}),1)
+$(shell echo "#define ATH_SWRETRY 1"   >> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${ATH_REMOVE_2G_TURBO_RD_TABLE}),1)
+$(shell echo "#define ATH_REMOVE_2G_TURBO_RD_TABLE 1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${ATH_SUPPORT_SPECTRAL}),1)
+$(shell	echo "#define ATH_SUPPORT_SPECTRAL 1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${ATH_SUPPORT_WIFIPOS}),1)
+$(shell	echo "#define ATH_SUPPORT_WIFIPOS 1"    >> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${ATH_SUPPORT_RAW_ADC_CAPTURE}),1)
+$(shell echo "#define ATH_SUPPORT_RAW_ADC_CAPTURE 1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${ATH_SUPPORT_TxBF}),1)
+$(shell echo "#define ATH_SUPPORT_TxBF 1"	>> ${OBJDIR}/opt_ah.h)
+endif
+ifeq ($(strip ${ATH_DEBUG}),1)
+$(shell echo "#define ATH_DEBUG 1"	>> ${OBJDIR}/opt_ah.h)
+#else
+#$(shell echo "#define ATH_DEBUG 0"	>> ${OBJDIR}/opt_ah.h)
+endif
+$(shell echo "#define DEBUG_PKTLOG 1"	>>${OBJDIR}/opt_ah.h)
+
+ifeq ($(strip ${ATH_SUPPORT_CRDC}),1)
+$(shell echo "#define ATH_SUPPORT_CRDC 1"	>> ${OBJDIR}/opt_ah.h)
+else
+$(shell echo "#define ATH_SUPPORT_CRDC 0"	>> ${OBJDIR}/opt_ah.h)
+endif
+
+ifeq ($(strip ${ATH_SUPPORT_PAPRD}),1)
+$(shell echo "#define ATH_SUPPORT_PAPRD 1"	>>${OBJDIR}/opt_ah.h)
+endif
+
+ifeq ($(strip ${HOST_OFFLOAD}), 1)
+$(shell echo "#define HOST_OFFLOAD 1"	    >> ${OBJDIR}/opt_ah.h)
+endif
+
+ifeq ($(strip ${ATH_TRAFFIC_FAST_RECOVER}), 1)
+$(shell echo "#define ATH_TRAFFIC_FAST_RECOVER 1"	    >> ${OBJDIR}/opt_ah.h)
+else
+$(shell	echo "#define ATH_TRAFFIC_FAST_RECOVER 0"	    >> ${OBJDIR}/opt_ah.h)
+endif
+
+ifeq ($(strip ${ATH_SUPPORT_LED}), 1)
+$(shell echo "#define ATH_SUPPORT_LED 1"	    >> ${OBJDIR}/opt_ah.h)
+endif
+
+ifeq ($(strip ${ATH_CAL_NAND_FLASH}), 1)
+$(shell	echo "#define ATH_CAL_NAND_FLASH 1"	    >> ${OBJDIR}/opt_ah.h)
+$(shell	echo "#define ATH_CAL_NAND_PARTITION "\"$(strip ${ATH_CAL_NAND_PARTITION})\"	    >> ${OBJDIR}/opt_ah.h)
+endif
+
+ifeq ($(strip ${ATH_GEN_RANDOMNESS}),1)
+$(shell	echo "#define ATH_GEN_RANDOMNESS 1"	>> ${OBJDIR}/opt_ah.h)
+endif
+
+# Build driver on python + merlin.
+ifeq ($(strip ${ATH_PYTHON}),1)
+# Start location of calibration data in eeprom or flash
+# Set it to zero by default
+ifndef AH_CAL_OFFSET
+	export AH_CAL_OFFSET=0
+endif
+
+# On python board + Merlin, the start address of calbration data
+# on flash was changed. We specify this value in config.<board-type>
+ifeq ($(strip ${AH_CAL_IN_FLASH}),1)
+$(shell echo "#define AH_CAL_LOCATION ${AH_CAL_LOCATION}"  >>${OBJDIR}/opt_ah.h)
+endif # AH_CAL_IN_FLASH
+
+$(shell echo "#define ATH_PYTHON 1"  >>${OBJDIR}/opt_ah.h)
+$(shell echo "#define AH_CAL_OFFSET ${AH_CAL_OFFSET}" >>${OBJDIR}/opt_ah.h)
+endif # ATH_PYTHON
+
+#endif # end of opt_ah.h
+# copy opt_ah.h to ath_hal
+$(shell cp $(OBJDIR)/opt_ah.h $(OBJDIR)/../../os/linux/ath_hal/)
+
+
+obj-m += hal.o
+hal-y += $(HAL_SRCS:%.c=%.o) 
+
+#PWD=$(shell 'pwd')
+#$(warning "$(PWD)  copy hal.o ../vendor/atheros/compat-wireless/qca_main/drivers/wlan_modules/hal/linux/hal.o ../vendor/atheros/compat-wireless/qca_main/drivers/wlan_modules/os/linux/ath_hal/")
+#Objpath = ../vendor/atheros/qca_main/drivers/wlan_modules
+#$(shell cp $(Objpath)/hal/linux/hal.o $(Objpath)/os/linux/ath_hal/)
+
+clean:
+	rm -f ${ALL} ${OBJS} ${CLEANFILES}
+	-rmdir -p ${OBJDIR}
+

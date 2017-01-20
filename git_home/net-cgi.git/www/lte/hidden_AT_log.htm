@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<html><head><link rel="stylesheet" href="style/basic.css">
+<html><head><link rel="stylesheet" href="style/top.css">
+<title>NETGEAR Router MBR1000</title>
+</head>
+
+<body onLoad="loadvalue();">
+<script>
+var select_num=0;
+var lte_upg_refresh_time=0;
+var refresh_time=0;
+function loadvalue()
+{
+	select_lable(select_num);
+}
+function select_lable(num)
+{
+	if(num==0)
+		document.getElementById("network_info").className="label_click";
+	else
+		document.getElementById("network_info").className="label_unclick";
+	if(num==1)
+		document.getElementById("at_test").className="label_click";
+	else
+		document.getElementById("at_test").className="label_unclick";
+	if(num==2)
+		document.getElementById("lte_upgrade").className="label_click";
+	else
+		document.getElementById("lte_upgrade").className="label_unclick";
+	if(num==3)
+		document.getElementById("ping").className="label_click";
+	else
+		document.getElementById("ping").className="label_unclick";
+	if(num==4)
+		document.getElementById("boot").className="label_click";
+	else
+		document.getElementById("boot").className="label_unclick";
+
+	select_num=num;
+	if(select_num==0)
+		document.getElementById("atformframe").src="lte_pls_wait_1.html";
+	else
+		document.getElementById("atformframe").src="at_log.html";
+}
+
+</script>
+
+<style>
+.label_click .label_left { width: 15px; height: 30px; background: url(../image/tops.gif) no-repeat 0 -23px; float: left; position: relative }
+.label_click .label_middle { width: auto; height: 30px; background: url(../image/tops.gif) no-repeat -5px -23px; float: left; position: relative }
+.label_click .label_right { width: 15px; height: 30px; background: url(../image/tops.gif) no-repeat -325px -23px;  float: left; position: relative }
+.label_unclick .label_left { width: 15px; height: 30px; background: url(../image/tops.gif) no-repeat -340px -23px; float: left; position: relative }
+.label_unclick .label_middle { width: auto; height: 30px; background: url(../image/tops.gif) no-repeat -345px -23px; float: left; position: relative }
+.label_unclick .label_right { width: 15px; height: 30px; background: url(../image/tops.gif) no-repeat -638px -23px;  float: left; position: relative }
+</style>
+
+<div id="labels">
+	<div id="network_info" class="label_unclick" onclick="select_lable(0)">
+		<div class="label_left"></div>
+		<div class="label_middle"><b><span>Network Info</span></b></div>
+		<div class="label_right"></div>
+	</div>
+	<div id="at_test" class="label_unclick" onclick="select_lable(1)">
+		<div class="label_left"></div>
+		<div class="label_middle"><b><span>AT Test</span></b></div>
+		<div class="label_right"></div>
+	</div>
+	<div id="lte_upgrade" class="label_unclick" onclick="select_lable(2)">
+		<div class="label_left"></div>
+		<div class="label_middle"><b><span>LTE Upgrade</span></b></div>
+		<div class="label_right"></div>
+	</div>
+	<div id="ping" class="label_unclick" onclick="select_lable(3)">
+		<div class="label_left"></div>
+		<div class="label_middle"><b><span>Ping</span></b></div>
+		<div class="label_right"></div>
+	</div>
+	<div id="boot" class="label_unclick" onclick="select_lable(4)">
+		<div class="label_left"></div>
+		<div class="label_middle"><b><span>Bootup Info</span></b></div>
+		<div class="label_right"></div>
+	</div>
+</div>
+<div id="atlog_frame" class="container_center">
+	<iframe id="atformframe" allowtransparency="true" height="400px" width="100%" scrolling="no" frameborder="0" >
+</iframe>
+</div>
+</body>
+</html>

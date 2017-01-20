@@ -1,0 +1,47 @@
+#!/bin/sh
+
+#
+# Exection begins here
+#
+CONFIG="/bin/config"
+
+case "$1" in
+start)
+	echo -n "traffic_meter start : "
+	cp -arf /usr/traffic_meter/ /tmp/
+	/sbin/generate_traffic_meter_conf
+	/sbin/traffic_meter
+	echo "."
+	;;
+
+stop)
+	echo -n "traffic_meter stop : "
+	/usr/bin/killall traffic_meter
+	echo "."
+	;;
+
+restart)
+	$0 stop
+	$0 start
+	;;
+config_update)
+	echo -n "traffic_meter config_update : "
+	/sbin/generate_traffic_meter_conf
+	/usr/bin/killall -USR1 traffic_meter
+##To fix the bug 25516 & 26430
+	sleep 10
+	/bin/config set default_traffic="1"
+	/bin/config commit
+	echo "."
+	;;
+restart_counter)
+	echo -n "traffic_meter restart_counter : "
+	/usr/bin/killall -USR2 traffic_meter
+	echo "."
+	;;
+*)
+	echo "Usage: /sbin/traffic_meter {start|stop|restart|config_update|restart_counter}"
+	exit 1
+	;;
+esac
+

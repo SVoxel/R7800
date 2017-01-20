@@ -1,0 +1,130 @@
+<% http_header("style/form.css", "/funcs.js", "/fastlane.js") %>
+<% body_header("_FL_fastlane", "FL_fastLane.htm", "fastlane") %>
+<div class="page_title">Fast Lane</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+        <TD nowrap colspan=2 align=center>
+	<input class="cancel_bt" type='button' name='Cancel' value='$cancel_mark' onClick='location.href="FL_fastLane.htm";'>&nbsp;&nbsp;
+        <input class="apply_bt" type='submit' name='Apply' value='$apply_mark' onClick='return check_fastlane();'>
+        </TD>
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<script>
+var enable_fastlane="<% cfg_get("FL_enable_fast_lane") %>";
+var bandwith_val="<% cfg_get("FL_bandwith") %>";
+var wps_or_fastlane_val="<% cfg_get("FL_wps_or_fastlane") %>";
+var trust_ip_val="<% cfg_get("FL_trusted_ip") %>";
+var lan_ip="<% cfg_get("lan_ipaddr") %>";
+var lan_subnet="<% cfg_get("lan_netmask") %>";
+var trustedip_array=new Array();
+var lanip_array=new Array();
+var lan_subnet_array=new Array();
+trustedip_array=trust_ip_val.split('.');
+lanip_array=lan_ip.split('.');
+lan_subnet_array=lan_subnet.split('.');
+
+function loadvalue()
+{
+	var cf = document.forms[0];
+
+	if( enable_fastlane == "1" )
+		cf.fast_lane_enable.checked = true;
+	else
+		cf.fast_lane_enable.checked = false;
+
+	cf.bandwith.value = bandwith_val;
+
+	if( trust_ip_val != "" )
+	{
+                cf.cfTrusted_IPAddress1.value=trustedip_array[0];
+                cf.cfTrusted_IPAddress2.value=trustedip_array[1];
+                cf.cfTrusted_IPAddress3.value=trustedip_array[2];
+                cf.cfTrusted_IPAddress4.value=trustedip_array[3];
+	}
+	else
+	{
+                cf.cfTrusted_IPAddress1.value=lanip_array[0];
+                cf.cfTrusted_IPAddress2.value=lanip_array[1];
+                cf.cfTrusted_IPAddress3.value=lanip_array[2];
+                cf.cfTrusted_IPAddress4.value="";
+	}
+
+        if(parseInt(lan_subnet_array[0])!=255)
+                cf.cfTrusted_IPAddress1.disabled=false;
+        if(parseInt(lan_subnet_array[1])!=255)
+                cf.cfTrusted_IPAddress2.disabled=false;
+        if(parseInt(lan_subnet_array[2])!=255)
+                cf.cfTrusted_IPAddress3.disabled=false;
+        if(parseInt(lan_subnet_array[3])!=255)
+                cf.cfTrusted_IPAddress4.disabled=false;
+
+	if( wps_or_fastlane_val == "fastlane")
+		cf.wps_or_fastlane[1].checked = true;
+	else
+		cf.wps_or_fastlane[0].checked = true;
+}
+</script>
+<input type="hidden" name="http_fastlane_enable">
+<input type="hidden" name="cfTrusted_IPAddress">
+<TR>
+	<TD nowrap colspan=2>
+	<b>Fast Lane Status:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<% on_status("FL_enable_fast_lane") %></b>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="fast_lane_enable" value="0">
+	<A tabindex=-1 href="javascript:loadhelp('_FL_fastlane','turnon')"><B>Turn On Fast Lane</B></A>
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_FL_fastlane','bandwidth')"><B>Bandwidth Reserved for Trusted IP Address</B></A></TD>
+	<TD nowrap>
+		<select name="bandwith" size="1" >
+			<option value="50">50%</option>
+			<option value="60">60%</option>
+			<option value="70">70%</option>
+			<option value="80">80%</option>
+		</select>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_FL_fastlane','bandwidth')"><b>$trust_ip</b></A>
+	</TD>
+	<TD nowrap align=left>	
+	<input type="text" name="cfTrusted_IPAddress1" size="3" autocomplete="off" maxlength="3" disabled onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="cfTrusted_IPAddress2"  size="3" autocomplete="off" maxlength="3" disabled onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="cfTrusted_IPAddress3"  size="3" autocomplete="off" maxlength="3" disabled onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="cfTrusted_IPAddress4"  size="3" autocomplete="off" maxlength="3" disabled onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_FL_fastlane','push')"><b>WiFi Connection & Fast Lane Push Button</b></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="wps_or_fastlane" value="wps" ><b>WPS</b>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="wps_or_fastlane" value="fastlane"><b>Fast Lane</b>
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_FL_fastlane") %>
+</FORM>
+</BODY>
+</HTML>

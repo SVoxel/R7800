@@ -1,0 +1,20 @@
+<% start_netscan() %>
+
+<HTML>
+<HEAD>
+<script language="javascript" type="text/javascript">
+var streamboost_enable="<% cfg_get("streamboost_enable") %>";
+if(streamboost_enable == "1" && top.enable_ap_flag != 1 && top.enable_bridge_flag == 0)
+	document.write('<META http-equiv="Refresh" content="4; url=QOS_show_device.htm">');
+else
+	document.write('<META http-equiv="Refresh" content="4; url=QOS_list_device.htm">');
+</script>
+<META http-equiv="content-type" content='text/html; charset=UTF-8'>
+<LINK rel="stylesheet" type="text/css" href="style/hijack_style.css">
+</HEAD>
+<BODY bgcolor=#ffffff>
+<div  align="center"><BR><BR><B>$wizard_pls_wait</B><BR><BR></div>
+<div class="waiting_img_div" align="center"><img src="image/wait30.gif" /></div>
+</BODY>
+</HTML>
+

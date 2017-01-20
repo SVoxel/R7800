@@ -1,0 +1,105 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<!--META http-equiv="refresh" content="10; url=Disk_internal.htm"-->
+<body bgcolor=#ffffff>
+<form action="backupSMART.cgi" method="post" enctype="multipart/form-data">
+<div style="width: 100%; height: 20px; font: bold 15px arial; color: #0000ff; position: absolute; top: 0px; left: 0px;">S.M.A.R.T information for internal Disk</div>
+<div id="main" class="main">
+<script>
+<% get_internal_disk_info() %>
+
+function loadvalue()
+{
+
+}
+
+</script>
+
+<TABLE cellspacing=0 cellPadding=0 width=100% border=0>
+<TR class="even_line">
+	<TD nowrap>Model:</TD><TD nowrap align=left><% cfg_get("smart_model") %></TD>
+</TR>
+<TR class="even_line">
+<TD nowrap>Serial:</TD><TD nowrap align=left><% cfg_get("smart_serial") %></TD>
+</TR>
+<TR class="even_line">
+<TD nowrap>Firmware:</TD><TD nowrap align=left><% cfg_get("smart_firmware") %></TD>
+</TR>
+<TR class="odd_line"><TD nowrap colspan=2>&nbsp;&nbsp;</TD></TR>
+<TR class="odd_line"><TD nowrap colspan=2>&nbsp;&nbsp;</TD></TR>
+<TR class="odd_line"><TD nowrap colspan=2>SMART Attribute</TD></TR>
+<script>
+var internal_info = "<% cfg_sed_xss("smart_value") %>";
+var	each_info = internal_info.split('*');
+
+	for(i=1; i<=10 ; i++)
+	{
+		document.write('<TR class="even_line">');
+		switch(i)
+		{
+			case 1:
+				document.write('<TD nowrap>Spin Up Time</TD><TD nowrap align=right>'+each_info[0]+'</TD>');
+				break;
+		    case 2:
+				document.write('<TD nowrap>Start Stop Count</TD><TD nowrap align=right>'+each_info[1]+'</TD>');
+				break;
+			case 3:
+				document.write('<TD nowrap>Reallocated Sector Ct</TD><TD nowrap align=right>'+each_info[2]+'</TD>');
+				break;
+			case 4:
+				document.write('<TD nowrap>Power On Hours</TD><TD nowrap align=right>'+each_info[3]+'</TD>');
+				break;
+			case 5:
+				document.write('<TD nowrap>Spin Retry Count</TD><TD nowrap align=right>'+each_info[4]+'</TD>');
+				break;
+			case 6:
+				document.write('<TD nowrap>Power Cycle Count</TD><TD nowrap align=right>'+each_info[5]+'</TD>');
+				break;
+			case 7:
+				document.write('<TD nowrap>Current Pending Sector</TD><TD nowrap align=right>'+each_info[6]+'</TD>');
+				break;
+			case 8:
+				document.write('<TD nowrap>Offline Uncorrectable</TD><TD nowrap align=right>'+each_info[7]+'</TD>');
+				break;
+			case 9:
+				document.write('<TD nowrap>UDMA CRC Error Count</TD><TD nowrap align=right>'+each_info[8]+'</TD>');
+				break;
+			case 10:
+				document.write('<TD nowrap>Multi Zone Error Rate</TD><TD nowrap align=right>'+each_info[9]+'</TD>');
+				break;
+		}		
+		document.write('</TR>');
+	}
+
+</script>
+
+<TR class="odd_line"><TD nowrap colspan=2>&nbsp;&nbsp;</TD></TR>
+<script>
+var smart_currentTemp = "<% cfg_sed_xss("smart_currentTemp") %>";
+var smart_powerTemp = "<% cfg_sed_xss("smart_powerTemp") %>";
+var smart_lifeTemp = "<% cfg_sed_xss("smart_lifeTemp") %>";
+if ( smart_currentTemp == "" )
+	document.write('<TR><TD nowrap>Current Temperature (Celsius)</TD><TD nowrap align=right>'+'N/A''</TD></TR>');
+else
+	document.write('<TR><TD nowrap>Current Temperature (Celsius)</TD><TD nowrap align=right>'+smart_currentTemp+'</TD></TR>');
+if ( smart_powerTemp == "" )
+	document.write('<TR><TD nowrap>Power Cycle Min/Max Temperature (Celsius)</TD><TD nowrap align=right>'+'N/A'+'</TD></TR>');
+else
+	document.write('<TR><TD nowrap>Power Cycle Min/Max Temperature (Celsius)</TD><TD nowrap align=right>'+smart_powerTemp+'</TD></TR>');
+if ( smart_lifeTemp == "" )
+	document.write('<TR><TD nowrap>Lifetime Min/Max Temperature (Celsius)</TD><TD nowrap align=right>'+'N/A'+'</TD></TR>');
+else
+	document.write('<TR><TD nowrap>Lifetime Min/Max Temperature (Celsius)</TD><TD nowrap align=right>'+smart_lifeTemp+'</TD></TR>');
+</script>
+
+<TR class="odd_line"><TD nowrap colspan=2>&nbsp;&nbsp;</TD></TR>
+
+<TR class="odd_line"><TD nowrap colspan=2>Save a copy of all S.M.A.R.T current values</TD></TR>
+<TR class="odd_line"><TD nowrap colspan=2 align=right>
+<input class="common_key_bt" type="submit" name="Save" value="Save">
+</TD></TR>
+
+</TABLE>
+</div>
+</FORM>
+</BODY>
+</HTML>

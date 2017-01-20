@@ -1,0 +1,94 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<body>
+<div id="page_title_div" class="page_title">$mobile_upgrade</div>
+<div id="page_button_div" class="fix_button">
+<table width=100% border=0 cellpadding=0 cellspacing=2>
+<tr>
+	<td nowrap colspan=2 align=center>
+		<input class="cancel_bt" type="reset" name="Cancel" value='$cancel_mark' onClick='location.href="UPG_module.htm";'>&nbsp;&nbsp;
+		<input class="apply_bt" type="button" name="Upgrade" value="$upg_mark" onClick='return clickUpgrade(document.forms[1]);'>
+	</td>
+</tr>
+</table>
+</div>
+
+<div id="main" class="main_top_button">
+<div id="FW_checking_div">
+<form method="post" action="/func.cgi?/AUTO_search.htm" target="formframe">
+<input type="hidden" name="submit_flag" value="download_confile" />
+
+<script>
+<% refresh_timestamp("download_confile") %>
+var ts="<% cfg_get("download_confile") %>"
+
+function clickUpgrade(form)
+{
+	if(form.mtenFWUpload.value=="")
+	{
+		alert("$in_upgrade");
+		return false;
+	}
+	var filestr=form.mtenFWUpload.value;
+	var file_format=filestr.substr(filestr.lastIndexOf(".")+1);
+	if(file_format.toUpperCase()!="BIN")
+	{
+		alert("$not_correct_file"+"bin");
+		return false;
+	}
+
+	var page_title_div = document.getElementById("page_title_div");
+	var page_button_div = document.getElementById("page_button_div");
+	var FW_checking_div = document.getElementById("FW_checking_div");
+	var FW_upg_div = document.getElementById("FW_upg_div");
+	var pls_wait_div = document.getElementById("pls_wait_div");
+
+	page_title_div.style.display = "none";
+	page_button_div.style.display = "none";
+	FW_checking_div.style.display = "none";
+	FW_upg_div.style.display = "none";
+	pls_wait_div.style.display = "block";
+
+	form.submit();
+	return true;
+}
+
+function click_check()
+{
+	var cf=document.forms[0];
+	cf.action="/func.cgi?/AUTO_search.htm timestamp="+ts;
+	cf.submit();
+}
+
+</script>
+
+<% table_header() %>
+<tr>
+	<td nowrap><b>$upgrade_new_version</b></td>
+	<td nowrap>
+	<input class="short_common_bt" type="button" name="Check" value="$check_mark" onclick="click_check();">
+	</td>
+</tr>
+$bluebar
+</table>
+</form>
+</div>
+
+<div id="FW_upg_div">
+<form method="post" action="/upgrade_module.cgi" target="formframe" enctype="multipart/form-data">
+<table width="100%" border="0" cellpadding="0" cellspacing="3">
+<tr>
+	<td nowrap><b>$upgrade_select_disk</b></td>
+</tr>
+<tr><td nowrap><input name="mtenFWUpload" type="file" size="32"></td></tr>
+</table>
+</form>
+</div>
+
+<div id="pls_wait_div" style="display:none">
+<div align="center"><br /><br /><b>$wizard_pls_wait</b><br /><br /></div>
+<div class="waiting_img_div" align="center"><img src="image/wait30.gif" /></div>
+</div>
+
+</div>
+</body>
+</html>

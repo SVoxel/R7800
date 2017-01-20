@@ -1,0 +1,121 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% funcLod_header( "", "RST_status.htm", "write_image") %>
+<% hijack_language() %>
+<table width="100%" border="0" cellpadding="0" cellspacing="3">
+<tr><td colSpan="2"><h1><script>printText(bh_wait_upg_head, "$wait_upg_head");</script></h1></td></tr>
+$bluebar
+
+</TABLE>
+<DIV id="msg"></DIV>
+<script>
+<% save_timestamp("write_image","cancel_image") %>
+var ts="<% cfg_get("cancel_image") %>";
+var is_in_cd_less = isCDLESS();
+
+var img_status=<% image_status() %>;
+var md5=<% md5_have_checked() %>;
+var wan_status="<% detwan_valid() %>";//fix bug 25310,[Netgear]Auto-Update issue
+var ftp_status="<% detftp_valid() %>";//fix bug 26101
+var delay_time=2000;//msecs
+
+var percComplete = 0;
+
+function loadvalue()
+{
+	if(wan_status == 0 || ftp_status == 0)
+	{
+		if(top.topframe)
+			top.topframe.location.href="top.html";
+		document.location.href="AUTO_download_failure.htm";
+	}
+	detec_status();
+}
+
+function detec_status()
+{
+	if (img_status < 1000)
+	{	
+		getObj("msg").innerHTML=getText(bh_downloading_ver, "$downloading_ver");
+		
+		setTimeout("detec_status()",delay_time);
+	}
+	else if (img_status >= 1000 && img_status < 2000)
+	{
+		percComplete = img_status - 1000;
+		getObj("msg").innerHTML=""
+		if(percComplete >= 100 && md5 == 1 )
+		{	
+			getObj("msg").innerHTML="$pro100";
+			getObj("msg").innerHTML+="<BR>";
+			getObj("msg").innerHTML+=getText(bh_downloading_ver, "$downloading_ver");
+			document.forms[0].submit();
+		}
+		else
+		{
+			if( percComplete >= 100 )
+				percComplete = 99;
+			getObj("msg").innerHTML="$pro1"+percComplete+"$pro2"+percComplete+"$pro3"+(100-percComplete)+"$pro4";
+			getObj("msg").innerHTML+="<BR>";
+			getObj("msg").innerHTML+=getText(bh_downloading_ver, "$downloading_ver");
+
+			setTimeout("detec_status()",delay_time);
+		}	
+	}
+	else if (img_status == 10008)
+	{
+		if(top.topframe && !top.hidden_upgrade) //if top.topframe exists and top.hidden_upgrade does not exit
+			top.topframe.location.href="top.html";
+		else if(top.topframe && top.hidden_upgrade)     //if top.hidden_upgrade exits, top is the hidden page CheckNewFirmware.htm
+			top.topframe.location.href="CheckNewFW_top.htm";
+	
+		top.enable_action=1;
+		document.location.href="AUTO_MD5_failure.htm";
+	}
+	else if (img_status >= 10000)
+	{
+		if(top.topframe && !top.hidden_upgrade) //if top.topframe exists and top.hidden_upgrade does not exit
+			top.topframe.location.href="top.html";
+		else if(top.topframe && top.hidden_upgrade)     //if top.hidden_upgrade exits, top is the hidden page CheckNewFirmware.htm
+			top.topframe.location.href="CheckNewFW_top.htm";
+
+		top.enable_action=1;
+		document.location.href="AUTO_download_failure.htm";
+	}
+}
+
+function click_cancel()
+{
+	if(top.topframe && !top.hidden_upgrade){ //if top.topframe exists and top.hidden_upgrade does not exit
+		top.topframe.location.href="top.html";
+		if(isWIZARD())
+			document.forms[0].action = "/func.cgi?/to_internet_no_auth.htm timestamp="+ts;
+	}
+	else if(top.topframe && top.hidden_upgrade)     //if top.hidden_upgrade exits, top is the hidden page CheckNewFirmware.htm
+	{
+		document.forms[0].action = "/func.cgi?/AUTO_start.htm timestamp="+ts;
+		top.topframe.location.href="CheckNewFW_top.htm";
+	}
+	else if (is_in_cd_less)
+	{
+		document.forms[0].action = "/func.cgi?/to_internet_no_auth.htm timestamp="+ts;
+	}
+	top.enable_action=1;
+	document.forms[0].submit_flag.value="cancel_image";
+	document.forms[0].submit();
+}
+var cancel_mark = getText(bh_cancel_mark, "$cancel_mark");
+</script>
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+$bluebar
+<TR>
+	<TD nowrap colspan=2 align=center>
+	<script>
+		document.write("<input type='button' class='cancel_bt' name='cancel_down' value='"+cancel_mark+"' onclick='click_cancel();'>");
+	</script>
+	</TD>
+</TR>
+</TABLE>
+</FORM>
+<iframe name="upg_status_frame" src="upg_get_status.htm" allowtransparency="true" scrolling="no" frameborder="0" ></iframe>
+</BODY>
+</HTML>

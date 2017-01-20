@@ -1,0 +1,71 @@
+#!/bin/sh
+
+[ -z "$1" ] && {
+    echo "$0 <config>"
+    exit 1
+}
+
+## the argument is the configurations file.
+USERCFG=$1
+
+# There are two ways that this script gets called.
+#  1) from ucitrack when an update to appflow is made
+#  2) when streamboost is started at boot.
+
+##========================================================
+## Load the UCI access pieces
+##========================================================
+. /lib/config/uci.sh
+update_from_uci() {
+	local name=$1
+	local uciname=${2:-$1}
+	local newval=$(uci -q get appflow.tccontroller.${uciname})
+
+	[ ! -z "${newval}" ] && {
+		eval ${name}=${newval}
+	}
+}
+
+update_yn_from_uci() {
+	local name=$1
+	local uciname=${2:-$1}
+	local newval=$(uci -q get appflow.tccontroller.${uciname})
+
+	[ ! -z "${newval}" ] && {
+		if [ ${newval} -eq 1 ]
+		then	eval ${name}=yes
+		else	eval ${name}=no
+		fi
+	}
+}
+
+##========================================================
+## Read in the old values
+##========================================================
+[ -e ${USERCFG}    ] && . ${USERCFG}
+
+##========================================================
+## Update the variables from UCI
+##========================================================
+update_yn_from_uci improve_streamboost auto_update
+update_yn_from_uci improve_streamboost opt_in
+update_yn_from_uci enable_streamboost
+update_yn_from_uci auto_bandwidth enable_auto
+update_from_uci uplimit
+update_from_uci downlimit
+update_yn_from_uci auto_update
+update_yn_from_uci nss_qdisc
+update_from_uci max_zone_id
+
+##========================================================
+## Write values back out
+##========================================================
+echo "## Last updated: $(date)"			>  ${USERCFG}
+echo "improve_streamboost=$improve_streamboost"	>> ${USERCFG}
+echo "enable_streamboost=$enable_streamboost"	>> ${USERCFG}
+echo "auto_bandwidth=$auto_bandwidth"		>> ${USERCFG}
+echo "uplimit=$uplimit"				>> ${USERCFG}
+echo "downlimit=$downlimit"			>> ${USERCFG}
+echo "auto_update=$auto_update"			>> ${USERCFG}
+echo "nss_qdisc=$nss_qdisc"			>> ${USERCFG}
+echo "max_zone_id=$max_zone_id"			>> ${USERCFG}

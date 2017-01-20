@@ -1,0 +1,118 @@
+<% http_header("style/form.css", "/funcs.js", "/triggering.js") %>
+<% noload_header("_FW_trigger", "triggering.htm", "triggering_add") %>
+<div class="page_title">$trigger_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'triggering.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onClick="check_triggering_add(document.forms[0],\'add\')"></TD>');
+else
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="button" name="Apply" id="apply" value="$apply_mark" disabled></TD>');
+</script>
+        
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<script>
+<% forward_items_xss() %>
+<% trigger_items_xss() %>
+<% upnp_items() %>
+
+<% check_ftp() %>
+var show_enableHTTP="<% cfg_get("usb_enableHTTP") %>";
+var show_enableHvia="<% cfg_get("usb_enableHvia") %>";
+var show_HTTP_via_port="<% cfg_get("usb_HTTP_via_port") %>";
+var show_enableFTP="<% cfg_get("usb_enableFTP") %>";
+var show_enableFvia="<% cfg_get("usb_enableFvia") %>";
+var show_FTP_via_port="<% cfg_get("usb_FTP_via_port") %>";
+var usb_router_flag=parent.usb_router_flag;
+</script>
+
+<input type="hidden" name="service_ip">
+<input type="hidden" name="hidden_pt_name">
+<TR>
+	<TD nowrap>$forward_service_name</TD>
+	<TD nowrap>
+	<input type="text" name="pt_name" id="pt_name" size="20" maxlength="30">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$trigger_ser_user</TD>
+	<TD nowrap> 
+	<select name="src_ip_type" id="src_ip_type" onChange="setsrc(document.forms[0]);">
+		<option value="Any">$any</option>
+		<option value="Single address">$single_addr</option>
+	</select>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap> &nbsp;</TD>
+	<TD nowrap> 
+	<input type="text" name="src_ip1" id="src_ip1" disabled size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="src_ip2" id="src_ip2" disabled size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="src_ip3" id="src_ip3" disabled size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	 <input type="text" name="src_ip4" id="src_ip4" disabled size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$block_ser_service_type</TD>	
+	<TD nowrap>
+	<select NAME="pt_type" id="pt_type" size="1" >
+		<option value="TCP">$block_ser_setup_tcp</option>
+		<option value="UDP">$block_ser_setup_udp</option>
+	</select>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$trigger_port</TD>
+	<TD nowrap>
+	<input type="text" name="pt_port" id="pt_port" size="7" maxlength="5" onKeyPress="return getkey('num', event)">(1~65535)
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2><B>$trigger_in_connect</B></TD>
+</TR>
+<TR>
+	<TD nowrap>$trigger_contype</TD>
+	<TD nowrap>
+	<select name="in_port_type" id="in_port_type" size="1">
+		<option value="TCP/UDP">TCP/UDP</option>
+		<option value="TCP">TCP</option>
+		<option value="UDP">UDP</option>
+	</select>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$block_ser_start_port</TD>
+	<TD nowrap> 
+	<input type="text" name="in_port_start" id="in_port_start" size="7" maxlength="5" onKeyPress="return getkey('num', event)">(1~65535)
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$block_ser_end_port</TD>
+	<TD nowrap>
+	<input type="text" name="in_port_end" id="in_port_end" size="7" maxlength="5" onKeyPress="return getkey('num', event)">(1~65535)
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+<script>
+var endis_ntp="<% cfg_get("endis_ntp") %>";
+var endis_upnp="<% cfg_get("upnp_enable") %>";
+var lan_ip="<% cfg_get("lan_ipaddr") %>";
+var lan_subnet="<% cfg_get("lan_netmask") %>";
+var remote_port="<% cfg_get("remote_port") %>";
+var info_get_wanproto="<% cfg_get("wan_proto") %>";
+var endis_remote="<% cfg_get("remote_endis") %>";
+</script>
+</div>
+<% help_box("0","_FW_trigger") %>
+</FORM>
+</BODY>
+</HTML>

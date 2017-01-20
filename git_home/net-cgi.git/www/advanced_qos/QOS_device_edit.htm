@@ -1,0 +1,84 @@
+<% http_header("style/form.css", "/funcs.js", "/qos_prru.js") %>
+<% body_header("_qos", "QOS_basic_setting.htm", "edit_qoslist") %>
+<div class="page_title">$qos_add_head</div>
+<div class="fix_button">
+<TABLE cellspacing=2 cellPadding=0 width=100% border=0>
+<TR>
+	<script>
+		var master="<% cfg_get("http_loginname") %>";
+		if( master == "admin" )
+			document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" value="$cancel_mark" onClick=\'location.href="QOS_basic_setting.htm";\'>&nbsp;&nbsp;<input class="apply_bt" type="submit" name="apply" value="$apply_mark" onClick="return check_qos_mac(document.forms[0],\'edit\');"></TD>');
+		else
+			document.write('<TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit" name="apply" value="$apply_mark" disabled></TD>');
+	</script>
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button">
+<% table_header() %>
+<% refresh_timestamp("apply_prru_qos") %>
+<script>
+var selected_node='<% cfg_get("qoslist_editnode") %>';
+<% qos_items_xss() %>
+function loadvalue()
+{
+	var cf=document.forms[0];
+	for(var i=1; i<=qos_array_num; i=i+2)
+	{
+		var str = eval ( 'qosArray' + i ).replace(/&#92;/g, "\\").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+		var each_info=str.split(' ');
+		if(selected_node == i)
+		{
+			cf.dev_poli_name.value = each_info[0];
+			cf.mac.value = each_info[8];
+			cf.dev_name.value = each_info[7];
+			cf.dev_priority.value = each_info[3];
+		}
+	}
+}
+</script>
+<input type="hidden" name="the_mac">
+<TR><TD nowrap colspan=2> <b>$qos_mac_device_list</b></TD></TR>
+<TR>
+	<TD nowrap colspan=2>
+		<TABLE class=tables border=0 cellpadding=2 cellspacing=0 width=100%>
+			<TR class=table_header>
+				<TD nowrap>&nbsp; </TD>
+				<TD nowrap align=center> <span class="subhead">$qos_policy</span></TD>
+				<TD nowrap align=center> <span class="subhead">$qos_priority</span></TD>
+				<TD nowrap align=center> <span class="subhead">$lan_mark_name</span></TD>
+				<TD nowrap align=center> <span class="subhead">$qos_mac</span></TD>
+                        </TR>
+		</TABLE>
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap>$qos_policy_for</TD>
+	<TD nowrap><INPUT type="text" name="dev_poli_name" maxLength="60" size="16" onKeyPress="return getkey('ssid', event)" value=""></TD>
+</TR>
+<TR><TD nowrap>$qos_mac</TD>
+	<TD nowrap><input type="text" value="" name="mac" maxlength="60" size="16" onKeyPress="return getkeya(event)"></TD>
+</TR>
+<TR>
+	<TD nowrap>$lan_mark_name</TD>
+	<TD nowrap> <INPUT type="text" name="dev_name" maxLength="60" size="16" onKeyPress="return getkey('hostname', event)" value=""></TD>
+</TR>
+<TR>
+	<TD nowrap>$qos_priority</TD>
+	<TD nowrap>
+		<SELECT name="dev_priority">
+			<OPTION value="0" >$qos_highest</OPTION>
+			<OPTION value="1" >$qos_high</OPTION>
+			<OPTION value="2" >$qos_normal</OPTION>
+			<OPTION value="3" >$qos_low</OPTION>
+		</SELECT>
+	</TD>
+</TR>
+$bluebar
+</table>
+</div>
+<% help_box("0","_qos") %>
+</form>
+</body>
+</html>

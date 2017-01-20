@@ -1,0 +1,14 @@
+#!/bin/sh /etc/rc.common
+
+start() {
+	/sbin/cmd_ddns start
+}
+
+stop() {
+	/sbin/cmd_ddns stop
+}
+
+restart() {
+	/sbin/cmd_ddns restart
+}
+

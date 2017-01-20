@@ -1,0 +1,92 @@
+<% ca_http_header("style/hijack_style.css","style/hijack_ru_welcome.css", "/funcs.js","/bas_pppoe.js") %>
+
+<BODY onLoad="loadvalue();" bgcolor=#ffffff>
+<FORM>
+
+<script>
+
+function loadvalue()
+{
+	var form=document.forms[0];
+	form.pppoe_username.value=parent.pppoe_username;
+	form.pppoe_passwd.value=parent.pppoe_password;
+	form.pppoe_servername.value=parent.pppoe_server;
+
+        //buttons left
+        var btns_div1 = document.getElementById("btnsContainer_div1");
+		if( master == "admin" )
+		{
+			btns_div1.onclick = function()
+			{
+                location.href="RU_login_yes.htm";
+			}
+		}
+
+        //buttons right
+        var btns_div2 = document.getElementById("btnsContainer_div2");
+		if( master == "admin" )
+		{
+			btns_div2.onclick = function()
+			{
+                RU_pppoe_user_info();
+			}
+		}
+
+
+}
+</script>
+
+<div class="wizard_content_div">
+<div class="wizard_words_div">
+	<H1><script>document.write(RU_CA_head)</script></H1>
+<TABLE>
+<tr>
+	<td colspan=2><script>document.write(RU_isp_l2tp_head)</script></td>
+</tr>
+	<tr><td><br></td></tr>
+<tr>
+	<td colspan=2 align=center><script>document.write(RU_service_optional)</script></td>
+</tr>	
+<tr>
+	<td><script>document.write(basic_pppoe_login)</script></td><td align=right><input type="text" name="pppoe_username" onKeyPress="return getkey('ssid', event)"></td>	
+</tr>
+<tr>
+	<td><script>document.write(basic_pppoe_passwd)</script></td><td align=right><input type="text" name="pppoe_passwd" onFocus="this.select();" onKeyPress="return getkey('ssid', event)"></td>	
+</tr>
+<tr>
+	<td><script>document.write(forward_service_name)</script></td><td align=right><input type="text" name="pppoe_servername" onKeyPress="return getkey('ssid', event)"></td>	
+</tr>
+<tr><td><br></td></tr>
+
+</TABLE>
+</div><!--wizard_words_div -->
+<div id="center_buttons">
+  <div id="allBtns_div" class="wizard_buttons_div" align="center">
+                <div id="btnsContainer_div1" class="buttons_img_div" align="center">
+                         <script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							document.write('<img src="image/ca-little-grey-button.png" />');
+                        </script>
+                        <div class="buttons_words_div"><script>document.write(RU_back)</script></div>
+                </div>
+                <div class="buttons_split"></div>
+                <div id="btnsContainer_div2" class="buttons_img_div" align="center">
+						<script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							
+							document.write('<img src="image/ca-little-grey-button.png" />');
+						</script>
+                        <div class="buttons_words_div"><script>document.write(RU_next)</script></div>
+                </div>
+  </div><!--allBtns_div -->
+</div>
+</div>
+</FORM>
+</BODY>
+</HTML>

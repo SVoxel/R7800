@@ -1,0 +1,49 @@
+#
+# Copyright (c) 2013 The Linux Foundation. All rights reserved.
+#
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+config SND_ATH79_SOC
+	tristate "SoC Audio for ath79"
+	depends on SOC_AR934X
+	help
+	  Say Y or M if you want to add support for ath79 platforms
+	  You will also need to select the board in the options below.
+
+config SND_ATH79_SOC_I2S
+	tristate
+
+config SND_ATH79_SOC_CODEC
+	tristate
+
+config SND_ATH79_SOC_DB120
+	tristate "SoC Audio support for QCA Reference design DB120"
+	depends on SND_ATH79_SOC
+	select SND_ATH79_SOC_I2S
+	select SND_ATH79_SOC_CODEC
+	help
+	  Say Y if you want to add support for SoC audio on DB120
+	  Qualcomm-Atheros reference design. This option enables the
+	  DB12x machine support, ath79 PCM engine, I2S interface and internal
+	  codec.
+
+config SND_ATH79_SOC_CUS227
+	tristate "SoC  Audio support for CUS227 board"
+	depends on SND_ATH79_SOC
+	select SND_ATH79_SOC_I2S
+	select SND_SOC_WM8988
+	help
+	  Say Y if you want to add support for SoC audio on DB120
+	  Qualcomm-Atheros reference design. This option enables the
+	  CUS227 machine support, ath79 PCM engine, I2S interface and internal
+	  codec.

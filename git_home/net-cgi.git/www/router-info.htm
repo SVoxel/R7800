@@ -1,0 +1,152 @@
+<% http_header("style/form.css") %>
+<body>
+DeviceID:<% cat_file("/module_name") %>;<br>
+HardwareVersion:<% cat_file("/hardware_version") %>;<br>
+FirmwareVersion:<% cat_file("/firmware_version") %><% get_firmware_region("single_blank", "ww_blank") %>;<br>
+
+<script>
+<% web_flag() %>
+function showWirelessN()              //Wireless b/g/n
+{
+	if( an_router_flag == 1)
+		var strN="WLAN(b/g/n)-Security:"
+	else
+		var strN="WLAN-Security:"
+	var security_mode_n="<% cfg_get("wl_sectype") %>";
+	if ( security_mode_n == 2 )
+	{
+		strN=strN+"SecurityMode=WEP;"
+
+		shared_key="<% cfg_get("wl_auth") %>";
+		if ( shared_key == "0" )
+			strN=strN+"WEPAuthType=Open;";
+		else if ( shared_key == "1" )
+			strN=strN+"WEPAuthType=Shared;";
+		else
+			strN=strN+"WEPAuthType=Auto;";
+		wep_encry="<% cfg_get("wl_key_length") %>";
+		if ( wep_encry == "5" )
+			strN=strN+"WEPStrength=64;";
+		else
+			strN=strN+"WEPStrength=128;";
+
+		strN=strN+"WEPKey1=<% cfg_sed("wl_key1") %>;";
+		strN=strN+"WEPKey2=<% cfg_sed("wl_key2") %>;";
+		strN=strN+"WEPKey3=<% cfg_sed("wl_key3") %>;";
+		strN=strN+"WEPKey4=<% cfg_sed("wl_key4") %>;";
+
+		key_no="<% cfg_get("wl_key") %>";
+		strN=strN+"ActiveKeyIndex="+key_no+";";
+	}
+	else if (security_mode_n == 3)
+	{
+		strN=strN+"SecurityMode=WPA-PSK;";
+
+		wpa1_pwd="<% cfg_sed("wl_wpa1_psk") %>".replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\\\\/g,"\\").replace(/\\\"/g,"\"").replace(/\\`/g,"`");
+		strN=strN+"WPAPassPhrase="+wpa1_pwd+";";
+	}
+	else if (security_mode_n == 4)
+	{
+		strN=strN+"SecurityMode=WPA2-PSK;";
+
+		wpa2_pwd="<% cfg_sed("wl_wpa2_psk") %>".replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\\\\/g,"\\").replace(/\\\"/g,"\"").replace(/\\`/g,"`");
+		strN=strN+"WPAPassPhrase="+wpa2_pwd+";";
+	}
+	else if (security_mode_n == 5)
+	{
+		strN=strN+"SecurityMode=WPA-PSK-Mixed;";
+
+		wpa1wpa2_pwd="<% cfg_sed("wl_wpas_psk") %>".replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\\\\/g,"\\").replace(/\\\"/g,"\"").replace(/\\`/g,"`");
+		strN=strN+"WPAPassPhrase="+wpa1wpa2_pwd+";";
+	}
+	else if (security_mode_n == 6)
+	{
+		strN=strN+"SecurityMode=WPA/WPA2-Enterprise;";
+		
+		strN=strN+"WPAMode="+"<% cfg_sed("wl_wpae_mode") %>"+";";
+		strN=strN+"RADIUSserverIP="+"<% cfg_get("wl_radiusSerIp") %>"+";";
+		strN=strN+"RADIUSserverPort="+"<% cfg_get("wl_radiusPort") %>"+";";
+		wpae_pwd="<% cfg_sed("wl_radiusSecret") %>".replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\\\\\\\\/g,"\\").replace(/\\\"/g,"\"").replace(/\\\\\\`/g,"`");
+		strN=strN+"RADIUSserverSecret="+wpae_pwd+";";
+	}
+	else
+		strN=strN+"SecurityMode=NONE;";
+	document.write(strN);
+	document.write("<br>");
+}
+
+function showWirelessAN()		//wireless a/n
+{
+	if(ac_router_flag == 1)
+		var strA="WLAN(a/n/ac)-Security:"
+	else
+		var strA="WLAN(a/n)-Security:"
+	var security_mode_a="<% cfg_get("wla_sectype") %>";
+	if ( security_mode_a == 2 )
+	{
+		strA=strA+"SecurityMode=WEP;"
+
+		shared_key="<% cfg_get("wla_auth") %>";
+		if ( shared_key == "0" )
+			strA=strA+"WEPAuthType=Open;";
+		else if ( shared_key == "1" )
+			strA=strA+"WEPAuthType=Shared;";
+		else
+			strA=strA+"WEPAuthType=Auto;";
+		wep_encry="<% cfg_get("wla_key_length") %>";
+		if ( wep_encry == "5" )
+			strA=strA+"WEPStrength=64;";
+		else
+			strA=strA+"WEPStrength=128;";
+
+		strA=strA+"WEPKey1=<% cfg_sed("wla_key1") %>;";
+		strA=strA+"WEPKey2=<% cfg_sed("wla_key2") %>;";
+		strA=strA+"WEPKey3=<% cfg_sed("wla_key3") %>;";
+		strA=strA+"WEPKey4=<% cfg_sed("wla_key4") %>;";
+
+		key_no="<% cfg_get("wla_key") %>";
+		strA=strA+"ActiveKeyIndex="+key_no+";";
+	}
+	else if (security_mode_a == 3)
+	{
+		strA=strA+"SecurityMode=WPA-PSK;";
+
+		wpa1_pwd="<% cfg_sed("wla_wpa1_psk") %>".replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\\\\/g,"\\").replace(/\\\"/g,"\"").replace(/\\`/g,"`");
+		strA=strA+"WPAPassPhrase="+wpa1_pwd+";";
+	}
+	else if (security_mode_a == 4)
+	{
+		strA=strA+"SecurityMode=WPA2-PSK;";
+
+		wpa2_pwd="<% cfg_sed("wla_wpa2_psk") %>".replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\\\\/g,"\\").replace(/\\\"/g,"\"").replace(/\\`/g,"`");
+		strA=strA+"WPAPassPhrase="+wpa2_pwd+";";
+	}
+	else if (security_mode_a == 5)
+	{
+		strA=strA+"SecurityMode=WPA-PSK-Mixed;";
+
+		wpa1wpa2_pwd="<% cfg_sed("wla_wpas_psk") %>".replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\\\\/g,"\\").replace(/\\\"/g,"\"").replace(/\\`/g,"`");
+		strA=strA+"WPAPassPhrase="+wpa1wpa2_pwd+";";
+	}
+	else if (security_mode_a == 6)
+	{
+		strA=strA+"SecurityMode=WPA/WPA2-Enterprise;";
+		
+		strA=strA+"WPAMode="+"<% cfg_sed("wla_wpae_mode") %>"+";";
+		strA=strA+"RADIUSserverIP="+"<% cfg_get("wla_radiusSerIp") %>"+";";
+		strA=strA+"RADIUSserverPort="+"<% cfg_get("wla_radiusPort") %>"+";";
+		wpaeA_pwd="<% cfg_sed("wla_radiusSecret") %>".replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\\\\\\\\/g,"\\").replace(/\\\"/g,"\"").replace(/\\\\\\`/g,"`");
+		strA=strA+"RADIUSserverSecret="+wpaeA_pwd+";";
+	}
+	else
+		strA=strA+"SecurityMode=NONE;";
+	document.write(strA);
+	document.write("<br>");
+}
+if( (typeof(have_wifi_flag) == "undefined" ||  have_wifi_flag == 1) && an_router_flag == 1 )
+	showWirelessAN();
+if(typeof(have_wifi_flag) == "undefined" ||  have_wifi_flag == 1)
+	showWirelessN();
+</script>
+</body>
+</html>

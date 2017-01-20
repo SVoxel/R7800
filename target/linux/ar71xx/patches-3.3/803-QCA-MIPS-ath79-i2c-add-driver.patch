@@ -1,0 +1,106 @@
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+--- a/arch/mips/ath79/Kconfig
++++ b/arch/mips/ath79/Kconfig
+@@ -125,6 +125,7 @@ config ATH79_MACH_CUS227
+ 	select ATH79_DEV_NAND
+ 	select ATH79_DEV_USB
+ 	select ATH79_DEV_WMAC
++	select ATH79_DEV_I2C
+ 	help
+ 	  Say 'Y' here if you want your kernel to support the
+ 	  Qualcomm Atheros CUS227 board.
+@@ -692,6 +693,9 @@ config ATH79_DEV_NAND
+ config ATH79_DEV_SPI
+ 	def_bool n
+ 
++config ATH79_DEV_I2C
++	def_bool n
++
+ config ATH79_DEV_USB
+ 	def_bool n
+ 
+--- a/arch/mips/ath79/Makefile
++++ b/arch/mips/ath79/Makefile
+@@ -26,6 +26,7 @@ obj-$(CONFIG_ATH79_DEV_LEDS_GPIO)	+= dev
+ obj-$(CONFIG_ATH79_DEV_M25P80)		+= dev-m25p80.o
+ obj-$(CONFIG_ATH79_DEV_NAND)		+= dev-nand.o
+ obj-$(CONFIG_ATH79_DEV_SPI)		+= dev-spi.o
++obj-$(CONFIG_ATH79_DEV_I2C)		+= dev-i2c.o
+ obj-$(CONFIG_ATH79_DEV_USB)		+= dev-usb.o
+ obj-$(CONFIG_ATH79_DEV_WMAC)		+= dev-wmac.o
+ 
+--- a/arch/mips/ath79/mach-cus227.c
++++ b/arch/mips/ath79/mach-cus227.c
+@@ -44,6 +44,8 @@
+ #include <linux/delay.h>
+ #include <linux/gpio.h>
+ #include <linux/mtd/mtd.h>
++#include <linux/i2c.h>
++#include <linux/i2c-gpio.h>
+ 
+ #include <asm/mach-ath79/ar71xx_regs.h>
+ #include <asm/mach-ath79/ath79.h>
+@@ -59,6 +61,7 @@
+ #include "dev-spi.h"
+ #include "dev-usb.h"
+ #include "dev-wmac.h"
++#include "dev-i2c.h"
+ #include "machtypes.h"
+ #include "nand-caldata-fixup.h"
+ 
+@@ -66,6 +69,8 @@
+ #define CUS227_GPIO_S2			13
+ #define CUS227_GPIO_S3			14
+ #define CUS227_GPIO_S4			15
++#define CUS227_GPIO_I2C_SDA		16
++#define CUS227_GPIO_I2C_SCL		17
+ 
+ #define CUS227_KEYS_POLL_INTERVAL	20	/* msecs */
+ #define CUS227_KEYS_DEBOUNCE_INTERVAL	(3 * CUS227_KEYS_POLL_INTERVAL)
+@@ -122,6 +127,13 @@ static struct gpio_keys_button cus227_gp
+ 	},
+ };
+ 
++/* There is no H/W I2C controller in ATH79 SoCs, so use GPIO based S/W I2C master */
++static struct i2c_gpio_platform_data ath79_i2c_gpio_data = {
++	.sda_pin	= CUS227_GPIO_I2C_SDA,
++	.scl_pin	= CUS227_GPIO_I2C_SCL,
++};
++
++
+ /* Because CUS227 doesn't have a NOR flash on the SPI bus, we cannot
+  * reuse the routines from dev-m25p80.c to instanciate it.
+  * That's also the reason why the first device on the bus is 1 and not 0 */
+@@ -186,6 +198,11 @@ static void __init cus227_audio_setup(vo
+ 	ath79_audio_setup();
+ }
+ 
++static void __init cus227_register_i2c_devices(
++			struct i2c_board_info const *info)
++{
++	ath79_register_i2c(&ath79_i2c_gpio_data, info, info?1:0);
++}
+ 
+ static void __init cus227_register_spi_devices(
+ 			struct spi_board_info const *info)
+@@ -218,6 +235,10 @@ static void __init cus227_setup(void)
+ 	ath79_register_nand();
+ 	ath79_mtd_caldata_fixup(&cus227_caldata);
+ 
++	/* just define GPIO based S/W I2C master device now */
++	/* later I2C slave devices can be added per platform defined */
++	cus227_register_i2c_devices(NULL);
++
+ 	cus227_register_spi_devices(cus227_spi_info);
+ 
+ 	ath79_register_wmac(NULL, NULL);

@@ -1,0 +1,20 @@
+#!/bin/sh
+
+if [ -f "/tmp/wget_file_result" ]; then
+	/bin/rm /tmp/wget_file_result
+fi
+
+cfg_dns_hijack=$(/bin/config get dns_hijack)
+
+if [ "$cfg_dns_hijack" = "1" ]; then
+	/bin/config set dns_hijack="0"	#free dns hijack
+	/usr/sbin/dns-hijack
+fi
+
+/usr/bin/wget -T 10 -O - http://www.netgear.com | /bin/grep -i "netgear.com" > /tmp/wget_file
+mv /tmp/wget_file /tmp/wget_file_result
+
+if [ "$cfg_dns_hijack" = "1" ]; then	#recover dns hijack mode
+	/bin/config set dns_hijack="1"
+	/usr/sbin/dns-hijack
+fi

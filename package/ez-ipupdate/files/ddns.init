@@ -1,0 +1,59 @@
+#!/bin/sh /etc/rc.common
+START=60
+
+DDNS_STATUS=/tmp/ez-ipupd.status
+DDNS_CONF=/tmp/ez-ipupd.conf
+
+
+print_ddns_conf(){
+cat <<EOF
+#!/usr/sbin/ez-ipupdate -c
+service-type=dyndns
+user=$1:$2
+host=$3
+interface=$4
+max-interval=86400
+resolv-period=30
+period=10
+retrys=6
+pid-file=/tmp/ddnspid
+daemon
+EOF
+}
+
+ddns_start() {
+	local start_flag wl_radio wds_repeater_basic wds_endis_fun
+
+	echo -n "0" > $DDNS_STATUS
+
+	wl_radio=$($CONFIG get endis_wl_radio)
+	wds_repeater_basic=$($CONFIG get wds_repeater_basic)
+	wds_endis_fun=$($CONFIG get wds_endis_fun)
+	
+	if [ "$wl_radio" = "1" -a "$wds_repeater_basic" = "0" -a "$wds_endis_fun" = "1" ]; then
+		exit
+	fi
+
+	[ "$($CONFIG get endis_ddns)" != "1" ] && exit
+		
+	print_ddns_conf "$($CONFIG get sysDNSUser)" "$($CONFIG get sysDNSPassword)" "$($CONFIG get sysDNSHost)" "$(get_wan_ifname)" > $DDNS_CONF
+
+	if [ "$($CONFIG get endis_wildcards)" = "1" ]; then
+		/usr/sbin/ez-ipupdate -w wildcard -c $DDNS_CONF
+	else
+		/usr/sbin/ez-ipupdate -c $DDNS_CONF
+	fi
+}
+
+boot() {
+	ddns_start
+}
+
+ddns_stop(){
+	kill -9 $(cat /tmp/ddnspid)
+}
+
+restart(){
+	ddns_stop
+	ddns_start
+}

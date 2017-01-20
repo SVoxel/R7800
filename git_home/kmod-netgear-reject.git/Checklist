@@ -1,0 +1,37 @@
+[quote begin]
+When a module administrator approves a patch received from mailing
+lists, module administrator will merge the patch into her/his
+public git tree and generate a new git commit object.
+ 
+For module administrator, she/he should append following
+paragraph to the patch's original log message:
+ 
+DNI Common Module Patch Review Checklist
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 
+Here are some basic things that I (reviewer's name) have checked
+in order to ensure the quality of common modules.
+ 
+1: The syntax and comment are compliant.
+ 
+2: No memory leak.
+   * memory allocated by malloc() will be freed
+   * memory allocated by calloc() will be freed
+ 
+3: No deadlock such as
+   * No function call deadlock.
+   * No semaphore deadlock.
+   * No tag or label deadlock.
+ 
+4: No stack overflow caused by
+   * infinite recursion
+   * too large local array variables
+ 
+5: coding completeness, such as
+   * conditions completeness
+   * functions completeness
+   * update completeness
+   * memory resources completeness
+   * sessions resources completeness
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[quota end]

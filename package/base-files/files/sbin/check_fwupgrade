@@ -1,0 +1,46 @@
+#!/bin/sh
+
+#check config when firmware update from stage1 to stage2 avoid default setting
+CONFIG="/bin/config"
+wanname=`$CONFIG get wan_ifname`
+if [ "$wanname" != "brwan" ]; then
+	AP_MODE=`$CONFIG get ap_mode`
+	BR_MODE=`$CONFIG get br_mode`
+	NETBIOS_NAME=`$CONFIG get netbiosname`
+	EMAIL_ADDR=`$CONFIG get email_addr1`
+	USB_NAME=`$CONFIG get usb_deviceName`
+
+	[ "$AP_MODE" = "1" ] && $CONFIG set i_opmode="apmode"
+	[ "$BR_MODE" = "1" ] && $CONFIG set i_opmode="brmode"
+	$CONFIG set Device_name="$NETBIOS_NAME"
+	$CONFIG set upnp_serverName="$NETBIOS_NAME"
+	$CONFIG set email_addr="$EMAIL_ADDR"
+	$CONFIG set Readyshare_name="$USB_NAME"
+	$CONFIG set leafp2p_log_entry_limit="10000"
+	$CONFIG set leafp2p_log_type="1"
+	$CONFIG set leafp2p_log_file_name="/tmp/leafd.log"
+	$CONFIG set ipv6_auto_dns_assign="0"
+	$CONFIG set leafp2p_log_entry_flush="1"
+	$CONFIG set vlan_tag_0="1 Intranet 11 0 0 0"
+	$CONFIG set enable_bt_igmp="0"
+	$CONFIG set green_download_max_tasks_run="6"
+	$CONFIG set raw_iface="ethlan"
+	$CONFIG set qos_uprate="512"
+	$CONFIG set rcagent_log_level="debug"
+	$CONFIG set true_lanif="ethlan"
+	$CONFIG set leafp2p_debug="5"
+	$CONFIG set wan_ifname="brwan"
+	$CONFIG set lan_ifnames="ethlan ath0"
+	$CONFIG set wan_ifnames="brwan"
+	$CONFIG commits
+fi
+
+web_tcbw_value=`$CONFIG get web_tcbw_value`
+if [ "x$web_tcbw_value" = "x" -o "$web_tcbw_value" = "512" ]; then
+	qos_uprate=`$CONFIG get qos_uprate`
+	qos_width=`$CONFIG get qos_width`
+	if [ "$qos_width" = "Mbps" ]; then
+		qos_uprate=`awk -v tmp_tcbw=$qos_uprate 'BEGIN{printf "%.0f",tmp_tcbw/1024}'`
+	fi
+	$CONFIG set web_tcbw_value="$qos_uprate"
+fi

@@ -1,0 +1,636 @@
+<% http_header("style/form.css", "/funcs.js", "/bas_mulpppoe.js") %>
+<% body_header( "","BAS_update.htm", "mulpppoe") %>
+<div class="page_title">$internet_head</div>
+
+<script>
+<% multipppoe_items() %>
+<% save_timestamp("mulpppoe", "mulpppoe_addnum", "mulpppoe_editnum", "mulpppoe_del") %>
+<% refresh_timestamp("mulpppoe_add", "mulpppoe_edit") %>
+var ts='<% cfg_get("mulpppoe") %>';
+var run_test="<% cfg_get("run_test") %>";
+var in_hijack=( "<% cfg_get("dns_hijack") %>" == "1" && "<% cfg_get("hijack_process") %>" != "3" );
+var mul_testnum="<% cfg_get("mul_testnum") %>";
+<% cfg_set("run_test", "no") %>
+<% cfg_set("mul_testnum", "0") %>
+<% commit() %>
+<% bas_mul_pppoe_dns("wan_mulpppoe1_dns_assign", "/etc/ppp/pppoe1-status", "/etc/ppp/pppoe1-dns.conf", "1") %>
+<% bas_mul_pppoe_dns("wan_mulpppoe2_dns_assign", "/etc/ppp/pppoe2-status", "/etc/ppp/pppoe2-dns.conf", "2") %>
+
+var lan_ip="<% cfg_get("lan_ipaddr") %>";
+var lan_subnet="<% cfg_get("lan_netmask") %>";
+var disableHTML="";
+var enableHTML="";
+var westHTML="";
+var eastHTML="";
+var otherHTML="";
+var pppoe2_policy="<% cfg_get("wan_mulpppoe2_policy") %>"
+
+var east_username="<% cfg_sed("wan_mulpppoe2_east_username") %>";
+var east_password="<% cfg_sed("wan_mulpppoe2_east_password") %>";
+var west_username="<% cfg_sed("wan_mulpppoe2_west_username") %>";
+var west_password="<% cfg_sed("wan_mulpppoe2_west_password") %>";
+var other_username="<% cfg_sed("wan_mulpppoe2_other_username") %>";
+var other_password="<% cfg_sed("wan_mulpppoe2_other_password") %>";
+var username="<% cfg_sed("wan_mulpppoe2_username") %>";
+var password="<% cfg_sed("wan_mulpppoe2_password") %>";
+var east_servicename="<% cfg_sed("wan_mulpppoe2_servicename") %>";
+var west_servicename="<% cfg_sed("wan_mulpppoe2_servicename") %>";
+var other_servicename="<% cfg_sed("wan_mulpppoe2_servicename") %>";
+var servicename="<% cfg_sed("wan_mulpppoe2_servicename") %>";
+var wanproto_type="mulpppoe1";
+var wan_mtu_now='<% wan_mtu() %>';
+var netgear_region=top.netgear_region;
+
+var old_wan_type="<% cfg_get("wan_proto") %>";
+var old_wan_ip="<% bas_multipppoe_ip("wan_mulpppoe1_wan_assign", "wan_mulpppoe1_ip") %>";
+if ( old_wan_ip == "" )
+	old_wan_ip = "0.0.0.0";
+
+var old_pppoe_wan_assign="<% cfg_get("wan_mulpppoe1_wan_assign") %>";
+var old_wan_ip2="<% bas_multipppoe_ip("wan_mulpppoe2_wan_assign","wan_mulpppoe2_ip") %>";
+if( old_wan_ip2 == "" )
+	old_wan_ip2 = "0.0.0.0";
+var old_pppoe_wan_assign2="<% cfg_get("wan_mulpppoe2_wan_assign") %>";
+var vpn_enable = "<% cfg_get("vpn_enable") %>";
+var readycloud_enable = "<% cfg_get("readycloud_enable") %>";
+var upnp_enableMedia = "<% cfg_get("upnp_enableMedia") %>";
+
+
+function loadvalue()
+{
+	var form=document.forms[0];
+	
+	form.mulpppoe_demand.value="<% cfg_get("wan_mulpppoe_demand") %>";
+	show_idleout(form,form.mulpppoe_demand.value);	
+	disableHTML=getObj("disable").innerHTML;
+	enableHTML=getObj("enable").innerHTML;
+	
+	if( form.pppoe_passwd.value == "" )
+	{
+		if( get_browser() == "Firefox" )
+		{
+			form.pppoe_passwd.type = "text";
+		}
+		else
+		{
+			form.pppoe_passwd.outerHTML='<input type="text" name="pppoe_passwd" maxlength="64" size="16" onFocus="this.select();" onKeyPress="return getkey(\'ssid\', event)" value="<% cfg_sed_xss("wan_mulpppoe1_passwd") %>">';
+		}
+	}
+	else if( get_browser() == "IE" )
+	{
+		form.pppoe_passwd.outerHTML='<input type="password" name="pppoe_passwd" maxlength="64" size="16" style="width: 126px" onFocus="change_mulpppoe_password(this);" onKeyPress="return getkey(\'ssid\', event)" value="<% cfg_sed_xss("wan_mulpppoe1_passwd") %>">';
+	}
+
+	if( form.pppoe2_password.value == "" )
+	{
+		if( get_browser() == "Firefox" )
+		{
+			form.pppoe2_password.type = "text";
+		}
+		else
+		{
+			form.pppoe2_password.outerHTML='<input type="text" name="pppoe2_password" size="16" maxlength="64" onFocus="this.select();"  onKeyPress="return getkey(\'ssid\', event)" value="">';
+		}
+	}
+	else if( get_browser() == "IE" )
+	{
+		form.pppoe2_password.outerHTML='<input type="password" name="pppoe2_password" size="16" maxlength="64" style="width: 126px" onFocus="change_mulpppoe_password(this);"  onKeyPress="return getkey(\'ssid\', event)" value="">';
+	}
+	if( old_pppoe_wan_assign == "0")
+     	   	form.WANAssign[0].checked = true;
+	else
+	   	form.WANAssign[1].checked = true;
+	setIP(form);		
+	var pppoe_get_ip=old_wan_ip;
+	if(pppoe_get_ip!="")
+	{
+		var ip_array=pppoe_get_ip.split('.');
+		form.WPethr1.value=ip_array[0];
+		form.WPethr2.value=ip_array[1];
+		form.WPethr3.value=ip_array[2];
+		form.WPethr4.value=ip_array[3];
+	}
+
+
+	if('<% cfg_get("wan_mulpppoe1_dns_assign") %>' == '0')
+	    form.DNSAssign[0].checked = true;
+	else
+	    form.DNSAssign[1].checked = true;
+	if(pppoe1_get_dns1!="")
+	{
+		var dns1_array=pppoe1_get_dns1.split('.');
+		form.PDAddr1.value=dns1_array[0];
+		form.PDAddr2.value=dns1_array[1];
+		form.PDAddr3.value=dns1_array[2];
+		form.PDAddr4.value=dns1_array[3];
+	}
+	if(pppoe1_get_dns2!="")
+	{
+		var dns2_array=pppoe1_get_dns2.split('.');
+		form.DAddr1.value=dns2_array[0];
+		form.DAddr2.value=dns2_array[1];
+		form.DAddr3.value=dns2_array[2];
+		form.DAddr4.value=dns2_array[3];
+	}
+	setDNS(form);	
+
+	getObj("disable").innerHTML="";
+	getObj("enable").innerHTML="";
+
+
+	if('<% cfg_get("wan_enable_session2") %>' == '0')
+	{
+		form.enable_session2[0].checked = true;
+		enablepppoe2(0);
+	}
+	else
+	{
+		form.enable_session2[1].checked = true;	
+		enablepppoe2(1);
+	}
+
+	form.old_internet_type.value='<% cfg_get("internet_type") %>';
+	form.old_ppp_type.value='<% cfg_get("internet_ppp_type") %>';
+	//form.login_type.selectedIndex=1;
+	if( parent.gui_region != "Japanese" && parent.jp_multiPPPoE == 1 ) 
+		form.login_type.disabled = true;
+	
+//	change_session();
+	goTestApply();	
+}
+
+
+function show_idleout(form,time)
+{
+	if( time == 1 )
+		form.pppoe_idletime.disabled = false;
+	else
+		form.pppoe_idletime.disabled = true;
+}
+
+
+function cilck_jump()
+{
+  if(top.dsl_enable_flag == 0)
+    this.location.href="BAS_ether.htm";
+  else
+    this.location.href="BAS_ether_dsl.htm";
+}
+
+</script>
+
+<input type="hidden" name="conflict_wanlan">
+<input type="hidden" name="select_edit">
+<input type="hidden" name="select_del">
+<input type="hidden" name="change_wan_type">
+<input type="hidden" name="run_test" value="">
+<input type="hidden" name="mul_testnum">
+<input type="hidden" name="pppoe_ipaddr">
+<input type="hidden" name="pppoe2_ipaddr">
+<input type="hidden" name="pppoe_dnsaddr1">
+<input type="hidden" name="pppoe_dnsaddr2">
+<input type="hidden" name="pppoe2_dnsaddr1">
+<input type="hidden" name="pppoe2_dnsaddr2">
+<input type="hidden" name="old_internet_type">
+<input type="hidden" name="old_ppp_type">
+<input type="hidden" name="pppoe_idletime_value">
+<input type="hidden" name="hid_mtu_value">
+<div class="fix_button">
+<TABLE cellspacing=2 cellPadding=0 width=100% border=0>
+<TR>
+	<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if( master=="admin" )
+		document.write('<td nowrap colspan=2 align=center><input class="common_bt" type="submit"  value="$test_mark" onClick="return check_mulpppoe(document.forms[0],1)">&nbsp;&nbsp;<input class="cancel_bt" type="button" value="$cancel_mark" onClick="location.href=\'BAS_mulpppoe_ww.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="submit"  value="$apply_mark" onClick="return check_mulpppoe(document.forms[0],0)"> &nbsp;&nbsp;</td>');
+	else
+		document.write('<td nowrap colspan=2 align=center><input class="common1_bt" type="submit"  value="$test_mark" disabled>&nbsp;&nbsp;<input class="cancel1_bt" type="button" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit"  value="$apply_mark" disabled> &nbsp;&nbsp;</td>');
+	</script>
+  </TR>
+</TABLE>
+</div> <!--button -->
+
+<div id="bas_top">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR><TD nowrap>
+<A tabindex=-1 href="javascript:loadhelp('_BAS_mulpppoe','question')"><B>$basic_top_info</B></A>
+</TD></TR>
+<TR>
+	<TD nowrap>
+	<input type="radio" name="loginreq" value="pppoe" checked="true">$yes_mark
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<input onclick='cilck_jump()' type="radio" name="loginreq" value="dhcp">$no_mark
+	</TD>
+</TR>
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+</TABLE>
+</div> <!-- bas_top -->
+
+<div id="main" class="main_bas">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<tr>
+	<td nowrap><a tabindex=-1 href="javascript:loadhelp('_BAS_mulpppoe','isp')"><b>$basic_intserv_provider</script></b></a></td>
+	<td nowrap align=right>
+		<SELECT name="login_type" onChange="change_serv(document.forms[0])">
+			<OPTION value="PPPoE" >$basic_intserv_pppoe</OPTION>
+			<OPTION value="multiPPPoE" >$basic_intserv_mulpppoe</OPTION>
+		</SELECT>
+		<script>document.getElementsByName("login_type")[0].value="multiPPPoE";</script>
+	</td>
+</tr>
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+<TR>
+	<td nowrap><b>$pppoe1</b></TD></TR>
+<TR>
+	<td nowrap><a tabindex=-1 href="javascript:loadhelp('_BAS_mulpppoe','login')"><b>$basic_pppoe_login</b></a></TD>
+	<td nowrap align=right><INPUT type="text" name="pppoe_username" maxLength="64" size="16" onKeyPress="return getkey('ssid', event)" value="<% cfg_sed_xss("wan_mulpppoe1_username") %>"></TD>
+</TR>
+<tr>
+	<td nowrap><a tabindex=-1 href="javascript:loadhelp('_BAS_mulpppoe','password')"><b>$basic_pppoe_passwd</b></a></td>
+	<td nowrap align=right><input type="password" name="pppoe_passwd" maxlength="64" size="16" onFocus="change_mulpppoe_password(this);" onKeyPress="return getkey('ssid', event)" value="<% cfg_sed_xss("wan_mulpppoe1_passwd") %>"></td>
+</tr>
+<TR>
+	<td nowrap><a tabindex=-1 href="javascript:loadhelp('_BAS_mulpppoe','serv_name')"><b>$basic_pppoe_serv_name</b></a></TD>
+	<td nowrap align=right><INPUT type="text" name="pppoe_servername" maxLength="50" size="16" onKeyPress="return getkey('ssid', event)" value="<% cfg_sed_xss("wan_mulpppoe1_service") %>"></TD>
+</TR>
+
+<tr>
+	<TD><b>$basic_int_connection_mode</b></td>
+	<TD align=right>
+		<SELECT name="mulpppoe_demand" onchange="show_idleout(document.forms[0],this.value)">
+			<option value="0">$basic_mode_always</option>
+			<option value="1">$basic_mode_dial</option>
+			<option value="2">$basic_mode_manual</option>
+		</SELECT>
+	</td>
+</tr>
+
+
+<TR>
+	<td nowrap><a tabindex=-1 href="javascript:loadhelp('_BAS_mulpppoe','pppoe_idletime')"><B>$basic_pppoe_idle</b></a></TD>
+	<td nowrap align=right><INPUT type="text" name="pppoe_idletime" maxLength="5" size="16" value="<% idle_time("wan_mulpppoe1_idletime") %>" onKeyPress="return getkey('num', event)"></TD>
+</TR>
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+<tr><td colspan=2><a tabindex=-1 href="javascript:loadhelp('_BAS_mulpppoe','InternetIP')"><b>$basic_int_intip</b></a></td></tr>
+<tr><td colspan=2><input type="radio" name="WANAssign" value="0" onClick="setIP(document.forms[0])">$basic_int_autoip</td></tr>
+<tr><td colspan=2><input type="radio" name="WANAssign" value="1" onClick="setIP(document.forms[0])">$basic_int_static_ip</td></tr>
+<tr>
+	<td nowrap>&nbsp;&nbsp;$lan_mark_ip</td>
+	<td nowrap align=right>
+	<input type="text" name="WPethr1"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);" >.
+	<input type="text" name="WPethr2"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">.
+	<input type="text" name="WPethr3"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">.
+	<input type="text" name="WPethr4"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">
+	</TD>
+</tr>
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+<tr><td colspan=2><a tabindex=-1 href="javascript:loadhelp('_BAS_mulpppoe','DNSaddress')"><b>$basic_int_dns</b></a></td></tr>
+<tr><td colspan=2><input type="radio" name="DNSAssign" value="0" onClick="setDNS(document.forms[0])">$basic_int_autodns</td></tr>
+<tr><td colspan=2><input type="radio" name="DNSAssign" value="1" onClick="setDNS(document.forms[0])">$basic_int_these</script></td></tr>
+<tr>
+  <td nowrap>&nbsp;&nbsp;$basic_int_primary_dns</td>
+	<td nowrap align=right>
+	<input type="text" name="PDAddr1"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)"  onkeyup="keyup(event,this);">.
+	<input type="text" name="PDAddr2"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">.
+	<input type="text" name="PDAddr3"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">.
+	<input type="text" name="PDAddr4"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">
+	</TD>
+<tr>
+	<td nowrap>&nbsp;&nbsp;$basic_int_second_dns</script></td>
+	<td nowrap align=right>
+	<input type="text" name="DAddr1"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)"  onkeyup="keyup(event,this);">.
+	<input type="text" name="DAddr2"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">.
+	<input type="text" name="DAddr3"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">.
+	<input type="text" name="DAddr4"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">
+	</td>
+</tr>
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+<TR>
+<td nowrap><b>$adva_wansetup_mtu $adva_wansetup_byte</b></TD>
+<td nowrap align=right><INPUT type="text" name="pppoe1_mtusize" maxLength="8" size="8" onKeyPress="return getkey('num', event)" value="<% cfg_get("wan_mulppp_mtu") %>"></TD>
+</TR>
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+<TR>
+	<td colspan=2 align=center>
+	<input class="common_bt" type="submit"  value="$test_mark" onClick="return check_mulpppoe_session1(document.forms[0],1)">
+	</td>
+</TR>
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+<TR><td nowrap><b>$flet_square_pppoe_session</b></TD></TR>
+<tr><td colspan=2><input type="radio" name="enable_session2" value="0" onClick=enablepppoe2(0)>$pppoe2_disable<td></tr>
+<tr><td colspan=2><input type="radio" name="enable_session2" value="1" onClick=enablepppoe2(1)>$pppoe2_enable</td></tr>
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+</table>
+<div id=view>
+</div>
+<div align="center" ID="disable" style="position:absolute;top:0;left:0;visibility:hidden">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0><tr><td colspan=2></td></tr></table>
+</div>
+<div align="center" ID="enable" style="position:absolute;top:0;left:0;visibility:hidden">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0><tr><td colspan=2></td></tr>
+<TR>
+	<td nowrap><b>$pppoe2_type</b></td>
+	<td nowrap align=right>
+			<SELECT name="pppoe2_session" onChange="change_session();">
+				<option value="0">$pppoe2_west</option>
+				<option value="1">$pppoe2_east</option>
+				<option value="2">$pppoe2_other</option>
+			</SELECT>
+		</td>
+  </TR>	
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+<TR>
+    <td nowrap><B>$basic_pppoe_login</B></TD>
+    <td nowrap align=right><INPUT type="text" name="pppoe2_username" maxLength="64" size="16" onKeyPress="return getkey('ssid', event)" value=""></TD>
+</TR>
+<tr>
+	<td nowrap><b>$basic_pppoe_passwd</b></td>
+	<td nowrap align=right><input type="password" name="pppoe2_password" size="16" maxlength="64" onFocus="change_mulpppoe_password(this);" onKeyPress="return getkey('ssid', event)" value="" /></td>
+</tr>
+<TR>
+    <td nowrap><B>$basic_pppoe_serv_name</B></TD>
+    <td nowrap align=right><INPUT type="text" name="pppoe2_servicename" maxLength="50" size="16" onKeyPress="return getkey('ssid', event)" value="<% cfg_sed_xss("wan_mulpppoe2_servicename") %>"></TD>
+</TR> 
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+
+<tr><td colspan=2><b>$basic_int_intip</b></td></tr>
+<tr><td colspan=2><input type="radio" name="WANAssign2" value="0" onClick="setIP2(document.forms[0])">$basic_int_autoip</td></tr>
+<tr><td colspan=2><input type="radio" name="WANAssign2" value="1" onClick="setIP2(document.forms[0])">$basic_int_static_ip</td></tr>
+ <tr>
+
+	<td nowrap>&nbsp;&nbsp;$lan_mark_ip</td>
+	<td nowrap align=right>
+	<input type="text" name="pppoe2_ip1"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">.
+	<input type="text" name="pppoe2_ip2"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">.
+	<input type="text" name="pppoe2_ip3"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">.
+	<input type="text" name="pppoe2_ip4"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">
+	</TD>
+</tr>
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+<tr><td colspan=2><b>$basic_int_dns</b></td></tr>
+<tr><td colspan=2><input type="radio" name="DNSAssign2" value="0" onClick="setDNS2(document.forms[0])">$basic_int_autodns</td></tr>
+<tr><td colspan=2><input type="radio" name="DNSAssign2" value="1" onClick="setDNS2(document.forms[0])">$basic_int_these</td></tr>
+<tr>
+  <td nowrap>&nbsp;&nbsp;$basic_int_primary_dns</td>
+	<td nowrap align=right>
+	<input type="text" name="pppoe2_dnsp1"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)"  onkeyup="keyup(event,this);">.
+	<input type="text" name="pppoe2_dnsp2"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">.
+	<input type="text" name="pppoe2_dnsp3"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">.
+	<input type="text" name="pppoe2_dnsp4"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">
+	</TD>
+<tr>
+	<td nowrap>&nbsp;&nbsp;$basic_int_second_dns</td>
+	<td nowrap align=right>
+	<input type="text" name="pppoe2_dnss1"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)"  onkeyup="keyup(event,this);">.
+	<input type="text" name="pppoe2_dnss2"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">.
+	<input type="text" name="pppoe2_dnss3"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">.
+	<input type="text" name="pppoe2_dnss4"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">
+	</td>
+</tr>
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+<TR>
+<td nowrap><B>$adva_wansetup_mtu $adva_wansetup_byte</b></TD>
+<td nowrap align=right><INPUT type="text" name="pppoe2_mtusize" maxLength="8" size="8" onKeyPress="return getkey('num', event)" value="<% cfg_get("wan_mulpppoe2_mtu") %>"></TD>
+</TR>
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+
+<TR>
+	<td colspan=2 align=center>
+      
+		  <input class="common_bt" type="submit"  value="$test_mark" onClick="return check_mulpppoe_session2(document.forms[0],2)">
+	  </td>
+  </TR>
+
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+</table>
+<!-- div 2222222222222222222222222222222222222222head--------------->
+<div ID="view_session">
+</div>
+<div align="center" ID="NTTwest" style="position:absolute;top:0;left:0;visibility:hidden">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0><tr><td colspan=2></td></tr>
+<TR><td nowrap><B>$mulpppoe_setting</B></TD></tr>
+<tr><td>
+	<!--script>document.write(hd2_center)</script>
+
+	<script>document.write(table_bolder)</script-->
+	<table width="100%" cellspacing="0" cellpadding="2" border="1">
+	<TR>
+		<td nowrap align=center> &nbsp;</TD>
+		<td nowrap align=center> <span class="subhead">$pppoe2_session_type</span></TD>
+		<td nowrap align=center> <span class="subhead">$pppoe2_domain_name</span></TD>
+		<td nowrap align=center> <span class="subhead">$block_ser_setup_ip_jp</span></TD>
+		<td nowrap align=center> <span class="subhead">$pppoe2_port</span></TD>
+		<td nowrap align=center> <span class="subhead">$block_ser_setup_pro</span></TD>
+
+	</TR> 
+	<TR>
+		<td nowrap align=center><input type="radio" name="select_mulpppoe" value="1"></td>
+		<td nowrap align=center>$pppoe2_west</td>
+		<td nowrap align=center>*.flets</td>
+		<td nowrap align=center> --</td>	
+		<td nowrap align=center> --</td>
+		<td nowrap align=center> --</td>
+	</TR>
+	</table>	
+	</td>
+</tr>	
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+</table>
+</div>
+
+<div align="center" ID="NTTeast" style="position:absolute;top:0;left:0;visibility:hidden">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0><tr><td colspan=2></td></tr>
+
+<TR><td nowrap><B>$mulpppoe_setting</B></TD></tr>
+<tr><td>
+
+	<table width="100%" cellspacing="0" cellpadding="2" border="1">
+	<TR>
+		<td nowrap align=center> &nbsp;</TD>
+		<td nowrap align=center> <span class="subhead">$pppoe2_session_type</span></TD>
+
+		<td nowrap align=center> <span class="subhead">$pppoe2_domain_name</span></TD>
+		<td nowrap align=center> <span class="subhead">$block_ser_setup_ip_jp</span></TD>
+		<td nowrap align=center> <span class="subhead">$pppoe2_port</span></TD>
+		<td nowrap align=center> <span class="subhead">$block_ser_setup_pro</span></TD>
+
+	</TR>
+	<TR>
+		<td nowrap align=center><input type="radio" name="select_mulpppoe" value="1"></td>
+		<td nowrap align=center>$pppoe2_east</td>
+		<td nowrap align=center>*.flets</td>
+		<td nowrap align=center> --</td>
+		<td nowrap align=center> --</td>
+		<td nowrap align=center> --</td>
+	</TR>
+	</table>	
+	</td>
+</tr>	
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+</table>
+</div>
+
+<div align="center" ID="Other" style="position:absolute;top:0;left:0;visibility:hidden">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0><tr><td colspan=2></td></tr>
+<tr>
+	<td nowrap><b>$pppoe2_policy_setting</b></td>
+	<td nowrap align=right>
+
+		<SELECT name="pppoe2_policy">
+			<option value="0">$pppoe2_domain_name</option>
+			<option value="1">$pppoe2_ip_protocol</option>
+			<option value="2">$pppoe2_port_protocol</option>
+		</SELECT>
+	</td>
+</tr>
+<tr>
+	<td nowrap colspan=2 align=center>
+	<br>
+	<script>
+	if( master=="admin" )
+		document.write('<input class="add_bt" type="submit" name="add" value="$add_mark" onClick="return check_mulpppoe_addnum(document.forms[0],0);">&nbsp;&nbsp;<input class="edit_bt" type="submit" name="edit" value="$edit_mark" onClick="return check_mulpppoe_editnum(document.forms[0],0);">&nbsp;&nbsp;<input class="delete_bt" type="submit" name="del" value="$delete_mark" onClick="return check_mulpppoe_del(document.forms[0],0);">');
+	else
+		document.write('<input class="add1_bt" type="submit" name="add" value="$add_mark" disabled>&nbsp;&nbsp;<input class="edit1_bt" type="submit" name="edit" value="$edit_mark" disabled>&nbsp;&nbsp;<input class="delete1_bt" type="submit" name="del" value="$delete_mark" disabled>');
+	</script>
+	</td>
+</tr> 
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+
+
+<TR><td nowrap><B>$mulpppoe_setting</B></TD></tr>
+<tr><td nowrap colspan=2>
+
+	<table width="100%" cellspacing="0" cellpadding="2" border="1">
+	<TR>
+		<td nowrap align=center> &nbsp;</TD>
+		<td nowrap align=center> <span class="subhead">$pppoe2_session_type</TD>
+		<td nowrap align=center> <span class="subhead">$pppoe2_domain_name</span></TD>
+		<td nowrap align=center> <span class="subhead">$block_ser_setup_ip_jp</span></TD>
+		<td nowrap align=center> <span class="subhead">$pppoe2_port</span></TD>
+		<td nowrap align=center> <span class="subhead">$block_ser_setup_pro</span></TD>
+
+	</TR> 
+<script>
+
+if( array_num > 0 )
+{
+	for(i=1;i<=array_num;i++)
+	{
+		var str = eval ( 'mulpppoeArray' + i );
+		var each_info=str.split(' ');
+
+		document.write('<tr><td nowrap align=center><input type="radio" name="select_mulpppoe" value="'+i+'"></td>');
+
+		document.write('<td nowrap align=center>'+"$pppoe2_other"+'</td>');
+		document.write('<td nowrap align=center>'+each_info[1]+'</td>');
+		if(each_info[2]!='--')
+			document.write('<td nowrap align=center>'+each_info[2]+'-'+each_info[3]+'</td>');
+		else
+			document.write('<td nowrap align=center> --</td>');	
+		if(each_info[4]!='--')	
+			document.write('<td nowrap align=center>'+each_info[4]+'-'+each_info[5]+'</td>');
+		else
+			document.write('<td nowrap align=center> --</td>');	
+		document.write('<td nowrap align=center>'+each_info[6]+'</td></tr>');
+
+	}
+}
+
+</script>	
+	</table>	
+	</td>
+</tr>	
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+</table>
+</div>
+<!--div 22222222222222222222222222222222222222222222--->
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+</table></div>
+
+</div> <!-- main -->
+<% help_box("0","_BAS_mulpppoe") %>
+
+</FORM>
+<script>
+function enablepppoe2(num)
+{
+
+	if(num==1)
+	{
+		getObj("view").innerHTML=enableHTML;
+
+	}
+	else
+	{
+		getObj("view").innerHTML=disableHTML;
+	
+	}
+
+	if(num==1)
+	{
+	 	//loadvalue of div "enable"
+		var form=document.forms[0];
+
+		westHTML=getObj("NTTwest").innerHTML;
+		eastHTML=getObj("NTTeast").innerHTML;
+		otherHTML=getObj("Other").innerHTML;	
+
+		if( old_pppoe_wan_assign2 == '0')
+			form.WANAssign2[0].checked = true;
+		else
+			form.WANAssign2[1].checked = true;
+	
+		setIP2(form);
+	 	var pppoe2_get_ip=old_wan_ip2;
+	 	if(pppoe2_get_ip!="")
+	 	{
+		  	var ip2_array=pppoe2_get_ip.split('.');
+		  	form.pppoe2_ip1.value=ip2_array[0];
+		  	form.pppoe2_ip2.value=ip2_array[1];
+		  	form.pppoe2_ip3.value=ip2_array[2];
+		  	form.pppoe2_ip4.value=ip2_array[3];
+	  	}
+
+
+	  	if('<% cfg_get("wan_mulpppoe2_dns_assign") %>' == '0')
+	      		form.DNSAssign2[0].checked = true;
+	  	else
+	      		form.DNSAssign2[1].checked = true;
+	  	if(pppoe2_get_dns1!="")
+	  	{
+		  	var dns1_array2=pppoe2_get_dns1.split('.');
+		  	form.pppoe2_dnsp1.value=dns1_array2[0];
+		  	form.pppoe2_dnsp2.value=dns1_array2[1];
+		  	form.pppoe2_dnsp3.value=dns1_array2[2];
+		  	form.pppoe2_dnsp4.value=dns1_array2[3];
+	  	}
+	  	if(pppoe2_get_dns2!="")
+	  	{
+		  	var dns2_array2=pppoe2_get_dns2.split('.');
+		  	form.pppoe2_dnss1.value=dns2_array2[0];
+		  	form.pppoe2_dnss2.value=dns2_array2[1];
+		  	form.pppoe2_dnss3.value=dns2_array2[2];
+		  	form.pppoe2_dnss4.value=dns2_array2[3];
+	  	}
+	  	setDNS2(form);
+
+		
+		getObj("NTTwest").innerHTML="";
+		getObj("NTTeast").innerHTML="";
+		getObj("Other").innerHTML="";
+
+	 	form.pppoe2_session.value='<% cfg_get("wan_mulpppoe2_session") %>';	
+
+		change_session();
+	}
+
+}
+
+
+
+
+</script>
+</body>
+</html>

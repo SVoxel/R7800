@@ -1,0 +1,76 @@
+#!/bin/sh
+
+. ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+#
+# Environment config
+#
+BINARY="cape"
+NAME=${BINARY}
+DISPLAY_NAME="Class Arbiter/Policy Engine"
+
+#
+# Cape config
+#
+# path to cape binary
+CAPE_BIN="${BINDIR}/${BINARY}"
+
+# path to cape pid file
+PIDFILE="${RUNDIR}/${BINARY}.pid"
+
+# Redis server
+REDIS_PORT=6379
+REDIS_UNIXSOCK=/var/run/appflow/redis.sock
+
+# pull in the guest network config so we know if we need to create
+# a node exception rule
+[ -f /etc/dhcp.guest.conf ] && . /etc/dhcp.guest.conf
+
+# Format the command line parameters
+CMDLINE_OPTS="--daemon -u ${REDIS_UNIXSOCK} -p ${PIDFILE} --cache 8"
+#
+# Functions
+#
+
+start() {
+	# if we're configured for guest network, we need to add node
+	# exceptions for all nodes on the network
+	[ "$GUEST_DHCP_ENABLE" = "yes" ] && {
+		local bypass=$(ipaddr_netmask_to_cidr ${GUEST_DHCP_IPADDR} ${GUEST_DHCP_NETMASK})
+		redis-cli lpush policydb:except:nodes "${bypass}"
+	}
+
+	[ ! -d "${RUNDIR}" ] && {
+		mkdir ${RUNDIR}
+	}
+
+	[ -x ${CAPE_BIN} ] || {
+		echo "${BINARY} not found: ${CAPE_BIN}"
+		exit 2
+	}
+
+	echo -n "Starting ${NAME}: "
+	${CAPE_BIN} ${CMDLINE_OPTS} "$@"
+	retval=$?
+	echo
+	return ${retval}
+}
+
+boot() {
+	start "$@"
+}
+
+stop() {
+	default_stop
+
+	# clean up the guest network node exceptions
+	[ "$GUEST_DHCP_ENABLE" = "yes" ] && {
+		local bypass=$(ipaddr_netmask_to_cidr ${GUEST_DHCP_IPADDR} ${GUEST_DHCP_NETMASK})
+		redis-cli lrem policydb:except:nodes 0 "${bypass}"
+	}
+
+	return 0
+}
+
+action "$@"
+exit $?

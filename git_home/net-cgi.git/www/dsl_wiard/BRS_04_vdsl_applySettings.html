@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<% cfg_set("from_setting","1") %>
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta http-equiv="refresh" content="60; url=BRS_04_applySettings.html" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_hijack_04_applySettings.js"></script>
+<% hijack_language() %>
+<script language="javascript" type="text/javascript">
+var is_04_refresh_page = 0;
+ip_content =" <% obtain_ip() %>";
+function loadvalue()
+{
+    if(ip_content == "0.0.0.0") //on obtain ip
+		this.location.href = "BRS_03A_E_IP_problem.html";
+	else //obtian ip
+		this.location.href = "BRS_04_B_vdsl_checkNet_ping.html"; //ping 
+		
+}
+</script>
+</head>
+
+<body onLoad="loadvalue()">
+
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+		<h1><!--apply_connection--></h1>
+			
+		<p><!--plz_waite_apply_connection--></p>
+		
+		<div id="applySettings_wait" class="waiting_img_div" align="center">
+			<img src="image/wait30.gif" />
+		</div>
+		<a href="BRS_04_B_checkNet_ping.html" class="ui-corner-all">obtian ip-></a><br>
+		<a href="BRS_03A_E_IP_problem.html" class="ui-corner-all">no ip</a><br>
+	</div>
+		
+</div>
+
+</body>
+
+</html>

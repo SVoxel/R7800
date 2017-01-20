@@ -1,0 +1,37 @@
+body{background-color: #e5e5e5;}
+#form{ width: 802px; height: 480px; position: absolute; top: 0px; left: 0px;}
+
+.adv_icon{float:left; margin-left: 5px; width: 295px; height: 300px; background:url(../image/advanced_homes.gif) no-repeat 0 -363px}
+
+.adv_icon .title{ width: 295px; height: 50px; background:url(../image/advanced_homes.gif) no-repeat 0 -313px}
+.adv_icon .title img{position:relative; left: 4px; top: 5px;}
+.adv_icon .title b{position:relative; left: 4px; font-family: Arial; font-size: 14px; color: #e5e5e5;}
+
+.adv_icon tr td{font:12px arial; color: #404040}
+.adv_icon tr td b{font: bold 12px arial; position:relative; left: 5px;}
+.adv_icon img{margin-top:2px; margin-bottom: 2px;}
+.adv_icon .info_div{width: 100%; height:206px;}
+
+#icon1{ position: absolute; top: 0px; left: 0px;}
+#icon2{ position: absolute; top: 0px; left: 300px;}
+#wds2_4_repeater{position: absolute; top: 0px; left: 300px;}
+#wds5_repeater{position: absolute; top: 0px; left: 300px;}
+#pl_1{position: absolute; top: 300px; left: 0px;}
+#title_bgn{ position: absolute; top: 326px; left: 0px;}
+#head_an{ position: absolute; top: 326px; left: 300px;}
+#pl_2{position: absolute; top: 626px; left: 0px;}
+#wl_title_bgn{ position: absolute; top: 646px; left: 0px;}
+#wl_head_an{ position: absolute; top: 646px; left: 300px;}
+#pl_3{position: absolute; top: 946px; left: 0px;}
+#wds2_4_base{position: absolute; top: 966px; left: 0px;}
+#wds5_base{position: absolute; top: 966px; left: 300px;}
+#wds_base{position: absolute; top: 966px; left: 0px;}
+#bottom_buttons{position: absolute; top: 1266px; left:0px;}
+
+
+.button_div{position:relative; left: 4px; width: 288px; height:40px; background-color: #ffffff;}
+.button{position:relative; top: 9px; float: left; width:180px; height:22px; text-align: center; background:url(../image/buttons.gif) no-repeat -128px -44px; cursor:pointer; color:#ffffff; font-family: Arial; font-weight: Bold; font-size: 12px;}
+.page_line{ margin-top:10px; margin-bottom: 10px;}
+#disconnect{ position:relative; left: 7px; }
+#show_statictics {position:relative; left: 17px; }
+#disconeect_wifi {position:relative; left: 100px; }

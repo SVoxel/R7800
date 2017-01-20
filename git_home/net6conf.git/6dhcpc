@@ -1,0 +1,98 @@
+#!/bin/sh /etc/rc.common
+
+. /etc/net6conf/6data.conf
+
+write_dhcp6c_conf() {
+	printf	'interface %s {\n' "$WAN"
+	printf		'\tsend ia-na 1;\n'
+	printf		'\tsend ia-pd 11;\n'
+	printf		'\trequest domain-name;\n'
+	printf		'\trequest domain-name-servers;\n'
+	printf		'\trequest ntp-servers;\n'
+	printf		'\trequest sip-server-domain-name;\n'
+	printf		'\trequest sip-server-address;\n'
+	printf		'\tscript "%s";\n' "$DHCP6C_SCRIPT"
+	printf	'};\n\n'
+
+	printf	'id-assoc na 1 {\n'
+	printf	'};\n\n'
+
+	printf	'id-assoc pd 11 {\n'
+	printf	'};\n'
+}
+
+start_dhcp6c() {
+	local U_CLADATA=`$CONFIG get ipv6_dhcp_userClass`
+	local U_DOMAIN=`$CONFIG get ipv6_dhcp_domainName`
+	write_dhcp6c_conf > /tmp/dhcp6c.conf
+	if ! diff -q /etc/dhcp6c.conf /tmp/dhcp6c.conf > /dev/null
+	then
+		echo "Warning: some problem in /tmp/dhcp6c.conf, replace with /etc/dhcp6c.conf" > /dev/console
+		cp /etc/dhcp6c.conf /tmp/dhcp6c.conf
+		sleep 1
+	fi
+
+	/usr/sbin/dhcp6c -c /tmp/dhcp6c.conf -3 ${U_CLADATA:+-u $U_CLADATA} ${U_DOMAIN:+-U $U_DOMAIN}  $WAN
+
+	#add the default route
+#	$IP -6 route add default dev $WAN
+}
+
+stop_dhcp6c() {
+	/usr/bin/killall dhcp6c
+	#wait the dhcpv6 client send release package
+	sleep 1
+	/usr/bin/killall -9 dhcp6c
+}
+
+dhcpv6c_is_running() {
+	if ps | grep dhcp6c | grep -v grep >&- 2>&- ; then
+		return 0;
+	else
+		return 1;
+	fi
+}
+
+start() {
+	if ! [ -f /proc/net/if_inet6 ]; then
+		echo "IPv6 not enabled, install kmod-ipv6";
+		exit 1;
+	fi
+	if dhcpv6c_is_running ; then
+		echo "DHCPv6 Client Daemon is already running, kill it!!";
+		local pid=`ps | grep dhcp6c | grep -v grep |awk '{print  $1}'`
+		if [ "x$pid" != "x" ]; then
+			/bin/kill -9 $pid
+		fi
+	fi
+	start_dhcp6c
+}
+
+stop () {
+	if ! dhcpv6c_is_running ; then
+		echo "DHCPv6 client is not running! Return";
+		return 1;
+	fi
+
+	# Stop the dhcp6c daemon
+	stop_dhcp6c
+
+	# Delete the prefix, prefix time, dns, ntp, sip file
+	rm -f $DHCP6C_SCRIPT_ENVS
+	rm $DHCP6S_DSN
+	rm $DHCP6C_PD
+	rm $DHCP6S_PD	
+}
+
+case "$1" in
+	start)
+	start
+	;;
+	stop)
+    stop
+    ;;
+    restart)
+	stop
+	start
+	;;
+esac

@@ -1,0 +1,179 @@
+#!/bin/sh /etc/rc.common
+FIREWALL="/www/cgi-bin/firewall.sh"
+#START=99
+
+start() {
+	if [ "$($CONFIG get bridge_mode)" = "1" ]; then
+		echo "bridge mode is on!!" > /dev/console
+		if [ "$($CONIFG get ap_mode)" = "1" ] ; then
+			echo "ap mode is on, and stop it" > /dev/console
+			/etc/init.d/ap-mode stop
+		fi
+		echo "1" > /tmp/enable_br_mode
+		# Pull down the wireless
+		#for i in 0 1 2 3; do
+		#  vap_status=`ifconfig | grep ath${i}`
+		#  if [ "x$vap_status" != "x" ]; then
+		#	ifconfig ath${i} down 2> /dev/null
+		#	case "$i" in
+		#		0) vap_radio_0=0;;
+		#		1) vap_radio_1=1;;
+		#		2) vap_radio_2=2;;
+		#		3) vap_radio_3=3;;
+		#		*) echo "var i $i is incorrect"
+		#	esac
+		#  fi
+		#done
+
+
+		killall udhcpd
+		killall udhcpc
+		killall net-scan
+		killall miniupnpd
+		killall minidlna
+		killall zcip
+		sleep 1
+
+		# Basic Settings
+		/etc/init.d/net-wan stop
+
+		# Block Services & Schedule
+		/sbin/cmdsched stop
+		/etc/init.d/cron stop
+		#/usr/bin/killall ntpclient
+
+		# Wireless Repeating Function
+		/etc/init.d/dnsmasq stop
+		#/usr/bin/killall /sbin/printhosts
+		#/etc/init.d/net-lan stop
+
+		# Port Forwarding/Port Triggering & firewall & Remote Management
+		$FIREWALL stop
+
+		# stop static route & ripd & LAN/WAN setup
+		/sbin/cmdroute stop
+		#/usr/bin/killall -SIGINT ripd
+		#/usr/bin/killall /sbin/cmd_sipalg
+
+		# Dynamic DNS
+		/sbin/cmd_ddns stop
+
+		#QOS
+		/sbin/qos.sh stop
+
+		local ns_flag=0
+
+		#ifconfig $WAN_PHYNAME down
+		#ifconfig $LAN_IF.2 down
+		#ifconfig $WAN_IF down
+		
+		#brctl delif $WAN_IF $WAN_PHYNAME
+                brctl addif br0 ethwan
+		# Attach Device
+
+		/sbin/wlan updateconf
+		/sbin/wlan down
+		/sbin/wlan up
+
+		killall net-scan
+		mkdir -p /tmp/netscan
+		/usr/sbin/net-scan
+
+
+		# DHCP
+	#		# udhcpc -b -i $WAN_IF -h "$($CONFIG get ap_netbiosname)" -r $($CONFIG get ap_dhcp_ipaddr)
+	#		killall udhcpd
+	#		killall dnsmasq
+	#		udhcpc -b -i $BR_IF -h "$($CONFIG get ap_netbiosname)" -r $($CONFIG get ap_dhcp_ipaddr)
+	#		[ "$($CONFIG get ap_ether_dns_assign)" = "0" ] && ns_flag=1
+
+		/sbin/cmd_ebtables restart
+		# dnsmasq restart
+		/etc/init.d/dnsmasq start
+
+		sleep 2
+	
+		# To fix bug 22953, when the ap-mode is on, we can't see the WNDR3700 In the Vista/win7 full map.
+		# Start lld2d
+		echo "$($CONFIG get bridge_netbiosname)" > /proc/sys/kernel/hostname
+		/usr/sbin/lld2d $($CONFIG get lan_ifname)
+
+		#upnp restart
+		/sbin/cmdupnp restart
+
+		#DLNA restart
+		/sbin/cmddlna restart
+
+		#/usr/sbin/brctl stp $BR_IF 1
+
+		if [ "$($CONFIG get endis_ntp)" = "1" ]; then
+			/usr/sbin/ntpclient
+		fi
+		#syslogd start
+		/usr/sbin/dsyslog start
+		# update samba
+		/usr/bin/killall smbd
+		/usr/sbin/update_smb
+
+		# Pull down and up the phy for 9s
+		echo -n 9 > /proc/switch_phy
+
+		/usr/sbin/start_br_udhcpc
+
+		# Pull up the wireless
+		#if [ "$vap_radio_0" = "0" ]; then
+                #    ifconfig ath0 up 2> /dev/null
+		#fi
+		#if [ "$vap_radio_1" = "1" ]; then
+                #    ifconfig ath1 up 2> /dev/null
+		#fi
+		#if [ "$vap_radio_2" = "2" ]; then
+                #    ifconfig ath2 up 2> /dev/null
+		#fi
+		#if [ "$vap_radio_3" = "3" ]; then
+                #    ifconfig ath3 up 2> /dev/null
+		#fi
+		# Restart the telnetenable for Thincient
+		killall utelnetd
+		killall telnetenable
+		/usr/sbin/telnetenable
+	fi
+
+}
+stop() {
+	echo "bridge mode is off!!" > /dev/console
+	echo "0" > /tmp/br_mode_enable
+	if [ "$($CONFIG get ap_mode)" = "1" ]; then
+		return
+	fi
+	killall br-dhcp-helper
+	killall udhcpc
+	killall net-scan
+	killall lld2d
+	killall miniupnpd
+	killall minidlna
+	killall zcip
+	sleep 1
+	lan_ipaddress=$($CONFIG get lan_ipaddr)
+	if [ "${lan_ipaddress%.*.*}" = "169.254" ]; then
+		$CONFIG set lan_ipaddr=192.168.1.1
+		$CONFIG set lan_netmask=255.255.255.0
+		$CONFIG commit
+	fi
+	sleep 2
+
+	brctl delif br0 ethwan
+	#brctl addif $WAN_IF $WAN_PHYNAME
+	#ifconfig $WAN_PHYNAME up
+	#ifconfig $LAN_IF.2 up
+	#ifconfig $WAN_IF up
+
+	#/usr/sbin/brctl stp $BR_IF 0
+	/sbin/cmd_ebtables stop	
+	/sbin/wlan updateconf
+	/sbin/wlan down
+	/sbin/wlan up
+	/etc/init.d/net-lan restart
+	/etc/init.d/net-wan restart
+	/etc/init.d/init6 restart
+}

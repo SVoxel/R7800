@@ -1,0 +1,94 @@
+$include /etc/hotplug2-common.rules
+#rules file for hotplug2
+
+SUBSYSTEM == block, DEVPATH is set, MAJOR is set, MINOR is set {
+        makedev /dev/%DEVICENAME% 0644
+}
+
+#For debugging
+#ACTION is set {
+#       printdebug
+#}
+
+# Load modules (what old hotplug did)
+#MODALIAS is set {
+#        exec modprobe -q %MODALIAS% ;
+#}
+
+# Create device nodes
+DEVPATH is set, MAJOR is set, MINOR is set {
+        makedev /dev/%DEVICENAME% 0644
+}
+
+#ACTION == add, MODALIAS is set, INTERFACE is set {
+#	exec /etc/usb_modem_hotplug on ;
+#}
+
+#ACTION == remove, MODALIAS is set, INTERFACE is set {
+#	exec /etc/usb_modem_hotplug off ;
+#}
+
+# Add and update parallel printer device
+ACTION == add, DEVICENAME ~~ "^lp[0-9]+$", DEVPATH is set, MAJOR is set, MINOR is set {
+	#run "/usr/sbin/update_cups add %DEVICENAME%"
+	exec /sbin/usb_disk_event
+}
+
+# Delete and update parallel printer device
+ACTION == remove, DEVICENAME ~~ "^lp[0-9]+$", DEVPATH is set, MAJOR is set, MINOR is set {
+	#run "/usr/sbin/update_cups delete %DEVICENAME%"
+	exec /sbin/usb_disk_event
+}
+
+# Add USB disk
+ACTION == add, DEVTYPE ~~ "^disk$", MAJOR is set, MINOR is set {
+	exec /sbin/usb_disk_event
+}
+
+# Remove USB disk
+ACTION == remove, DEVTYPE ~~ "^disk$", MAJOR is set, MINOR is set {
+	exec /sbin/usb_disk_event
+}
+
+# Mount a USB flashdisk
+ACTION == add, SUBSYSTEM == block, DEVICENAME ~~ "^sd[a-z][0-9]*$", DEVPATH is set, MAJOR is set, MINOR is set {
+	makedev /dev/%DEVICENAME% 0644
+	run "/sbin/hotplug2.mount %DEVICENAME%"
+}
+
+# Unmount a USB flashdisk
+ACTION == remove, SUBSYSTEM == block, DEVICENAME ~~ "^sd[a-z][0-9]*$", MAJOR is set, MINOR is set {
+	run "/usr/sbin/detach_afp_shares %DEVICENAME% hotplug2"
+	exec /sbin/hotplug2.umount %DEVICENAME% ;
+}
+
+# WLAN Toggle
+SUBSYSTEM == button, BUTTON == wlan_toggle, BUTTONACTION == pressed {
+	exec /sbin/wlan toggle
+}
+
+# WPS Button
+SUBSYSTEM == button, BUTTON == wps_pbc, BUTTONACTION == pressed {
+	exec /sbin/detect_factory wps_pbc_pressed
+	break_if_failed
+	exec /sbin/wps_pbc pressed
+}
+
+SUBSYSTEM == button, BUTTON == wps_pbc, BUTTONACTION == released {
+	exec /sbin/detect_factory wps_pbc_released
+	break_if_failed
+	exec /sbin/wps_pbc released
+}
+
+SUBSYSTEM == button, BUTTON == reset, BUTTONACTION == reboot {
+	exec /sbin/detect_factory reboot
+	break_if_failed
+	exec /sbin/reboot
+}
+
+SUBSYSTEM == button, BUTTON == reset, BUTTONACTION == default {
+	break_if_failed
+	exec /bin/config default
+	exec /bin/rm -f /usr/lib/sbsaved/sb.redis
+	exec /sbin/reboot
+}

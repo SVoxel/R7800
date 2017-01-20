@@ -1,0 +1,56 @@
+#!/bin/sh /etc/rc.common
+
+START=60
+
+start()
+{
+    DEFAULT=/etc/default/samba
+    RUN_D=/var/run/samba
+    SMB_CONF_DIR=/tmp/samba
+    SYS_CONF_DIR=/tmp/config
+    PRIVATE_DIR=/tmp/private
+    SMBD_PID_F=$RUN_D/smbd.pid
+    SMB_PASSWD_DIR=/tmp/smbpasswd
+    [ -f $DEFAULT ] && . $DEFAULT
+
+    mkdir -p /var/log/samba
+    #mount -t tmpfs tmpfs /home -o size=64K
+    mkdir -p $SMB_CONF_DIR
+    cp -f /usr/config/smb.conf $SMB_CONF_DIR
+    cp -f /usr/config/lowcase.dat $SMB_CONF_DIR
+    cp -f /usr/config/upcase.dat $SMB_CONF_DIR
+    cp -f /usr/config/valid.dat $SMB_CONF_DIR
+    mkdir -p $SYS_CONF_DIR
+    cp -f /usr/config/passwd $SYS_CONF_DIR
+    cp -f /usr/config/group $SYS_CONF_DIR
+    cp -f /usr/config/shadow $SYS_CONF_DIR
+    mkdir -p $PRIVATE_DIR
+    mkdir -p $RUN_D
+
+    # create users, groups
+    update_user
+
+    # detect SATA disk
+    /usr/sbin/detectSATA start
+
+    # update smb.conf and start samba if needed
+    /usr/sbin/update_smb
+    /etc/init.d/dbus start
+    /etc/init.d/avahi-daemon start
+    /etc/init.d/run_afpd start
+}
+
+stop() {
+    killall -9 smbd
+    /etc/init.d/run_afpd stop
+    /etc/init.d/avahi-daemon stop
+    /etc/init.d/dbus stop
+}
+
+boot() {
+    start &
+    /etc/init.d/kcode boot
+}
+
+[ "$1" = "start" ] && start
+[ "$1" = "stop" ] && stop

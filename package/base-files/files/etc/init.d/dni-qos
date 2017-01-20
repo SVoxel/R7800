@@ -1,0 +1,16 @@
+#!/bin/sh /etc/rc.common
+
+start()
+{
+	# if Eth Wan NIF is a VLAN NIF, the default txqueuelen is 0.
+	# it should be assigned a reasonable value
+	ip link set ethwan txqueuelen 1000
+	dni_qos --dni_qos_if ethwan
+	/sbin/qos.sh start
+}
+
+stop()
+{
+	/sbin/qos.sh stop
+	dni_qos --dni_qos_if xxx    # xxx NOT exist, this will detach original attached interface.
+}

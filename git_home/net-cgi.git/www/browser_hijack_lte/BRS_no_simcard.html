@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_no_simcard.js"></script>
+<% hijack_language() %>
+</head>
+<script>
+var sim_card_status="<% cfg_get("wan_sim_card") %>";
+var lte_card_status="<% cfg_get("wan_lte_card") %>";
+</script>
+<body>
+
+<div class="wizard_content_div">
+	<div class="wizard_words_div">
+		<h1 class="h1_red"><!--bh_no_simcard--></h1>
+		<p><!--bh_not_simcard_msg1--></p>
+		<p><!--bh_detect_not_simcard_msg3--></p>
+	</div>
+
+	<div class="wizard_buttons_div" align="center">
+		<div id="btnsContainer_div" class="buttons_img_div" align="center">
+			<img src="image/ca-little-purple-button.gif" />
+			<div id="btn_div" class="buttons_words_div"><!--bh_try_again--></div>
+		</div>
+	</div>
+</div>
+
+</body>
+
+</html>

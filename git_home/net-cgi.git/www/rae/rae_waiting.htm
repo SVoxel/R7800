@@ -1,0 +1,89 @@
+<HTML>
+<HEAD>
+<META http-equiv="content-type" content='text/html; charset=UTF-8'>
+<style type="text/css">
+.wizard_words_div{ width:80%; padding:5% 10% 0px 10%; font-family:Arial; font-size:10pt; font-weight:normal; color:#404040; }
+.wizard_words_div h1 { font-family:Arial; font-size:12pt; font-weight:bold; color:#9D98FF; }
+.wait_main_content {text-align:center; position:relative;top:-26px}
+.bluebar_div {z-index:999; display:inline-block; width:258px; *display:inline; zoom:1}
+.bluebar_div .bluebar_left{width:10px; height:8px; float:left; background: url(../image/blue_bar.png) no-repeat 0 0;}
+.bluebar_div .bluebar_middle{ width:0px;height:8px; float:left; background: url(../image/blue_bar.png) no-repeat -10px 0;}
+.bluebar_div .bluebar_right{width:10px; height:8px; float:left; background: url(../image/blue_bar.png) no-repeat -248px 0;}
+</style>
+</HEAD>
+<BODY onload="loadvalue();" bgcolor=#ffffff>
+<script>
+  var ap_on_off = "<% cfg_get("ap_mode") %>";
+  var ap_dyn_get_ip = "<% cfg_get("ap_ether_ip_assign") %>";
+  var ap_ipaddr = "<% cfg_get("ap_ipaddr") %>";
+
+  var extender_on_off = "<% cfg_get("extender_mode") %>";
+  
+  if(ap_on_off == 1 || extender_on_off == 1)
+	var delay_time=50000;
+  else
+	var delay_time=50000;
+  var wait_time_count = 238;
+  var time_increment = delay_time/238;
+  var middle_bar_length = 0;
+function loadvalue()
+{
+	setTimeout("updateProgress()",time_increment);
+}
+function updateProgress()
+{
+	var cf = document.forms[0];
+	middle_bar_length = middle_bar_length + 1;
+	document.getElementById("bluebar_middle").style.width = middle_bar_length;
+	wait_time_count--;
+		//alert(time_increment);
+	if(wait_time_count > 0)
+		setTimeout("updateProgress()",time_increment);
+	else
+		timeout();
+}
+function timeout()
+{
+	var host= window.location.host;
+
+	if( ap_on_off == "1" &&  ap_dyn_get_ip == "0")
+		top.location.href="http://"+ap_ipaddr+"/adv_index.htm";
+	else 
+	{
+		if(host.indexOf("www") != -1)
+		{
+			if( host.indexOf("net") != -1)
+				top.location.href="http://www.routerlogin.com/adv_index.htm";
+			else
+				top.location.href="http://routerlogin.net/adv_index.htm";
+		}
+		else
+		{
+			if(host.indexOf("net") != -1)
+				top.location.href="http://routerlogin.com/adv_index.htm";
+			else
+				top.location.href="http://www.routerlogin.net/adv_index.htm";
+		}
+	}
+}
+</script>
+<div  class="wizard_words_div" align="center"><BR><BR><h1>
+<script>
+	if(delay_time == 100000 || delay_time == 85000)
+		document.write('$bas_plz_wait_process');
+	else
+		document.write('$wait_serv');		
+ //<h1>$bas_plz_wait_process</h1>
+</script>
+</h1><BR><BR></div>
+<div class="new_waiting_img_div" align="center"><img src="image/progress_bar.png" alt="waiting" /></div>
+<div class="wait_main_content">
+<div class="bluebar_div" >
+	<div class="bluebar_left"></div>
+	<div class="bluebar_middle" id="bluebar_middle"></div>
+	<div class="bluebar_right"></div> 
+</div>
+</div>
+</BODY>
+</HTML>
+

@@ -1,0 +1,6 @@
+#!/bin/sh /etc/rc.common
+START=75
+boot() {
+	echo 3 > /proc/sys/vm/drop_caches
+        echo 16384 > /proc/sys/vm/min_free_kbytes
+}

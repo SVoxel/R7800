@@ -1,0 +1,246 @@
+<% http_header("style/form.css", "/funcs.js", "/basic.js", "/broadband.js")%>
+<% body_header("_BAS_broadband", "BAS_update_broadband.htm", "broadband") %>
+<div class="page_title">$broadband_title</div>
+<div id="main" class="main">
+<% table_header() %>
+<script>
+<% save_timestamp("broadband", "test_multiwan") %>
+var ts="<% cfg_get("broadband") %>";
+var browser_lang = "<% get_browser_language() %>";
+var gui_region="<% cfg_get("GUI_Region") %>";
+var broadband_wan_type="<% cfg_get("dango_det_wan_type")%>";
+var multi_wan_type="<% cfg_get("multi_wan_type") %>";
+var detect_method = "<% cfg_get("failover_detect_method") %>";
+var old_wan_type="<% cfg_get("failover_wired_proto") %>";
+var ping_ethernet_result="<% cfg_get("ping_ethernet_result")%>";
+var ping_3g_result="<% cfg_get("ping_3g_result")%>";
+
+function click_test()
+{
+	var cf=document.forms[0];
+	cf.action="/apply.cgi?/BAS_update_test.htm timestamp=" + ts;
+	cf.submit_flag.value = "test_multiwan";
+	cf.submit();
+}
+
+function chgBroMode()
+{
+	var cf=document.forms[0];
+	if(cf.adsl_3g[0].checked || cf.adsl_3g[1].checked)
+	{
+		cf.test.disabled = true;
+		cf.test.className = "common_gray_bt";
+		cf.primary_link.disabled = true;
+		cf.detect_method_rd[0].disabled = true;	
+		cf.detect_method_rd[1].disabled = true;	
+		cf.myip_1.disabled = true;
+		cf.myip_2.disabled = true;
+		cf.myip_3.disabled = true;
+		cf.myip_4.disabled = true;
+		cf.hostname_tx.disabled = true;
+		cf.retry_inter_tx.disabled = true;
+		cf.failover_tx.disabled = true;
+		cf.enable_hardware_ch.disabled = true;
+	}
+	else if(cf.adsl_3g[2].checked)
+	{
+		cf.test.disabled = false;
+		cf.test.className="common_bt";
+		if(ping_ethernet_result != "1" || ping_3g_result != "1")
+		{
+			cf.primary_link.disabled = true;
+			cf.detect_method_rd[0].disabled = true;
+			cf.detect_method_rd[1].disabled = true;
+			cf.myip_1.disabled = true;
+			cf.myip_2.disabled = true;
+			cf.myip_3.disabled = true;
+			cf.myip_4.disabled = true;
+			cf.hostname_tx.disabled = true;
+			cf.retry_inter_tx.disabled = true;
+			cf.failover_tx.disabled = true;
+			cf.enable_hardware_ch.disabled = true;
+		}
+		else
+		{
+			cf.primary_link.disabled = false;
+			cf.detect_method_rd[0].disabled = false;
+			cf.detect_method_rd[1].disabled = false;
+			cf.myip_1.disabled = false;
+			cf.myip_2.disabled = false;
+			cf.myip_3.disabled = false;
+			cf.myip_4.disabled = false;
+			cf.hostname_tx.disabled = false;
+			cf.retry_inter_tx.disabled = false;
+			cf.failover_tx.disabled = false;
+			cf.enable_hardware_ch.disabled = false;
+		}
+	}
+	
+}
+
+function loadvalue()
+{
+	var cf=document.forms[0];
+
+	if(broadband_wan_type == "AutoDetc")
+		cf.adsl_3g[0].checked = true;
+	else if(broadband_wan_type == "MyDetc")
+		cf.adsl_3g[1].checked = true;
+	else
+		cf.adsl_3g[2].checked = true;
+	
+
+	var primary_link = "<% cfg_get("failover_primary_link") %>";
+	if( primary_link == "3g" ) 
+		cf.primary_link.value = "3G";
+	else
+		cf.primary_link.value = "ethernet";
+
+	if( detect_method == "0" )
+		cf.detect_method_rd[0].checked = true;
+	else if( detect_method == "1")
+		cf.detect_method_rd[1].checked = true;
+
+	click_ping();
+
+	cf.hostname_tx.value = "<% cfg_get("failover_detect_dns") %>";
+
+	var detect_ip = "<% cfg_get("failover_detect_ip") %>";
+	if(detect_ip!="")
+	{
+		var ip_array=detect_ip.split('.');
+		cf.myip_1.value=ip_array[0];
+		cf.myip_2.value=ip_array[1];
+		cf.myip_3.value=ip_array[2];
+		cf.myip_4.value=ip_array[3];
+	}
+
+	cf.retry_inter_tx.value = "<% cfg_get("failver_retry_interval") %>";
+	cf.failover_tx.value = "<% cfg_get("failover_fail_after") %>";
+	if( "<% cfg_get("failover_enable_hardware") %>" == "1" )
+		cf.enable_hardware_ch.checked = true;
+	else
+		cf.enable_hardware_ch.checked = false;
+	
+	chgBroMode();	
+}
+
+</script>
+<input type="hidden" name="hidden_wan_type">
+<input type="hidden" name="primary_link_hid">
+<input type="hidden" name="hidden_detect_method">
+<input type="hidden" name="hidden_detect_ip">
+<input type="hidden" name="hidden_enable_hardware">
+
+<TR>
+	<TD nowrap>
+		<A tabindex=-1 href="javascript:loadhelp('_BAS_broadband', 'bromode')"><b>$broadband_mode</b></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+		<input type="radio" name="adsl_3g" value="AutoDetc" checked onclick="chgBroMode();">$ethernet_only
+		<input type="radio" name="adsl_3g" value="MyDetc" onclick="chgBroMode();">$3g_only
+		<input type="radio" name="adsl_3g" value="multiDetc" onclick="chgBroMode();">$failover_mode
+	</TD>
+</TR>
+$bluebar
+<TR id="wan">
+	<TD nowrap>
+		<A tabindex=-1 href="javascript:loadhelp('_BAS_broadband', 'multimode')"><b>$failover_mode_setup</b></A>
+	</TD>
+</TR>
+<TR><TD colSpan=2></TD></TR>
+<TR>
+	<TD nowrap colSpan=2>$failover_loadbalance_test
+		<input class="common_bt" type="button" name="test" value="$test_mark" onClick="click_test()">
+	</TD>
+</TR>
+<TR><TD colSpan=2 style="height: 15px"></TD></TR>
+<TR id="failset">
+	<TD nowrap>
+		<A tabindex=-1 href="javascript:loadhelp('_BAS_broadband', 'failover')"><b>$failover_setup</b></A>
+	</TD>
+</TR>
+<TR id="link">
+	<TD nowrap>
+	$multi_wan_failover_primary_link
+	</TD>
+	<TD align=right>
+		<select name="primary_link">
+			<option value="ethernet">$multi_wan_failover_ether_conn</option>
+			<option value="3G">$multi_wan_failover_mobile_conn</option>
+		</select>
+</TR>
+
+<TR id="method">
+	<TD nowrap>
+		<A tabindex=-1 href="javascript:loadhelp('_BAS_broadband', 'failover_meth')"><b>$multi_wan_failover_detect_method</b></A>
+	</TD>
+</TR>
+<TR id="dns">
+	<TD nowrap>
+		<input type="radio" name="detect_method_rd" value="hostname" checked onClick="click_ping();">$multi_wan_failover_detect_dns
+	</TD>
+	<TD align=right>
+		<input type="text" name="hostname_tx" value="www.netgear.com" size="16" onKeyPress="return getkey('ssid', event)">
+	</TD>
+</TR>
+<TR id="ip">
+	<TD nowrap>
+		<input type="radio" name="detect_method_rd" value="ping" onClick="click_ping();">$multi_wan_failover_detect_ip
+	</TD>
+	<TD nowrap align=right>
+		<input type="text" name="myip_1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+		<input type="text" name="myip_2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+		<input type="text" name="myip_3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+		<input type="text" name="myip_4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR id="retry">
+	<TD nowrap>$multi_wan_failover_retry_interval</TD>
+	<TD nowrap align=right>
+		<!--input type="text" name="retry_inter_tx" size="3" onKeyPress="return getkey('num', event)">(In Seconds)-->
+		<select name="retry_inter_tx">
+			<option value="5">5</option>
+			<option value="10" selected>10</option>
+			<option value="20">20</option>
+			<option value="30">30</option>
+			<option value="60">60</option>
+		</select>$multi_wan_failover_unit_seconds
+	</TD>
+</TR>
+<TR id="failafter">
+	<TD nowrap>$multi_wan_failover_failover_after</TD>
+	<TD nowrap align="right">
+		<!--input type="text" name="failover_tx" size="3" onKeyPress="return getkey('num', event)">(In Intervals)-->
+		<select name="failover_tx">
+			<option value="3" selected>3</option>
+			<option value="4">4</option>
+			<option value="5">5</option>
+			<option value="6">6</option>
+			<option value="7">7</option>
+			<option value="8">8</option>
+			<option value="9">9</option>
+			<option value="10">10</option>
+		</select>$multi_wan_failover_unit_interval
+	</TD>
+</TR>
+<TR id="hardware">
+	<TD nowrap>
+		<input type="checkbox" name="enable_hardware_ch">$multi_wan_failover_hardware_dete
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2 align=center>
+		<input class="cancel_bt" type='button' name='Cancel' value='$cancel_mark' onClick='location.href="BAS_broadband.htm";'>&nbsp;&nbsp;
+		<input class="apply_bt" type="submit" name="Apply" value="$apply_mark" onClick="return check_broadband(document.forms[0]);">
+	</TD>
+</TR>
+</TABLE>
+</div>
+<% help_box("0","_BAS_broadband") %>
+</FORM>
+</BODY>
+</HTML>

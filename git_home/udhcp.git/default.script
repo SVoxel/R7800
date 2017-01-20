@@ -1,0 +1,356 @@
+#!/bin/sh
+# udhcpc script edited by Tim Riker <Tim@Rikers.org>
+
+CONFIG="/bin/config"
+ECHO="/bin/echo"
+DATE="/bin/date"
+IFCONFIG="/sbin/ifconfig"
+ROUTE="/sbin/route"
+CMDUPNP="/sbin/cmdupnp"
+FIREWALL="/www/cgi-bin/firewall.sh"
+WAN_PROTO=$($CONFIG get wan_proto)
+WAN6_PROTO=$($CONFIG get ipv6_type)
+LAN_NETMASK=$($CONFIG get lan_netmask)
+WAN_IPUP="/sbin/wan-ipup"
+
+SR33_FILE="/tmp/udhcpc_static_route"
+CSR121_FILE="/tmp/udhcpc_classless_static_route"
+CSR249_FILE="/tmp/udhcpc_microsoft_classless_static_route"
+
+compare_the_same_subnet(){
+	num=0
+	for j in $1 $2 $3; do
+		num=`expr $num + 1`
+		IP1=$(echo $j | cut -f1 -d ".")
+		IP2=$(echo $j | cut -f2 -d ".")
+		IP3=$(echo $j | cut -f3 -d ".")
+		IP4=$(echo $j | cut -f4 -d ".")
+		if [ $num -eq 1 ]; then
+			IPN1=$IP1
+			IPNA=$(((IP2<<16) + (IP3<<8) + IP4))
+		elif [ $num -eq 2 ]; then
+			IPN2=$IP1
+			IPNB=$(((IP2<<16) + (IP3<<8) + IP4))
+		elif [ $num -eq 3 ]; then
+			IPN3=$IP1
+			MASKN=$(((IP2<<16) + (IP3<<8) + IP4))
+		fi
+	done
+
+	NETA=$((IPNA & MASKN))
+	NETB=$((IPNB & MASKN))
+
+	if [ $((IPN1 & IPN3)) -eq $((IPN2 & IPN3)) ] && [ $NETA -eq $NETB ]; then
+		return 1
+	else
+		return 0
+	fi
+}
+
+new_option_6rd=$ip6rd
+restart_ipv6=0
+update_6rd=0
+# if no have 6rd option212, unset Option212_get
+# if get 6rd option212, set Option212_get and 6rd parameters.
+if [ -z "$new_option_6rd" ]; then
+	echo "no 6RD parameters available, so unset 6rd related config"
+	update_6rd=1
+	$CONFIG unset Option212_get
+	$CONFIG unset Ipv6rdPrefixDynamic
+	$CONFIG unset Ipv6rdPlenDynamic
+	$CONFIG unset Ipv6rdRelayDynamic
+	$CONFIG unset Ipv6rdv4MaskDynamic
+else
+	srd_masklen=`echo ${new_option_6rd} |awk '{print $1}'`
+        srd_prefixlen=`echo ${new_option_6rd} |awk '{print $2}'`
+        srd_prefix=`echo ${new_option_6rd} |awk '{print $3}' | sed 's/:0000//g'`
+        srd_prefix="${srd_prefix}::"
+        srd_braddr=`echo ${new_option_6rd} |awk '{print $4}'`
+	$CONFIG set Option212_get=1
+	$CONFIG set Ipv6rdPrefixDynamic=${srd_prefix}
+	$CONFIG set Ipv6rdPlenDynamic=${srd_prefixlen}
+	$CONFIG set Ipv6rdRelayDynamic=$srd_braddr
+	$CONFIG set Ipv6rdv4MaskDynamic=$srd_masklen
+	if [ "x$WAN6_PROTO" != "x6rd" ] ;then
+		update_6rd=1
+	fi
+	sixrd_prefix=`$CONFIG get Ipv6rdPrefix`
+	# set 6rd information if they are empty
+	if [ "x$sixrd_prefix" = "x" ] ;then
+		$CONFIG set Ipv6rdPrefix=${srd_prefix}
+		$CONFIG set Ipv6rdPlen=${srd_prefixlen}
+		$CONFIG set Ipv6rdRelay=$srd_braddr
+		$CONFIG set Ipv6rdv4Mask=$srd_masklen
+	fi
+fi
+
+if [ "x$WAN6_PROTO" = "x6rd" ] || [ "x$WAN6_PROTO" = "x6to4" ] ;then
+        restart_ipv6=1
+elif [ "x$WAN6_PROTO" = "xautoDetect" ] && [ "x$update_6rd" = "x1" ] ;then
+	restart_ipv6=1
+fi
+
+DNS_ASSIGN=0
+if [ "$WAN_PROTO" = "bigpond" ]; then
+	if [ "$($CONFIG get wan_bpa_dns_assign)" = "1" ]; then
+		DNS_ASSIGN=1
+	fi
+elif [ "$WAN_PROTO" = "pptp" ]; then
+	DNS_ASSIGN=1	
+elif [ "$WAN_PROTO" = "l2tp" ]; then
+	DNS_ASSIGN=1
+elif [ "$WAN_PROTO" = "pppoe" ]; then
+	DNS_ASSIGN=1
+elif [ "$($CONFIG get wan_ether_dns_assign)" = "1" ]; then
+	DNS_ASSIGN=1
+fi
+if [ "$DNS_ASSIGN" = "1" ]; then
+	touch /tmp/dhcpc_resolv.conf
+	RESOLV_CONF="/tmp/dhcpc_resolv.conf"
+else
+	RESOLV_CONF="/tmp/resolv.conf"
+fi
+
+[ -z "$1" ] && $ECHO "Error: should be called from udhcpc" && exit 1
+[ -n "$broadcast" ] && BROADCAST="broadcast $broadcast"
+[ -n "$subnet" ] && NETMASK="netmask $subnet"
+
+$ECHO -n > "$SR33_FILE"
+$ECHO -n > "$CSR121_FILE"
+$ECHO -n > "$CSR249_FILE"
+
+case "$1" in
+	deconfig)
+		/sbin/ledcontrol -n wan -c amber -s on
+		[ -f /tmp/boot_status ] && exit 0
+		#in russia dynamic pppoe,it will need udhcpc to realize Ethernet Interface 
+		if [ "$WAN_PROTO" != "pppoe" ]; then
+			killall pppd
+			# sleep 2s for LCP Termination
+			sleep 2
+		fi
+
+		$IFCONFIG $interface 0.0.0.0 && $CONFIG set wan_dhcp_ipaddr=0.0.0.0
+
+		# start 6to4/6rd when ipv4 wan type is changed.
+		if [ "x$restart_ipv6" = "x1" ] ; then
+ 			killall net6conf
+			/etc/net6conf/net6conf restart
+		fi
+		# Restart static route & ripd
+		/sbin/cmdroute stop
+		/usr/bin/killall -SIGINT ripd 2> /dev/null
+		/sbin/cmdroute restart
+		/usr/sbin/ripd
+		;;
+
+	renew|bound)
+		old_ip=$($CONFIG get wan_dhcp_ipaddr)
+		$IFCONFIG $interface $ip $BROADCAST $NETMASK && $CONFIG set wan_dhcp_ipaddr=$ip && $CONFIG set wan_dhcp_oldip=$ip && $CONFIG set wan_dhcp_netmask=$subnet
+
+		if [ "x${vendor_specific}" != "x" ]; then
+			$CONFIG set wan_dhcp_acs_url="${vendor_specific}"
+		else
+			$CONFIG set wan_dhcp_acs_url="`$CONFIG get cwmp_acs_url`"
+		fi
+
+		if [ -n "$sroute" ]; then
+			for i in $sroute ; do
+				$ECHO "adding static route $i"
+				$ECHO "$i $interface" >> "$SR33_FILE"
+			done
+		fi
+
+		if [ -n "$csroute" ]; then
+			for i in $csroute ; do
+				$ECHO "adding classless static route $i"
+				$ECHO "$i $interface" >> "$CSR121_FILE"
+			done
+		fi
+		if [ -n "$mcsroute" ]; then
+			for i in $mcsroute ; do
+				$ECHO "adding microsoft classless static route $i"
+				$ECHO "$i $interface" >> "$CSR249_FILE"
+			done
+		fi
+
+		$ECHO -n > $RESOLV_CONF
+		[ -n "$domain" ] && $ECHO search $domain >> $RESOLV_CONF
+		dns_num=0
+		for i in $dns ; do
+			$ECHO adding dns $i
+			$ECHO nameserver $i >> $RESOLV_CONF
+
+			dns_num=`expr $dns_num + 1`
+			if [ $dns_num -eq 1 ]; then
+				wan_dns1=$i
+			fi
+			if [ $dns_num -eq 2 ]; then
+				wan_dns2=$i
+			fi
+			if [ $dns_num -eq 3 ]; then
+				wan_dns3=$i
+				# fixed Bug 28766[DNS]the DUT only use 3 DNS server,The 4th and more DNS servers in the list, if there is any, Must be dropped.
+				break
+			fi
+		done
+		# Fixed Bug35066 pppoe mode in RU firmware should use intranet interface to resolv intranet dns
+		if [ -n "$router" -a "$WAN_PROTO" = "pppoe" -a "$($CONFIG get wan_pppoe_intranet_wan_assign)" = "0" ]; then
+			pppoegw=""
+			
+			for i in $router ; do
+				[ "x$pppoegw" = "x" ] && pppoegw=$i
+			done
+
+			if [ "x$wan_dns1" != "x" ] && compare_the_same_subnet "$pppoegw" "$wan_dns1" "$subnet"; then
+				/sbin/route -A inet add -net "$wan_dns1" netmask 255.255.255.255 gw "$pppoegw"  $($CONFIG get wan_ifname)
+			fi
+			if [ "x$wan_dns2" != "x" ] && compare_the_same_subnet "$pppoegw" "$wan_dns2" "$subnet"; then
+				/sbin/route -A inet add -net "$wan_dns2" netmask 255.255.255.255 gw "$pppoegw"  $($CONFIG get wan_ifname)
+			fi
+			if [ "x$wan_dns3" != "x" ] && compare_the_same_subnet "$pppoegw" "$wan_dns3" "$subnet"; then
+				/sbin/route -A inet add -net "$wan_dns3" netmask 255.255.255.255 gw "$pppoegw"  $($CONFIG get wan_ifname)
+			fi
+		fi
+		# Fixed Bug28830: [IPv6 DNS] There is no IPv6 DNS server in /tmp/resolv.conf after DUT IPv4 WAN DHCP renew
+		if [ "$WAN6_PROTO" != "disabled" ] && [ -s /tmp/ipv6_dns ]; then
+			cat /tmp/ipv6_dns >> $RESOLV_CONF
+		fi
+
+		if [ "$DNS_ASSIGN" = "0" ]; then
+			/sbin/ipconflict $ip $LAN_NETMASK $wan_dns1 $wan_dns2 $wan_dns3; $ECHO "ipconflict run done"
+		fi
+
+		#Bug 31657[DHCP]Can't access the website after reboot until I click apply/test on Internet Setup page.
+		#If $router and lan ip are the same,then we can't add the default route.So we add default route after doing ipconflict
+		$CONFIG set wan_dhcp_gateway=0.0.0.0
+		if [ -n "$router" ] && [ "$WAN_PROTO" != "pptp" ] && [ "$WAN_PROTO" != "l2tp" ] && [ "$WAN_PROTO" != "pppoe" ]; then
+			$ECHO "deleting routers"
+			while $ROUTE del default gw 0.0.0.0 dev $interface >&- 2>&-; do
+				:
+			done
+
+			for i in $router ; do
+				$ECHO "adding router $i"
+				if compare_the_same_subnet "$ip" "$i" "$subnet"; then
+					$ROUTE add -net $i netmask 255.255.255.255 dev $interface
+				fi
+				$ROUTE add default gw $i dev $interface 
+			done
+			$CONFIG set wan_dhcp_gateway=$router
+		fi
+
+		# Run /sbin/wan-ipup after checking ipconflict
+		if [ "$old_ip" != "$($CONFIG get wan_dhcp_ipaddr)" -a -x $WAN_IPUP ]; then
+			$WAN_IPUP $ip
+		fi
+
+		if [ "$WAN_PROTO" = "pptp" ] && [ "$1" != "renew" -o "$($CONFIG get wan_dhcp_ipaddr)" != "$($CONFIG get wan_dhcp_oldip)" ]; then
+			/usr/bin/killall pppd 2> /dev/null
+			route del default
+			sleep 1
+
+			pptpconf="/etc/ppp/peers/dial-provider"
+			if [ "x$($CONFIG get pptp_gw_static_route)" = "x"  ]; then
+				[ "x$(grep ^pptp_dns1 $pptpconf)" = "x" -a "x$wan_dns1" != "x" ] && echo "pptp_dns1 $wan_dns1" >> $pptpconf
+				[ "x$(grep ^pptp_dns2 $pptpconf)" = "x" -a "x$wan_dns2" != "x" ] && echo "pptp_dns2 $wan_dns2" >> $pptpconf
+				[ "x$(grep ^pptp_dns3 $pptpconf)" = "x" -a "x$wan_dns3" != "x" ] && echo "pptp_dns3 $wan_dns3" >> $pptpconf
+			fi
+
+			pptpgw=""
+			if [ -n "$router" ]; then
+				for i in $router ; do
+					[ "x$pptpgw" = "x" ] && pptpgw=$i
+				done
+			fi
+			[ "x$(grep ^pptp_gateway $pptpconf)" = "x" -a "x$pptpgw" != "x" ] && echo "pptp_gateway $pptpgw" >> $pptpconf
+
+			pppd call dial-provider updetach
+		elif [ "$WAN_PROTO" = "l2tp" ] && [ "$1" != "renew" -o "$($CONFIG get wan_dhcp_ipaddr)" != "$($CONFIG get wan_dhcp_oldip)" ]; then
+			/usr/bin/killall pppd 2> /dev/null
+			route del default
+			sleep 3
+
+			l2tpconf="/etc/ppp/peers/dial-provider"
+			if [ "x$($CONFIG get l2tp_gw_static_route)" = "x"  ]; then
+				[ "x$(grep ^l2tp_dns1 $l2tpconf)" = "x" -a "x$wan_dns1" != "x" ] && echo "l2tp_dns1 $wan_dns1" >> $l2tpconf
+				[ "x$(grep ^l2tp_dns2 $l2tpconf)" = "x" -a "x$wan_dns2" != "x" ] && echo "l2tp_dns2 $wan_dns2" >> $l2tpconf
+				[ "x$(grep ^l2tp_dns3 $l2tpconf)" = "x" -a "x$wan_dns3" != "x" ] && echo "l2tp_dns3 $wan_dns3" >> $l2tpconf
+			fi
+
+			l2tpgw=""
+			if [ -n "$router" ]; then
+				for i in $router ; do
+					[ "x$l2tpgw" = "x" ] && l2tpgw=$i
+				done
+			fi
+			[ "x$(grep ^l2tp_gateway $l2tpconf)" = "x" -a "x$l2tpgw" != "x" ] && echo "l2tp_gateway $l2tpgw" >> $l2tpconf
+
+			pppd call dial-provider updetach
+		elif [ "$WAN_PROTO" = "bigpond" ]; then
+			$FIREWALL restart
+			/usr/bin/killall bpalogin 2> /dev/null
+			sleep 1
+
+			# Restart static route & ripd
+			/sbin/cmdroute stop
+			/usr/bin/killall -SIGINT ripd 2> /dev/null
+			/sbin/cmdroute restart
+			/usr/sbin/ripd
+
+			bpaconf="/tmp/bpalogin.conf"
+			[ -n "$domain" ] && authdomain=$domain
+			[ "x${authdomain}" = "x" ] && authdomain="vic.bigpond.net.au"
+			olddomain=$(grep ^authdomain $bpaconf)
+			[ "x$olddomain" = "x" ] && echo "authdomain $authdomain" >> $bpaconf
+			bpalogin -c $bpaconf
+			[ -n "$serverid" ] && $CONFIG set wan_dhcp_server=$serverid
+		else
+			[ -n "$lease" ] && $CONFIG set dhcpc_lease_time=$lease
+			[ -n "$serverid" ] && $CONFIG set wan_dhcp_server=$serverid
+
+			$CONFIG set dhcpc_lease_obtain="$(cat /proc/uptime | awk -F. '{print $1}')"
+
+			# restart firewall
+			$FIREWALL restart
+
+			# Restart static route & ripd
+			/sbin/cmdroute stop
+			/usr/bin/killall -SIGINT ripd
+			/sbin/cmdroute restart
+			/usr/sbin/ripd
+
+			# As New GUI spec V10, CD-less feature require resolve and ping www.netgear.com
+			if [ "$($CONFIG get dns_hijack)" = "1" -a "$($CONFIG get hijack_process)" = "1" ]; then
+				ping -c 5 www.netgear.com > /tmp/ping_result &
+				sleep 2
+			fi
+
+			# in ppp mode,after idle time and dhcp renew, it should not change the led color to green
+			if [ "$WAN_PROTO" != "pppoe" ] && [ "$WAN_PROTO" != "pptp" ] && [ "$WAN_PROTO" != "l2tp" ]; then
+				/sbin/ledcontrol -n wan -c green -s on
+			fi
+
+			# if IP address re-assigned, we will check qos bandwidth.
+			local qos_enable=`$CONFIG get qos_endis_on`
+			local qos_bandwidth_enable=`$CONFIG get qos_threshold`
+			local qos_bandwidth_type=`$CONFIG get qos_bandwidth_type`
+			if [ "x$qos_enable" = "x1" -a "x$qos_bandwidth_enable" = "x1" ]; then
+				if [ "x$qos_bandwidth_type" = "x1" ]; then
+					/etc/bandcheck/band-check &
+				fi
+			fi
+
+			# start 6to4/6rd when ipv4 wan type is changed.
+			if [ "x$restart_ipv6" = "x1" ] ; then
+ 				killall net6conf
+				/etc/net6conf/net6conf restart
+			fi
+
+			/sbin/cmdigmp start
+			# If upgrade FW, need to update stremboost database
+			sb_update_database
+		fi
+esac
+
+exit 0

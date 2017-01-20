@@ -1,0 +1,19 @@
+<% http_header("style/form.css") %>
+
+<BODY bgcolor=#FFFFFF>
+<table border="0">
+<TR>
+	<TD nowrap><B>POT : </B></TD>
+	<TD nowrap> &nbsp;<% cat_file("/tmp/pot_value") %> &nbsp;min</TD>
+</TR>
+<tr>
+        <td nowrap><B>NTP synchronized date/time : </B></td>
+        <td nowrap> &nbsp;<% get_pot_ntpst() %></td>
+</tr>
+<tr>
+        <td nowrap><B>MAC Address of the First STA Connected : </B></td>
+        <td nowrap> &nbsp;<% get_pot_stamac() %></td>
+</tr>
+</table>
+</BODY>
+</HTML>

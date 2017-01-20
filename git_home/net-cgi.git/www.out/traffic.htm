@@ -1,0 +1,459 @@
+ <% http_header("style/form.css", "/funcs.js", "/traffic.js") %>
+ <% body_header("_traffic", "traffic.htm", "traffic") %>
+ <div class="page_title">$traffic_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'traffic.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="button" name="apply" id="apply" value="$apply_mark" onclick="return check_traffic_apply(document.forms[0]);"></TD></TR>');
+else
+	document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="button" name="apply" id="apply" value="$apply_mark" disabled></TD></TR>');
+</script>
+</table>
+</div>
+<div id="main" class="main_top_button"> 
+ <% table_header() %>
+ <% save_timestamp("traffic", "traffic_reset") %>
+<script>
+endis_traffic="<% cfg_get("endis_traffic") %>";
+ctrl_volumn_time="<% cfg_get("ctrl_volumn_time") %>";
+limit="<% cfg_get("limit") %>";
+mon_volumn_limit="<% cfg_get("mon_volumn_limit") %>";
+mon_time_limit="<% cfg_get("mon_time_limit") %>";
+round_up_value="<% cfg_get("round_up") %>";
+restart_counter_time="<% cfg_get("restart_counter_time") %>";
+traffic_restart_day="<% cfg_get("traffic_restart_day") %>";
+left_time_volumn="<% cfg_get("left_time_volumn") %>";
+traffic_led="<% cfg_get("traffic_led") %>";
+traffic_block_all="<% cfg_get("traffic_block_all") %>";
+<% traffic_meter() %>
+gui_region="<% cfg_get("GUI_Region") %>"
+var basic_type="<% cfg_get("internet_type") %>";
+var ppp_login_type="<% cfg_get("internet_ppp_type") %>";
+
+var current_month="1";
+var current_year="2012";
+var current_days;
+var traffic_wan_interface="<% cfg_get("traffic_wan_interface") %>";
+var mobile_conn_status="<% cfg_get("wan_mobile_status") %>";
+var readyshare_mobile=parent.mobile_conn_flag;
+/* 
+Startdatum/-zeit: Thu Jan 1 00:00:00 1970
+Aktuelle(s) Datum/Zei: Sat Jan 1 00:00:44 2000
+*/
+if( traffic_startday != "")
+{
+	traffic_startday = get_date(traffic_startday);
+}
+if( traffic_currentdate != "")
+{
+	traffic_currentdate = get_date(traffic_currentdate);
+}
+
+function set_gray()
+{
+    var cf=document.forms[0];
+    var dflag;
+    dflag=(!(cf.checkTraffic.checked));
+    setDisabled ( dflag, cf.tm_type[0], cf.tm_type[1], cf.traff_dir, cf.volume_monthly_limit, cf.round_up_volume, cf.conntime_monthly_limit, cf.hour, cf.minute,  cf.day,  cf.waterMark, cf.checkLed, cf.checkBlock, cf.ampm, cf.refresh, cf.wan_interface);    //cf.restartCounter, cf.refresh, cf.trafficStatus,
+    if( basic_type == 1)
+        setDisabled ( true, cf.round_up_volume, cf.tm_type[1], cf.conntime_monthly_limit);
+    if(cf.checkTraffic.checked == true)
+    {
+	if(master == "admin")
+	{
+		document.getElementById("restart_counter").className  = "long_common_bt";
+		document.getElementById("restart_counter").disabled = false;
+	}
+	else
+	{
+		document.getElementById("restart_counter").className  = "long_common_gray_bt";
+		document.getElementById("restart_counter").disabled = true;
+	}
+    document.getElementById("refresh").className  = "common_key_bt";
+    document.getElementById("traffic_status").className  = "common_key_bt";
+    document.getElementById("traffic_status").disabled = false;
+    change_volumn_time();
+    check_limit();
+    }
+    else
+    {
+    document.getElementById("restart_counter").className  = "long_common_gray_bt";
+    document.getElementById("refresh").className  = "common_key_gray_bt";
+    document.getElementById("traffic_status").className  = "common_key_gray_bt";
+    document.getElementById("restart_counter").disabled = true;
+    document.getElementById("traffic_status").disabled = true;
+    }
+
+}
+
+function get_date(old_str)
+{
+	var each_info=old_str.split(': ');
+
+	var name=each_info[0];
+
+	var date_info=each_info[1].split(' ');
+	var week=date_info[0];
+	var show_week=change_week(week);
+	var month=date_info[1];
+	var show_month=change_month(month);
+
+	if( date_info[2] == "")
+	{
+		var day=date_info[3];
+		var time=date_info[4];
+		var year=date_info[5];
+	}
+	else
+	{
+		var day=date_info[2];
+		var time=date_info[3];
+		var year=date_info[4];	
+	}	
+	//to fix bug31500:The time format should be Start Date/Time: Tuesday,1 Nov 2011 00:00 AM
+	var time_info=time.split(':');
+	var hour=parseInt(time_info[0],10);
+	var sign="$am_mark";
+	if(hour>=12)
+	{
+		hour=hour-12;
+		sign="$pm_mark";
+	}
+	hour=hour.toString();
+	if(hour.length<2)
+	hour = "0" +hour;
+	var show_time=hour+':'+time_info[1];
+	var new_str = name+': '+show_week+','+day+' '+show_month+' '+year+' '+show_time+' '+sign;
+
+	current_month = num_month(show_month);
+	current_year = year;	
+	
+	return new_str;	
+}
+//fix the second problem of bug 30692
+current_days = getDaysInMonth(current_year, current_month);
+
+function check_limit()
+{
+	var cf=document.forms[0];
+	if(cf.traff_dir.value == "No limit")
+	{
+		cf.volume_monthly_limit.disabled = true;
+		cf.round_up_volume.disabled = true;
+	}
+	else
+	{
+		cf.volume_monthly_limit.disabled = false;
+		if(basic_type == 1)
+			cf.round_up_volume.disabled = true;
+		else
+			cf.round_up_volume.disabled = false;
+	}
+}
+
+function loadvalue()
+{
+	var cf=document.forms[0];
+
+	cf.volume_monthly_limit.value=mon_volumn_limit;
+	cf.conntime_monthly_limit.value=mon_time_limit;
+	cf.round_up_volume.value=round_up_value;
+	cf.hidden_round_up.value=round_up_value;
+	cf.waterMark.value=left_time_volumn;
+
+	if(readyshare_mobile=="1")
+	{
+		document.getElementById("wan_inter").style.display="";
+		if(traffic_wan_interface=="1")
+			cf.wan_interface.selectedIndex=1;
+		else
+			cf.wan_interface.selectedIndex=0;
+	}
+	if( gui_region == "German" )
+		for( i=0; i<28; i++)
+		{
+			var value=i+1;
+			value = value.toString();
+			cf.day.options[i].text = value;
+		}	
+		
+	if((basic_type=="0"&&ppp_login_type=="2") && false) //according to bug No.19250, should allow user to enable traffic meter under bigpond mode.
+	{
+		cf.checkTraffic.disabled = true;	
+		var dflag=true;
+		setDisabled ( dflag, cf.checkTraffic, cf.tm_type[0], cf.tm_type[1], cf.traff_dir, cf.volume_monthly_limit, cf.round_up_volume, cf.conntime_monthly_limit, cf.hour, cf.minute, cf.day, cf.restartCounter, cf.waterMark, cf.checkLed, cf.checkBlock, cf.refresh, cf.trafficStatus, cf.cmd, cf.Cancel, cf.ampm);
+	}
+	else
+	{
+		if( endis_traffic == "0" )
+		{
+			cf.checkTraffic.checked = false;	
+		}
+		else
+		{
+			cf.checkTraffic.checked = true;
+
+		}
+		if( basic_type == 1)
+			cf.tm_type[0].checked =true;
+		else if(ctrl_volumn_time=="0")
+			cf.tm_type[0].checked =true;
+		else
+			cf.tm_type[1].checked = true;
+		if(limit == "0")
+			cf.traff_dir.value="No limit";
+		else if(limit == "1")
+			cf.traff_dir.value="Download only";
+		else
+			cf.traff_dir.value="Both directions";
+		if ( traffic_led == "0")
+			cf.checkLed.checked = false;
+		else
+			cf.checkLed.checked = true;
+		if( traffic_block_all == "0")
+			cf.checkBlock.checked = false;
+		else
+			cf.checkBlock.checked = true;
+		time=restart_counter_time;
+		var time_array=time.split(':');
+		var hour=parseInt(time_array[0],10);
+		if(hour >11 )
+		{
+			hour = hour-12;
+			cf.ampm.selectedIndex = 1;
+		}
+		else
+			cf.ampm.selectIndex = 0; 
+		hour=hour.toString();
+		cf.hour.value=hour;
+		cf.minute.value=time_array[1];
+		
+		cf.day.value=traffic_restart_day;
+		set_gray();
+	}
+}
+</script>
+<input type="hidden" name="endis_traffic">
+<input type="hidden" name="traffic_led">
+<input type="hidden" name="traffic_block_all">
+<input type="hidden" name="restart_counter_time">
+<input type="hidden" name="hidden_round_up">
+<input type="hidden" name="hidden_traff_dir">
+<input type="hidden" name="hidden_tm_type">
+	<tr><td nowrap colspan=2><A tabindex=-1 href="javascript:loadhelp('_traffic','internet')"><b>$traffic_int</b></A></td></tr>
+	<tr><td nowrap colspan=2>
+		<input type="checkbox" name="checkTraffic" id="check_traffic" value="1" onclick="set_gray();"><A tabindex=-1 href="javascript:loadhelp('_traffic','meter')">$traffic_endis</A>
+		</td>
+	</tr>
+	<tr id=wan_inter style="display:none">
+		<td><b>mobile_wan_interface</b></td>
+		<td>
+			<select name="wan_interface">
+				<option value="0" selected>$mobile_traffic_ether</option>
+				<option value="1">$mobile_traffic_3g</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td nowrap colspan=2>
+			<input type="radio" name="tm_type" id="tm_tvolume" value="tvolume" onclick="change_volumn_time()">$traffic_volumn_ctrl
+		<!--</td>	
+		<td nowrap> -->	
+			<SELECT name="traff_dir" id="traff_dir" onChange="check_limit();">
+				<OPTION value="No limit" selected >$traffic_nolimit</OPTION>
+				<OPTION value="Download only" >$traffic_download</OPTION>
+				<OPTION value="Both directions" >$traffic_dir</OPTION>
+			</SELECT>
+		</td>
+	</tr>
+	<tr>
+		<td nowrap> <img src=/spacer.gif width=20 height=12 border=0>$traffic_mon_limit</td>
+		<td nowrap> 
+			<input type="text" name="volume_monthly_limit" id="volume_monthly_limit" maxlength="6" size="16" onKeyPress="return getkey('num', event)">&#40;$mbytes_mark&#41;
+		</td>
+	</tr>
+	<tr>	
+		<td nowrap> <img src=/spacer.gif width=20 height=12 border=0>$traffic_round_up</td>
+		<td nowrap> 
+			<input type="text" name="round_up_volume" id="round_up_volume" maxlength="16" value="$round_up" size="16" onKeyPress="return getkey('num', event)">&#40;$mbytes_mark&#41;
+		</td>
+	</tr>
+	<tr>
+		<td nowrap colspan=2>
+			<input type="radio" name="tm_type" id="tm_conntime" value="conntime" onclick="change_volumn_time()" >$traffic_time_ctrl
+		</td>
+	</tr>
+	<tr>	
+		<td nowrap> <img src=/spacer.gif width=20 height=12 border=0>$traffic_mon_limit</td>
+		<td nowrap> 
+			<input type="text" name="conntime_monthly_limit" id="conntime_monthly_limit" maxlength="5" size="16" onKeyPress="return getkey('num', event)">&#40;$hours_mark&#41;
+		</td>
+	</tr>
+$bluebar
+	<tr>
+		<td nowrap colspan=2><A tabindex=-1 href="javascript:loadhelp('_traffic','counter')"><b>$traffic_counter</b></A></td>
+	</tr>
+	<tr>
+		<td nowrap colspan=2>$traffic_counter_restart
+			<input type="text" name="hour" id="hour" maxlength=2 size=2>:<input type="text" name="minute" id="minute" maxlength=2 size=2>
+			<select name="ampm" id="ampm">
+				<option value="0" selected>am</option>
+				<option value="1">pm</option>
+			</select> 
+			$traffic_onthe
+			<select name="day" id="day">
+				<option value="1" selected>1st</option>
+				<option value="2">2nd</option>
+				<option value="3">3rd</option>
+				<option value="4">4th</option>		
+				<option value="5">5th</option>	
+				<option value="6">6th</option>		
+				<option value="7">7th</option>		
+				<option value="8">8th</option>		
+				<option value="9">9th</option>	
+				<option value="10">10th</option>		
+				<option value="11">11th</option>	
+				<option value="12">12th</option>	
+				<option value="13">13th</option>				
+				<option value="14">14th</option>		
+				<option value="15">15th</option>	
+				<option value="16">16th</option>		
+				<option value="17">17th</option>		
+				<option value="18">18th</option>		
+				<option value="19">19th</option>	
+				<option value="20">20th</option>		
+				<option value="21">21st</option>	
+				<option value="22">22nd</option>	
+				<option value="23">23rd</option>				
+				<option value="24">24th</option>		
+				<option value="25">25th</option>	
+				<option value="26">26th</option>		
+				<option value="27">27th</option>		
+				<option value="28">28th</option>
+				<option value="31">$last</option>
+			</select>	
+			$traffic_day_of_month
+		</td>
+	</tr>
+<script>
+if( master == "admin" )
+	document.write('<TR><TD nowrap colspan=2 align=right><input id="restart_counter" class="long_common_bt" type="button" name="Restart Counter Now" value="$traffic_btn_counter" onclick="click_restart();"></TD></TR>');
+else
+	document.write('<TR><TD nowrap colspan=2 align=right><input id="restart_counter" class="long_common_gray_bt" type="button" name="Restart Counter Now" value="$traffic_btn_counter" disabled></TD></TR>');
+</script>
+$bluebar
+	<tr><td nowrap colspan=2><A href="javascript:loadhelp('_traffic', 'reached')"><b>$traffic_ctrl</b></A></td></tr>
+	<tr><td nowrap colspan=2>$traffic_popup</td></tr>
+	<tr>
+		<td nowrap colspan=2>
+			<input type="text" maxlength="16" size="16" name="waterMark" id="water_mark" onKeyPress="return getkey('num', event)">$traffic_before
+		</td>	
+	</tr>
+	<tr><td nowrap colspan=2>$traffic_when</td></tr>
+	<tr>
+		<td nowrap colspan=2><input type="checkbox" name="checkLed" id="check_led" value=1>$traffic_turn_led</td>
+	</tr>
+	<tr>
+		<td nowrap colspan=2><input type="checkbox" name="checkBlock" id="check_block" value=1>$traffic_block</td>
+	</tr>
+$bluebar
+	<tr><td nowrap colspan=2><A href="javascript:loadhelp('_traffic', 'statistics')"><b>$traffic_statistics</b></A></td></tr>
+	<tr><td nowrap colspan=2 id="start_time"><script>document.write(traffic_startday)</script></td></tr>
+	<tr><td nowrap colspan=2 id="current_time"><script>document.write(traffic_currentdate)</script></td></tr>
+	<tr><td nowrap colspan=2 id="left_traffic"><script>document.write(traffic_volumnleft)</script></td></tr>
+	<tr>
+		<td nowrap colspan=2 align=center>
+			<table id=traffic_statistics border=1 cellpadding=2 cellspacing=0 width=100%>
+				<tr>
+				<td nowrap rowspan="2" align="center"><span class="subhead">$traffic_period_1</span></td>
+				<script>
+				if( basic_type == 1)
+					document.write('<td nowrap rowspan="2" align="center"><span class="subhead" style="color:gray;">$traffic_connect_time<br>$traffic_hhmm</span>');
+				else
+					document.write('<td nowrap rowspan="2" align="center"><span class="subhead">$traffic_connect_time<br>$traffic_hhmm</span>');
+				</script>
+				<td nowrap colspan="3" align="center" style="border-bottom-style:none"><span class="subhead">$traffic_volum_mbytes</span></td>
+				</tr>
+				<tr>
+				<td nowrap align="center" style="border-top-style:none; border-right-style:none"><span class="subhead">$traffic_avg_up</span></td>
+				<td nowrap align="center" style="border-top-style:none; border-left-style:none; border-right-style:none"><span class="subhead">$traffic_avg_down</span></td>
+				<td nowrap align="center" style="border-top-style:none; border-left-style:none"><span class="subhead">$traffic_avg_total</span></td>
+				</tr>
+				<tr>
+					<td nowrap align=center><span class="subhead">$today</span></td>
+					<script>
+					if( basic_type == 1)
+						document.write("<td nowrap align=center style='color:gray'>0:0</td>");
+					else
+						document.write("<td nowrap align=center>"+traffic_today_time+"</td>");
+					</script>
+					<td nowrap align=center> <script>document.write(traffic_today_up)</script></td>
+					<td nowrap align=center> <script>document.write(traffic_today_down)</script></td>
+					<td nowrap align=center> <script>document.write(traffic_today_total)</script></td>
+				</tr>
+				<tr>
+					<td nowrap align=center><span class="subhead">$yesterday</span></td>
+					<script>
+					if( basic_type == 1)
+						document.write("<td nowrap align=center style='color:gray'>0:0</td>");
+					else
+						document.write("<td nowrap align=center>"+traffic_yesterday_time+"</td>");
+					</script>
+					<td nowrap align=center> <script>document.write(traffic_yesterday_up)</script></td>
+					<td nowrap align=center> <script>document.write(traffic_yesterday_down)</script></td>
+					<td nowrap align=center> <script>document.write(traffic_yesterday_total)</script></td>
+				</tr>		
+				<tr>
+					<td nowrap align=center><span class="subhead">$this_week</span></td>
+					<script>
+					if( basic_type == 1)
+						document.write("<td nowrap align=center style='color:gray'>0:0</td>");
+					else
+						document.write("<td nowrap align=center>"+traffic_this_week_time+"</td>");
+					</script>
+					<td nowrap align=center> <script>document.write(traffic_this_week_up)</script> </td>
+					<td nowrap align=center> <script>document.write(traffic_this_week_down)</script> </td>
+					<td nowrap align=center> <script>document.write(traffic_this_week_total)</script> </td>
+				</tr>	
+				<tr>
+					<td nowrap align=center><span class="subhead">$this_month</span></td>
+					<script>
+					if( basic_type == 1)
+						document.write("<td nowrap align=center style='color:gray'>0:0</td>");
+					else
+						document.write("<td nowrap align=center>"+traffic_this_month_time+"</td>");
+					</script>
+					<td nowrap align=center> <script>document.write(traffic_this_month_up)</script> </td>
+					<td nowrap align=center> <script>document.write(traffic_this_month_down)</script> </td>
+					<td nowrap align=center> <script>document.write(traffic_this_month_total)</script> </td>
+				</tr>	
+				<tr>
+					<td nowrap align=center><span class="subhead">$last_month</span></td>
+					<script>
+					if( basic_type == 1)
+						document.write("<td nowrap align=center style='color:gray'>0:0</td>");
+					else
+						document.write("<td nowrap align=center>"+traffic_last_month_time+"</td>");
+					</script>
+					<td nowrap align=center> <script>document.write(traffic_last_month_up)</script> </td>
+					<td nowrap align=center> <script>document.write(traffic_last_month_down)</script> </td>
+					<td nowrap align=center> <script>document.write(traffic_last_month_total)</script> </td>
+				</tr>			
+			</table>	
+		</td>
+	</tr>	
+	<tr>
+		<td nowrap colspan=2 align=center>
+		<input class="common_key_bt" type='button' name='refresh' id='refresh' value='$refresh_mark' onclick="click_refresh_2();"> &nbsp;
+		<input class="common_key_bt" type="button" name="Traffic Status" id="traffic_status" value="$traffic_status" onclick="click_status();">
+		</td>
+	</tr>
+$bluebar
+</table>
+</div>
+<% help_box("0","_traffic") %>
+</form>
+</BODY>
+</HTML>

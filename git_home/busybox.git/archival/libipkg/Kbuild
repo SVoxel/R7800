@@ -1,0 +1,60 @@
+# Makefile for busybox
+#
+# Copyright (C) 1999-2004 by Erik Andersen <andersen@codepoet.org>
+# Copyright (C) 2006 OpenWrt.org
+#
+# Licensed under the GPL v2 or later, see the file LICENSE in this tarball.
+
+LIBIPKG_CORE_OBJS:= \
+	args.o \
+	libipkg.o \
+	user.o \
+
+LIBIPKG_CMD_OBJS:= \
+	ipkg_cmd.o \
+	ipkg_configure.o \
+	ipkg_download.o \
+	ipkg_install.o \
+	ipkg_remove.o \
+	ipkg_upgrade.o \
+
+LIBIPKG_DB_OBJS:= \
+	hash_table.o \
+	ipkg_conf.o \
+	ipkg_utils.o \
+	pkg.o \
+	pkg_depends.o \
+	pkg_extract.o \
+	pkg_hash.o \
+	pkg_parse.o \
+	pkg_vec.o \
+
+LIBIPKG_LIST_OBJS:= \
+	conffile.o \
+	conffile_list.o \
+	nv_pair.o \
+	nv_pair_list.o \
+	pkg_dest.o \
+	pkg_dest_list.o \
+	pkg_src.o \
+	pkg_src_list.o \
+	str_list.o \
+	void_list.o \
+
+LIBIPKG_UTIL_OBJS:= \
+	file_util.o \
+	ipkg_message.o \
+	str_util.o \
+	xsystem.o \
+
+lib-y :=
+lib-$(CONFIG_IPKG) += $(LIBIPKG_CORE_OBJS)
+lib-$(CONFIG_IPKG) += $(LIBIPKG_CMD_OBJS)
+lib-$(CONFIG_IPKG) += $(LIBIPKG_DB_OBJS)
+lib-$(CONFIG_IPKG) += $(LIBIPKG_LIST_OBJS)
+lib-$(CONFIG_IPKG) += $(LIBIPKG_UTIL_OBJS)
+
+ifeq ($(strip $(IPKG_ARCH)),)
+IPKG_ARCH:=$(TARGET_ARCH)
+endif
+CFLAGS += -DIPKG_LIB -DIPKGLIBDIR="\"/usr/lib\"" -DHOST_CPU_STR="\"$(IPKG_ARCH)\""

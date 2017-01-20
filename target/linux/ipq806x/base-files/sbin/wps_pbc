@@ -1,0 +1,82 @@
+#!/bin/sh
+
+if [ "$(config get endis_wl_wps)" -eq "1" -a "$(config get endis_wla_wps)" -eq "1" ] && [ "$(config get endis_wl_radio)" -eq "1" -o "$(config get endis_wla_radio)" -eq "1" ]; then
+	echo "wps enabled!"
+	if [ "$1" = "pressed" ]; then
+		echo "start" > /tmp/wps_process_state
+		/sbin/wlan wps --pbc_start
+	fi
+	exit 0
+fi
+
+echo "wps disable and wps button $1"
+
+LED_off='/sbin/ledcontrol -n wps -c green -s off'
+LED_on='/sbin/ledcontrol -n wps -c green -s on'
+
+ERROR_INTERVAL=100000           # 0.1s
+ERROR_TIMEOUT=50		# 0.1*50=5s
+LED_busy=no
+i=0
+
+PID_file=/var/run/wps_button.pid
+test -f $PID_file && {
+kill $(cat $PID_file)
+eval $LED_off
+}
+
+echo "$$" > $PID_file
+
+blink_wps_led_long(){
+
+while [ 1 ]
+do
+        if [ $LED_busy = "no" ]; then
+                eval $LED_on
+                LED_busy=yes
+        else
+                eval $LED_off
+                LED_busy=no
+        fi
+        usleep $ERROR_INTERVAL
+done
+
+}
+
+blink_wps_led_timeout(){
+
+while [ $i -lt $ERROR_TIMEOUT ]
+do
+        if [ $LED_busy = "no" ]; then
+                eval $LED_on
+                LED_busy=yes
+        else
+                eval $LED_off
+                LED_busy=no
+        fi
+        usleep $ERROR_INTERVAL
+	i=$(($i+1))
+done
+
+}
+
+
+case "$1" in
+	pressed)
+		blink_wps_led_long
+	;;
+	released)
+		blink_wps_led_timeout
+	;;
+	*)
+		echo "wps_led_control wrong paramters"
+	;;
+esac
+
+ENABLE_11G=`/bin/config get endis_wl_radio`
+ENABLE_11A=`/bin/config get endis_wla_radio`
+SECURITY_TYPE_11G=`/bin/config get wl_sectype`
+SECURITY_TYPE_11A=`/bin/config get wla_sectype`
+[ "${SECURITY_TYPE_11G}" -gt "1" -a "${ENABLE_11G}" -eq "1" -o "${SECURITY_TYPE_11A}" -gt "1" -a "${ENABLE_11A}" -eq "1" ] && eval ${LED_on} || eval ${LED_off}
+
+rm -f $PID_file

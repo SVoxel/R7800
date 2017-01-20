@@ -1,0 +1,189 @@
+<% http_header("style/form.css") %>
+
+<script>
+<% web_flag() %>
+var have_ethernet_wan_flag = "<% get_ethernet_wan_flag() %>";
+</script>
+
+<BODY bgcolor=#FFFFFF>
+<table>
+<TR>
+	<TD nowrap><B>FW Version : </B></TD>
+	<TD nowrap> &nbsp;<% cat_file("/firmware_version") %><% get_firmware_region("single_blank", "ww_blank") %> &nbsp;</TD>
+</TR>
+<TR>
+	<TD nowrap><B>Series number : </B></TD>
+	<TD nowrap> &nbsp;<% get_sn() %> &nbsp;</TD>
+</TR>
+<tbody id=wireless_info>
+<TR>
+	<TD nowrap><B>Wireless Region : </B></TD>
+	<TD nowrap> &nbsp;<% wireless_region_Eng() %>&nbsp;</TD>
+</TR>
+<TR>
+	<TD nowrap><B>2.4G SSID : </B></TD>
+	<TD nowrap> &nbsp;<% cfg_get_ssid_html("wl_ssid") %> &nbsp;</TD>
+</TR>
+<TR>
+	<TD nowrap><B>2.4G PassPhrase :</B></TD>
+	<TD nowrap> &nbsp;<% passphrase_bg_msg() %> &nbsp;</TD>
+</TR>
+<TR>
+	<TD nowrap><B>2.4G Data rate : </B></TD>
+	<TD nowrap> &nbsp;<% wl_mode("wl_") %> &nbsp;</TD>
+</TR>
+<TR>
+	<TD nowrap><B>2.4G Channel : </B></TD>
+	<TD nowrap> &nbsp;<% wl_channel() %> &nbsp;</TD>
+</TR>
+<TR id=coext style="display:none;">
+<TD nowrap><B>Coexist :</B></TD>
+<TD nowrap> &nbsp;<% cfg_get_inverse_value("wl_disablecoext") %> &nbsp;</TD>
+</TR>
+<TR id=bgcoext style="display:none;">
+<TD nowrap><B>2.4G Coexist :</B></TD>
+<TD nowrap> &nbsp;<% cfg_get_inverse_value("wl_disablecoext") %> &nbsp;</TD>
+</TR>
+<script>
+if(an_router_flag == 1)
+	document.getElementById("bgcoext").style.display="";
+else
+	document.getElementById("coext").style.display="";
+</script>
+<TR id=anssid style="display:none;">
+<TD nowrap><B>5G SSID : </B></TD>
+<TD nowrap> &nbsp;<% cfg_get_ssid_html("wla_ssid") %> &nbsp;</TD>
+</TR>
+<TR id=anpass style="display:none;">
+<TD nowrap><B>5G PassPhrase :</B></TD>
+<TD nowrap> &nbsp;<% passphrase_ag_msg() %> &nbsp;</TD>
+</TR>
+<TR id=an_wlamode style="display:none;">
+<TD nowrap><B>5G Data rate : </B></TD>
+<TD nowrap> &nbsp;<% wl_mode("wla_") %> &nbsp;</TD>
+</TR>
+<TR id=an_wlachannel style="display:none;">
+<TD nowrap><B>5G Channel : </B></TD>
+<TD nowrap> &nbsp;<% wla_channel() %> &nbsp;</TD>
+</TR>
+<TR id=ancoext style="display:none;">
+<TD nowrap><B>5G Coexist :</B></TD>
+<TD nowrap> &nbsp;<% cfg_get_inverse_value("wla_disablecoext") %> &nbsp;</TD>
+</TR>
+<script>
+
+if(an_router_flag == 1)
+{
+	document.getElementById("anssid").style.display="";
+	document.getElementById("anpass").style.display="";
+	document.getElementById("an_wlamode").style.display="";
+	document.getElementById("an_wlachannel").style.display="";
+	if(an_coexist_flag == 1)
+		document.getElementById("ancoext").style.display="";
+}
+</script>
+<TR>
+	<TD nowrap><B>2.4G WLAN MAC : </B></TD>
+	<TD nowrap> &nbsp;<% wds_mac("bgn") %> &nbsp;</TD>
+</TR>
+<TR>
+<TR id=an_wdsmac style="display:none;">
+<TD nowrap><B>5G WLAN MAC : </B></TD>
+<TD nowrap> &nbsp;<% wds_mac("an") %>  &nbsp;</TD>
+</TR>
+<script>
+	if(an_router_flag == 1)
+		document.getElementById("an_wdsmac").style.display="";
+</script>
+</TR>
+</tbody>
+<TR>
+	<TD nowrap><B>LAN MAC : </B></TD>
+	<TD nowrap> &nbsp;<% lan_mac() %> &nbsp;</TD>
+</TR>
+<TR>
+	<TD nowrap><B>WAN MAC : </B></TD>
+	<TD nowrap> &nbsp;<% wan_mac() %> &nbsp;</TD>
+</TR>
+<TR id=pin_code>
+	<TD nowrap><B>PIN Code : </B></TD>
+	<TD nowrap> &nbsp;<% pin_num() %> &nbsp;</TD>
+</TR>
+<TR>
+        <TD nowrap><B>Region : </B></TD>
+        <TD nowrap> &nbsp;<% get_firmware_region() %> &nbsp;</TD>
+</TR>
+<TR>
+        <TD nowrap><B>Language : </B></TD>
+        <TD nowrap> &nbsp;<% language_list() %> &nbsp;</TD>
+</TR>
+<TR>
+        <TD nowrap><B>Board HW ID : </B></TD>
+        <TD nowrap> &nbsp;<% get_board_hw_id() %> &nbsp;</TD>
+</TR>
+<TR>
+        <TD nowrap><B>Board Model ID : </B></TD>
+        <TD nowrap> &nbsp;<% get_board_model_id() %> &nbsp;</TD>
+</TR>
+<TR>
+        <TD nowrap><B>start page : </B></TD>
+        <TD nowrap> &nbsp;<% endis_setup_wizard() %> &nbsp;</TD>
+</TR>
+<TR id=ethernet_wan_speed>
+        <TD nowrap><B>WAN speed : </B></TD>
+        <TD nowrap> &nbsp;<% cat_file("/tmp/WAN_status")%> &nbsp;</TD>
+</TR>
+<tbody id=vpn_info>
+<TR>
+        <TD nowrap><B>VPN Cert : </B></TD>
+        <TD nowrap> &nbsp;<% cat_file("/tmp/openvpn/cert.info")%> &nbsp;</TD>
+</TR>
+<TR>
+        <TD nowrap><B>VPN Cert begin time : </B></TD>
+	<TD nowrap> &nbsp;<% show_vpn_expire_time("1")%>&nbsp;</TD>
+</TR>
+<TR>
+        <TD nowrap><B>VPN Cert end time : </B></TD>
+	<TD nowrap> &nbsp;<% show_vpn_expire_time("2")%> &nbsp;</TD>
+</TR>
+</tbody>
+<TR id=dsl_upspeed style="display:none"><TD nowrap><B>DSL Link Upsteam Speed : </B></TD><TD nowrap> &nbsp;<% dsl_info("1")%>&nbsp;</TD></TR>
+<TR id=dsl_downspeed style="display:none"><TD nowrap><B>DSL Link Downsteam Speed : </B></TD><TD nowrap> &nbsp;<% dsl_info("2")%>&nbsp;</TD></TR>
+<TR id=dsl_mode style="display:none"><TD nowrap><B>WAN mode : </B></TD><TD nowrap> &nbsp;<% wan_mode_type("")%>&nbsp;</TD></TR>
+<TR id=factory_mode style="display:none"><TD nowrap><B>Factory Mode : </B></TD><TD nowrap> &nbsp;<% factory_setting() %>&nbsp;</TD></TR>
+<script>
+if(dsl_enable_flag == 1)
+{
+	document.getElementById("dsl_upspeed").style.display="";
+	document.getElementById("dsl_downspeed").style.display="";
+	document.getElementById("dsl_mode").style.display="";
+}
+
+if(typeof(have_wifi_flag) != "undefined" && have_wifi_flag == 0)
+{
+	document.getElementById("wireless_info").style.display="none";
+	document.getElementById("pin_code").style.display="none";
+	document.getElementById("factory_mode").style.display="";
+}
+else
+{
+	document.getElementById("wireless_info").style.display="";
+	document.getElementById("pin_code").style.display="";
+	document.getElementById("factory_mode").style.display="none";
+}
+if(vpn_show_flag == 0)
+	document.getElementById("vpn_info").style.display="none";
+else
+	document.getElementById("vpn_info").style.display="";
+
+if(have_ethernet_wan_flag == "0")
+	document.getElementById("ethernet_wan_speed").style.display="none";
+else
+	document.getElementById("ethernet_wan_speed").style.display="";
+</script>
+
+<!-- % green_download_version() % //fix bug 43093--> 
+</table>
+</BODY>
+</HTML>
+

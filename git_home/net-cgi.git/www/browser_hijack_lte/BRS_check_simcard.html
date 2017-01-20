@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+</head>
+
+<body onLoad="loadvalue();" bgcolor=#ffffff>
+
+<script>
+var sim_card_status="<% cfg_get("wan_sim_card") %>";
+var lte_card_status="<% cfg_get("wan_lte_card") %>";
+var pin_required="<% cfg_get("pin_required") %>";
+var puk_required="<% cfg_get("puk_required") %>";
+function loadvalue()
+{
+	if(lte_card_status == '1' && sim_card_status == '1')
+	{
+		if(pin_required == '1')
+			location.href="BRS_enter_pin.html";
+		else if(puk_required == '1')
+			location.href="BRS_enter_puk.html";
+		else
+			location.href="BRS_check_isp_wait.html";
+	}
+	else
+		location.href="BRS_no_simcard.html";
+}
+</script>
+</body>
+</html>

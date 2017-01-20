@@ -1,0 +1,444 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ATHSIOCDEVPRIVATE	switch-api.h	7;"	d
+A_FALSE	switch-api.h	/^    A_FALSE,$/;"	e	enum:__anon1
+A_TRUE	switch-api.h	/^    A_TRUE           $/;"	e	enum:__anon1
+BINDIR	Makefile	/^BINDIR=\/usr\/local\/bin$/;"	m
+BIT_CLR	defs.h	105;"	d
+BIT_SET	defs.h	104;"	d
+BIT_TST	defs.h	106;"	d
+BIT_ZERO	defs.h	103;"	d
+BUILD	build.h	1;"	d
+CFLAGS	Makefile	/^CFLAGS=-Os$/;"	m
+Config	defs.h	/^struct Config {$/;"	s
+DEFAULT_RATELIMIT	defs.h	176;"	d
+DEFAULT_ROBUSTNESS	defs.h	174;"	d
+DEFAULT_THRESHOLD	defs.h	175;"	d
+DNI_MULTI_LAN_SUPPORT	defs.h	69;"	d
+DPRINTF	defs.h	114;"	d
+DPRINTF	defs.h	122;"	d
+ENABLE_DEBUG	defs.h	64;"	d
+ETCDIR	Makefile	/^ETCDIR=\/etc$/;"	m
+EXTRA_FLAG	Makefile	/^EXTRA_FLAG = -DUSE_ATH_HEADER$/;"	m
+FALSE	defs.h	110;"	d
+FAL_MAC_CPY_TO_CPU	switch-api.h	/^    FAL_MAC_CPY_TO_CPU,$/;"	e	enum:__anon3
+FAL_MAC_DROP	switch-api.h	/^    FAL_MAC_DROP,$/;"	e	enum:__anon3
+FAL_MAC_FRWRD	switch-api.h	/^    FAL_MAC_FRWRD = 0,$/;"	e	enum:__anon3
+FAL_MAC_RDT_TO_CPU	switch-api.h	/^    FAL_MAC_RDT_TO_CPU$/;"	e	enum:__anon3
+FDBSTATE_CHECK_LAST_MEMBER	fdbtable.h	7;"	d
+FDBSTATE_JOINED	fdbtable.h	6;"	d
+FDBSTATE_NOTJOINED	fdbtable.h	5;"	d
+FSM	defs.h	525;"	d
+FdbTable	fdbtable.h	/^struct FdbTable {$/;"	s
+Flags	defs.h	/^    short               Flags;$/;"	m	struct:IfDesc
+GOT_SIGHUP	igmpproxy.c	96;"	d	file:
+GOT_SIGINT	igmpproxy.c	95;"	d	file:
+GOT_SIGUSR1	igmpproxy.c	97;"	d	file:
+GOT_SIGUSR2	igmpproxy.c	98;"	d	file:
+GetSysUpTime	igmpproxy.c	/^long GetSysUpTime()$/;"	f
+GroupVifDesc	request.c	/^} GroupVifDesc;$/;"	t	typeref:struct:__anon8	file:
+IFNAMSIZ	switch-api.h	2;"	d
+IF_DEBUG	defs.h	160;"	d
+IF_NAME	switch-api.h	4;"	d
+IF_STATE_DISABLED	defs.h	169;"	d
+IF_STATE_DOWNSTREAM	defs.h	171;"	d
+IF_STATE_UPSTREAM	defs.h	170;"	d
+IGMPPROXY_CONFIG_FILEPATH	defs.h	63;"	d
+IGMPV1_V2	defs.h	235;"	d
+IGMPV3	defs.h	236;"	d
+IGMPV3_ALLOW_NEW_SOURCE	defs.h	243;"	d
+IGMPV3_BLOCK_OLD_SOURCE	defs.h	244;"	d
+IGMPV3_CHANGE_TO_EXCLUDE	defs.h	242;"	d
+IGMPV3_CHANGE_TO_INCLUDE	defs.h	241;"	d
+IGMPV3_MINLEN	defs.h	231;"	d
+IGMPV3_MODE_IS_EXCLUDE	defs.h	240;"	d
+IGMPV3_MODE_IS_INCLUDE	defs.h	239;"	d
+IGMP_IMMEDIATE_LEAVE	defs.h	66;"	d
+IGMP_MBR_TIMEOUT	defs.h	484;"	d
+IGMP_V3_MEMBERSHIP_REPORT	defs.h	232;"	d
+INTERVAL_QUERY	defs.h	179;"	d
+INTERVAL_QUERY_RESPONSE	defs.h	180;"	d
+IP_RA_OPTION_LEN	defs.h	229;"	d
+IfDesc	defs.h	/^struct IfDesc {$/;"	s
+IfDescEp	ifvc.c	/^struct IfDesc IfDescVc[ MAX_IF ], *IfDescEp = IfDescVc;$/;"	v	typeref:struct:
+IfDescVc	ifvc.c	/^struct IfDesc IfDescVc[ MAX_IF ], *IfDescEp = IfDescVc;$/;"	v	typeref:struct:IfDesc
+IfDp	mroute-api.c	/^    struct IfDesc *IfDp;$/;"	m	struct:VifDesc	typeref:struct:VifDesc::IfDesc	file:
+InAdr	defs.h	/^    struct in_addr      InAdr;          \/* == 0 for non IP interfaces *\/            $/;"	m	struct:IfDesc	typeref:struct:IfDesc::in_addr
+InVif	defs.h	/^    short           InVif;$/;"	m	struct:MRouteDesc
+IpAddrToMacAddr	switch-api.c	/^IpAddrToMacAddr(uint32 group, fal_mac_addr_t *mac)$/;"	f	file:
+LOCAL_CONTROL_END	request.c	303;"	d	file:
+LOCAL_CONTROL_START	request.c	302;"	d	file:
+Listener	defs.h	/^struct Listener {$/;"	s
+Log2Stderr	syslog.c	/^int  Log2Stderr = LOG_WARNING;$/;"	v
+LogLastErrno	syslog.c	/^int  LogLastErrno;$/;"	v
+LogLastMsg	syslog.c	/^char LogLastMsg[ 128 ];$/;"	v
+LogLastServerity	syslog.c	/^int  LogLastServerity;$/;"	v
+MANDIR	Makefile	/^MANDIR=\/usr\/share\/man$/;"	m
+MAX	defs.h	98;"	d
+MAX_IF	defs.h	166;"	d
+MAX_IP_HEADER_LEN	defs.h	92;"	d
+MAX_IP_PACKET_LEN	defs.h	90;"	d
+MAX_MC_VIFS	defs.h	94;"	d
+MAX_SOURCE_ENTRY	source_set.h	6;"	d
+MAX_TOKEN_LENGTH	confread.c	50;"	d	file:
+MAX_TOKEN_LENGTH	defs.h	438;"	d
+MIN	defs.h	97;"	d
+MIN_IP_HEADER_LEN	defs.h	91;"	d
+MRouteDesc	defs.h	/^struct MRouteDesc {$/;"	s
+MRouterFD	mroute-api.c	/^int         MRouterFD;        \/* socket for all network I\/O  *\/$/;"	v
+MULTICAST	defs.h	84;"	d
+McAdr	defs.h	/^    struct in_addr  OriginAdr, McAdr;$/;"	m	struct:MRouteDesc	typeref:struct:MRouteDesc::
+NIPQUAD	defs.h	78;"	d
+Name	defs.h	/^    char                Name[ sizeof( ((struct ifreq *)NULL)->ifr_name ) ];$/;"	m	struct:IfDesc
+OriginAdr	defs.h	/^    struct in_addr  OriginAdr, McAdr;$/;"	m	struct:MRouteDesc	typeref:struct:MRouteDesc::in_addr
+PORT_INIT_STATE	defs.h	526;"	d
+PORT_MAX_NUM	defs.h	71;"	d
+READ_BUFFER_SIZE	confread.c	47;"	d	file:
+RECV_BUF_SIZE	defs.h	138;"	d
+ROUTESTATE_CHECK_LAST_MEMBER	defs.h	185;"	d
+ROUTESTATE_JOINED	defs.h	184;"	d
+ROUTESTATE_NOTJOINED	defs.h	183;"	d
+RouteTable	defs.h	/^struct RouteTable {$/;"	s
+SSDP	request.c	304;"	d	file:
+SUPPORT_IGMPV3	defs.h	67;"	d
+SUPPURT_MCAST_TO_UNICAST	defs.h	68;"	d
+SWINTERFACE	igmpproxy.c	104;"	d	file:
+SW_ABORTED	switch-api.h	/^    SW_ABORTED         = -29      \/* Operation has been aborted.         *\/$/;"	e	enum:__anon2
+SW_ALREADY_EXIST	switch-api.h	/^    SW_ALREADY_EXIST   = -16,     \/* Tried to create existing entry      *\/$/;"	e	enum:__anon2
+SW_BAD_LEN	switch-api.h	/^    SW_BAD_LEN         = -6,      \/* Wrong length                        *\/$/;"	e	enum:__anon2
+SW_BAD_PARAM	switch-api.h	/^    SW_BAD_PARAM       = -4,      \/* Illegal parameter(s)                *\/$/;"	e	enum:__anon2
+SW_BAD_PTR	switch-api.h	/^    SW_BAD_PTR         = -5,      \/* Illegal pointer value               *\/$/;"	e	enum:__anon2
+SW_BAD_STATE	switch-api.h	/^    SW_BAD_STATE       = -7,      \/* Wrong state of state machine        *\/$/;"	e	enum:__anon2
+SW_BAD_VALUE	switch-api.h	/^    SW_BAD_VALUE       = -2,      \/* Illegal value                       *\/$/;"	e	enum:__anon2
+SW_BUSY	switch-api.h	/^    SW_BUSY            = -22,     \/* Operation is still running          *\/$/;"	e	enum:__anon2
+SW_CREATE_ERROR	switch-api.h	/^    SW_CREATE_ERROR    = -10,     \/* Fail in creating an entry           *\/$/;"	e	enum:__anon2
+SW_DELETE_ERROR	switch-api.h	/^    SW_DELETE_ERROR    = -11,     \/* Fail in deleteing an entry          *\/  $/;"	e	enum:__anon2
+SW_DISABLE	switch-api.h	/^    SW_DISABLE         = -24,     \/* Operation is disabled               *\/$/;"	e	enum:__anon2
+SW_EMPTY	switch-api.h	/^    SW_EMPTY           = -18,     \/* Table is empty                      *\/$/;"	e	enum:__anon2
+SW_FAIL	switch-api.h	/^    SW_FAIL            = -1,      \/* Operation failed                    *\/$/;"	e	enum:__anon2
+SW_FULL	switch-api.h	/^    SW_FULL            = -17,     \/* Table is full                       *\/$/;"	e	enum:__anon2
+SW_INIT_ERROR	switch-api.h	/^    SW_INIT_ERROR      = -26,     \/* Error occured while INIT process    *\/$/;"	e	enum:__anon2
+SW_MAX_NR_PORTS	switch-api.h	5;"	d
+SW_NOT_FOUND	switch-api.h	/^    SW_NOT_FOUND       = -12,     \/* Entry not found                     *\/$/;"	e	enum:__anon2
+SW_NOT_IMPLEMENTED	switch-api.h	/^    SW_NOT_IMPLEMENTED = -20,     \/* This request is not implemented     *\/$/;"	e	enum:__anon2
+SW_NOT_INITIALIZED	switch-api.h	/^    SW_NOT_INITIALIZED = -21,     \/* The item is not initialized         *\/$/;"	e	enum:__anon2
+SW_NOT_READY	switch-api.h	/^    SW_NOT_READY       = -27,     \/* The other side is not ready yet     *\/$/;"	e	enum:__anon2
+SW_NOT_SUPPORTED	switch-api.h	/^    SW_NOT_SUPPORTED   = -19,     \/* This request is not support         *\/$/;"	e	enum:__anon2
+SW_NO_CHANGE	switch-api.h	/^    SW_NO_CHANGE       = -13,     \/* The parameter(s) is the same        *\/$/;"	e	enum:__anon2
+SW_NO_MORE	switch-api.h	/^    SW_NO_MORE         = -14,     \/* No more entry found                 *\/$/;"	e	enum:__anon2
+SW_NO_RESOURCE	switch-api.h	/^    SW_NO_RESOURCE     = -25,     \/* Resource not available (memory ...) *\/$/;"	e	enum:__anon2
+SW_NO_SUCH	switch-api.h	/^    SW_NO_SUCH         = -15,     \/* No such entry                       *\/$/;"	e	enum:__anon2
+SW_OK	switch-api.h	/^    SW_OK              = 0,       \/* Operation succeeded                 *\/$/;"	e	enum:__anon2
+SW_OUT_OF_MEM	switch-api.h	/^    SW_OUT_OF_MEM      = -28,     \/* Cpu memory allocation failed.       *\/$/;"	e	enum:__anon2
+SW_OUT_OF_RANGE	switch-api.h	/^    SW_OUT_OF_RANGE    = -3,      \/* Value is out of range               *\/$/;"	e	enum:__anon2
+SW_READ_ERROR	switch-api.h	/^    SW_READ_ERROR      = -8,      \/* Read operation failed               *\/$/;"	e	enum:__anon2
+SW_TIMEOUT	switch-api.h	/^    SW_TIMEOUT         = -23,     \/* Operation Time Out                  *\/$/;"	e	enum:__anon2
+SW_WRITE_ERROR	switch-api.h	/^    SW_WRITE_ERROR     = -9,      \/* Write operation failed              *\/$/;"	e	enum:__anon2
+SubnetList	defs.h	/^struct SubnetList {$/;"	s
+TRUE	defs.h	111;"	d
+TtlVc	defs.h	/^    uint8           TtlVc[ MAX_MC_VIFS ];$/;"	m	struct:MRouteDesc
+UINT32	source_set.h	/^typedef unsigned long UINT32;$/;"	t
+USE_LINUX_IN_H	mroute-api.c	40;"	d	file:
+USE_UP_TIME	igmpproxy.c	52;"	d	file:
+Usage	igmpproxy.c	/^static const char Usage[] = $/;"	v	file:
+VCEP	defs.h	100;"	d
+VCMC	defs.h	99;"	d
+VERSION	version.h	33;"	d
+Version	igmpproxy.c	/^static const char Version[] = $/;"	v	file:
+VifDesc	mroute-api.c	/^static struct VifDesc {$/;"	s	file:
+VifDescVc	mroute-api.c	/^} VifDescVc[ MAXVIFS ];$/;"	v	typeref:struct:VifDesc	file:
+ZEROSET	igmpv3.c	/^struct source_set ZEROSET;$/;"	v	typeref:struct:source_set
+__SOURCE_SET__	source_set.h	2;"	d
+a_bool_t	switch-api.h	/^}a_bool_t;$/;"	t	typeref:enum:__anon1
+a_int16_t	switch-api.h	/^typedef int16_t           a_int16_t;    $/;"	t
+a_int32_t	switch-api.h	/^typedef int32_t           a_int32_t;    $/;"	t
+a_int64_t	switch-api.h	/^typedef int64_t           a_int64_t;    $/;"	t
+a_int8_t	switch-api.h	/^typedef int8_t            a_int8_t;     $/;"	t
+a_uint16_t	switch-api.h	/^typedef uint16_t          a_uint16_t;   $/;"	t
+a_uint32_t	switch-api.h	/^typedef uint32_t          a_uint32_t;   $/;"	t
+a_uint64_t	switch-api.h	/^typedef uint64_t          a_uint64_t;   $/;"	t
+a_uint8_t	switch-api.h	/^typedef uint8_t           a_uint8_t;    $/;"	t
+acceptGroupReport	request.c	/^void acceptGroupReport(uint32 port, uint32 src, uint32 group, uint8 type) {$/;"	f
+acceptIgmp	igmp.c	/^void acceptIgmp(int recvlen) {$/;"	f
+acceptLeaveMessage	request.c	/^void acceptLeaveMessage(uint32 src, uint32 group) {$/;"	f
+activateRoute	rttable.c	/^int activateRoute(uint32 group, uint32 originAddr) {$/;"	f
+addMFdb	switch-api.c	/^int addMFdb(uint32 group, uint32 port){$/;"	f
+addMRoute	mroute-api.c	/^int addMRoute( struct MRouteDesc *Dp )$/;"	f
+addVIF	mroute-api.c	/^void addVIF( struct IfDesc *IfDp )$/;"	f
+add_ebt_rule	igmpv3.c	/^add_ebt_rule(uint32 port, uint32 group, uint32 newmode, struct source_set *newset)$/;"	f	file:
+add_listener	igmpv3.c	/^add_listener(uint32 port, struct RouteTable *croute, uint32 src, struct source_set *tmp1, int mode) $/;"	f	file:
+add_source_list	mroute-api.c	/^int add_source_list(uint32 mgroup, uint32 src_ip)$/;"	f
+addr	switch-api.h	/^    a_uint8_t addr[6];$/;"	m	struct:__anon4
+ageActiveFdbs	fdbtable.c	/^ageActiveFdbs()$/;"	f
+ageActiveRoutes	rttable.c	/^void ageActiveRoutes() {$/;"	f
+ageActivity	defs.h	/^    int                 ageActivity;    \/\/ Records any acitivity that notes there are still listeners.$/;"	m	struct:RouteTable
+ageActivity	fdbtable.h	/^    int ageActivity;          \/\/ Records any acitivity that notes there are still listeners.$/;"	m	struct:FdbTable
+ageSwifBits	fdbtable.h	/^    uint32 ageSwifBits;         \/\/ Bits representing aging switch ports - Ports received report$/;"	m	struct:FdbTable
+ageSwifResultBits	fdbtable.h	/^    uint32 ageSwifResultBits;    \/\/ Bits representing aging Ports result.$/;"	m	struct:FdbTable
+ageValue	defs.h	/^    int                 ageValue;       \/\/ Downcounter for death.          $/;"	m	struct:RouteTable
+ageValue	fdbtable.h	/^    int ageValue;             \/\/ Downcounter for death.          $/;"	m	struct:FdbTable
+ageVifBits	defs.h	/^    uint32              ageVifBits;     \/\/ Bits representing aging VIFs.$/;"	m	struct:RouteTable
+age_callout_queue	callout.c	/^void age_callout_queue(int elapsed_time) {$/;"	f
+all_group_igmpv3	igmp.c	/^uint32	   all_group_igmpv3;$/;"	v
+allhosts_group	igmp.c	/^uint32     allhosts_group;          \/* All hosts addr in net order *\/$/;"	v
+allowednets	config.c	/^    struct SubnetList*  allowednets;$/;"	m	struct:vifconfig	typeref:struct:vifconfig::SubnetList	file:
+allowednets	defs.h	/^    struct SubnetList*  allowednets;$/;"	m	struct:IfDesc	typeref:struct:IfDesc::SubnetList
+allrouters_group	igmp.c	/^uint32     allrouters_group;          \/* All hosts addr in net order *\/$/;"	v
+arl_struct_t	switch-api.h	/^} arl_struct_t;$/;"	t	typeref:struct:__anon5
+atlog	defs.h	501;"	d
+bufPtr	confread.c	/^unsigned int    bufPtr;             \/\/ Buffer position pointer.$/;"	v
+buildIfVc	ifvc.c	/^void buildIfVc() {$/;"	f
+buildIgmp	igmp.c	/^void buildIgmp(uint32 src, uint32 dst, int type, int code, uint32 group, int datalen) {$/;"	f
+buildIgmpv3	igmp.c	/^void buildIgmpv3(uint32 src, uint32 dst, int type, int code, uint32 group, int datalen) {$/;"	f
+cToken	confread.c	/^char    cToken[MAX_TOKEN_LENGTH];   \/\/ Token buffer...$/;"	v
+callout_init	callout.c	/^void callout_init() {$/;"	f
+cfunc_t	defs.h	/^typedef void (*cfunc_t)   (void *);$/;"	t
+check_mbr_timeout	rttable.c	/^void check_mbr_timeout(void)$/;"	f
+clearAllFdbs	fdbtable.c	/^clearAllFdbs()$/;"	f
+clearAllRoutes	rttable.c	/^void clearAllRoutes() {$/;"	f
+clearSnoopBr	ifvc.c	/^clearSnoopBr()$/;"	f
+closeConfigFile	confread.c	/^void closeConfigFile() {$/;"	f
+commonConfig	config.c	/^static struct Config commonConfig;$/;"	v	typeref:struct:Config	file:
+commonConfig	config.c	/^struct Config commonConfig;$/;"	v	typeref:struct:Config
+confFilePtr	confread.c	/^FILE            *confFilePtr;       \/\/ File handle pointer$/;"	v
+configureVifs	config.c	/^void configureVifs() {$/;"	f
+copy_source_list	igmpv3.c	/^copy_source_list(struct source_set *set, struct igmpv3_grec *grec)$/;"	f	file:
+createVif	igmpproxy.c	/^void createVif(){$/;"	f
+create_croute	igmpv3.c	/^create_croute(uint32 group, uint32 src, uint32 port, uint8 grec_type, struct source_set *source)$/;"	f	file:
+curttl	kern.c	/^int curttl = 0;$/;"	v
+da_pri_en	switch-api.h	/^    a_bool_t da_pri_en;$/;"	m	struct:__anon6
+da_queue	switch-api.h	/^    a_uint8_t da_queue;$/;"	m	struct:__anon6
+dacmd	switch-api.h	/^    fal_fdb_cmd_t dacmd;$/;"	m	struct:__anon6
+data	callout.c	/^    void                    *data;  \/\/ Data for function$/;"	m	struct:timeOutQueue	file:
+debugQueue	callout.c	/^static void debugQueue() {$/;"	f	file:
+delMFdb	switch-api.c	/^int delMFdb(uint32 group){$/;"	f
+delMRoute	mroute-api.c	/^int delMRoute( struct MRouteDesc *Dp )$/;"	f
+del_ebt_rule	igmpv3.c	/^del_ebt_rule(uint32 port, uint32 group, uint32 oldmode, struct source_set *oldset)$/;"	f	file:
+disableHwIGMPS	switch-api.c	/^int disableHwIGMPS()$/;"	f
+disableMRouter	mroute-api.c	/^void disableMRouter()$/;"	f
+enableHwIGMPS	switch-api.c	/^int enableHwIGMPS()$/;"	f
+enableMRouter	mroute-api.c	/^int enableMRouter()$/;"	f
+ev_allow	defs.h	/^	ev_allow,$/;"	e	enum:incoming_event
+ev_block	defs.h	/^	ev_block,$/;"	e	enum:incoming_event
+ev_is_ex	defs.h	/^	ev_is_ex,$/;"	e	enum:incoming_event
+ev_is_in	defs.h	/^	ev_is_in,$/;"	e	enum:incoming_event
+ev_max	defs.h	/^	ev_max$/;"	e	enum:incoming_event
+ev_none	defs.h	/^	ev_none,$/;"	e	enum:incoming_event
+ev_to_ex	defs.h	/^	ev_to_ex,$/;"	e	enum:incoming_event
+ev_to_in	defs.h	/^	ev_to_in,$/;"	e	enum:incoming_event
+fal_fdb_cmd_t	switch-api.h	/^} fal_fdb_cmd_t;$/;"	t	typeref:enum:__anon3
+fal_fdb_entry_t	switch-api.h	/^} fal_fdb_entry_t;$/;"	t	typeref:struct:__anon6
+fal_mac_addr_t	switch-api.h	/^} fal_mac_addr_t;$/;"	t	typeref:struct:__anon4
+fal_pbmp_t	switch-api.h	/^typedef a_uint32_t fal_pbmp_t;$/;"	t
+fal_pbmp_t	switch-api.h	/^typedef a_uint64_t fal_pbmp_t;$/;"	t
+fastUpstreamLeave	defs.h	/^    unsigned short      fastUpstreamLeave;$/;"	m	struct:Config
+fdb_table	fdbtable.c	/^static struct FdbTable *fdb_table = NULL;$/;"	v	typeref:struct:FdbTable	file:
+findFdb	fdbtable.c	/^findFdb(uint32 group)$/;"	f
+findListener	rttable.c	/^struct Listener *findListener(struct RouteTable*  croute, uint32 src) $/;"	f
+findRoute	rttable.c	/^struct RouteTable *findRoute(uint32 group) {$/;"	f
+fmtInAdr	lib.c	/^char *fmtInAdr( char *St, struct in_addr InAdr ) {$/;"	f
+free_all_callouts	callout.c	/^void free_all_callouts() {$/;"	f
+func	callout.c	/^    cfunc_t                 func;   \/\/ function to call$/;"	m	struct:timeOutQueue	file:
+getCommonConfig	config.c	/^struct Config *getCommonConfig() {$/;"	f
+getCurrentConfigToken	confread.c	/^char *getCurrentConfigToken() {$/;"	f
+getIfByAddress	ifvc.c	/^struct IfDesc *getIfByAddress( uint32 ipaddr ) {$/;"	f
+getIfByIx	ifvc.c	/^struct IfDesc *getIfByIx( unsigned Ix ) {$/;"	f
+getIfByName	ifvc.c	/^struct IfDesc *getIfByName( const char *IfName ) {$/;"	f
+getIfByVifIndex	ifvc.c	/^struct IfDesc *getIfByVifIndex( unsigned vifindex ) {$/;"	f
+getIgmpPState	igmpproxy.c	/^getIgmpPState()$/;"	f
+getIgmpSState	igmpsnooping.c	/^getIgmpSState()$/;"	f
+getMcGroupSock	rttable.c	/^int getMcGroupSock() {$/;"	f
+getVifIx	mroute-api.c	/^int getVifIx( struct IfDesc *IfDp )$/;"	f
+group	defs.h	/^    uint32              group;          \/\/ The group to route$/;"	m	struct:RouteTable
+group	fdbtable.h	/^    uint32 group;               \/\/ The group to route$/;"	m	struct:FdbTable
+group	request.c	/^    uint32      group;$/;"	m	struct:__anon8	file:
+group_compatibilty_mode	igmp.c	/^int 	   group_compatibilty_mode;		\/* Group compatibility mode *\/$/;"	v
+group_state	defs.h	/^enum group_state$/;"	g
+host_op	igmpv3.c	/^static struct source_set_op host_op[st_max][ev_max] = $/;"	v	typeref:struct:source_set_op	file:
+hwaddr	switch-api.h	/^	fal_mac_addr_t hwaddr;$/;"	m	struct:__anon5
+iBuffer	confread.c	/^char            *iBuffer;           \/\/ Inputbuffer for reading...$/;"	v
+id	callout.c	/^    int                     id;  $/;"	m	struct:timeOutQueue	file:
+id	callout.c	/^static int id = 0;$/;"	v	file:
+id	switch-api.h	/^        a_uint32_t id;$/;"	m	union:__anon6::__anon7
+ifIndex	defs.h	/^    unsigned int	ifIndex;$/;"	m	struct:IfDesc
+igmpPState	igmpproxy.c	/^static int igmpPState = 0;$/;"	v	file:
+igmpPacketKind	igmp.c	/^char *igmpPacketKind(u_int type, u_int code) {$/;"	f
+igmpProxyCleanUp	igmpproxy.c	/^void igmpProxyCleanUp() {$/;"	f
+igmpProxyInit	igmpproxy.c	/^int igmpProxyInit() {$/;"	f
+igmpProxyRun	igmpproxy.c	/^void igmpProxyRun() {$/;"	f
+igmpSState	igmpsnooping.c	/^static int igmpSState = 0;$/;"	v	file:
+igmpSnoopCleanUp	igmpsnooping.c	/^igmpSnoopCleanUp()$/;"	f
+igmpSnoopInit	igmpsnooping.c	/^igmpSnoopInit()$/;"	f
+igmpTimerHandle	request.c	/^igmpTimerHandle()$/;"	f
+igmp_syslog	syslog.c	/^void igmp_syslog( int Serverity, int Errno, const char *FmtSt, ... )$/;"	f
+incoming_event	defs.h	/^enum incoming_event$/;"	g
+index	defs.h	/^    unsigned int        index;$/;"	m	struct:IfDesc
+inetChksum	lib.c	/^int inetChksum(u_short *addr, u_int len) {$/;"	f
+inetFmt	lib.c	/^char *inetFmt(uint32 addr, char *s) {$/;"	f
+inetFmts	lib.c	/^char *inetFmts(uint32 addr, uint32 mask, char *s) {$/;"	f
+initCommonConfig	config.c	/^void initCommonConfig() {$/;"	f
+initFdbTable	fdbtable.c	/^initFdbTable()$/;"	f
+initIgmp	igmp.c	/^void initIgmp() {$/;"	f
+initRouteTable	rttable.c	/^void initRouteTable() {$/;"	f
+initSnoopBr	ifvc.c	/^initSnoopBr()$/;"	f
+insertFdb	fdbtable.c	/^insertFdb(uint32 group, uint32 port)$/;"	f
+insertListener	rttable.c	/^struct Listener* insertListener(uint32 port, struct RouteTable*  croute, uint32 src) {$/;"	f
+insertRoute	rttable.c	/^int insertRoute(uint32 port, uint32 group, int ifx, uint32 src) {$/;"	f
+interfaceSetPacketFlag	igmpproxy.c	/^int interfaceSetPacketFlag(const char *Interface,$/;"	f
+internAgeFdb	fdbtable.c	/^internAgeFdb(struct FdbTable *cfdb)$/;"	f	file:
+internAgeRoute	rttable.c	/^int internAgeRoute(struct RouteTable*  croute) {$/;"	f
+internUpdateFdb	fdbtable.c	/^int internUpdateFdb(int group, uint32 ifBits, int activate) {$/;"	f
+internUpdateKernelRoute	rttable.c	/^int internUpdateKernelRoute(struct RouteTable *route, int activate) {$/;"	f
+inverse	igmpv3.c	/^	int inverse;$/;"	m	struct:source_set_op	file:
+isAdressValidForIf	ifvc.c	/^int isAdressValidForIf( struct IfDesc* intrface, uint32 ipaddr ) {$/;"	f
+joinMcGroup	mcgroup.c	/^int joinMcGroup( int UdpSock, struct IfDesc *IfDp, uint32 mcastaddr ) {$/;"	f
+join_group	request.c	/^join_group(unsigned long src, unsigned long group)$/;"	f
+joinleave	mcgroup.c	/^static int joinleave( int Cmd, int UdpSock, struct IfDesc *IfDp, uint32 mcastaddr ) {$/;"	f	file:
+k_hdr_include	kern.c	/^void k_hdr_include(int bool) {$/;"	f
+k_set_if	kern.c	/^void k_set_if(uint32 ifa) {$/;"	f
+k_set_loop	kern.c	/^void k_set_loop(int l) {$/;"	f
+k_set_rcvbuf	kern.c	/^void k_set_rcvbuf(int bufsize, int minsize) {$/;"	f
+k_set_ttl	kern.c	/^void k_set_ttl(int t) {$/;"	f
+lastMemberGroupAge	rttable.c	/^int lastMemberGroupAge(uint32 group) {$/;"	f
+lastMemberQueryCount	defs.h	/^    unsigned int        lastMemberQueryCount;$/;"	m	struct:Config
+lastMemberQueryInterval	defs.h	/^    unsigned int        lastMemberQueryInterval;$/;"	m	struct:Config
+leaky_en	switch-api.h	/^    a_bool_t leaky_en;$/;"	m	struct:__anon6
+leaveMcGroup	mcgroup.c	/^int leaveMcGroup( int UdpSock, struct IfDesc *IfDp, uint32 mcastaddr ) {$/;"	f
+leave_group	rttable.c	/^leave_group(unsigned long src, unsigned long group)$/;"	f	file:
+list	source_set.h	/^	UINT32 list[MAX_SOURCE_ENTRY];$/;"	m	struct:source_set
+listeners	defs.h	/^	struct Listener		*listeners;$/;"	m	struct:RouteTable	typeref:struct:RouteTable::Listener
+loadConfig	config.c	/^int loadConfig(char *configFile) {$/;"	f
+logFdbTable	fdbtable.c	/^logFdbTable(char *header)$/;"	f
+logRouteTable	rttable.c	/^void logRouteTable(char *header) {$/;"	f
+mac	switch-api.h	/^    fal_mac_addr_t mac;$/;"	m	struct:__anon6
+main	igmpproxy.c	/^int main( int ArgCn, const char *ArgVc[] ) {$/;"	f
+map	switch-api.h	/^        fal_pbmp_t map;$/;"	m	union:__anon6::__anon7
+mcGroupSock	rttable.c	/^int mcGroupSock = 0;$/;"	v
+mc_ctrl_packet	request.c	/^int mc_ctrl_packet(uint32 group)$/;"	f
+mirror_en	switch-api.h	/^    a_bool_t mirror_en;$/;"	m	struct:__anon6
+mode	defs.h	/^	int mode;$/;"	m	struct:Listener
+mode	defs.h	/^	uint32 mode;$/;"	m	struct:RouteTable
+mode	defs.h	/^    unsigned int        mode;$/;"	m	struct:Config
+mode_change	igmpv3.c	/^	int mode_change;$/;"	m	struct:source_set_op	file:
+name	config.c	/^    char*               name;$/;"	m	struct:vifconfig	file:
+next	callout.c	/^    struct timeOutQueue    *next;   \/\/ Next event in queue$/;"	m	struct:timeOutQueue	typeref:struct:timeOutQueue::timeOutQueue	file:
+next	config.c	/^    struct vifconfig*   next;$/;"	m	struct:vifconfig	typeref:struct:vifconfig::vifconfig	file:
+next	defs.h	/^    struct SubnetList*  next;$/;"	m	struct:SubnetList	typeref:struct:SubnetList::SubnetList
+nextConfigToken	confread.c	/^char *nextConfigToken() {$/;"	f
+nextfdb	fdbtable.h	/^    struct FdbTable *nextfdb;   \/\/ Pointer to the next group in line.$/;"	m	struct:FdbTable	typeref:struct:FdbTable::FdbTable
+nextlistener	defs.h	/^	struct Listener		*nextlistener;$/;"	m	struct:Listener	typeref:struct:Listener::Listener
+nextroute	defs.h	/^    struct RouteTable   *nextroute;     \/\/ Pointer to the next group in line.$/;"	m	struct:RouteTable	typeref:struct:RouteTable::RouteTable
+num	source_set.h	/^	int num;$/;"	m	struct:source_set
+op	igmpv3.c	/^	void (*op)(struct source_set *, struct source_set *, struct source_set *, int);$/;"	m	struct:source_set_op	file:
+openConfigFile	confread.c	/^int openConfigFile(char *filename) {$/;"	f
+openUdpSocket	udpsock.c	/^int openUdpSocket( uint32 PeerInAdr, uint16 PeerPort ) {$/;"	f
+originAddr	defs.h	/^    uint32              originAddr;     \/\/ The origin adress (only set on activated routes)$/;"	m	struct:RouteTable
+parsePhyintToken	config.c	/^struct vifconfig *parsePhyintToken() {$/;"	f
+parseSubnetAddress	config.c	/^struct SubnetList *parseSubnetAddress(char *addrstr) {$/;"	f
+port	defs.h	/^	uint32 port;$/;"	m	struct:Listener
+port	defs.h	/^	uint32 port[PORT_MAX_NUM+1];$/;"	m	struct:RouteTable
+port	switch-api.h	/^    } port;$/;"	m	struct:__anon6	typeref:union:__anon6::__anon7
+port_map	switch-api.h	/^	int port_map;$/;"	m	struct:__anon5
+port_mode	defs.h	/^	uint32 port_mode[PORT_MAX_NUM + 1];$/;"	m	struct:RouteTable
+port_source	defs.h	/^	struct source_set port_source[PORT_MAX_NUM + 1];$/;"	m	struct:RouteTable	typeref:struct:RouteTable::source_set
+portmap_en	switch-api.h	/^    a_bool_t portmap_en;$/;"	m	struct:__anon6
+prevfdb	fdbtable.h	/^    struct FdbTable *prevfdb;   \/\/ Pointer to the previous group in line.$/;"	m	struct:FdbTable	typeref:struct:FdbTable::FdbTable
+prevroute	defs.h	/^    struct RouteTable   *prevroute;     \/\/ Pointer to the previous group in line.$/;"	m	struct:RouteTable	typeref:struct:RouteTable::RouteTable
+processV3report	igmpv3.c	/^processV3report(char *buf, uint32 src, uint32 port)$/;"	f
+proxy_op	igmpv3.c	/^static struct source_set_op proxy_op[st_max][ev_max] =$/;"	v	typeref:struct:source_set_op	file:
+queryInterval	defs.h	/^    unsigned int        queryInterval;$/;"	m	struct:Config
+queryResponseInterval	defs.h	/^    unsigned int        queryResponseInterval;$/;"	m	struct:Config
+queue	callout.c	/^static struct timeOutQueue  *queue = 0; \/* pointer to the beginning of timeout queue *\/$/;"	v	typeref:struct:timeOutQueue	file:
+ratelimit	config.c	/^    int                 ratelimit;$/;"	m	struct:vifconfig	file:
+ratelimit	defs.h	/^    unsigned int        ratelimit; $/;"	m	struct:IfDesc
+readSize	confread.c	/^unsigned int    readSize;           \/\/ Number of bytes in buffer after last read...$/;"	v
+recv_buf	mroute-api.c	/^char        *recv_buf;           \/* input packet buffer         *\/$/;"	v
+removeFdb	fdbtable.c	/^removeFdb(struct FdbTable *cfdb)$/;"	f
+removeListener	rttable.c	/^int removeListener(struct RouteTable*  croute, uint32 src) $/;"	f
+removeRoute	rttable.c	/^int removeRoute(struct RouteTable*  croute) {$/;"	f
+robustness	defs.h	/^    unsigned int        robustness;$/;"	m	struct:IfDesc
+robustnessValue	defs.h	/^    unsigned int        robustnessValue;$/;"	m	struct:Config
+routing_table	rttable.c	/^static struct RouteTable   *routing_table;$/;"	v	typeref:struct:RouteTable	file:
+routing_table	rttable.c	/^struct RouteTable   *routing_table;$/;"	v	typeref:struct:RouteTable
+s1	lib.c	/^char s1[19];        \/* buffers to hold the string representations  *\/$/;"	v
+s2	lib.c	/^char s2[19];        \/* of IP addresses, to be passed to inet_fmt() *\/$/;"	v
+s3	lib.c	/^char s3[19];        \/* or inet_fmts().                             *\/$/;"	v
+s4	lib.c	/^char s4[19];$/;"	v
+sa_drop	switch-api.h	/^	int sa_drop; $/;"	m	struct:__anon5
+sacmd	switch-api.h	/^    fal_fdb_cmd_t sacmd;$/;"	m	struct:__anon6
+sendGeneralMembershipQuery	request.c	/^void sendGeneralMembershipQuery() {$/;"	f
+sendGroupSpecificMemberQuery	request.c	/^void sendGroupSpecificMemberQuery(void *argument) {$/;"	f
+sendIgmp	igmp.c	/^void sendIgmp(uint32 src, uint32 dst, int type, int code, uint32 group, int datalen) {$/;"	f
+sendJoinLeaveUpstream	rttable.c	/^void sendJoinLeaveUpstream(struct RouteTable* route, int join) {$/;"	f
+send_buf	mroute-api.c	/^char        *send_buf;           \/* output packet buffer        *\/$/;"	v
+setIgmpPState	igmpproxy.c	/^setIgmpPState(int state)$/;"	f
+setIgmpSState	igmpsnooping.c	/^setIgmpSState(int state)$/;"	f
+setMultiOnVlan	switch-api.c	/^int setMultiOnVlan(int enable)$/;"	f
+setRouteLastMemberMode	rttable.c	/^void setRouteLastMemberMode(uint32 group, uint32 src) {$/;"	f
+setStartCount	request.c	/^void setStartCount()$/;"	f
+set_add	set_comp.c	/^void set_add(struct source_set *A, struct source_set *B, struct source_set *res, int inverse)$/;"	f
+set_assign	set_comp.c	/^void set_assign(struct source_set *A, struct source_set *B, struct source_set *res, int inverse)$/;"	f
+set_comp	set_comp.c	/^int set_comp(struct source_set *A, struct source_set *B)$/;"	f
+set_intersection	set_comp.c	/^void set_intersection(struct source_set *A, struct source_set *B, struct source_set *res, int inverse)$/;"	f
+set_mcast_set	igmpv3.c	/^set_mcast_set(struct Listener *listener, uint32 group)$/;"	f	file:
+set_source_list	mroute-api.c	/^int set_source_list(struct RouteTable *croute)$/;"	f
+set_subtract	set_comp.c	/^void set_subtract(struct source_set *A, struct source_set *B, struct source_set *res, int inverse)$/;"	f
+set_test	set_comp.c	/^void set_test()$/;"	f
+sighandled	igmpproxy.c	/^static int sighandled = 0;$/;"	v	file:
+signalHandler	igmpproxy.c	/^static void signalHandler(int sig) {$/;"	f	file:
+source	defs.h	/^	struct source_set source;$/;"	m	struct:Listener	typeref:struct:Listener::source_set
+source	defs.h	/^	struct source_set source;$/;"	m	struct:RouteTable	typeref:struct:RouteTable::source_set
+source_set	source_set.h	/^struct source_set$/;"	s
+source_set_op	igmpv3.c	/^struct source_set_op$/;"	s	file:
+srcAddr	defs.h	/^	uint32              srcAddr;$/;"	m	struct:Listener
+st_is_ex	defs.h	/^	st_is_ex,$/;"	e	enum:group_state
+st_is_in	defs.h	/^	st_is_in,$/;"	e	enum:group_state
+st_max	defs.h	/^	st_max$/;"	e	enum:group_state
+st_none	defs.h	/^	st_none,$/;"	e	enum:group_state
+started	request.c	/^    short       started;$/;"	m	struct:__anon8	file:
+startupQueryCount	defs.h	/^    unsigned int        startupQueryCount;$/;"	m	struct:Config
+startupQueryCount	request.c	/^static int startupQueryCount = 0;$/;"	v	file:
+startupQueryInterval	defs.h	/^    unsigned int        startupQueryInterval;$/;"	m	struct:Config
+state	config.c	/^    short               state;$/;"	m	struct:vifconfig	file:
+state	defs.h	/^    short               state;$/;"	m	struct:IfDesc
+static_en	switch-api.h	/^    a_bool_t static_en;$/;"	m	struct:__anon6
+subnet_addr	defs.h	/^    uint32              subnet_addr;$/;"	m	struct:SubnetList
+subnet_mask	defs.h	/^    uint32              subnet_mask;$/;"	m	struct:SubnetList
+sw_error_t	switch-api.h	/^} sw_error_t;                    $/;"	t	typeref:enum:__anon2
+swifBits	fdbtable.h	/^    uint32 swifBits;            \/\/ Bits representing receiving switch ports$/;"	m	struct:FdbTable
+threshold	config.c	/^    int                 threshold;$/;"	m	struct:vifconfig	file:
+threshold	defs.h	/^    unsigned char       threshold;   \/* ttl limit *\/$/;"	m	struct:IfDesc
+time	callout.c	/^    int                     time;   \/\/ Time offset for next event$/;"	m	struct:timeOutQueue	file:
+timeOutQueue	callout.c	/^struct timeOutQueue {$/;"	s	file:
+timeout	defs.h	/^	uint32  timeout;$/;"	m	struct:Listener
+timer_clearTimer	callout.c	/^int timer_clearTimer(int  timer_id) {$/;"	f
+timer_leftTimer	callout.c	/^int timer_leftTimer(int timer_id) {$/;"	f
+timer_nextTimer	callout.c	/^int timer_nextTimer() {$/;"	f
+timer_setTimer	callout.c	/^int timer_setTimer(int delay, cfunc_t action, void *data) {$/;"	f
+uint16	defs.h	/^typedef u_int16_t  uint16;$/;"	t
+uint32	defs.h	/^typedef u_int32_t  uint32;$/;"	t
+uint8	defs.h	/^typedef u_int8_t   uint8;$/;"	t
+upStreamVif	igmpproxy.c	/^int upStreamVif = 0;$/;"	v
+update_all_ports	igmpv3.c	/^update_all_ports(struct RouteTable *croute)$/;"	f
+update_ebt_rules	igmpv3.c	/^update_ebt_rules(uint32 port, uint32 group, uint32 oldmode, struct source_set *oldset, uint32 newmode, struct source_set *newset)$/;"	f	file:
+update_listener	rttable.c	/^void update_listener(struct RouteTable*  croute)$/;"	f
+update_port	rttable.c	/^update_port(struct RouteTable *croute, uint32 oldport, uint32 newport)$/;"	f	file:
+update_port_source_info	igmpv3.c	/^update_port_source_info(struct RouteTable *croute, uint32 port, uint32 flag)$/;"	f	file:
+update_proxy_source_info	igmpv3.c	/^update_proxy_source_info(struct RouteTable *croute)$/;"	f	file:
+upstrState	defs.h	/^    short               upstrState;     \/\/ Upstream membership state.$/;"	m	struct:RouteTable
+upstrState	fdbtable.h	/^    short upstrState;           \/\/ Upstream membership state.$/;"	m	struct:FdbTable
+v2_join_group	rttable.c	/^void v2_join_group(int port, uint32 mgroup)$/;"	f
+v2_leave_group	rttable.c	/^void v2_leave_group(int port, uint32 mgroup)$/;"	f
+v2_port_update	rttable.c	/^void v2_port_update (struct RouteTable *croute, int oldport, int newport)$/;"	f
+vaild_grec	igmpv3.c	/^vaild_grec(struct igmpv3_grec *grec)$/;"	f	file:
+validToken	confread.c	/^short   validToken;$/;"	v
+version	defs.h	/^	int version;$/;"	m	struct:Listener
+vid	switch-api.h	/^    a_uint16_t vid;$/;"	m	struct:__anon6
+vifAddr	request.c	/^    uint32      vifAddr;$/;"	m	struct:__anon8	file:
+vifBits	defs.h	/^    uint32              vifBits;        \/\/ Bits representing recieving VIFs.$/;"	m	struct:RouteTable
+vifconf	config.c	/^struct vifconfig*   vifconf;$/;"	v	typeref:struct:vifconfig
+vifconfig	config.c	/^struct vifconfig {$/;"	s	file:

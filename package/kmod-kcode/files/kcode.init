@@ -1,0 +1,24 @@
+#!/bin/sh /etc/rc.common
+#START=61
+
+KVER=`uname -r | cut -f 1`
+MODULE_PATH=/lib/modules/$KVER
+
+boot() {
+	mknod /dev/usblp0 -m 666 c 180 0
+	mknod /dev/usblp1 -m 666 c 180 1
+	mknod /dev/usblp2 -m 666 c 180 2
+	mknod /dev/usblp3 -m 666 c 180 3
+	mknod /dev/usblp4 -m 666 c 180 4
+	mknod /dev/usblp5 -m 666 c 180 5
+	mknod /dev/usblp6 -m 666 c 180 6
+	mknod /dev/usblp7 -m 666 c 180 7
+	mknod /dev/usblp8 -m 666 c 180 8
+	mknod /dev/usblp9 -m 666 c 180 9
+
+	/sbin/insmod $MODULE_PATH/GPL_NetUSB.ko
+	/sbin/insmod $MODULE_PATH/NetUSB.ko
+
+	/sbin/KC_BONJOUR &
+	/sbin/KC_PRINT &
+}

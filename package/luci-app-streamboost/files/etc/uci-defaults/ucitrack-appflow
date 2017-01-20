@@ -1,0 +1,11 @@
+#!/bin/sh
+
+uci -q batch <<-EOF >/dev/null
+	delete ucitrack.@appflow[-1]
+	add ucitrack appflow
+	set ucitrack.@appflow[-1].exec=/usr/local/bin/apply_appflow
+	commit ucitrack
+EOF
+
+rm -f /tmp/luci-indexcache
+exit 0

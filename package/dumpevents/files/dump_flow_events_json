@@ -1,0 +1,43 @@
+#!/bin/sh
+
+keys="${@:-eventdb:events}"
+
+entries_per_call=300
+begin_index=0
+end_index=$(($begin_index+$entries_per_call-1))
+comma=""
+
+# process_step return values
+FLAG_DONE=0
+FLAG_COMMA=1
+FLAG_NOTHING=2
+
+process_step() {
+	redis-cli -s /var/run/appflow/redis.sock --eval /usr/bin/filter_events.lua eventdb:events , $begin_index $end_index open close milestone oversub | \
+	{
+		local setcomma=$FLAG_NOTHING
+		while read line; do
+			[ -z "$line" ] && continue
+			[ "$line" = "done" ] && return $FLAG_DONE
+			if [ $setcomma -eq $FLAG_NOTHING ]; then
+				echo $comma
+				setcomma=$FLAG_COMMA
+			else
+				echo ,
+			fi
+			echo $line
+		done
+		return $setcomma
+	}
+}
+
+echo "{\"events\": ["
+
+while true; do
+	process_step && break
+	[ $? -eq $FLAG_COMMA ] && comma=","
+	begin_index=$((end_index+1))
+	end_index=$(($begin_index+$entries_per_call-1))
+done
+
+echo "]}"

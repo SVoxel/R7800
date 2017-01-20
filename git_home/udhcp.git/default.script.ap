@@ -1,0 +1,104 @@
+#!/bin/sh
+# udhcpc script edited by Tim Riker <Tim@Rikers.org>
+
+CONFIG="/bin/config"
+ECHO="/bin/echo"
+IFCONFIG="/sbin/ifconfig"
+ROUTE="/sbin/route"
+
+[ -n "$broadcast" ] && BROADCAST="broadcast $broadcast"
+[ -n "$subnet" ] && NETMASK="netmask $subnet"
+
+AP_DNS_ASSIGN=0
+if [ "$($CONFIG get ap_ether_dns_assign)" = "0" ]; then
+	AP_DNS_ASSIGN=1
+fi
+
+if [ "$AP_DNS_ASSIGN" = "1" ]; then
+	RESOLV_CONF="/tmp/dhcpc_resolv.conf"
+else
+	RESOLV_CONF="/tmp/resolv.conf"
+fi
+
+case "$1" in
+	renew | bound )
+		$ECHO "configure ip address got from DHCP Server ..."
+		local pid=`ps | grep zcip | grep -v grep |awk '{print  $1}'`
+		if [ "x$pid" != "x" ]; then
+			/bin/kill -9 $pid
+		fi
+		local ori_ip=$($IFCONFIG $interface | grep 'inet addr' | cut -f2 -d':' | cut -f1 -d' ')
+
+		if [ "${ip%% *}" != "$ori_ip" ]; then
+			$IFCONFIG $interface down
+			$IFCONFIG $interface $ip $BROADCAST $NETMASK 
+			$IFCONFIG $interface up
+		fi
+		$CONFIG set ap_dhcp_ipaddr=$ip
+		$CONFIG set ap_dhcp_netmask=$subnet
+
+		if [ -n "$router" ]; then
+			$ECHO "deleting routers" >/dev/console
+			while $ROUTE del default gw 0.0.0.0 dev $interface >&- 2>&-; do
+				:
+			done
+
+			for i in $router ; do
+				$ECHO "adding router $i"
+				$ROUTE add default gw $i dev $interface
+			done
+			$CONFIG set ap_dhcp_gateway=$router
+		fi
+
+		$ECHO -n > $RESOLV_CONF
+		[ -n "$domain" ] && $ECHO search $domain >> $RESOLV_CONF
+		for i in $dns ; do
+			$ECHO adding dns $i
+			$ECHO nameserver $i >> $RESOLV_CONF
+		done
+
+		[ -n "$lease" ] && $CONFIG set dhcpc_lease_time=$lease
+		[ -n "$serverid" ] && $CONFIG set ap_dhcp_server=$serverid
+		$CONFIG set dhcpc_lease_obtain="$(cat /proc/uptime | awk -F. '{print $1}')"
+
+		if [ "${ip%% *}" != "$ori_ip" ]; then
+			# restart DLNA if IP changes
+			/sbin/cmddlna ip_restart
+
+			# restart samba if IP changes
+			/usr/bin/killall smbd
+			/usr/sbin/update_smb
+			
+			# restart net-scan if IP changes
+			killall net-scan
+			/usr/sbin/net-scan
+
+		fi
+
+		# restart net-wall to update the br0 address in the rule.
+		/usr/sbin/net-wall restart
+
+		# restart miniupnpd to update the br0 address in ap modo, bridge mode and extender mode.
+		local opmode=$($CONFIG get i_opmode)
+		if [ "$opmode" = "apmode" -o "$opmode" = "brmode" -o "$opmode" = "extmode" ]; then
+			/etc/init.d/upnp restart
+		fi
+
+		/sbin/ledcontrol -n wan -c green -s on
+		;;
+	runzcip )
+		$ECHO "configure auto-ip address ..."
+		if [ ! -f /usr/share/zcip/zcip.script ]; then
+			$ECHO "NO SCRIPT RUNNING FOR ZCIP!!" >/dev/console
+			exit 1
+		fi
+
+		local ori_ip=$($IFCONFIG $interface | grep 'inet addr' | cut -f2 -d':' | cut -f1 -d' ')
+		if [ "${ori_ip%.*.*}" = "169.254" ]; then
+			require_ip="-r $ori_ip"
+		fi
+
+		$ECHO "Running zcip $require_ip for $interface" >/dev/console
+		/sbin/zcip -f -q $require_ip $interface /usr/share/zcip/zcip.script &
+		;;
+esac

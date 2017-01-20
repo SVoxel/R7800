@@ -1,0 +1,23 @@
+<HTML>
+<HEAD>
+<META http-equiv="refresh" content="2; url=PLC_scan_result.htm">		
+<META http-equiv=content-type content='text/html; charset=UTF-8'>
+<LINK rel="stylesheet" href="style/form.css">
+<script language=javascript type=text/javascript src=/funcs.js></script>
+</HEAD>
+<BODY onLoad="loadhelp('_plc_avail_dev');" bgcolor=#ffffff>
+
+<script>
+var plc_info_file = "<% access_file("/tmp/plc_scan_finish_status") %>";
+
+if(plc_info_file == "1")
+{
+	location.href = "PLC_available_device.htm";
+}
+</script>
+
+<TR><TD colspan=2><BR><img src=/liteblue.gif width=100% height=12></TD></TR>
+<TR><TD><BR><BR>$wizard_pls_wait<BR><BR></TD></TR>
+<TR><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+</BODY>
+</HTML>

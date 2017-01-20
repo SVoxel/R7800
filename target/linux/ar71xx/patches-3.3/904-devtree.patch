@@ -1,0 +1,380 @@
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+--- a/arch/mips/kernel/setup.c
++++ b/arch/mips/kernel/setup.c
+@@ -9,6 +9,7 @@
+  * Copyright (C) 1996 Stoned Elipot
+  * Copyright (C) 1999 Silicon Graphics, Inc.
+  * Copyright (C) 2000, 2001, 2002, 2007  Maciej W. Rozycki
++ * Copyright (c) 2013 The Linux Foundation. All rights reserved.
+  */
+ #include <linux/init.h>
+ #include <linux/ioport.h>
+@@ -35,6 +36,8 @@
+ #include <asm/system.h>
+ #include <asm/prom.h>
+ 
++#include <linux/of_fdt.h>
++
+ struct cpuinfo_mips cpu_data[NR_CPUS] __read_mostly;
+ 
+ EXPORT_SYMBOL(cpu_data);
+@@ -467,6 +470,24 @@ static int __init early_parse_mem(char *
+ }
+ early_param("mem", early_parse_mem);
+ 
++static int __init fdt_early(char *p)
++{
++	unsigned long fdtp = memparse(p, &p);
++	struct boot_param_header *devtree = (void *)fdtp;
++
++	printk("fdt addr: %p\n", devtree);
++
++	if (be32_to_cpu(devtree->magic) != OF_DT_HEADER) {
++		printk("not a devtree @ %p\n", devtree);
++		return 0;
++	}
++
++	initial_boot_params = (void *)devtree;
++
++	return 0;
++}
++early_param("fdt", fdt_early);
++
+ static void __init arch_mem_init(char **cmdline_p)
+ {
+ 	phys_t init_mem, init_end, init_size;
+--- a/arch/mips/ath79/gpio.c
++++ b/arch/mips/ath79/gpio.c
+@@ -21,9 +21,14 @@
+ #include <linux/io.h>
+ #include <linux/ioport.h>
+ #include <linux/gpio.h>
++#include <linux/irq.h>
++#include <linux/interrupt.h>
++
++#include <linux/of.h>
+ 
+ #include <asm/mach-ath79/ar71xx_regs.h>
+ #include <asm/mach-ath79/ath79.h>
++#include <asm/mach-ath79/irq.h>
+ #include "common.h"
+ 
+ void __iomem *ath79_gpio_base;
+@@ -32,6 +37,13 @@ EXPORT_SYMBOL_GPL(ath79_gpio_base);
+ static unsigned long ath79_gpio_count;
+ static DEFINE_SPINLOCK(ath79_gpio_lock);
+ 
++/*
++ * gpio_both_edge is a bitmask of which gpio pins need to have
++ * the detect priority flipped from the interrupt handler to
++ * emulate IRQ_TYPE_EDGE_BOTH.
++ */
++static unsigned long gpio_both_edge = 0;
++
+ static void __ath79_gpio_set_value(unsigned gpio, int value)
+ {
+ 	void __iomem *base = ath79_gpio_base;
+@@ -255,6 +267,137 @@ void __init ath79_gpio_output_select(uns
+ 	spin_unlock_irqrestore(&ath79_gpio_lock, flags);
+ }
+ 
++static int ath79_gpio_irq_type(struct irq_data *d, unsigned type)
++{
++	int offset = d->irq - ATH79_GPIO_IRQ_BASE;
++	void __iomem *base = ath79_gpio_base;
++	unsigned long flags;
++	unsigned long int_type;
++	unsigned long int_polarity;
++	unsigned long bit = (1 << offset);
++
++	spin_lock_irqsave(&ath79_gpio_lock, flags);
++
++	int_type = __raw_readl(base + AR71XX_GPIO_REG_INT_TYPE);
++	int_polarity = __raw_readl(base + AR71XX_GPIO_REG_INT_POLARITY);
++
++	gpio_both_edge &= ~bit;
++
++	switch (type) {
++	case IRQ_TYPE_EDGE_RISING:
++		int_type &= ~bit;
++		int_polarity |= bit;
++		break;
++
++	case IRQ_TYPE_EDGE_FALLING:
++		int_type &= ~bit;
++		int_polarity &= ~bit;
++		break;
++
++	case IRQ_TYPE_LEVEL_HIGH:
++		int_type |= bit;
++		int_polarity |= bit;
++		break;
++
++	case IRQ_TYPE_LEVEL_LOW:
++		int_type |= bit;
++		int_polarity &= ~bit;
++		break;
++
++	case IRQ_TYPE_EDGE_BOTH:
++		int_type |= bit;
++		/* set polarity based on current value */
++		if (gpio_get_value(offset)) {
++			int_polarity &= ~bit;
++		} else {
++			int_polarity |= bit;
++		}
++		/* flip this gpio in the interrupt handler */
++		gpio_both_edge |= bit;
++		break;
++
++	default:
++		spin_unlock_irqrestore(&ath79_gpio_lock, flags);
++		return -EINVAL;
++	}
++
++	__raw_writel(int_type, base + AR71XX_GPIO_REG_INT_TYPE);
++	__raw_writel(int_polarity, base + AR71XX_GPIO_REG_INT_POLARITY);
++
++	__raw_writel(__raw_readl(base + AR71XX_GPIO_REG_INT_MODE) | (1 << offset),
++		     base + AR71XX_GPIO_REG_INT_MODE);
++
++	__raw_writel(__raw_readl(base + AR71XX_GPIO_REG_INT_ENABLE) & ~(1 << offset),
++		     base + AR71XX_GPIO_REG_INT_ENABLE);
++
++	spin_unlock_irqrestore(&ath79_gpio_lock, flags);
++	return 0;
++}
++
++static void ath79_gpio_irq_enable(struct irq_data *d)
++{
++	int offset = d->irq - ATH79_GPIO_IRQ_BASE;
++	void __iomem *base = ath79_gpio_base;
++
++	__raw_writel(__raw_readl(base + AR71XX_GPIO_REG_INT_ENABLE) | (1 << offset),
++		     base + AR71XX_GPIO_REG_INT_ENABLE);
++}
++
++static void ath79_gpio_irq_disable(struct irq_data *d)
++{
++	int offset = d->irq - ATH79_GPIO_IRQ_BASE;
++	void __iomem *base = ath79_gpio_base;
++
++	__raw_writel(__raw_readl(base + AR71XX_GPIO_REG_INT_ENABLE) & ~(1 << offset),
++		     base + AR71XX_GPIO_REG_INT_ENABLE);
++}
++
++static struct irq_chip ath79_gpio_irqchip = {
++	.name = "GPIO",
++	.irq_enable = ath79_gpio_irq_enable,
++	.irq_disable = ath79_gpio_irq_disable,
++	.irq_set_type = ath79_gpio_irq_type,
++};
++
++static irqreturn_t ath79_gpio_irq(int irq, void *dev)
++{
++	void __iomem *base = ath79_gpio_base;
++	unsigned int stat = __raw_readl(base + AR71XX_GPIO_REG_INT_PENDING);
++
++	int irq_base = ATH79_GPIO_IRQ_BASE;
++
++	while (stat) {
++		int bit_num = __ffs(stat);
++		unsigned long bit = (1<<bit_num);
++
++		if (bit & gpio_both_edge) {
++			__raw_writel(__raw_readl(base + AR71XX_GPIO_REG_INT_POLARITY) ^ bit,
++				base + AR71XX_GPIO_REG_INT_POLARITY);
++		}
++
++		handle_nested_irq(irq_base + bit_num);
++		stat &= ~bit;
++	}
++
++	return IRQ_HANDLED;
++}
++
++static int __devinit ath79_gpio_irq_init(struct gpio_chip *chip)
++{
++	int irq;
++	int irq_base = ATH79_GPIO_IRQ_BASE;
++
++	for (irq = irq_base; irq < irq_base + chip->ngpio; irq++) {
++		irq_set_chip_data(irq, chip);
++		irq_set_chip_and_handler(irq, &ath79_gpio_irqchip, handle_simple_irq);
++		irq_set_nested_thread(irq, 1);
++		irq_set_noprobe(irq);
++	}
++
++	return 0;
++}
++
++
+ void __init ath79_gpio_init(void)
+ {
+ 	int err;
+@@ -281,9 +424,15 @@ void __init ath79_gpio_init(void)
+ 		ath79_gpio_chip.direction_output = ar934x_gpio_direction_output;
+ 	}
+ 
++	ath79_gpio_chip.of_node = of_find_node_by_path("/ath79-gpio");
++
+ 	err = gpiochip_add(&ath79_gpio_chip);
+ 	if (err)
+ 		panic("cannot add AR71xx GPIO chip, error=%d", err);
++
++	ath79_gpio_irq_init(&ath79_gpio_chip);
++
++	request_threaded_irq(ATH79_MISC_IRQ_GPIO, NULL, ath79_gpio_irq, IRQF_ONESHOT, "ath79-gpio", NULL);
+ }
+ 
+ int gpio_get_value(unsigned gpio)
+@@ -306,14 +455,22 @@ EXPORT_SYMBOL(gpio_set_value);
+ 
+ int gpio_to_irq(unsigned gpio)
+ {
+-	/* FIXME */
+-	return -EINVAL;
++	if (gpio > ath79_gpio_count) {
++		return -EINVAL;
++	}
++
++	return ATH79_GPIO_IRQ_BASE + gpio;
+ }
+ EXPORT_SYMBOL(gpio_to_irq);
+ 
+ int irq_to_gpio(unsigned irq)
+ {
+-	/* FIXME */
+-	return -EINVAL;
++	unsigned gpio = irq - ATH79_GPIO_IRQ_BASE;
++
++	if (gpio > ath79_gpio_count) {
++		return -EINVAL;
++	}
++
++	return gpio;
+ }
+ EXPORT_SYMBOL(irq_to_gpio);
+--- a/arch/mips/ath79/mach-cus227.c
++++ b/arch/mips/ath79/mach-cus227.c
+@@ -22,6 +22,8 @@
+ #include <asm/mach-ath79/ar71xx_regs.h>
+ #include <asm/mach-ath79/ath79.h>
+ 
++#include <linux/of_platform.h>
++
+ #include "common.h"
+ #include "dev-ap9x-pci.h"
+ #include "dev-audio.h"
+@@ -69,36 +71,11 @@ static struct ath79_caldata_fixup cus227
+ 	.mac_addr = { FIXUP_UNDEFINED, CUS227_MAC0_OFFSET },
+ };
+ 
+-static struct gpio_led cus227_leds_gpio[] __initdata = {
+-	{
+-		.name		= "cus227:green:s3",
+-		.gpio		= CUS227_GPIO_S3,
+-		.active_low	= 1,
+-	},
+-	{
+-		.name		= "cus227:green:s4",
+-		.gpio		= CUS227_GPIO_S4,
+-		.active_low	= 1,
+-	},
+-};
+-
+-static struct gpio_keys_button cus227_gpio_keys[] __initdata = {
+-	{
+-		.desc		= "WPS button",
+-		.type		= EV_KEY,
+-		.code		= KEY_WPS_BUTTON,
+-		.debounce_interval = CUS227_KEYS_DEBOUNCE_INTERVAL,
+-		.gpio		= CUS227_GPIO_S1,
+-		.active_low	= 1,
+-	},
+-	{
+-		.desc		= "s2",
+-		.type		= EV_KEY,
+-		.code		= BTN_2,
+-		.debounce_interval = CUS227_KEYS_DEBOUNCE_INTERVAL,
+-		.gpio		= CUS227_GPIO_S2,
+-		.active_low	= 1,
+-	},
++static struct of_device_id __initdata cus227_common_ids[] = {
++	{ .type = "soc", },
++	{ .compatible = "gpio-keys", },
++	{ .compatible = "gpio-leds", },
++	{},
+ };
+ 
+ /* There is no H/W I2C controller in ATH79 SoCs, so use GPIO based S/W I2C master */
+@@ -207,11 +184,8 @@ static void __init cus227_register_spi_d
+ 
+ static void __init cus227_setup(void)
+ {
+-	ath79_register_leds_gpio(-1, ARRAY_SIZE(cus227_leds_gpio),
+-				 cus227_leds_gpio);
+-	ath79_register_gpio_keys_polled(-1, CUS227_KEYS_POLL_INTERVAL,
+-					ARRAY_SIZE(cus227_gpio_keys),
+-					cus227_gpio_keys);
++	of_platform_bus_probe(NULL, cus227_common_ids, NULL);
++
+ 	ath79_register_usb();
+ 
+ 	ath79_register_nand();
+@@ -235,6 +209,7 @@ static void __init cus227_setup(void)
+ 	/* Audio initialization: PCM/I2S and CODEC */
+ 	cus227_audio_setup();
+ 	ath79_audio_device_register();
++
+ }
+ MIPS_MACHINE(ATH79_MACH_CUS227, "CUS227", "Qualcomm Atheros CUS227",
+ 	     cus227_setup);
+--- a/arch/mips/include/asm/mach-ath79/irq.h
++++ b/arch/mips/include/asm/mach-ath79/irq.h
+@@ -1,4 +1,5 @@
+ /*
++ *  Copyright (c) 2013 The Linux Foundation. All rights reserved.
+  *  Copyright (C) 2008-2010 Gabor Juhos <juhosg@openwrt.org>
+  *  Copyright (C) 2008 Imre Kaloz <kaloz@openwrt.org>
+  *
+@@ -10,7 +11,7 @@
+ #define __ASM_MACH_ATH79_IRQ_H
+ 
+ #define MIPS_CPU_IRQ_BASE	0
+-#define NR_IRQS			51
++#define NR_IRQS			83
+ 
+ #define ATH79_MISC_IRQ_BASE	8
+ #define ATH79_MISC_IRQ_COUNT	32
+@@ -28,6 +29,10 @@
+ #define ATH79_IP3_IRQ_COUNT     3
+ #define ATH79_IP3_IRQ(_x)       (ATH79_IP3_IRQ_BASE + (_x))
+ 
++#define ATH79_GPIO_IRQ_BASE	(ATH79_IP3_IRQ_BASE + ATH79_IP3_IRQ_COUNT)
++#define ATH79_GPIO_IRQ_COUNT	32
++#define ATH79_GPIO_IRQ(_x)	(ATH79_GPIO_IRQ_BASE + (_x))
++
+ #define ATH79_CPU_IRQ_IP2	(MIPS_CPU_IRQ_BASE + 2)
+ #define ATH79_CPU_IRQ_IP3	(MIPS_CPU_IRQ_BASE + 3)
+ #define ATH79_CPU_IRQ_USB	ATH79_CPU_IRQ_IP3
+--- a/arch/mips/ath79/Kconfig
++++ b/arch/mips/ath79/Kconfig
+@@ -117,6 +117,7 @@ config ATH79_MACH_AP81
+ 	select ATH79_DEV_M25P80
+ 	select ATH79_DEV_USB
+ 	select ATH79_DEV_WMAC
++	select USE_OF
+ 	help
+ 	  Say 'Y' here if you want your kernel to support the
+ 	  Atheros AP81 reference board.

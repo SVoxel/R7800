@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>PhEmbed: CUpdateBase类参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css">
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+</head><body>
+<!-- 制作者 Doxygen 1.5.9 -->
+<div class="navigation" id="top">
+  <div class="tabs">
+    <ul>
+      <li><a href="index.html"><span>首页</span></a></li>
+      <li class="current"><a href="annotated.html"><span>类</span></a></li>
+      <li><a href="files.html"><span>文件</span></a></li>
+    </ul>
+  </div>
+  <div class="tabs">
+    <ul>
+      <li><a href="annotated.html"><span>组合类型列表</span></a></li>
+      <li><a href="hierarchy.html"><span>类继承关系</span></a></li>
+      <li><a href="functions.html"><span>组合类型成员</span></a></li>
+    </ul>
+  </div>
+</div>
+<div class="contents">
+<h1>CUpdateBase类参考</h1><!-- doxytag: class="CUpdateBase" -->花生壳DDNS客户端实现基类  
+<a href="#_details">更多...</a>
+<p>
+<code>#include &lt;<a class="el" href="phupdate_8h_source.html">phupdate.h</a>&gt;</code>
+<p>
+被CPhUpdater继承.
+<p>
+
+<p>
+<a href="class_c_update_base-members.html">所有成员的列表。</a><table border="0" cellpadding="0" cellspacing="0">
+<tr><td></td></tr>
+<tr><td colspan="2"><br><h2>公有成员</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="c9b9219bcf2d4ce88b430991d52d6736"></a><!-- doxytag: member="CUpdateBase::CUpdateBase" ref="c9b9219bcf2d4ce88b430991d52d6736" args="()" -->
+&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_update_base.html#c9b9219bcf2d4ce88b430991d52d6736">CUpdateBase</a> ()</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">构造, 初始化必要的变量 <br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="aa6ee745dabb4269176668d588cba941"></a><!-- doxytag: member="CUpdateBase::step" ref="aa6ee745dabb4269176668d588cba941" args="()" -->
+int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_update_base.html#aa6ee745dabb4269176668d588cba941">step</a> ()</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">步进调用，配置好参数后需要立即进入此函数，函数返回下次需要执行本函数的时间（秒数） <br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="b0915549308b8a7166f96ff5ab8ebe2b"></a><!-- doxytag: member="CUpdateBase::stop" ref="b0915549308b8a7166f96ff5ab8ebe2b" args="()" -->
+void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_update_base.html#b0915549308b8a7166f96ff5ab8ebe2b">stop</a> ()</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">停止花生壳DDNS更新，重新配置参数后可进入另一个 <br></td></tr>
+<tr><td colspan="2"><br><h2>公有属性</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="401aaaec40b4bd2d80c591d690bc3b43"></a><!-- doxytag: member="CUpdateBase::phglobal" ref="401aaaec40b4bd2d80c591d690bc3b43" args="" -->
+<a class="el" href="struct_p_h_global.html">PHGlobal</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_update_base.html#401aaaec40b4bd2d80c591d690bc3b43">phglobal</a></td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">保存了启动参数与各种运行时信息 <br></td></tr>
+<tr><td colspan="2"><br><h2>保护成员</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_update_base.html#46ef0b7f94feee9c355e8c3efcd8209b">OnStatusChanged</a> (int status, long data)=0</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">重载此函数得到状态变更，必须重载  <a href="#46ef0b7f94feee9c355e8c3efcd8209b"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="903f42a46b6b819110528e8d936fc1cf"></a><!-- doxytag: member="CUpdateBase::OnDomainRegistered" ref="903f42a46b6b819110528e8d936fc1cf" args="(std::string domain)" -->
+virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_update_base.html#903f42a46b6b819110528e8d936fc1cf">OnDomainRegistered</a> (std::string domain)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">重载此函数得到注册的域名，每条域名被执行一次 <br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="da93a2a984d05a33c664156de210c31d"></a><!-- doxytag: member="CUpdateBase::OnUserInfo" ref="da93a2a984d05a33c664156de210c31d" args="(std::string userInfo)" -->
+virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_update_base.html#da93a2a984d05a33c664156de210c31d">OnUserInfo</a> (std::string userInfo)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">重载此函数得到用户信息，XML格式 <br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="anchor" name="579317204265d70fe69424beaac47e99"></a><!-- doxytag: member="CUpdateBase::OnAccountDomainInfo" ref="579317204265d70fe69424beaac47e99" args="(std::string domainInfo)" -->
+virtual void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_update_base.html#579317204265d70fe69424beaac47e99">OnAccountDomainInfo</a> (std::string domainInfo)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">重载此函数得到用户域名信息，XML格式 <br></td></tr>
+</table>
+<hr><a name="_details"></a><h2>详细描述</h2>
+花生壳DDNS客户端实现基类 
+<p>在文件<a class="el" href="phupdate_8h_source.html">phupdate.h</a>第<a class="el" href="phupdate_8h_source.html#l00019">19</a>行定义。</p>
+<hr><h2>成员函数文档</h2>
+<a class="anchor" name="46ef0b7f94feee9c355e8c3efcd8209b"></a><!-- doxytag: member="CUpdateBase::OnStatusChanged" ref="46ef0b7f94feee9c355e8c3efcd8209b" args="(int status, long data)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void CUpdateBase::OnStatusChanged           </td>
+          <td>(</td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>status</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long&nbsp;</td>
+          <td class="paramname"> <em>data</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td><code> [protected, pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+重载此函数得到状态变更，必须重载 
+<p>
+status可能的值： enum MessageCodes { okConnected = 0, okAuthpassed, okDomainListed, okDomainsRegistered, okKeepAliveRecved, okConnecting, okRetrievingMisc, okRedirecting,<p>
+errorConnectFailed = 0x100, errorSocketInitialFailed, errorAuthFailed, errorDomainListFailed, errorDomainRegisterFailed, errorUpdateTimeout, errorKeepAliveError, errorRetrying, errorAuthBusy, errorStatDetailInfoFailed,<p>
+okNormal = 0x120, okNoData, okServerER, errorOccupyReconnect, }; 其中： 1、当status为okDomainsRegistered时，data返回用户级别：0(免费),1(专业),2(商业) 2、当status为okKeepAliveRecved时，data返回客户端IP地址（整数形式） 3、其他情况下，data一直为0 
+</div>
+</div><p>
+<hr>该类的文档由以下文件生成：<ul>
+<li>D:/SkyVense/Code/vc6/Privatework/Projects.current/oray/PH50/Embed/src/<a class="el" href="phupdate_8h_source.html">phupdate.h</a><li>D:/SkyVense/Code/vc6/Privatework/Projects.current/oray/PH50/Embed/src/<a class="el" href="phupdate_8cpp_source.html">phupdate.cpp</a></ul>
+</div>
+<hr size="1"><address style="text-align: right;"><small>Generated at Tue Sep 15 11:01:32 2009 for PhEmbed by&nbsp;
+<a href="http://www.doxygen.org/index.html">
+<img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.9 </small></address>
+</body>
+</html>

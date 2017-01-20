@@ -1,0 +1,790 @@
+#!/usr/bin/perl
+#
+#   This file released to public domain by the copyright holders
+#   including ArrayComm, Inc.
+#   Author: Ted Merrill
+#
+# makefun -- extract function prototypes and other declarations from C programs
+#
+# NOTE: makefun has been largely supplanted by the compiled program cmakeFun.
+# makefun is useful for bootup when cmakeFun has not yet been compiled;
+# see atoolBoot.sh
+#
+
+# Option variables -- must appear before help message in order to print defaults
+$xtargets="MDFGH";       # externally visible extractions
+$targets=$xtargets;     # default targets to extract
+$itargets="Mmdfgh";  # targets to extract with -i option (internal stuff)
+$externs="FfGgHh";       # targets to generate "extern" for
+$autoterm=$externs;     # targets for which we should autoterminate on {=;
+$modules="Mm";    # document module (as a major section) for these
+#$functions="Ff"; # document functions for these
+#$globals="Gg";    # document global variable for these
+#$datastructs="Dd"; # document data structure for these
+#$cmdhelp="Hh";    # document help for commands
+
+# THIS HELP MESSAGE IS THE BASIC DOCUMENTATION -- KEEP UP TO DATE!
+# NOTE -- this help message contains deliberate ${var} references.
+# ... be sure to quote literal $'s.
+$HelpMessage=<<END
+    makefun -- extract function prototypes etc. from C programs
+    ------------------------------------------------------------------------
+
+    Purpose:
+    ---------
+    makefun produces an output file (conventional extension: .fun)
+    that contains automatically generated function prototypes,
+    based upon the definitions in your C-language files,
+    thus saving you the bother of redundant typing.
+    It will also extract declarations for global variables.
+    It can also extract data definitions (#define's, structs, enums etc.)
+    although this is most useful for a companion program called makefuntex,
+    which produces latex documentation.
+    It can also extract help messages intended to be used with the cmd
+    module.
+
+    An important feature is that you can distinguish between things to be
+    extracted for external versus internal consumption.
+    For example, if your module name is foo,
+    you might have a foo.fun for others to link with and
+    a fooI.fun for use within the module directory only.
+
+    Another important feature is that makefun implements a subset
+    of the markup features of makefuntex, that auto-generates pretty
+    documentation for your code (important for showing to customers...).
+
+    Terminology:
+    ------------
+    Extract means to copy (perhaps with some translation) a portion
+    of an input file to the end of an output file being built.
+
+    Internal usually means only with in the same directory, makefile,
+    library and/or program; external means for other uses in the company
+    or even outside the company.
+
+    Global is the opposite of static (for C coding), i.e. something
+    with "extern" linkage, whether "extern" appears or not.
+
+    Source code is code that is ok for you to edit before you do a make.
+    Object code is anything created by make.
+    If make generates a C language file with a .c extension, it is
+    object code and not source code.
+    If a given file contains both source and object code, your version
+    management utilities are likely to be confused; don't do this.
+
+    Coding Requirements:
+    --------------------
+    Before using makefun you will need to mark up your C source code with
+    special comments. (You could autogenerate C code with these special
+    comments too, if you like). (Works with C++ code too, kind of).
+
+    The special comments may be preceded on their starting line only
+    by spaces or tabs; starting at column 1 is preferred but not required.
+    The special comments MUST begin as:
+    /*-x-
+    or
+    //-x-
+    where "x" is to be replaced by a character from the extraction
+    code character list below.
+
+    The only translation that makefun does is to prepend "extern"
+    and append a semicolon (for global functions and variables),
+    and add some extra newlines and special-looking comments.
+    But please be aware that makefuntex does considerably more translation;
+    you are urged to read the help message for makefuntex before proceeding,
+    because this could have an impact on what you write.
+
+    Multiple C++ style comments beginning with "//" are considered to be
+    the same comment if they all are procedeeded on their line only by blanks
+    and spaces and only the first looks like a special comment.
+    This is important for extraction type "M" and "m" (module comment);
+    and in general for makefuntex.
+
+    Preprocessor directive lines are recognized only as text to be
+    extracted or skipped without further interpretation.
+
+    Extraction Code Characters:
+    ---------------------------
+
+    M - module comment for external consumption.
+    m - module comment for internal consumption.
+    Module comments are typically a comment at or near the top of each
+    source file, although they can appear at any line, and could
+    even appear in a text file that isn't really C code.
+    The extraction auto-terminates at the end of the special comment
+    (but see note above about extended C++ style comments).
+    
+    F - global function declaration/definition for external consumption.
+    f - global function declaration/definition for internal consumption only.
+    (Don't tell me you want to extract static functions!)
+    The extraction is preceded with the word "extern" and followed
+    by a semicolon, in order to make this a valid declaration.
+    The extraction automatically terminates at the first uncommented
+    left brace, equal sign or semi-colon.
+    Provided you wrote the function using ANSI-C style of declaring
+    arguments, the result is a valid C function prototype.
+    
+    G - global variable declaration/definition for external consumption
+    g - global variable declaration/definition for internal consumption only
+    (Don't tell me you want to extract static variables!)
+    For makefun, this works identically to F and f as described above.
+    But don't use Ff where Gg is needed because of makefuntex.
+
+    D - data definition (#define, struct, enum, etc.) for external consumption
+    d - data definition (#define, struct, enum, etc.) for internal consumption
+    You probably will put this stuff in a .h file anyway,
+    and you probably will not run makefun on a .h file.
+    But you might put these in a .c file and extract them.
+    Otherwise, these are mostly for use with makefuntex.
+    These extractions do not auto-terminate except when another
+    special comment is found, so best bet is to end each such section
+    to be extracted with a special comment such as
+    /*--- end extraction */
+    
+    H - cmd help array for documentation and extraction the same as "G"
+    h - cmd help array for documentation and extraction the same as "g"
+    The cmd module is a (new as of Jan. 1996) library for parsing
+    command line and text message input, for interprocess communications
+    and for debugging. An application using cmd should provide help
+    message arrays, which are usually static or global variables.
+    For purposes of makefuntex, both result in documentation extraction.
+    makefun treats "h" the same as "g" and treats "H" the same as "G".
+
+    (other) - does nothing except terminate previous extraction if any.
+        It is reccommended that you use only "-" in source code.
+        You may use this to explicitly terminate an extraction, or just
+        for general decoration.  For example:
+        /*---*/
+        //---
+        /*-------------------------------------*/
+        //------------------------------ end extraction
+
+
+    Usage:
+    ------
+    Arguments are interpreted in order;
+    in general, PUT OPTIONS BEFORE FILENAMES.
+    You could actually generate several output files with one invocation,
+    although this doesn't seem very useful.
+    By default output goes to stdout.
+    The unclaimed argument "-" means extract prototypes etc. from the stdin;
+    otherwise, unclaimed arguments beginning with "-" are options, and
+    unrecognized options produce a fatal error.
+    Unclaimed arguments not beginning with "-" mean extract from named file,
+    thus: makefun <option>... <file>...
+
+    Commonly used options are:
+    -o <filename> -- redirect output to file.
+        This also does an implicit -N <filename>.
+    -oo <filename> -- redirect output to a temp file (must be given before
+        the names of input files), and then only if the result differs from
+        <filename>, rename or copy the temp file to <filename>.
+        This may or may not prevent excessive recompilation when doing make.
+        This also does an implicit -N <filename>.
+    -i  -- extract for internal consumption instead of external.
+        Equivalent to: -x${itargets}
+        Must be given before the names of input files.
+    -ix  -- extract for internal consumption including external defs
+        Equivalent to: -x${xtargets}${itargets}
+        Must be given before the names of input files.
+    -h (or -help) -- print this message
+    Options for the brave-hearted are:
+    -                  -- extract from stdin.
+    -x<target letters> -- eXtract only special comments with these letters
+        Default: -x$targets
+    -e<target letters> -- emit "extern" before these extractions and
+        semicolon afterwards.
+        Also sets auto-termination of extraction (override with -a below).
+        Default: -e$externs
+    -a<target letters> -- auto-terminate extraction (for function/var defs)
+        Default: -a$autoterm
+    -N <name> -- specify base name to use for an initial #ifndef,
+        to help prevent multiple includes.
+        This base name is expanded by prepending a constant string and
+        appending a string based upon the source file.
+        Empty string for <name> disables this.
+        Note that -o and -oo set this;
+        otherwise, default is no #ifndefs (e.g. -N '').
+
+    Example makefile:
+    -------------------------------------------------------------------
+    SRC = fooWidget.c foo2.c foo3.c
+    foo.fun: \$(SRC)             # for external use
+        makefun -oo foo.fun \$(SRC)
+    fooI.fun: \$(SRC)            # for internal use only
+        makefun -i -oo fooI.fun \$(SRC)
+    foo.tex: \$(SRC) foo.h fooI.h
+        makefuntex -oo foo.tex foo.h fooI.h \$(SRC)
+    install: foo.a foo.fun foo.tex
+        cp foo.a foo.h foo.fun /the/right/bin
+        cp foo.tex /the/right/doc
+
+    Example foo.h:
+    ---------------------------------------------------------------------
+    //-M- foo.h -- Externally visible definitions for foo module.
+    // What the foo module does and why.
+    ... all the good data definitions for foo.h here ...
+    // Include foo.fun at bottom because it needs data definitions
+    #include "foo.fun"  /* auto-generated prototypes
+    // end of foo.h
+
+    Example fooWidget.c:
+    -----------------------------------------------------------------------
+    // Note that all first lines of special comments begin with
+    // the file or function or etc. name, followed by hyphens and description.
+    //
+    //-M- fooWidget.c -- Functions for interfacing foo with widgets.
+    // More lines of description can immediately follow before the
+    // "M" extraction is auto-terminated.
+    #include "foo.h"     // external definitions
+    #include "fooI.h"    // internal definitions
+    //-d- FOO_MAX_FREE_LIST -- the debug code needs to know this, ugh.
+    // Also, you must extract this because the extracted declaration of
+    // fooWidgetFreeList will use this.
+    enum { FOO_MAX_FREE_LIST = 330; };
+    //-g- fooWidgetFreeList -- internal, free list is kept here
+    struct fooWidgetStruct fooWidgetFreeList[FOO_MAX_FREE_LIST] = {0};
+    //-f- fooCheckWidget -- internal sanity check for ...
+    // Could say more here
+    int fooCheckWidget(
+    struct fooWidgetStruct * pWidget,  /* NULL or from fooGetWidget*/
+    enum fooOptionEnum Option
+    )
+    {
+    }
+    //-F- fooGetWidget -- Allocate a widget.
+    // Widget must be later freed with fooFreeWidget.
+    int fooGetWidget(void)
+    {
+    }
+
+    Problems:
+    ---------
+
+    Please note that extractions begin with the comment and end in
+    different ways depending upon the extraction code character as
+    described below.
+    If not otherwise terminated, they are always terminated when another
+    (uncommented) special comment appears, or at end of file.
+    Due to errors on your part, you may sometimes get more extracted
+    than you intended, resulting in compilation errors.
+    You should probably occasionally review the output file(s).
+    Certain extraction types are ended only by another special comment;
+    for safety, you may always want to put something like this at
+    the end of the extraction region (but beginning at column 1):
+    //---------------------- end extraction
+
+    makefun does NOT know about #if and similar preprocessor directives.
+    You cannot comment out extraction with "#if 0"; try preceding every line
+    with "// "; simply indenting the lines works too, but is confusing.
+
+    makefun does NOT know about line continuation (backslash at end of line),
+    this might be a problem with a continued preprocessor directive.
+
+    Usually, conditional compilation is not adversely effected if you
+    extract function declarations for functions that will not actually be
+    compiled.
+    An exception to the above is if a given function name has different
+    declarations for different compilations (why would you do that!?).
+    This exception might be fixed by #if's within the extraction...
+
+    If the source code needs an "extern", put the "extern" before the
+    special comment so that you won't get two externs in the output.
+    For example, you can put a prototype in source code and have it
+    extracted as a prototype in this way.
+
+    Works with C++ code, but doesn't provide sufficient support for
+    inline defined functions within class definitions and similar.
+
+    Major Revision History:
+    -----------------------
+    971021 -- Don't put full pathnames into comments in the output.
+    960718 -- Added -ix option.
+    9604xx -- Version for use with amake. Slight divergence from /q/common.
+    960128 -- Written by Ted Merrill
+END
+;
+
+# other state variables
+$externflag=0;   # 1 = generate extern in front of extraction
+$autotermflag=0; # 1 = auto-terminate at {, = or ;
+$srcfile="";     # file being extracted
+$srcfilebase=""; # basename of file being extracted
+$srcline=0;      # line no. of file
+$outfile="";     # default, no output file (use stdout)
+$tempoutfile="";     # temp file used with outfile option
+$ifndefname="";   # empty to disable protective ifndef
+$ifndefnamefull="";   # actual name used
+
+$moduleflag=0;   # if we should doc as a module
+#$functionflag=0; # if we should doc as a function
+#$globalflag=0;   # if we should doc as a global var
+#$cmdhelpflag=0;   # if we should doc as a cmd help
+#$datastructflag=0;  # if we should doc as data struct
+
+$inC = 0;   # 1 = if inside of C /*...*/ comment
+$inExtract = 0;    # 1 = if inside of an extraction
+
+sub extract
+{   # Extract from the open file whose handle is $INFILE
+    $inC = 0;   # 1 = if inside of C /*...*/ comment
+    $inExtract = 0;    # 1 = if inside of an extraction
+    # start with some diagnostic information (/*-@- is searchable
+    # by other filters...)
+    print "/*-@- makefun targets: $targets from file: $srcfilebase */\n";
+    print "/*---    THIS IS NOT SOURCE CODE */\n";
+    # Emit protective ifndef. The name includes output and source files.
+    ifndefstart();     # start protective ifndef (maybe)
+    print "\n\n";    # some blank lines to look better
+    $srcline = 0;
+    while ( <$INFILE> )
+    {   # Reads through file, putting each line in $_ for each loop.
+        # Note that match operator (m:: etc.) uses $_.
+        $srcline ++;
+
+        # An uncommented special comment at begin of line
+        # terminates previous extraction, if any, and may begin
+        # a new one if it contains the right code letter.
+        # An uncommented preprocessor directive should be extracted
+        # (if $inExtract) and skipped over...
+        if ( ! $inC )
+        {   # if not part of a C comment... sorry, don't handle #ifdefs
+            if ( isSpecial() )
+            {   # This line begins with magic comment sequence
+                if ( $inExtract )
+                {   # next special comment finishes previous one
+                    endExtract();
+                    $inExtract = 0;
+                }
+                # Check if this is a magic comment we handle!
+                # If so, emit stuff to begin, and set $inExtract
+                $inExtract = startExtract();
+            }
+            elsif ( $inExtract && $moduleflag && ! m:^[ \t]*//: )
+            {   # module header extraction ends at end of comment
+                # except may be continued by additional C++ style comments.
+                # without any breaks
+                endExtract();
+            }
+            if ( m:^[ \t]*\#: )
+            {   # uncommented preprocessor directive
+                # We don't want to be fooled by an equal sign in one of these
+                # Bug: preprocessor directives are often continued with
+                # a backslash to another line. oh well.
+                if ( $inExtract )
+                {  # just print the whole line unchanged
+                   print $_ ;
+                }
+                next;   # hope no C comments span multiple lines here!
+            }
+        }
+
+        #debug print ">>>line $srcline inC $inC inX $inExtract : $_"; # debug
+        # If we are not extracting then we can optimize.
+        # If the line does not contain a comment start or stop or quoting
+        # then we can skip it.
+        # This is because, when not extracting, we need only track comments.
+        if ( ! $inExtract &&
+            ! m://: && ! m:/\*: && ! m:\*/: && ! m:": && ! m:': ) { next; }
+        Search: for (;;)
+        {   # Search through line, usually one char at a time.
+            local($Char);
+            $Char = substr($_,0,1); s:^.:: ;  # eat next character
+            # ... but we may need to print this char out below! ...
+            if ($Char eq "\n")
+            {   # stop at end of line
+                if ( $inExtract ) { print "$Char"; }
+                last Search;
+            }
+            if ( $inC )
+            {   # if already in a C comment, look for comment end.
+                # Do not look for C++ comments!
+                if ( $inExtract ) { print "$Char"; }
+                if ( $Char eq '*' )
+                {
+                    $NextChar = substr($_,0,1); # peek at next character
+                    if ( $NextChar eq '/' )
+                    {
+                        $Char = $NextChar; s:^.:: ;  # eat next character
+                        if ( $inExtract ) { print "$Char"; }
+                        $inC = 0;       # but no longer in a C comment
+                        if ( $inExtract && $moduleflag )
+                        {   # module header w/ C comment ends at end of comment
+                            endExtract();
+                        }
+                    }
+                }
+            }
+            else
+            {   # not in a C comment, look for quote, comment, terminator
+                if ( $Char eq "\"" )
+                {   # Lucky for us strings are not allowed to cross lines.
+                    # Otherwise, they act much like C-style commenting.
+                    if ( $inExtract ) { print "$Char"; }
+                    for(;;)
+                    {
+                        $Char = substr($_,0,1);
+                        last if ( $Char eq "\n" );  # don't eat newline!
+                        s:^.:: ;  # eat next character
+                        if ( $inExtract ) { print "$Char"; }
+                        # End on unescaped quote or (ugh) end of line...
+                        last if ( $Char eq '"' );
+                        ## printf "dq$Char\n";   ## debug
+                        if ( $Char eq "\\" )
+                        {   # escaped character within string...
+                            $Char = substr($_,0,1);
+                            last if ( $Char eq "\n" );  # don't eat newline!
+                            s:^.:: ;  # eat next character
+                            if ( $inExtract ) { print "$Char"; }
+                        }
+                    }
+                }
+                elsif ( $Char eq "'" )
+                {   # Lucky for us char consts are not allowed to cross lines.
+                    # Otherwise, they act much like C-style commenting.
+                    if ( $inExtract ) { print "$Char"; }
+                    for(;;)
+                    {
+                        $Char = substr($_,0,1);
+                        last if ( $Char eq "\n" );  # don't eat newline!
+                        s:^.:: ;  # eat next character
+                        if ( $inExtract ) { print "$Char"; }
+                        # End on unescaped quote or (ugh) end of line...
+                        last if ( $Char eq '\'' );
+                        ## printf "sq$Char\n";   ## debug
+                        if ( $Char eq "\\" )
+                        {   # escaped character within string...
+                            $Char = substr($_,0,1);
+                            last if ( $Char eq "\n" );  # don't eat newline!
+                            s:^.:: ;  # eat next character
+                            if ( $inExtract ) { print "$Char"; }
+                        }
+                    }
+                }
+                elsif ( $Char eq '/' )
+                {   # slash (/) may begin C or C++ comment... or neither
+                    if ( $inExtract ) { print "$Char"; }
+                    $NextChar = substr($_,0,1); # peek ahead
+                    if ( $NextChar eq '*' )
+                    {   #   /* ... a C style comment
+                        $Char = $NextChar; s:^.:: ;  # eat next character
+                        if ( $inExtract ) { print "$Char"; }
+                        $inC = 1;       # now in a C comment
+                    }
+                    elsif ( $NextChar eq '/' )
+                    {   # A C++ comment: // ... to end of line
+                        if ( $inExtract )
+                        {   # Just Print remainder of line for C++ comment...
+                            print $_;
+                            s:.*:: ;  # eat next characters... rest of line
+                        }
+                        last Search;     # throw away rest of line
+                    }
+                }
+                elsif ( $inExtract &&  $autotermflag &&
+                    (  ($Char eq ';')   # we just copy the declaration
+                    || ($Char eq '{')   # make declaration out of function
+                                    # to make editor searches happy: }
+                    || ($Char eq '=')   # make declartion out of variable=value
+                    ) )
+                {   # Replace terminator with ; and print
+                    # a special comment /*-;-*/ on a line to indicate
+                    # termination to other filters.
+                    # Also add a few blank lines so output looks better.
+                    print ";\n                              /*-;-*/\n\n\n";
+                    $inExtract = 0;    # done with this extraction...
+                }
+                else
+                {
+                    if ( $inExtract ) { print "$Char"; }
+                }
+            }
+        }
+    }
+    if ( $inExtract )
+    {   # clean up trailing extraction, if any
+        endExtract();
+    }
+    ifndefend();     # end protective ifndef (maybe)
+    return 1;
+}
+
+
+sub isSpecial
+{   # Helper function for extract
+    # Returns 1 (TRUE) if current line $_ is a special comment start; else 0
+    # Does not modify anything!
+    # A special comment must have only blank space before it on the line
+    # and begin as "//-x-" or "/*-x-" where x is any character (nonull,non-nl).
+    return ( m:^[ \t]*//-.-: || m:^[ \t]*/\*-.-: );
+}
+
+sub endExtract
+{   # Helper function for extract; called to emit terminating stuff
+    # New special comment terminates old one...
+    # Call only if $inExtract
+    if ( $externflag ) { print ";\n"; }
+    print "\n\n";     # Make it pretty
+    $inExtract = 0;
+}
+
+sub startExtract
+{   # Helper function for extract.
+    # CALL ONLY if isSpecial() and NOT $inExtract
+    # $_ must contain entire line.
+    # If line begins with /*-x- or //-x- where x is a character from
+    # $targets, then it helps extract out by emitting a prefix
+    # to the output; also returns 1 if extract started, else 0.
+
+    if ( isSpecial() && ! $inExtract )
+    {   # if line begins with (whitespace + ) /*-x- or //-x- where x is anything
+        while ( m:^[ \t]: )
+        {   # Chop off leading whitespace
+            s:^.:: ;
+        }
+        ## print "::: Got $_\n";        # DEBUG
+        local($Char) = substr($_,3,1);   # get the char
+        if ( index( $targets, $Char ) >= 0 )
+        {   # if our character is one of the selected targets...
+            # emit a prefix. The /*-,- is searchable by other filters!
+            # The remainder of comment could be searchable, or just
+            # for human consumption. The extern makes it a legal
+            # declaration in C.
+            $externflag =  ( index($externs,$Char) >= 0 );
+            $autotermflag =  ( index($autoterm,$Char) >= 0 );
+            $moduleflag = (index($modules,$Char) >= 0 );
+            #$functionflag = (index($functions,$Char) >= 0 );
+            #$globalflag = (index($globals,$Char) >= 0 );
+            #$cmdhelpflag = (index($cmdhelp,$Char) >= 0 );
+            #$datastructflag = (index($datastructs,$Char) >= 0 );
+            # SORRY, BUT including line numbers cause frequent remake!
+            # Complete pathnames also cause unnecessary remakes.
+            # print "                    /*-,- From $srcfile line $. */";
+            print "                    /*-,- From $srcfilebase */";
+            if ( $externflag ) { print "\n                    extern"; }
+            print "\n";
+            $inExtract = 1;
+            return 1;  # starts an extraction
+        }
+    }
+    return 0;  # does not start an extraction
+}
+
+
+sub ifndefstart
+{   # if enabled, put the starting protective ifndef
+    if ( length($ifndefname) > 0 )
+    {   # enabled...
+        # clean up name to be just alpha_numeric_underscore
+        $ifndefnamefull = "MAKEFUN___${ifndefname}___${srcfilebase}";
+        $ifndefnamefull =~ s:\W:_:g ;
+        print "\n";   # make sure previous line terminated
+        print "#ifndef $ifndefnamefull /*once only*/\n";
+        print "#define $ifndefnamefull\n";
+        print "\n";   # make look nice
+    }
+}
+
+sub ifndefend
+{   # if enabled, end the starting protective ifndef with an endif
+    if ( length($ifndefname) > 0 )
+    {   # enabled...
+        print "\n";   # make sure previous line terminated
+        print "#endif /* $ifndefnamefull */\n";
+        print "\n\n\n\n\n\n\n\n\n\n";   # make look nice
+    }
+}
+
+
+# main program...
+for( ; $_ = $ARGV[0]; shift )
+{
+    if ( /^-$/ )
+    {   # arg is just a "-" which means extract from stdin
+        $srcfile="(stdin)";
+	$srcfilebase="stdin";
+        $INFILE=STDIN;
+        extract() || die("Error in stdin\n");
+    }
+    elsif ( ! /^-/ )
+    {   # arg is a filename... open and extract to stdout
+        $srcfile=$_;
+        $srcfilebase=$srcfile;
+        $srcfilebase =~ s:.*/:: ;   # strip off leading directory
+        open(INFILEIN,$_) || die("Could not open $_\n");
+        $INFILE=INFILEIN;
+        extract() || die("Error in file: $_\n");
+    }
+    else
+    {   # begin with "-" means an option ...
+        if ( /^-h$/ || /^-help$/ )
+        {   # print help message and exit
+            print "$HelpMessage";
+            exit (0);
+        }
+        elsif ( /^-i$/ )
+        {  # specifiy that module-internal targets are to be used
+           $targets=$itargets;
+        }
+        elsif ( /^-ix$/ )
+        {  # specifiy that module-internal targets are to be used
+           $targets="$xtargets$itargets";
+        }
+        elsif ( /^-x/ )
+        {   # specify target special comment type(s)
+            #   (which immediately follow -x, e.g.: -xEI)
+            $targets=substr($_,2);
+        }
+        elsif ( /^-e/ )
+        {   # -e<targets>: emit "extern" before extraction  for these
+            $externs=substr($_,2);
+            $autoterm=$externs;   # set autotermination the same
+        }
+        elsif ( /^-a/ )
+        {   # -a<targets>: auto-terminate for these
+            $autoterm=substr($_,2);
+        }
+        elsif ( /^-o$/ )
+        {   # -o <filename.> -- redirect output to this file
+            if ( $outfile ) { die("Cannot reassign output again."); }
+            shift;
+            $outfile=$ARGV[0];
+            if ( ! $outfile )
+            {
+                die("-o Requires filename.\n");
+            }
+            $ifndefname=$outfile;
+            # Use only the basename in order to avoid unnecessary recompiles.
+            # This does run the risk that two files of the same name
+            # but different directories might unnecessarily collide --
+            # but this is a very unusual and extreme case.
+            $ifndefname =~ s:.*/:: ;
+            open(STDOUT,">$outfile") ||
+                die("Cannot open $outfile for writing");
+        }
+        elsif ( /^-oo$/ )
+        {   # -oo <filename.> -- redirect output to this file if different...
+            if ( $outfile ) { die("Cannot reassign output again."); }
+            shift;
+            $outfile=$ARGV[0];
+            if ( ! $outfile )
+            {
+                die("-o Requires filename.\n");
+            }
+            $ifndefname=$outfile;
+            # Use only the basename in order to avoid unnecessary recompiles.
+            # This does run the risk that two files of the same name
+            # but different directories might unnecessarily collide --
+            # but this is a very unusual and extreme case.
+            $ifndefname =~ s:.*/:: ;
+            $tempoutfile="$outfile.tmp$$";
+            open(STDOUT,">$tempoutfile") ||
+                die("Cannot open $tempoutfile for writing");
+        }
+        elsif ( /^-N$/ )
+        {   # protective ifndef name, (empty for none)
+            shift;
+            $ifndefname=$ARGV[0];
+        }
+        else
+        {
+            die("Unknown option: $_\n");
+        }
+    }
+}
+
+
+if ( 1 )
+{   # Final cleanup...
+    if ( $outfile && $tempoutfile )
+    {   # if we used a temp file, now copy it to outfile (maybe)
+        local($isDifferent) = 0;
+        close(STDOUT);
+        # Don't do the copy if the file is unchanged.
+        if ( ! -f $outfile ) { $isDifferent = 1; }
+        elsif ( -s $outfile != -s $tempoutfile ) { $isDifferent = 1; }
+        elsif ( ! $isDifferent )
+        {
+            open(F1,$tempoutfile) || die("Could not reopen $tempoutfile");
+            open(F2,$outfile) || die("Could not open: $outfile");
+            while ( ! $isDifferent )
+            {
+                $temp1 = <F1>;
+                $temp2 = <F2>;
+                ($isDifferent = 1) if ( eof(F1) != eof(F2) );
+                last if ( eof(F1) || eof(F2) );
+                ($isDifferent = 1) if ( ! ($temp1 eq $temp2) );
+            }
+            close(F1);
+            close(F2);
+        }
+        if ( $isDifferent )
+        {   # copy or rename or something
+            # rename() will destroy old outfile, then rename new to old
+            rename($tempoutfile,$outfile) ||
+                die("Could not rename $tempoutfile to $outfile.");
+            # print STDERR "Renamed $tempoutfile to $outfile.\n"; # DEBUG
+        }
+        else
+        {   # here if they look the same
+            # Just delete the temp file
+            unlink($tempoutfile);
+            # print STDERR "Removed $tempoutfile because no change.\n"; # DEBUG
+        }
+    }
+}
+
+############################################################################
+# Test sequence:
+# Try makefun makefun
+#
+#
+__END__
+/* just in case there was an unterminated C comment from above */
+//-M- junk.c -- test for makefun
+    //  This stuff is actually at the end of the makefun perl script
+    //  This is an example of what could be used for a file header.
+    /* shouldn't see this */
+// This comment should be invisible
+
+    /*-D- foobox -- description of foo
+    */
+    struct foobox
+    {
+        int pow;
+    } = wow;
+    #define NFOO 32
+    #see what happens if preprocess def ends in \
+
+    see what happens if non preprocess def ends in \
+
+    "how about an unterminated quote?
+
+    "how about a quote that ends with \
+
+    /*-F- foo title here
+ *    Foo description
+ *    here.
+ */
+/*-F- bogus here. Note that it disrupts previous extraction...
+*/
+   int foo /*whynot?*/ ( int fee /*fo*/, int fum ) // comment here
+   /* not a comment: // */ { body of foo
+   more body of foo
+   }
+
+//-f- internal def title here
+/* Internal description
+*/  internalfnc(bla) { bla }
+//-F- widget title here
+
+bla widget( .......... /* { } */
+    #if FOOCH == ';'
+    int arg,
+    #else
+    long arg,
+    #endif
+    )
+{
+}
+

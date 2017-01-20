@@ -1,0 +1,25 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<body onLoad="loadvalue()">
+<% hijack_language() %>
+<script>
+var is_in_cd_less = isCDLESS();
+function loadvalue()
+{
+       if( is_in_cd_less || isWIZARD())
+               setTimeout('top.location.href="to_internet_no_auth.htm";', 3000);
+       else
+               setTimeout('location.href="UPG_upgrade.htm";', 3000);
+}
+</script>
+<div class="page_title"><script>printText(bh_failure_head, "$failure_head");</script></div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+
+<TR><TD nowrap><B><script>printText(bh_wait_cancel, "$wait_cancel");</script></B></TD></TR>
+$bluebar
+<TR><TD nowrap><script>printText(bh_few_second, "$few_second");</script></TD></TR> 
+</TABLE>
+</div>
+</BODY>
+</HTML>

@@ -1,0 +1,8 @@
+Package: wopr-db
+Version: 20150813165303-gea65011-generic
+Depends: libc
+Provides:
+Status: install ok installed
+Architecture: ipq806x
+Installed-Time: 1403787633
+

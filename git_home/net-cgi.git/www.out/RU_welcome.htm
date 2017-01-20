@@ -1,0 +1,1578 @@
+<% ca_http_header("style/hijack_style.css","style/hijack_ru_welcome.css","/funcs.js","/RU_isp_list.js") %>
+<% nohelp_header("RU_isp_fail.htm", "RU_welcome") %>
+
+<script>
+//load_default(1); 
+<% save_timestamp("RU_welcome", "hijack_toBasic") %>
+var ts='<% cfg_get("RU_welcome") %>'
+var str_isp=new Array();
+var final_isp="0";
+var city="0";
+var isp_type="0";
+var consolidate_device_name = parent.consolidate_device_name;
+
+/* reset parent value */
+parent.RU_manual_flag="0";
+
+parent.static_ip="";
+parent.static_subnet="";
+parent.static_gateway="";
+parent.static_dns1="";
+parent.static_dns2="";
+
+parent.domain_name="";
+parent.wan_assign="0";
+
+parent.pppoe_username="";
+parent.pppoe_password="";
+parent.pppoe_server="";
+parent.pppoe_idle=5;
+parent.pppoe_wan_assign="0";
+parent.pppoe_static_ip="";
+parent.pppoe_dns_assign="0";
+parent.pppoe_dns1="";
+parent.pppoe_dns2="";
+parent.pppoe_eth_ip="";
+parent.pppoe_eth_netmask="";
+parent.pppoe_eth_gateway="";
+parent.pppoe_dual_assign="0";
+parent.dual_access="";
+
+parent.pptp_username="";
+parent.pptp_password="";
+parent.pptp_idle_time=5;
+parent.pptp_local_ipaddr="";
+parent.pptp_local_netmask="";
+parent.pptp_local_gateway="";
+parent.pptp_dns_assign="0";
+parent.pptp_dns1="";
+parent.pptp_dns2="";
+parent.pptp_server_ipaddr="";
+parent.pptp_connect_id="";
+parent.pptp_wan_assign=0;
+parent.pptp_server_FQDN=0;
+
+parent.l2tp_username="";
+parent.l2tp_password="";
+parent.l2tp_idle_time=5;
+parent.l2tp_local_ipaddr="";
+parent.l2tp_local_netmask="";
+parent.l2tp_local_gateway="";
+parent.l2tp_dns_assign="0";
+parent.l2tp_dns1="";
+parent.l2tp_dns2="";
+parent.l2tp_server_ipaddr="";
+parent.l2tp_connect_id="";
+parent.l2tp_wan_assign=0;
+parent.l2tp_server_FQDN=0;
+
+parent.conflict_wanlan="0";
+parent.isp_type="0";
+parent.mac_spoof="0";
+parent.Spoofmac="";
+parent.STATIC_DNS="0";
+parent.manual_ppp_type="0";
+parent.need_auth="1";
+parent.vpn_server="";
+
+/*for all the following procedure*/
+
+function loadvalue()
+{
+	var cf = document.forms[0];
+	parent.isp_type="0";
+	document.getElementById("view").innerHTML=document.getElementById("isp0").innerHTML;
+
+	var i;
+	for(i=0;i<=100;i++)
+	{
+		var tmp='isp'+i;
+		str_isp[i]=document.getElementById(tmp).innerHTML;
+		document.getElementById(tmp).innerHTML="";	
+	}
+
+	//buttons left
+	var btns_div1 = document.getElementById("btnsContainer_div1");
+	if( master == "admin" )
+	{
+		btns_div1.onclick = function()
+		{
+			cf.action = "/apply.cgi?/index.htm timestamp=" + ts;
+			cf.target = "_top";
+			cf.submit_flag.value = "hijack_toBasic";
+			cf.submit();
+		}
+	}
+
+	//buttons right
+	var btns_div2 = document.getElementById("btnsContainer_div2");
+	if( master == "admin" )
+	{
+		btns_div2.onclick = function()
+		{
+			return check_ISP();
+		}
+	}
+
+	if(consolidate_device_name == 1)
+		cf.system_name.value = "<% cfg_sed("Device_name") %>";
+	else
+		cf.system_name.value = "<% cfg_sed("wan_hostname") %>";
+
+
+	//check_city();	
+}
+
+function adv_user()
+{
+	location.href="/WIZ_sel_3g_adsl.htm";
+}
+
+function check_ISP()
+{	
+    var cf=document.forms[0];
+    
+    //reset 
+	  parent.vpn_server="";
+	  parent.connection_id="";
+	  parent.static_ip="";
+	  parent.static_subnet="";
+	  parent.static_gateway="";
+	  parent.static_dns1="";
+	  parent.static_dns2="";
+   
+   
+   city=cf.RU_city.value;
+   final_isp=cf.RU_isp.value;
+
+   //alert("city:"+city+"isp:"+final_isp);
+
+   if( city == 0 || final_isp == -1 )
+   {
+	location.href="RU_MC_login.htm";
+	return false;
+   }
+   
+   work_work(city,final_isp);
+   isp_type=parent.isp_type;
+   
+   if(isp_type=="1" ) 
+       location.href="RU_isp_spoof.htm";
+   else if(isp_type=="2" )//dyn,no spoof (no this case atm)
+   {	
+   	   cf.basic_type.value="1";
+	   cf.ppp_login_type.value="0";
+	   cf.welcome_wan_type.value=2;
+       cf.WANAssign.value="dhcp";
+       cf.DNSAssign.value="0";
+	   cf.submit();
+   }
+   else if(isp_type=="3" || isp_type=="4")
+   	   location.href="RU_isp_static.htm";	  
+   else if(isp_type=="5" || isp_type=="6" || isp_type=="7" || isp_type=="8" || isp_type=="17" || isp_type=="18")
+   	   location.href="RU_isp_pppoe.htm";	  	  
+   else if(isp_type=="9" || isp_type=="10" || isp_type=="11" || isp_type=="12")
+   	   location.href="RU_isp_pptp.htm";	  
+   else if(isp_type=="13" || isp_type=="14" || isp_type=="15" || isp_type=="16")
+   	   location.href="RU_isp_l2tp.htm";	
+   else
+   {	
+   	   alert(RU_isp_alert_choose);
+   	   return false;
+   }
+
+}
+
+
+function check_city()
+{	
+	var cf=document.forms[0];
+	
+	var i;
+	for(i=0;i<=100;i++)
+	{
+		if(cf.RU_city.options[i].selected==true)
+	    {
+  		    document.getElementById("view").innerHTML=str_isp[i];	
+		    break;
+		}	
+	}
+	
+}
+function CloseWindow()
+{
+	top.window.opener=null;
+	top.window.close();
+}
+function msg_close()
+{
+	alert(ca_alert_close);
+	CloseWindow();
+}
+
+</script>
+
+<input type="hidden" name="welcome_wan_type">
+<input type="hidden" name="conflict_wanlan">
+<input type="hidden" name="Spoofmac">
+<input type="hidden" name="basic_type">
+<input type="hidden" name="ppp_login_type">
+<input type="hidden" name="run_test">
+<input type="hidden" name="DNSAssign">
+<input type="hidden" name="change_wan_type" value="0">
+<input type="hidden" name="WANAssign">
+<input type="hidden" name="STATIC_DNS">
+
+<!-- DHCP & Static -->
+<input type="hidden" name="ether_ipaddr">
+<input type="hidden" name="ether_subnet">
+<input type="hidden" name="ether_gateway">
+<input type="hidden" name="ether_dnsaddr1">
+<input type="hidden" name="ether_dnsaddr2">
+<input type="hidden" name="system_name">
+<input type="hidden" name="domain_name" value="<% cfg_sed("wan_domain") %>">
+
+<div class="wizard_content_div">
+
+  <div class="wizard_words_div">
+    <H1><script>document.write(RU_CA_head)</script></H1>
+
+<TABLE>
+<!--TR><TD colspan=2><img src=/liteblue.gif width=100%% height=12></TD></TR-->
+	
+<TR>
+	<TD colspan=2><script>document.write(RU_choose_isp)</script></TD>
+</TR>
+<tr><td><br></td></tr>
+<TR> 
+	<TD><script>document.write(RU_city)</script></TD>
+	<TD>
+	<select class=RU_sel name="RU_city" size="1" onchange=check_city()>
+	    <option value="0"><script>document.write(RU_not_listed)</script></option>
+		
+<option value="1">	Альметьевск	</option>
+<option value="2">	Архангельск	</option>
+<option value="3">	Астрахань	</option>
+<option value="4">	Балаково	</option>
+<option value="5">	Балашиха	</option>
+<option value="6">	Барнаул	</option>
+<option value="7">	Батайск	</option>
+<option value="8">	Брянск	</option>
+<option value="9">	Владивосток	</option>
+<option value="10">	Волгоград	</option>
+<option value="11">	Волгодонск	</option>
+<option value="12">	Волжский	</option>
+<option value="13">	Воронеж	</option>
+<option value="14">	Всеволожск	</option>
+<option value="15">	Десногорск	</option>
+<option value="16">	Дзержинск	</option>
+<option value="17">	Димитровград	</option>
+<option value="18">	Долгопрудный	</option>
+<option value="19">	Домодедово	</option>
+<option value="20">	Екатеринбург	</option>
+<option value="21">	Железноводск	</option>
+<option value="22">	Железногорск	</option>
+<option value="23">	Зеленоград	</option>
+<option value="24">	Иваново	</option>
+<option value="25">	Ижевск	</option>
+<option value="26">	Иркутск	</option>
+<option value="27">	Йошкар-Ола	</option>
+<option value="28">	Казань	</option>
+<option value="29">	Калининград	</option>
+<option value="30">	Калуга	</option>
+<option value="31">	Каменск-Уральский	</option>
+<option value="32">	Кашира	</option>
+<option value="33">	Кемерово	</option>
+<option value="34">	Киров	</option>
+<option value="35">	Кисловодск	</option>
+<option value="36">	Колпино	</option>
+<option value="37">	Кострома	</option>
+<option value="38">	Кохма	</option>
+<option value="39">	Краснодар	</option>
+<option value="40">	Красноярск	</option>
+<option value="41">	Курск	</option>
+<option value="42">	Липецк	</option>
+<option value="43">	Люберцы	</option>
+<option value="44">	Махачкала	</option>
+<option value="45">	Менделеево	</option>
+<option value="46">	Менделеевск	</option>
+<option value="47">	Минеральные Воды	</option>
+<option value="48">	Можайск	</option>
+<option value="49">	Москва	</option>
+<option value="50">	Набережные Челны	</option>
+<option value="51">	Нефтекамск	</option>
+<option value="52">	Нижнекамск	</option>
+<option value="53">	Нижний Новгород	</option>
+<option value="54">	Нижний Тагил	</option>
+<option value="55">	Новокузнецк	</option>
+<option value="56">	Новомосковск	</option>
+<option value="57">	Новосибирск	</option>
+<option value="58">	Ногинск	</option>
+<option value="59">	Обнинск	</option>
+<option value="60">	Одинцово	</option>
+<option value="61">	Октябрьский	</option>
+<option value="62">	Омск	</option>
+<option value="63">	Орел	</option>
+<option value="64">	Оренбург	</option>
+<option value="65">	Павловский Посад	</option>
+<option value="66">	Пенза	</option>
+<option value="67">	Пермь	</option>
+<option value="68">	Пятигорск	</option>
+<option value="69">	Ростов-на-Дону	</option>
+<option value="70">	Рыбинск	</option>
+<option value="71">	Рязань	</option>
+<option value="72">	Самара	</option>
+<option value="73">	Санкт-Петербург	</option>
+<option value="74">	Саратов	</option>
+<option value="75">	Саров	</option>
+<option value="76">	Северодвинск	</option>
+<option value="77">	Смоленск	</option>
+<option value="78">	Сочи	</option>
+<option value="79">	Таганрог	</option>
+<option value="80">	Тверь	</option>
+<option value="81">	Тольятти	</option>
+<option value="82">	Томск	</option>
+<option value="83">	Тула	</option>
+<option value="84">	Тутаев	</option>
+<option value="85">	Тюмень	</option>
+<option value="86">	Узловая	</option>
+<option value="87">	Ульяновск	</option>
+<option value="88">	Уфа	</option>
+<option value="89">	Хабаровск	</option>
+<option value="90">	Химки	</option>
+<option value="91">	Химки-Куркино	</option>
+<option value="92">	Челябинск	</option>
+<option value="93">	Череповец	</option>
+<option value="94">	Шатура	</option>
+<option value="95">	Шуя	</option>
+<option value="96">	Щекино	</option>
+<option value="97">	Электросталь	</option>
+<option value="98">	Энгельс	</option>
+<option value="99">	Южно-Сахалинск	</option>
+<option value="100">	Ярославль	</option>
+
+
+  </select>
+	</TD>
+</TR>
+<TR>
+	<TD><script>document.write(RU_isp)</script></TD>
+	<TD>
+	<div id=view></div>
+	
+	
+	 <div align="center" ID="isp0" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+  	</select>
+  	</div>
+	
+	 <div align="center" ID="isp1" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Таттелеком	</option>
+            <option value="1">	ТВТ	</option>
+
+  	</select>
+  	</div>
+	
+	 <div align="center" ID="isp2" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+            <option value="1">	Билайн (PPTP)	</option>
+
+  	</select>
+  	</div>
+	
+	 <div align="center" ID="isp3" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+            <option value="1">	Билайн (PPTP)	</option>
+
+  	</select>
+  	</div>
+	
+	 <div align="center" ID="isp4" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp5" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+
+  	</select>
+  	</div>
+	
+	 <div align="center" ID="isp6" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Enter	</option>
+			<option value="1">	Дом.ru	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp7" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+
+  	</select>
+  	</div>
+	
+	 <div align="center" ID="isp8" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>			 
+			<option value="2">	Спарк	</option>
+
+  	</select>
+  	</div>
+	
+	 <div align="center" ID="isp9" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+
+  	</select>
+  	</div>
+	
+	 <div align="center" ID="isp10" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			<option value="2">	Дом.ru	</option>
+
+  	</select>
+  	</div>
+	
+	 <div align="center" ID="isp11" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Спарк	</option>
+
+  	</select>
+  	</div>
+	
+	 <div align="center" ID="isp12" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	PowerNet	</option>
+			<option value="1">	Билайн	</option>
+			<option value="2">	Билайн (PPTP)	</option>
+			<option value="3">	Дом.ru	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp13" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			<option value="2">	Дом.ru	</option>
+			<option value="3">	Интеркон	</option>
+			<option value="4">	Сумма Телеком	</option>
+			<option value="5">	ЦентраЛинк	</option>
+
+  	</select>
+  	</div>
+	
+	 <div align="center" ID="isp14" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+
+  	</select>
+  	</div>
+	
+	
+	
+	 <div align="center" ID="isp15" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+
+  	</select>
+  	</div>
+	
+	 <div align="center" ID="isp16" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+
+			
+  	</select>
+  	</div>
+	
+	 <div align="center" ID="isp17" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+
+  	</select>
+  	</div>
+	
+	 <div align="center" ID="isp18" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+
+  	</select>
+  	</div>
+	
+	 <div align="center" ID="isp19" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+
+  	</select>
+  	</div>
+	
+	 <div align="center" ID="isp20" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	АКАДО (L2TP)	</option>
+			<!--option value="1">	АКАДО (PPTP)	</option-->
+			<option value="1">	Билайн	</option>
+			<option value="2">	Билайн (PPTP)	</option>
+			<option value="3">	ВИК Мастер	</option>
+			<option value="4">	Инсис	</option>
+			<option value="5">	Инсис (Безлимитный тариф)	</option>
+			<option value="6">	КАБiNET	</option>
+			<option value="7">	Мизар Проект	</option>
+			<option value="8">	Планета	</option>
+			<option value="9">	РусКом	</option>
+			<option value="10">	РусКом (Прямой IP)	</option>
+			<option value="11">	Скайнет	</option>
+
+  	</select>
+  	</div>
+	
+	 <div align="center" ID="isp21" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+
+  	</select>
+  	</div>
+	
+	<div align="center" ID="isp22" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp23" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>	
+			<option value="1">	Билайн (PPTP)	</option>	
+
+  	</select>
+  	</div>
+	
+	 <div align="center" ID="isp24" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>	
+			<option value="1">	Билайн (PPTP)	</option>	
+
+  	</select>
+  	</div>
+	
+	
+	
+	 <div align="center" ID="isp25" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Дом.ru	</option>
+			<option value="1">	Лайнер Телеком	</option>
+			<option value="2">	Марк	</option>
+
+  	</select>
+  	</div>
+	
+	 <div align="center" ID="isp26" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp27" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">Дом.ru</option>		
+  	</select>
+  	</div>
+	
+    
+	 <div align="center" ID="isp28" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			<option value="2">	Дом.ru	</option>
+			<option value="3">	Таттелеком	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp29" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp30" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			<option value="2">	Спарк	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp31" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Инсис	</option>
+			<option value="1">	Инсис (Безлимитный тариф)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp32" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp33" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp34" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">Дом.ru</option>		
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp35" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp36" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp37" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp38" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp39" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			<option value="2">	Спарк	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp40" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	CityTelecom.ru	</option>
+			<option value="1">	Билайн	</option>
+			<option value="2">	Билайн (PPTP)	</option>
+			<option value="3">	Дом.ru	</option>
+			<option value="4">	Игра-Сервис	</option>
+			<option value="5">	Игра-Сервис (VPN)	</option>
+			<option value="6">	Мультима	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp41" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+		
+	 <div align="center" ID="isp42" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			<option value="2">	Дом.ru	</option>
+			<option value="3">	Сумма Телеком	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp43" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp44" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">Сумма Телеком</option>		
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp45" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp46" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">ТВТ</option>		
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp47" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp48" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Бородино-Телеком	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp49" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+				
+			<option value="0">	2КОМ (DHCP)	</option>
+            <option value="1">	2КОМ (PPTP)	</option>
+            <option value="2">	AkademNet	</option>
+            <option value="3">	BirulevoNET	</option>
+            <option value="4">	Butovo.com	</option>
+            <option value="5">	ButovoNet	</option>
+            <option value="6">	CityTelecom.ru	</option>
+            <option value="7">	Complat 	</option>
+            <option value="8">	Compot	</option>
+            <option value="9">	Degunino.net	</option>
+            <option value="10">	DNlab	</option>
+            <option value="11">	Gelios.net	</option>
+            <option value="12">	GP Internet	</option>
+            <option value="13">	GP Internet (Реальный IP)	</option>
+            <option value="14">	Imsys	</option>
+            <option value="15">	InterLAN (СВАО)	</option>
+            <option value="16">	InterLAN (ЮАО, ЮВАО)	</option>
+            <option value="17">	Konkovo.Net	</option>
+            <option value="18">	Kurkino.Net.Ru	</option>
+            <option value="19">	Lanport	</option>
+            <option value="20">	LinkLine	</option>
+            <option value="21">	Masterlink (PPPoE)	</option>
+            <option value="22">	Masterlink (PPTP)	</option>
+            <option value="23">	NetByNet (PPPoE)	</option>
+            <option value="24">	NetByNet (PPTP)	</option>
+            <option value="25">	NorthNet	</option>
+            <option value="26">	Onlime	</option>
+            <option value="27">	PROV.RU	</option>
+            <option value="28">	PSK-net	</option>
+            <option value="29">	QWERTY	</option>
+            <option value="30">	UCA Networks	</option>
+            <option value="31">	UltraNet	</option>
+            <option value="32">	АБН (Albeon)	</option>
+            <option value="33">	Авакс-телеком 	</option>
+            <option value="34">	АКАДО (Ethernet кабель)	</option>
+            <option value="35">	АКАДО (ТВ кабель)	</option>
+            <option value="36">	Астэйс-Телеком	</option>
+            <option value="37">	Астэйс-Телеком (VPN)	</option>
+            <option value="38">	Билайн	</option>
+            <option value="39">	Билайн (PPTP)	</option>
+            <option value="40">	Бородино-Телеком	</option>
+            <option value="41">	Велнет Телеком	</option>
+            <option value="42">	Волина	</option>
+            <option value="43">	ВПК-Телеком	</option>
+            <option value="44">	ГорКом (DHCP)	</option>
+            <option value="45">	Инет Ком	</option>
+            <option value="46">	Интернет-Космос	</option>
+            <option value="47">	Искрателеком	</option>
+            <option value="48">	Камсан	</option>
+            <option value="49">	Квидекс Телеком	</option>
+            <option value="50">	Консул.ком	</option>
+            <option value="51">	КоптевоНет	</option>
+            <option value="52">	Лантек	</option>
+            <option value="53">	Локал Телеком	</option>
+            <option value="54">	Марьино.net	</option>
+            <option value="55">	МневникиОнлайн 	</option>
+            <option value="56">	Мосинтер	</option>
+            <option value="57">	Нетлайн	</option>
+            <option value="58">	Неторн	</option>
+            <option value="59">	Неторн (подсеть 13, gerdan)	</option>
+            <option value="60">	ОСТ НЕТ	</option>
+            <option value="61">	Проф Телеком	</option>
+            <option value="62">	Русцентросвязь	</option>
+            <option value="63">	Свиблово Он-Лайн (PPPoE )	</option>
+            <option value="64">	Свиблово Он-Лайн (PPTP )	</option>
+            <option value="65">	Сити онлайн (CLN)	</option>
+            <option value="66">	Смайл (Инфолайн)	</option>
+            <option value="67">	Старлинк Телеком (DHCP)	</option>
+            <option value="68">	Старлинк Телеком (PPPoE)	</option>
+            <option value="69">	ТелекомПрофит	</option>
+            <option value="70">	Техмаркет-Сеть	</option>
+            <option value="71">	Тушино Телеком (DHCP)	</option>
+            <option value="72">	Тушино Телеком (PPPoE)	</option>
+            <option value="73">	Хованка.Ру	</option>
+            <option value="74">	ЮМОС	</option>
+            <option value="75">	Юнионлайн	</option>
+            <option value="76">	Ясенево Онлайн	</option>
+            <option value="77">	Яуза Телеком	</option>
+            <option value="78">	Яуза Телеком (Реальный IP)	</option>		
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp50" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Дом.ru	</option>
+			<option value="1">	Таттелеком	</option>
+			<option value="2">	ТВТ	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp51" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+		
+	 <div align="center" ID="isp52" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Дом.ru	</option>
+			<option value="1">	Таттелеком	</option>
+			<option value="2">	ТВТ	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp53" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Imsys	</option>
+			<option value="1">	АБВ-Интернет	</option>
+			<option value="2">	Билайн	</option>
+			<option value="3">	Билайн (PPTP)	</option>
+			<option value="4">	Бородино-Телеком	</option>
+			<option value="5">	Дом.ru	</option>
+			<option value="6">	Сумма Телеком	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp54" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Инсис	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp55" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Enter	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp56" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp57" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Academ.org	</option>
+			<option value="1">	HomeNet	</option>
+			<option value="2">	Real-Net	</option>
+			<option value="3">	Дом.ru	</option>
+			<option value="4">	Комгейт	</option>
+			<option value="5">	НИР-Телеком	</option>
+			<option value="6">	Сибирские Сети	</option>
+			<option value="7">	Электронный город	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp58" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp59" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Спарк	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp60" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp61" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+		
+	 <div align="center" ID="isp62" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			<option value="2">	Дом.ru	</option>
+			<option value="3">	Сибинтерком	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp63" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			<option value="2">	Сумма Телеком	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp64" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			<option value="2">	Дом.ru	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp65" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp66" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">Дом.ru</option>		
+  	</select>
+  	</div>
+
+	
+	 <div align="center" ID="isp67" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			<option value="2">	Дом.ru	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp68" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp69" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			<option value="2">	Спарк	</option>
+			<option value="3">	Сумма Телеком	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp70" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp71" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Спарк	</option>
+
+  	</select>
+  	</div>
+		
+	 <div align="center" ID="isp72" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Аист	</option>
+			<option value="1">	Билайн	</option>
+			<option value="2">	Билайн (PPTP)	</option>
+			<option value="3">	Дом.ru	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp73" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Arbital	</option>
+			<option value="1">	BigFish	</option>
+			<option value="2">	CityTelecom.ru	</option>
+			<option value="3">	Cubio 	</option>
+			<option value="4">	CyberNet	</option>
+			<option value="5">	Diamond Network	</option>
+			<option value="6">	Hitnet	</option>
+			<option value="7">	HomeUser	</option>
+			<option value="8">	iLAN	</option>
+			<option value="9">	InterZet	</option>
+			<option value="10">	IntraStar	</option>
+			<option value="11">	KolpinoNet	</option>
+			<option value="12">	Lentel (IPN)	</option>
+			<option value="13">	Lentel (VPN)	</option>
+			<option value="14">	LuxTelecom	</option>
+			<option value="15">	MNS	</option>
+			<option value="16">	MNS (Безлимитный тариф)	</option>
+			<option value="17">	NEMIYA	</option>
+			<option value="18">	Polustrovo.net	</option>
+			<option value="19">	SkyNet	</option>
+			<option value="20">	SmartHome	</option>
+			<option value="21">	Teyla	</option>
+			<option value="22">	TiERA	</option>
+			<option value="23">	Unis	</option>
+			<option value="24">	UniWeb	</option>
+			<option value="25">	Well-Com	</option>
+			<option value="26">	WKT Networks	</option>
+			<option value="27">	Автово.нет	</option>
+			<option value="28">	Антхил	</option>
+			<option value="29">	Билайн	</option>
+			<option value="30">	Билайн (PPTP)	</option>
+			<option value="31">	ВестКолл	</option>
+			<option value="32">	Виартком	</option>
+			<option value="33">	Город ОнЛайн	</option>
+			<option value="34">	ГТК	</option>
+			<option value="35">	Демос Датаком	</option>
+			<option value="36">	Доминанта	</option>
+			<option value="37">	Невалинк	</option>
+			<option value="38">	Ниеншанц-Хоум	</option>
+			<option value="39">	Нью Линк Телеком	</option>
+			<option value="40">	ПетерСтар	</option>
+			<option value="41">	Прайм-Телеком	</option>
+			<option value="42">	Пулнет	</option>
+			<option value="43">	Пушкин-Net	</option>
+			<option value="44">	Реалнет	</option>
+			<option value="45">	Связь-Инвест Северо-Запад	</option>
+			<option value="46">	Сумма Телеком	</option>
+			<option value="47">	Телепорт	</option>
+			<option value="48">	ТКТ	</option>
+			<option value="49">	ТТК Северо-Запад	</option>
+			<option value="50">	Хохлома	</option>
+			<option value="51">	Цифра	</option>
+			<option value="52">	Электрон Телеком	</option>
+			<option value="53">	Эленет 	</option>
+			<option value="54">	Элтел	</option>
+			<option value="55">	Юго-Западные сети	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp74" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			<option value="2">	Дом.ru	</option>
+			<option value="3">	Фаннет Телеком	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp75" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp76" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp77" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp78" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp79" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Спарк	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp80" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp81" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Аист	</option>
+			<option value="1">	Айдо Телеком	</option>
+			<option value="2">	Билайн	</option>
+			<option value="3">	Билайн (PPTP)	</option>
+			<option value="4">	Тольятти Телеком	</option>
+
+  	</select>
+  	</div>
+		
+	 <div align="center" ID="isp82" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp83" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			<option value="2">	Спарк	</option>
+			<option value="3">	Сумма Телеком	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp84" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp85" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Enter	</option>
+			<option value="1">	Билайн	</option>
+			<option value="2">	Билайн (PPTP)	</option>
+			<option value="3">	Дом.ru	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp86" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp87" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp88" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			<option value="2">	Телесеть-Уфа	</option>
+
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp89" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp90" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp91" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+		
+	 <div align="center" ID="isp92" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Дом.ru	</option>
+			<option value="1">	Инсис	</option>
+			<option value="2">	Инсис (Безлимитный тариф)	</option>
+			<option value="3">	Интерсвязь (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp93" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp94" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp95" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp96" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp97" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp98" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp99" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Билайн	</option>
+			<option value="1">	Билайн (PPTP)	</option>
+			
+  	</select>
+  	</div>
+	
+	
+	 <div align="center" ID="isp100" style="position:absolute;top:0;left:0;visibility:hidden">
+		<select class=RU_sel name="RU_isp" size="1">
+			<option value="-1"><script>document.write(RU_not_listed)</script></option>
+			<option value="0">	Enter	</option>
+			<option value="1">	Билайн	</option>
+			<option value="2">	Билайн (PPTP)	</option>
+
+  	</select>
+  	</div>
+	
+
+  	
+	</TD>
+</TR>
+<tr><td><br></td></tr>
+<TR> 
+	<TD colspan=2><script>document.write(RU_manual_conf_1)</script><a href='RU_MC_login.htm'><script>document.write(RU_manual_conf_2)</script></a>
+	</TD>
+</TR>
+<tr><td><br></td></tr>
+<!--TR>
+	<TD>
+		<script>
+		document.write("<input class=RU_button name='quit' type='button' value='"+bh_back_mark+"' onClick='adv_user();'>")
+		document.write("<input class=RU_button name='next' type='button' value='"+bh_next_mark+"' onClick='check_ISP();'>")
+		</script>
+	</TD>
+</TR-->
+</TABLE>
+  </div><!--wizard_words_div -->
+<div id="center_buttons">
+  <div id="allBtns_div" class="wizard_buttons_div" align="center">
+                <div id="btnsContainer_div1" class="buttons_img_div" align="center">
+                         <script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							document.write('<img src="image/ca-little-grey-button.png" />');
+                        </script>
+                        <div class="buttons_words_div"><script>document.write(RU_back)</script></div>
+                </div>
+                <div class="buttons_split"></div>
+                <div id="btnsContainer_div2" class="buttons_img_div" align="center">
+						<script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							
+							document.write('<img src="image/ca-little-grey-button.png" />');
+						</script>
+                        <div class="buttons_words_div"><script>document.write(RU_next)</script></div>
+                </div>
+ 
+  </div><!--allBtns_div -->
+</div>
+</div><!--wizard_content_div -->
+</FORM>
+</BODY>
+</HTML>

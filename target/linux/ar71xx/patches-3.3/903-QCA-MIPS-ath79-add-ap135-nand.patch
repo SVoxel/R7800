@@ -1,0 +1,73 @@
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+--- a/arch/mips/ath79/Kconfig
++++ b/arch/mips/ath79/Kconfig
+@@ -73,6 +73,19 @@
+ 	  Say 'Y' here if you want your kernel to support the
+ 	  Atheros AP135 reference board.
+ 
++config ATH79_MACH_AP135_DUAL
++	bool "Atheros AP135 Dual reference board"
++	select SOC_QCA955X
++	select ATH79_DEV_GPIO_BUTTONS
++	select ATH79_DEV_LEDS_GPIO
++	select ATH79_DEV_SPI
++	select ATH79_DEV_USB
++	select ATH79_DEV_NAND
++	select ATH79_DEV_WMAC
++	help
++	  Say 'Y' here if you want your kernel to support the
++	  Atheros AP135 Dual reference board.
++
+ config ATH79_MACH_AP136
+ 	bool "Atheros AP136 reference board"
+ 	select SOC_QCA955X
+
+--- a/arch/mips/ath79/machtypes.h
++++ b/arch/mips/ath79/machtypes.h
+@@ -23,6 +23,7 @@
+ 	ATH79_MACH_AP121,		/* Atheros AP121 reference board */
+ 	ATH79_MACH_AP121_MINI,		/* Atheros AP121-MINI reference board */
+ 	ATH79_MACH_AP135,		/* Atheros AP135 reference board */
++	ATH79_MACH_AP135_DUAL,		/* Atheros AP135 Dual reference board */
+ 	ATH79_MACH_AP136,		/* Atheros AP136 reference board */
+ 	ATH79_MACH_AP81,		/* Atheros AP81 reference board */
+ 	ATH79_MACH_AP83,		/* Atheros AP83 */
+--- a/arch/mips/ath79/Makefile
++++ b/arch/mips/ath79/Makefile
+@@ -45,6 +45,7 @@
+ obj-$(CONFIG_ATH79_MACH_AP113)		+= mach-ap113.o
+ obj-$(CONFIG_ATH79_MACH_AP121)		+= mach-ap121.o
+ obj-$(CONFIG_ATH79_MACH_AP135)		+= mach-ap135.o
++obj-$(CONFIG_ATH79_MACH_AP135_DUAL)	+= mach-ap135.o
+ obj-$(CONFIG_ATH79_MACH_AP136)		+= mach-ap136.o
+ obj-$(CONFIG_ATH79_MACH_AP81)		+= mach-ap81.o
+ obj-$(CONFIG_ATH79_MACH_AP83)		+= mach-ap83.o
+--- a/arch/mips/include/asm/mach-ath79/ar71xx_regs.h
++++ b/arch/mips/include/asm/mach-ath79/ar71xx_regs.h
+@@ -26,6 +26,7 @@
+ #define AR71XX_GE1_BASE		0x1a000000
+ #define AR71XX_GE1_SIZE		0x10000
+ #define AR71XX_EHCI_BASE	0x1b000000
++#define AR71XX_NAND_BASE	0x1b800000
+ #define AR71XX_EHCI_SIZE	0x200
+ #define AR71XX_OHCI_BASE	0x1c000000
+ #define AR71XX_OHCI_SIZE	0x1000
+@@ -46,7 +47,7 @@
+ #define AR71XX_RESET_SIZE	0x100
+ #define AR71XX_MII_BASE		(AR71XX_APB_BASE + 0x00070000)
+ #define AR71XX_MII_SIZE		0x100
+-#define AR71XX_NAND_CTRL_BASE	(AR71XX_EHCI_BASE + 0x00000200)
++#define AR71XX_NAND_CTRL_BASE	(AR71XX_NAND_BASE + 0x00000200)
+ #define AR71XX_NAND_CTRL_SIZE	0x0b8
+ 
+ #define AR71XX_PCI_MEM_BASE	0x10000000

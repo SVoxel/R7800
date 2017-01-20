@@ -1,0 +1,9 @@
+#!/bin/sh /etc/rc.common
+START=99
+
+boot(){
+	[ $(cat /tmp/openvpn/cert_file_status) = "1" ] && {
+		/etc/init.d/openvpn regenerate_cert_file
+		/etc/init.d/openvpn start
+	}
+}

@@ -1,0 +1,115 @@
+#!/bin/sh
+
+. ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+# standard settings - accept overrides from the calling environment
+[ -z "$KROUTER_DEBUG_FILE" ] && KROUTER_DEBUG_FILE="/etc/krouter_debug"
+BINARY="ozker"
+export RUNDIR BINDIR BINARY
+
+# OzKer configuration items
+DAEMON_BIN="${BINDIR}/${BINARY}"
+DISPLAY_NAME="ozKer"
+PIDFILE="${RUNDIR}/${BINARY}.pid"
+DAEMON_PORT=9000
+DAEMON_HOST=127.0.0.1
+REDIS_PORT=6379
+REDIS_HOST=127.0.0.1
+REDIS_UNIXSOCK=/var/run/appflow/redis.sock
+REDIS_TIMEOUT=3000
+EXTRA_COMMANDS=status
+OZKER_LOG_LEVEL=6
+
+# Format the command line parameters
+OPTIONS_RUN="--daemon --port=$DAEMON_PORT --host=$DAEMON_HOST --run-dir=$RUNDIR --pid-file=$PIDFILE --log-level=$OZKER_LOG_LEVEL"
+OPTIONS_REDIS="--redis-unixsocket=$REDIS_UNIXSOCK --redis-timeout=$REDIS_TIMEOUT"
+OPTIONS_CGI="--uri-prefix=$URL_PREFIX"
+OPTIONS_ALL="$OPTIONS_RUN $OPTIONS_REDIS $OPTIONS_CGI"
+OPTIONS_DEBUG="--no-daemon --log-level=7"
+OPTIONS_DEBUG_INTERACTIVE="--debug-fastcgi"
+
+start() {
+	echo -n "Starting ${DISPLAY_NAME}: "
+
+	[ "$OZKER_BASIC_AUTH" = "yes" ] && {
+		if [ ! -e '/etc/httpd.conf' ] || [ $(grep -c ozker /etc/httpd.conf &>/dev/null) -eq 0 ]; then
+			echo '/cgi-bin/ozker:root:$p$root' >>/etc/httpd.conf
+		fi
+
+
+		if [ ! -e 'httpd.conf' ] || [ $(grep -c ozker httpd.conf &>/dev/null) -eq 0 ]; then
+			echo '/cgi-bin/ozker:root:$p$root' >>httpd.conf
+		fi
+
+
+		sed -i -e 's/^[ \t]*#[ \t]\+option[ \t]\+realm[ \t]\+/\toption realm /;s/^[ \t]*#[ \t]\+option[ \t]\+config[ \t]\+/\toption config /' /etc/config/uhttpd
+		/etc/init.d/uhttpd restart
+	}
+	start-stop-daemon -S -q -p $PIDFILE -x $DAEMON_BIN -- \
+		$OPTIONS_ALL "$@"
+
+	retval=$?
+	echo
+	return ${retval}
+}
+
+start_devel() {
+	[ ! -d "$RUNDIR" ] && {
+		mkdir -p $RUNDIR
+	}
+
+	DAEMON_BIN="$1"
+	shift
+
+	start-stop-daemon -S -q -p $PIDFILE -x $DAEMON_BIN -- \
+		$OPTIONS_ALL "$@"
+}
+
+boot() {
+	[ ! -d "$RUNDIR" ] && {
+		mkdir -p $RUNDIR
+	}
+
+	if [ -n "$KROUTER_DEBUG_FILE" ] && [ -e "$KROUTER_DEBUG_FILE" ]; then
+		# debug file is present
+		echo "$DISPLAY_NAME: booting in debug mode"
+		start $OPTIONS_DEBUG "$@"
+	else
+		start "$@"
+	fi
+}
+
+stop() {
+	default_stop && {
+		# We have our way to do authentication, so comment these three commands.
+#		sed -i -e '/^\/cgi-bin\/ozker:root:.*/d' /etc/httpd.conf
+#		sed -i -e 's/^[ \t]\+option[ \t]\+realm[ \t]\+/#\toption realm /;s/^[ \t]\+option[ \t]\+config[ \t]\+/#\toption config /' /etc/config/uhttpd
+#		/etc/init.d/uhttpd restart
+		true
+	}
+}
+
+restart() {
+	stop
+	start
+}
+
+action() {
+	action=${1:-boot}
+	shift
+
+	case "${action}" in
+		boot|init)
+			boot "$@"
+			;;
+		start|stop|restart|status|start_devel)
+			${action} "$@"
+			;;
+		*)
+			echo "Usage: $0 start|boot|stop|restart|status|start_devel"
+			exit 1
+	esac
+}
+
+action "$@"
+exit $?

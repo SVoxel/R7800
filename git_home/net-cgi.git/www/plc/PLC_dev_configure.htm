@@ -1,0 +1,211 @@
+<% http_header("style/form.css", "/funcs.js", "/plc_dev_config.js", "/plc_dev_class.js") %>
+<% body_header("_plc_device_config", "PLC_wait_scan.htm", "plc_dev_config") %>
+<div class="page_title">$plc_dev_head</div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+
+<script>
+<% refresh_timestamp("plc_qos_mac_add", "plc_qos_port_add") %>
+<% save_timestamp("plc_dev_config", "plc_qos_setting", "plc_qos_dev_mac_config", "plc_qos_dev_mac_delete", "plc_qos_dev_port_config", "plc_qos_dev_port_delete") %>
+var ts='<% cfg_get("plc_dev_config") %>';
+
+<% plc_qos_mac_items() %>
+<% plc_qos_port_items() %>
+
+/*---------PLC device-----------*/
+/*
+	Model_name, MAC, IP, FW_VERSION, Linkrate, Led_status, Reset_status, DAK, Dev_type, DAK_password, record_status.
+*/
+<% plc_availible_devs() %>
+
+//Bug 22008
+var devices_set = new Array();
+loadDevices();
+
+function loadvalue()
+{
+	var i;
+	var cf = document.forms[0];
+
+	if(plc_avail_dev_num == 1)
+		cf.select_dev.checked = true;
+	else if(plc_avail_dev_num > 1)
+	{
+		for(i=0; i<plc_avail_dev_num; i++)
+		{
+			cf.select_dev[i].checked = true;
+		}
+	}
+
+	check_DAK_status();
+}
+</script>
+
+<input type="hidden" name="plc_qos_mac_flag" value="">
+<input type="hidden" name="plc_qos_mac_select" value="">
+<input type="hidden" name="plc_qos_port_flag" value="">
+<input type="hidden" name="plc_qos_port_select" value="">
+<input type="hidden" name="plc_dev_cfg_info" value="">
+<input type="hidden" name="plc_dev_select_num" value="">
+<input type="hidden" name="plc_dev_cfg_mac" value="">
+
+<TR><TD colspan="2" align="left"><h2>$wlan_guest_security</h2></TD></TR>
+<TR><TD nowrap align="left" colspan="2"><b>$plc_plz_enter_encryp_key :</b></TD></TR>
+<TR><TD colspan="2">$spacebar</TD></TR>
+<TR><TD colspan="2" align="center">
+	<TABLE class=tables border=0 cellpadding="4" cellspacing="0" width="80%">
+	<TR class=table_header>
+		<TD nowrap align="center" width="15%">&nbsp; </TD>
+		<TD nowrap align="center" width="15%"><span class="subhead">#</span></TD>
+		<TD nowrap align="center" width="20%"><span class="subhead">$plc_model</span></TD>
+		<TD nowrap align="center" width="30%"><span class="subhead">$info_mark_mac</span></TD>
+		<TD nowrap align="center"><span class="subhead">$basic_pppoe_passwd</span></TD>
+	</TR>
+	<script>
+	var i;
+	for(i=1; i<=plc_avail_dev_num; i++)
+	{
+            if( i%2== 0 )
+                    document.write("<TR class=\"even_line\">");
+            else
+                    document.write("<TR class=\"odd_line\">");
+		document.write('<TD nowrap align="center"><input type="checkbox" name="select_dev" value="1" onClick="return check_DAK_status();"></TD>');
+		document.write('<TD nowrap align="center"><span class="subhead">'+i+'</span></TD>');
+		document.write('<TD nowrap align="center">'+devices_set[i].Model_name+'</TD>');
+		document.write('<TD nowrap align="center">'+devices_set[i].MAC+'</TD>');
+		document.write('<TD nowrap align="center">');
+
+		//local device or has been recorded, no need to get modification from user.
+		if(devices_set[i].Dev_type == "1" || devices_set[i].Record_status == "1")
+		{
+			document.write('<input type="text" name="DAK" style="width:240px; border:none;" readonly onfocus="this.blur()" value="xxxx-xxxx-xxxx-xxxx">');
+		}
+		else if(devices_set[i].Dev_type == "0" && devices_set[i].Record_status == "0")
+		{
+			document.write('<input type="text" name="DAK" style="width:240px;" maxlength="19" onKeyPress="return getkey(\'hostname\', event);">');
+		}
+		document.write('</TD></TR>');
+	}
+	</script>
+	</TABLE>
+</TD>
+</TR>
+<TR><TD colspan="2">$spacebar</TD></TR>
+<TR><TD colspan="2">$spacebar</TD></TR>
+<TR><TD colspan="2" align="center">
+	<TABLE border="0" cellpadding="4" cellspacing="0" width="80%">
+	<TR>
+        	<TD nowrap align="right" nowrap="nowrap" width="35%"><b>$plc_encryp_key :</b></TD>
+        	<TD nowrap align="center"><input type="text" size="50%" name="NMK" value="" maxlength="64" onKeyPress="return getkey('num_letter', event);"></TD>
+	</TR>
+	<TR>
+		<TD align="right" nowrap="nowrap" width="35%"><b>$plc_OR :</b></TD>
+		<TD align="center" nowrap="nowrap">
+		<input class="long_common_bt" type="button" name="creat_default_key"  value="$plc_encryp_default_key" onClick="return create_default_NMK();">
+		</TD>
+	</TR>
+	</TABLE>
+</TD>
+</TR>
+<TR><TD colspan="2">$spacebar</TD></TR>
+<TR>
+	<TD nowrap colspan="2" align="center">
+	<input class="cancel_bt" type="button" name="Cancel" value="$cancel_mark" onClick='location.href="PLC_wait_scan.htm";'>&nbsp;&nbsp;
+	<input class="apply_bt" type="submit" name="apply" value="$apply_mark" onClick="return plc_device_config(document.forms[0]);">
+	</TD>
+</TR>
+$bluebar
+<TR><TD colspan="2" align="left"><h2>$plc_qos_head</h2></TD></TR>
+<TR><TD nowrap align="left" colspan="2"><b>$plc_qos_mac_head</b></TD></TR>
+<TR><TD colspan="2">$spacebar</TD></TR>
+<TR><TD colspan="2" align="center">
+	<TABLE class=tables border=0 cellpadding="2" cellspacing="0" width="80%">
+	<TR class=table_header>
+		<TD nowrap align="center" width="10%">&nbsp;</TD>
+		<TD nowrap align="center" width="10%"><span class="subhead">#</span></TD>
+		<TD nowrap align="center"><span class="subhead">$qos_priority</span></TD>
+		<TD nowrap align="center" width="60%"><span class="subhead">$plc_dest_mac</span></TD>
+	</TR>
+	<script>
+	if(qos_mac_num > 0)
+	{
+		var i;
+		for(i=1; i<=qos_mac_num; i++)
+		{
+			var qos_mac_each = eval('qos_mac_Array' + i);
+			var each_info = qos_mac_each.split(' ');
+			   if( i%2== 0 )
+                    document.write("<TR class=\"even_line\">");
+            else
+                    document.write("<TR class=\"odd_line\">");
+			document.write('<TD nowrap align="center"><input type="radio" name="qos_mac_select"></TD>');
+			document.write('<TD nowrap align="center"><span class="subhead">'+i+'</span></TD>');
+			document.write('<TD nowrap align="center">'+each_info[0]+'</TD>');
+			document.write('<TD nowrap align="center">'+each_info[1]+'</TD></TR>');
+		}
+	}	
+	</script>
+	</TABLE>
+</TD></TR>
+<TR>
+	<TD nowrap colspan="2" align="center">
+	<input class="add_bt"  type="submit" name="add" value="$add_mark" onClick='return check_qos_mac("add");'>
+	<input class="edit_bt" type="submit" name="edit" value="$edit_mark" onClick='return check_qos_mac("edit");'>
+	<input class="delete_bt" type="submit" name="delete" value="$delete_mark" onClick='return check_qos_mac("delete");'>
+	</TD>
+</TR>
+<TR><TD colspan="2">$spacebar</TD></TR>
+<TR><TD nowrap align="left" colspan="2"><b>$plc_qos_port_head</b></TD></TR>
+<TR><TD colspan="2">$spacebar</TD></TR>
+<TR><TD align="center" colspan="2">
+	<TABLE class=tables border=0 cellpadding="2" cellspacing="0" width="80%">
+	<TR class=table_header>
+		<TD nowrap align="center" width="10%">&nbsp;</TD>
+		<TD nowrap align="center" width="10%"><span class="subhead">#</span></TD>
+		<TD nowrap align="center"><span class="subhead">$qos_priority</span></TD>
+		<TD nowrap align="center" width="60%"><span class="subhead">$plc_dest_port</span></TD>
+	</TR>
+	<script>
+	if(qos_port_num > 0)
+	{
+		var i;
+		for(i=1; i<=qos_port_num; i++)
+		{
+			var qos_port_each = eval('qos_port_Array' + i);
+			var each_info = qos_port_each.split(' ');
+			   if( i%2== 0 )
+                    document.write("<TR class=\"even_line\">");
+            else
+                    document.write("<TR class=\"odd_line\">");
+			document.write('<TD nowrap align="center"><input type="radio" name="qos_port_select"></TD>');
+			document.write('<TD nowrap align="center"><span class="subhead">'+i+'</span></TD>');
+			document.write('<TD nowrap align="center">'+each_info[0]+'</TD>');
+			document.write('<TD nowrap align="center">'+each_info[1]+'</TD></TR>');
+		}
+	}
+	</script>
+	</TABLE>
+</TD></TR>
+<TR>
+	<TD nowrap colspan="2" align="center">
+	<input class="add_bt" type="submit" name="add" value="Add" onClick='return check_qos_port("add");'>
+	<input class="edit_bt" type="submit" name="edit" value="Edit" onClick='return check_qos_port("edit");'>
+	<input class="delete_bt" type="submit" name="delete" value="Delete" onClick='return check_qos_port("delete");'>
+	</TD>
+</TR>
+<TR><TD colspan="2">$spacebar</TD></TR>
+<TR>
+	<TD nowrap colspan="2" align="center">
+	<input class="cancel_bt" type="button" name="Cancel" value="$cancel_mark" onClick='location.href="PLC_wait_scan.htm";'>&nbsp;&nbsp;
+	<input class="apply_bt" type="submit" name="apply" value="$apply_mark" onClick="return plc_qos_config(document.forms[0]);">
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+
+</div>
+
+</FORM>
+</BODY>
+</HTML>

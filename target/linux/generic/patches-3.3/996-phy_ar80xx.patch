@@ -1,0 +1,22 @@
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -121,6 +121,9 @@ config IP17XX_PHY
+ 	tristate "Driver for IC+ IP17xx switches"
+ 	select SWCONFIG
+ 
++config AR80XX_PHY
++	tristate "Driver for ar8031/ar8033/ar8035 phy"
++
+ config AR8216_PHY
+ 	tristate "Driver for Atheros AR8216 switches"
+ 	select ETHERNET_PACKET_MANGLE
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
+@@ -20,6 +20,7 @@ obj-$(CONFIG_ADM6996_PHY)	+= adm6996.o
+ obj-$(CONFIG_MVSWITCH_PHY)	+= mvswitch.o
+ obj-$(CONFIG_IP17XX_PHY)	+= ip17xx.o
+ obj-$(CONFIG_REALTEK_PHY)	+= realtek.o
++obj-$(CONFIG_AR80XX_PHY)	+= ar80xx.o
+ obj-$(CONFIG_AR8216_PHY)	+= ar8216.o
+ obj-$(CONFIG_RTL8306_PHY)	+= rtl8306.o
+ obj-$(CONFIG_RTL8366_SMI)	+= rtl8366_smi.o

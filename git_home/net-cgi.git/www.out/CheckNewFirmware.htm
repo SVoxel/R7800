@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<script language="javascript" type="text/javascript">
+<% cfg_set("hidden_upgrade", "1") %>
+//<% cat_rm_file("/tmp/auto_ctlfile") %>, delete file /tmp/auto_ctlfile when this page loaded
+var hidden_upgrade = "1";
+var charcount = 0;
+</script>
+</head>
+
+<body>
+
+<div class="checkfirmware_page_container">
+
+	<div id="header" style="width:740px; margin:0 auto;">
+		<iframe id="topframe" name="topframe" allowtransparency="true" height="97px" width="625px" scrolling="no" frameborder="0" class="header_frame" src="CheckNewFW_top.htm">
+		</iframe>
+	</div>
+	
+	<div class="checkfirmware_body_container">
+		<iframe id="formframe" name="formframe" allowtransparency="true" height="100%" width="100%" scrolling="no" frameborder="0" class="body_frame" src="AUTO_start.htm">
+		</iframe>
+	</div>
+	
+	<div class="bottom_margin"></div>
+
+</div>
+
+</body>
+
+</html>

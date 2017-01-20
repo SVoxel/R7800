@@ -1,0 +1,32 @@
+<% http_header("style/form.css", "/funcs.js", "/upgrade.js") %>
+<div class="page_title">$ch_lang_head_update</div>
+<div id="main" class="main">
+<script>
+var netgear_module="<% cat_file("/module_name") %>";
+var netgear_region=top.netgear_region;
+var netgear_ver="<% cat_file("/firmware_version") %>";
+
+</script>
+<body onLoad="" bgcolor=#ffffff>
+<form method="post" action="/langupg.cgi?" enctype="multipart/form-data">
+<table width=100% border=0 cellpadding=0 cellspacing=3>
+<!--TR><TD colSpan=2><H1>$ch_lang_head_update</H1></TD></TR-->
+<TR><TD colSpan=2></TD></TR>
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+<TR><td nowrap><b>$ch_language_fromdisk</b></TD></TR>
+<TR><td nowrap> <input name="filename" type="file" size="32"></TD></TR>
+$bluebar
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<td nowrap colspan=2 align=center><input class="cancel_bt" type="button" value="$cancel_mark" onClick="location.href=\'index.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="submit"  value="$upg_mark" onClick="return clickUpgradeLanguage(document.forms[0])"></td>');
+else
+	document.write('<td nowrap colspan=2 align=center><input class="cancel1_bt" type="button" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit"  value="$upg_mark" disabled></td>');
+</script>
+	
+  </TR>
+</TABLE>
+</FORM>
+</body>
+</HTML>

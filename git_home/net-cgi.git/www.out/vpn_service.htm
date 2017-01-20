@@ -1,0 +1,170 @@
+<% http_header("style/form.css", "/funcs.js", "/vpn.js") %>
+<% body_header("_vpn", "vpn_service.htm", "vpn") %>
+<div class="page_title">$vpn_head</div>
+<script>
+<% save_timestamp("vpn", "vpn_compress_conf") %>
+var ts='<% cfg_get("vpn") %>';
+var backup_rsp='<% cfg_get("backup_rspToPing") %>';
+var old_endis_ddns="<% cfg_get("endis_ddns") %>";
+var old_wan_assign="<% cfg_get("wan_ether_wan_assign")%>";
+var vpn_enable="<% cfg_get("vpn_enable")%>";
+var type="<% cfg_get("vpn_serv_type") %>";
+var port="<% cfg_get("vpn_serv_port") %>";
+var tun_type="<% cfg_get("tun_vpn_serv_type") %>";
+var tun_port="<% cfg_get("tun_vpn_serv_port") %>";
+var access_mode="<% cfg_get("vpn_access_mode") %>";
+var rspToPing_value='<% cfg_get("wan_endis_rspToPing") %>';
+var backup_rspToPing_value='<% cfg_get("backup_rspToPing") %>';
+var ipv6_type = "<% cfg_get("ipv6_type") %>";
+var enable_ap_flag="<% cfg_get("ap_mode") %>";
+var old_sysDNSHost="<% cfg_sed_xss("sysDNSHost") %>";
+var old_wan_ip="<% bas_ether_ip() %>";
+var pppoe_get_wan_assign='<% cfg_get("wan_pppoe_wan_assign") %>';
+
+var select_basic="<% cfg_get("internet_type") %>";
+
+<% ip_ddns_client_config_file() %>
+<% forward_items_xss() %>
+<% trigger_items_xss() %>
+<% upnp_items() %>
+
+<% check_ftp() %>
+var show_enableHTTP="<% cfg_get("usb_enableHTTP") %>";
+var show_enableHvia="<% cfg_get("usb_enableHvia") %>";
+var show_HTTP_via_port="<% cfg_get("usb_HTTP_via_port") %>";
+var show_enableFTP="<% cfg_get("usb_enableFTP") %>";
+var show_enableFvia="<% cfg_get("usb_enableFvia") %>";
+var show_FTP_via_port="<% cfg_get("usb_FTP_via_port") %>";
+var usb_router_flag=parent.usb_router_flag;
+var endis_ntp="<% cfg_get("endis_ntp") %>";
+var endis_remote="<% cfg_get("remote_endis") %>";
+var remote_port="<% cfg_get("remote_port") %>";
+var info_get_wanproto="<% cfg_get("wan_proto") %>";
+var endis_upnp="<% cfg_get("upnp_enable") %>";
+var internet_ppp_type = "<% cfg_get("internet_ppp_type") %>";
+var wan_pppoe_demand = "<% cfg_get("wan_pppoe_demand") %>";
+var wan_pptp_demand = "<% cfg_get("wan_pptp_demand") %>";
+var wan_l2tp_demand = "<% cfg_get("wan_l2tp_demand") %>";
+var wan_mulpppoe_demand = "<% cfg_get("wan_mulpppoe_demand") %>";
+
+function loadvalue()
+{
+	var cf = document.forms[0];	
+	if(vpn_enable == "1")
+		cf.enable_vpn.checked = true;
+	if(enable_ap_flag == "1"){
+		cf.enable_vpn.checked = false;
+		setDisabled(true, cf.enable_vpn );
+		document.getElementById("enable_vpn_text").style.color="grey";
+	}
+	cf.vpn_port.value=port;
+	cf.tun_vpn_port.value=tun_port;	
+	
+	if(type == "udp")
+		cf.vpn_type[0].checked = true;
+	else if(type == "tcp")
+		cf.vpn_type[1].checked = true;
+	if(tun_type == "udp")
+                cf.tun_vpn_type[0].checked = true;
+        else if(tun_type == "tcp")
+                cf.tun_vpn_type[1].checked = true;
+	
+	if(access_mode == "auto")
+		cf.vpn_access[0].checked = true;
+	else if(access_mode == "all")
+		cf.vpn_access[1].checked = true;
+	else if(access_mode == "home")
+		 cf.vpn_access[2].checked = true;
+	if(vpn_enable == "1"&&old_endis_ddns == "1" && ip_or_hostname != old_sysDNSHost && ip_or_hostname != "")
+		alert("$warn_config_differ");
+	if(vpn_enable == "1"&&old_endis_ddns != "1"&& old_wan_assign == "1" && ip_or_hostname != old_wan_ip && ip_or_hostname != "" && select_basic == "1")
+		alert("$warn_config_differ");
+	
+}
+</script>
+<input type="hidden" name="hidden_enable_vpn">
+<input type="hidden" name="hidden_vpn_type">
+<input type="hidden" name="hidden_vpn_port">
+<input type="hidden" name="hidden_tun_vpn_type">
+<input type="hidden" name="hidden_tun_vpn_port">
+<input type="hidden" name="hidden_vpn_access">
+<input type="hidden" name="hidden_backup_rspToPing">
+<input type="hidden" name="download_button_type">
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+        document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" value="$cancel_mark" onClick="location.href=\'vpn_service.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="submit" name="Apply" value="$apply_mark" onClick="return checkvpn(document.forms[0]);"></TD></TR>');
+else
+        document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit" name="Apply" value="$apply_mark" disabled></TD></TR>');
+</script>
+</TABLE>
+</div>
+<div id="main" class="main_top_button">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="enable_vpn" value="1"><font id="enable_vpn_text">$vpn_enable</font>
+	</TD>
+</TR>
+$bluebar
+<TR><TD nowrap><a href="javascript:loadhelp('_openvpn','package_download')" tabindex="-1"><b>$package_download</b></a></TD></TR>
+<table>	
+<TR><TD nowrap>
+	<input class='window_bt' type='submit' name="window" value='$window_mark' onClick='return checkdownload(document.forms[0], 1)'>&nbsp;&nbsp;
+    	<input class="non_window_bt" type="submit" name="non_window" value="$macos_mark" onClick='return checkdownload(document.forms[0], 2)'>&nbsp;&nbsp;
+	<input class="non_window_bt" type="submit" name="smart_phone" value="$phone_mark" onClick='return checkdownload(document.forms[0], 3)'>		
+	</TD>
+</TR>
+</table>
+$bluebar
+<TR><TD nowrap><a href="javascript:loadhelp('_openvpn','ovpn_instruction')" tabindex="-1"><b>$ovpn_instruction</b></a></TD></TR>
+<table>
+<TR><TD>
+	<a class="black_a" href="vpn_windows_instruction.htm" target="_blank">$windows_link</a>&nbsp;&nbsp;&nbsp;<a class="black_a" href="vpn_mac_instruction.htm" target="_blank">MacOSX</a>&nbsp;&nbsp;&nbsp;
+	<a class="black_a" href="vpn_iphone_instruction.htm" target="_blank">$iphone_link</a>&nbsp;&nbsp;&nbsp;<a class="black_a" href="vpn_andriod_instruction.htm" target="_blank">$andriod_link</a>
+</TR>
+</table>
+$bluebar
+</TABLE>
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR><TD nowrap><a href="javascript:loadhelp('_openvpn','adv_config')" tabindex="-1"><b>$adv_config</b></a></TD></TR>
+<TR>
+	<TD><a href="javascript:loadhelp('_openvpn','tun_mode_type')" tabindex="-1">$tun_mode_type</a>&nbsp;&nbsp;&nbsp;
+	<input type="radio" name="tun_vpn_type" value="udp">UDP&nbsp;&nbsp;
+	<input type="radio" name="tun_vpn_type" value="tcp">TCP
+	</TD>
+	
+</TR>
+<TR>
+       <TD ><a href="javascript:loadhelp('_openvpn','tun_mode_port')" tabindex="-1">$tun_mode_port</a>&nbsp;&nbsp;&nbsp;
+	<input type="text" maxLength=5 size=6 name="tun_vpn_port" onFocus="this.select();" onKeyPress="return getkey('num', event)" style="ime-mode:disabled;" ondrop="return false;" ondragenter="return false;" onpaste="return false;" >
+	</TD>
+</TR>
+<TR>
+	<TD><a href="javascript:loadhelp('_openvpn','tap_mode_type')" tabindex="-1">$tap_mode_type</a>&nbsp;&nbsp;&nbsp;
+	<input type="radio" name="vpn_type" value="udp">UDP&nbsp;&nbsp;
+	<input type="radio" name="vpn_type" value="tcp">TCP
+	</TD>
+	
+</TR>
+<TR>
+       <TD ><a href="javascript:loadhelp('_openvpn','tap_mode_port')" tabindex="-1">$tap_mode_port</a>&nbsp;&nbsp;&nbsp;
+	<input type="text" maxLength=5 size=6 name="vpn_port" onFocus="this.select();" onKeyPress="return getkey('num', event)" style="ime-mode:disabled;" ondrop="return false;" ondragenter="return false;" onpaste="return false;" >
+	</TD>
+</TR>
+<TR>
+        <TD nowrap ><a href="javascript:loadhelp('_openvpn','vpn_connect')" tabindex="-1">$vpn_connect</a>&nbsp;&nbsp;&nbsp;
+	<input type="radio" name="vpn_access" value="auto">$auto&nbsp;&nbsp;
+        <input type="radio" name="vpn_access" value="all">$inter_home_network&nbsp;&nbsp;
+        <input type="radio" name="vpn_access" value="home">$home_network&nbsp;&nbsp;
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_openvpn") %>
+</FORM>
+</BODY>
+</HTML>

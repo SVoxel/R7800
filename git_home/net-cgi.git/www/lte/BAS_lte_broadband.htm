@@ -1,0 +1,160 @@
+<% http_header("style/form.css", "/funcs.js", "/lte_broadband.js")%>
+<% body_header("_BAS_lte_broadband", "BAS_lte_broadband.htm", "lte_broadband") %>
+<div class="page_title">$broadband_title</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+	<TD nowrap colspan=2 align=center>
+		<input class="cancel_bt" type='button' name='Cancel' value='$cancel_mark' onClick='location.href="BAS_lte_broadband.htm";'>&nbsp;&nbsp;
+		<input class="apply_bt" type="submit" name="Apply" value="$apply_mark" onClick='return check_lte_broadband(document.forms[0]);'>
+	</TD>
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button">
+<% table_header() %>
+<script>
+var old_wan_type="<% cfg_get("wan_proto") %>";
+var detect_method = "<% cfg_get("failover_detect_method") %>";
+var broadband_wan_type="<% cfg_get("dango_det_wan_type") %>";
+var wan_mtu_now='<% wan_mtu() %>';
+var internet_type="<% cfg_get("internet_type") %>";
+var internet_ppp_type="<% cfg_get("internet_ppp_type") %>";
+var wanproto_type=old_wan_type;
+var lte_vendor="<% cfg_get("lte_vendor") %>";
+
+function loadvalue()
+{
+	top.broadband_wan_type=broadband_wan_type;
+	top.enabledItemsClass();
+
+	var cf=document.forms[0];
+
+	if(broadband_wan_type == "failover")
+		cf.wan_type.value ="0";
+	else if (broadband_wan_type == "MyDetc")
+		cf.wan_type.value = "1";
+	else if (broadband_wan_type == "AutoDetc")
+		cf.wan_type.value = "2";
+	if( detect_method == "0" )
+		cf.checkIPAssign[0].checked = true;
+	else if( detect_method == "1")
+		cf.checkIPAssign[1].checked = true;
+	else if( detect_method == "2")
+		cf.checkIPAssign[2].checked = true;
+
+	cf.failover_host_name.value = "<% cfg_get("failover_detect_dns") %>";
+
+	var detect_ip = "<% cfg_get("failover_detect_ip") %>";
+	if(detect_ip!="")
+	{
+		var ip_array=detect_ip.split('.');
+		cf.PingIP1.value=ip_array[0];
+		cf.PingIP2.value=ip_array[1];
+		cf.PingIP3.value=ip_array[2];
+		cf.PingIP4.value=ip_array[3];
+	}
+
+	cf.failover_retry_interval.value = "<% cfg_get("failover_retry_interval") %>";
+	cf.failover_count.value = "<% cfg_get("failover_fail_after") %>";
+	cf.failover_resume.value="<% cfg_get("failover_resume_after") %>";
+	cf.failover_hw_time.value="<% cfg_get("failover_fail_after_sec") %>";
+	if( "<% cfg_get("failover_enable_hardware") %>" == "1" )
+		cf.w_enable_hw_detect.checked = true;
+	else
+		cf.w_enable_hw_detect.checked = false;
+	
+	change_mode();
+	
+}
+
+</script>
+
+<input type="hidden" name="hidden_wan_type">
+<input type="hidden" name="hidden_detect_method">
+<input type="hidden" name="hidden_detect_ip">
+<input type="hidden" name="hidden_enable_hardware">
+<input type="hidden" name="primary_link_hid">
+<input type="hidden" name="new_wan_type" value="no_change" />
+<input type="hidden" name="hid_mtu_value" />
+
+<TR>
+	<TD nowrap>
+		<A tabindex=-1 href="javascript:('_BAS_lte_broadband', 'lte_bromode')"><b>$lte_broadband_conn_mode</b></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+		<select id="wan_preference" name="wan_type" onchange="change_mode();">
+			<option value="0">$lte_conn_mode_failover</option>
+			<option value="1">$lte_conn_mode_mydetc</option>
+			<option value="2">$lte_conn_mode_autodetc</option>
+		</select>
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap>
+		<A tabindex=-1 href="javascript:('_BAS_lte_broadband', 'lte_failover_meth')"><b>$multi_wan_failover_detect_method</b></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+		<input type="radio" id="failover_detect_dns" name="checkIPAssign" value="wan_dns" checked onClick="click_ping()">$multi_wan_failover_detect_dns_ser
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+		<input type="radio" id="failover_detect_hostname" name="checkIPAssign" value="hostname" onClick="click_ping()">$multi_wan_failover_detect_dns
+	</TD>
+	<TD align=right>
+		<input type="text" id="failover_host_name" name="failover_host_name" value="www.netgear.com" size="16" onKeyPress="return getkey('ssid', event)">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+		<input type="radio" id="failover_detect_ping" name="checkIPAssign" value="ping" onClick="click_ping()">$multi_wan_failover_detect_ip
+	</TD>
+	<TD nowrap align=right>
+		<input type="text" id="failover_ping_ip1" name="PingIP1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+		<input type="text" id="failover_ping_ip2" name="PingIP2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+		<input type="text" id="failover_ping_ip3" name="PingIP3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+		<input type="text" id="failover_ping_ip4" name="PingIP4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$multi_wan_failover_retry_interval</TD>
+	<TD nowrap align=right>
+		<input type="text" id="failover_retry_interval" name="failover_retry_interval" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">$multi_wan_failover_unit_seconds
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$multi_wan_failover_failover_after</TD>
+	<TD nowrap align="right">
+		<input type="text" id="failover_count" name="failover_count" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">$multi_wan_failover_unit_interval
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$multi_wan_failover_resume_after</TD>
+	<TD nowrap align="right">
+		<input type="text" id="failover_resume" name="failover_resume" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">$multi_wan_failover_unit_seconds
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+		<input type="checkbox" id="enable_hw_detect" name="w_enable_hw_detect">$multi_wan_failover_hardware_dete
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=20 height=12 border=0>$multi_wan_failover_failover_after</TD>
+	<TD nowrap align="right">
+		<input type="text" id="failover_hw_time" name="failover_hw_time" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">$multi_wan_failover_unit_seconds
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+</div>
+<!--% help_box("0","_BAS_lte_broadband") %-->
+</FORM>
+</BODY>
+</HTML>

@@ -1,0 +1,6 @@
+#!/bin/sh /etc/rc.common
+START=90
+
+boot() {
+	/sbin/cmdigmp start
+}

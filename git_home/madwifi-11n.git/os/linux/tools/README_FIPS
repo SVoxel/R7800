@@ -1,0 +1,23 @@
+To test FIPS mode, following are the commands to be used.
+
+
+wifi up
+wifitool ath0 fips input_file
+
+Below is a sample input file that can be refered on. 
+
+input_file
+========================
+0 1 16 16 2b7e151628aed2a6abf7158809cf4f3c f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff ec8cdf7398607cb0f2d21675ea9ea1e4 f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff
+0 1 32 16 603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4 f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff 0bdf7df1591716335e9a8b15c860c502 f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff
+========================
+
+Format of input file:
+========================
+<CommandID><space><Mode><space><KeyLength><space><InputDataLength><Key><InputData><ExpectedOutput><newline><CommandID><space><Mode><space><KeyLength><space><InputDataLength><Key><InputData><ExpectedOutput><space><IV><newline>
+
+CommandID - 0 for Encrypt and 1 for Decrypt
+Mode      - 1 for AES_CTR and 2 for AES_MIC
+
+Refer http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf for Test Vectors
+

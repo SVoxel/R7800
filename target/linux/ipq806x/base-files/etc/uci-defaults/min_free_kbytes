@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# Copyright (c) 2013 The Linux Foundation. All rights reserved.
+#
+
+# By default, Linux will set the minfreekbytes to 3MB which is way insufficient
+# to deal with the amount of traffic we're dealing with. Standard distributions
+# sets it to ~5% of the total memory. So we're doing the same here.
+
+min_free_kbytes=`grep MemTotal /proc/meminfo | awk '{print $2}'`
+min_free_kbytes=$((min_free_kbytes/20))
+
+mkdir -p /etc/sysctl.d/
+echo "vm.min_free_kbytes=${min_free_kbytes}" > /etc/sysctl.d/min_free_kbytes.conf

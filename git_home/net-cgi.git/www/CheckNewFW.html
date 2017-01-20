@@ -1,0 +1,110 @@
+<% http_header("style/form.css", "/funcs.js", "/upgrade.js") %>
+<% body_header("_auto_upgrade", "CheckNewFW.html", "auto_upgrade_check") %>
+<% table_header("$chkupg") %>
+$bluebar
+
+<input type="hidden" name="auto_check_for_upgrade" >
+<TR><TD colspan="2">$auto_upg_check 90 $auto_upg_seconds</TD></TR>
+<TR></TR>
+<TR></TR>
+<TR>
+	<TD nowrap colspan=2 align=center>
+	<input type="text" name="progress" value="" style="color: blue" size="40">
+	</TD>
+</TR>
+<TR></TR>
+<TR></TR>
+<!--TR>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="enable" onClick="check_if_show_auto();">$upgrade_upon
+	</TD>
+</TR-->
+<TR></TR>
+<TR></TR>
+<TR>
+	<TD nowrap colspan=2 align=center>
+	<input type="button" class="cancel_bt" name="Cancel" value="$cancel_mark" onClick="return clickCancel();" />
+	</TD>
+</TR>
+</TABLE>
+
+<script language="javascript">
+var status="<% detwan_valid() %>";
+//var autochk = '<% cfg_get("auto_check_for_upgrade") %>';
+function loadvalue()
+{
+//	parent.charcount = 0;
+/*	if(autochk == '1')
+		document.forms[0].enable.checked = true;
+	else
+		document.forms[0].enable.checked = false;*/
+
+	updateProgress();
+}
+
+function clickCancel()
+{
+	if(top.location.href.indexOf("CheckNewFirmware.htm") != -1)
+		close_top_window();
+	else
+	{
+		if(top.dsl_enable_flag == 0)
+		   location.href='BAS_basic.htm';
+		else
+		   location.href='BAS_basic_dsl.htm';
+	}
+	
+	return true;
+}
+
+var pchar = "|"; // progress char
+var maxchars = 60; 
+var delay_time = 1000; // msecs
+var charcount = parent.charcount;
+
+function updateProgress()
+{
+	var cf = document.forms[0];
+
+	if (charcount < 5)
+	{
+		charcount++;
+		cf.progress.value = makeStr(charcount,pchar);
+		setTimeout("updateProgress()",delay_time);
+		return;
+	}
+
+	if (status == "0")
+	{
+		location.href="AUTO_upgrade_no_internet.htm";
+		return;
+	}
+	else if (status == "1")
+	{
+		var config_status = <% autoup_status() %>;
+		if (config_status >= 10000)
+			location.href="AUTO_upgrade_noversion.htm";
+		else if(config_status == 9999) {
+			location.href="UPG_check_version.htm";
+			return;
+		}
+	}
+	if (charcount < maxchars && ((charcount % 5) == 0) && charcount != 0 )
+	{
+		parent.charcount=charcount+1;
+		location.href="CheckNewFW.html";
+	}
+	else if (charcount < maxchars) 
+	{
+		charcount++;
+		cf.progress.value = makeStr(charcount,pchar);
+		setTimeout("updateProgress()",delay_time);
+	}
+	else
+		location.href="CheckNewFW.html";
+}
+</script>
+
+</FORM>
+</BODY>
+</HTML>

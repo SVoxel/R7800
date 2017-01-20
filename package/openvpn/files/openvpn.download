@@ -1,0 +1,137 @@
+#!/bin/sh 
+
+CONFIG=/bin/config
+PROG=/usr/sbin/openvpn
+OPENVPN_CONF_DIR=/tmp/openvpn
+DOMAINLS_FILE=/tmp/ez-ipupd.domainls
+
+generate_client_conf_file(){
+
+	if [ "$($CONFIG get endis_ddns)" = "1" ]; then
+		ddns_provider=$($CONFIG get sysDNSProviderlist)
+		if [ "$ddns_provider" = "www/var/www.oray.cn" ]; then
+			host_name=$(head $DOMAINLS_FILE -n 1)
+		else
+			host_name=$($CONFIG get sysDNSHost)
+		fi
+	else
+		if [ "$($CONFIG get wan_proto)" == "pppoe" ]; then 
+			static_ip=$($CONFIG get wan_pppoe_ip)
+		else
+			static_ip=$($CONFIG get wan_ipaddr)
+		fi
+	fi
+	case $1 in
+	"windows")
+	port=$($CONFIG get vpn_serv_port)
+	proto=$($CONFIG get vpn_serv_type)
+	if [ "$proto" = "udp" ]; then
+		sndbuf=393216
+		rcvbuf=393216
+	else
+		sndbuf=0
+		rcvbuf=0
+	fi
+	cat << EOF
+client
+dev tap
+proto $proto
+dev-node NETGEAR-VPN
+remote $host_name $static_ip $port
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+ca ca.crt
+cert client.crt
+key client.key
+cipher AES-128-CBC
+comp-lzo
+verb 0
+sndbuf $sndbuf
+rcvbuf $rcvbuf
+EOF
+	;;
+
+	"nonwindows")
+	port=$($CONFIG get vpn_serv_port)
+	proto=$($CONFIG get vpn_serv_type)
+	cat << EOF
+client
+dev tap
+proto $proto
+remote $host_name $static_ip $port
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+ca ca.crt
+cert client.crt
+key client.key
+cipher AES-128-CBC
+comp-lzo
+verb 5
+script-security 2
+up dhcp-client-request.sh
+EOF
+	;;
+
+	"smart_phone")
+	port=$($CONFIG get tun_vpn_serv_port)
+	proto=$($CONFIG get tun_vpn_serv_type)
+	cat << EOF
+client
+dev tun
+proto $proto
+remote $host_name $static_ip $port
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+<ca>
+EOF
+	cat < $OPENVPN_CONF_DIR/ca.crt
+	cat << EOF
+</ca>
+<cert>
+EOF
+	cat < $OPENVPN_CONF_DIR/client.crt
+	cat << EOF
+</cert>
+<key>
+EOF
+	cat < $OPENVPN_CONF_DIR/client.key
+	cat << EOF
+</key>
+cipher AES-128-CBC
+comp-lzo
+verb 5
+EOF
+	;;
+	esac
+}
+generate_dhcp_script(){
+	cat << EOF
+#!/bin/bash
+
+/usr/sbin/ipconfig set tap0 dhcp
+EOF
+}
+
+compress()
+{
+	generate_client_conf_file windows > $OPENVPN_CONF_DIR/client.ovpn
+	generate_client_conf_file nonwindows > $OPENVPN_CONF_DIR/client.conf
+	generate_client_conf_file smart_phone > $OPENVPN_CONF_DIR/smart_phone.ovpn
+
+	#OSX client  need this script
+	generate_dhcp_script > $OPENVPN_CONF_DIR/dhcp-client-request.sh
+
+	# cpmpress ca.crt.client.crt,client.key and client.conf 
+	cd $OPENVPN_CONF_DIR
+	zip  windows.zip ca.crt client.crt client.key client.ovpn
+	zip  nonwindows.zip ca.crt client.crt client.key client.conf dhcp-client-request.sh
+	zip  smart_phone.zip smart_phone.ovpn
+}
+
+compress

@@ -1,0 +1,14 @@
+#!/bin/sh
+# ez-ipupdate script to execute ip and time of last successful update saving
+CONFIG=/bin/config
+
+#set ip and time
+$CONFIG set update_ddns_time=$1
+$CONFIG set update_ddns_ipaddr=$2
+format_time=`cat /tmp/ez-ipupd.time`
+# set the update time format as Mon Mar 28 19:48:31 CST 2011 in config.
+# We need it to produce /tmp/ez-ipupd.time when reboot.
+$CONFIG set update_ddns_format_time="$format_time"
+$CONFIG commit
+
+

@@ -1,0 +1,143 @@
+<% http_header("style/form.css", "/funcs.js", "/qos.js") %>
+<% body_header("_qos", "QOS_rule.htm", "edit_qos_online") %>
+<div class="page_title">$qos_add_head</div>
+<div class="fix_button">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TR><TD nowrap align=center><input class="cancel_bt" type="button" name="Cancel" value="$cancel_mark" onClick="qosRule();">&nbsp;&nbsp;<input class="apply_bt" type="submit" name="apply" value="$apply_mark" onClick="return check_qos_online(document.forms[0],\'edit\');"></TD></TR>');
+else
+	document.write('<TR><TD nowrap align=center><input class="cancel1_bt" type="button" name="Cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit" name="apply" value="$apply_mark" disabled></TD></TR>');
+</script>
+</TABLE>
+
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<% refresh_timestamp("qos_editnum") %>
+<script>
+<!--% qos_items() %-->
+<% qos_items_xss() %>
+<% qosMac_items_xss() %>
+str_div="";
+var serv_array=<% get_serv_array("1") %>;
+var select_editnum="<% cfg_get("qoslist_editnum") %>";
+function loadvalue()
+{
+	var cf=document.forms[0];
+	str_div=getObj("hidden_app_port").innerHTML;
+	getObj("hidden_app_port").innerHTML='';	
+	var edit_str=eval('qosArray'+select_editnum).replace(/&#92;/g, "\\").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+	var each_info=edit_str.split(' ');
+	var j = parseInt(select_editnum,10)+1;
+	var next_str = eval('qosArray'+j).replace(/&#92;/g, "\\").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+	cf.hidden_qos_policy_name.value=each_info[0];
+	cf.name.value=change_name_online(each_info[0]);
+	cf.apps.value=each_info[2];
+	cf.priority.value=each_info[3];
+	if (cf.apps.selectedIndex == 7)
+	{
+		getObj("real_app_port").innerHTML=str_div;
+		if( each_info[2] == "Add" )
+		{
+			cf.port_type.value = (next_str == "0") ? each_info[4] : "TCP/UDP";
+		}
+		else
+			cf.port_type.value=each_info[4];
+		cf.portstart.value=each_info[5];
+		cf.portend.value=each_info[6];
+	}
+	else
+		getObj("real_app_port").innerHTML='';
+}
+</script>
+<input type="hidden" name="hidden_port_type">
+<input type="hidden" name="hidden_portstart">
+<input type="hidden" name="hidden_portend">
+<input type="hidden" name="hidden_port_type2">
+<input type="hidden" name="hidden_portstart2">
+<input type="hidden" name="hidden_portend2">
+<input type="hidden" name="hidden_qos_policy_name">
+<input type="hidden" name="hidden_priority_category" value=1>
+	<TR><TD nowrap colspan=2><b>$qos_priority</b> </TD></TR>
+	<TR>
+		<TD nowrap>$qos_policy_for</TD>
+		<TD nowrap><INPUT type="text" name="name" maxLength="60" size="20" onKeyPress="return getkey('ssid', event)" value=""></TD>
+	</TR>
+	<TR>
+		<TD nowrap>$qos_priority_category</TD>
+		<TD nowrap> 
+			<SELECT name="category" onChange="change_priority()" disabled>
+				<OPTION value="0">$qos_application</OPTION>
+				<OPTION value="1" selected>$qos_online</OPTION>
+				<OPTION value="2" >$qos_ether</OPTION>
+				<OPTION value="3" >$qos_mac</OPTION>
+			</SELECT>
+		</TD>
+	</TR>	
+	<TR>
+		<TD nowrap>$qos_online</TD>
+		<TD nowrap> 
+			<SELECT name="apps" onChange="change_serv_online()">
+				<OPTION value="Counter-Strike">$qos_counter_strike</OPTION>
+				<OPTION value="Age-of-Empires" >$qos_ageof_empires</OPTION>
+				<OPTION value="Everquest" >$qos_everquest</OPTION>
+				<OPTION value="Quake-2" >$qos_quake2</OPTION>
+				<OPTION value="Quake-3" >$qos_quake3</OPTION>
+				<OPTION value="Unreal-Tourment" >$qos_unreal</OPTION>
+				<OPTION value="Warcraft" >$qos_warcraft</OPTION>
+				<OPTION value="Add" >$qos_add_new_game</OPTION>			
+			</SELECT>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>$qos_priority</TD>
+		<TD nowrap>
+			<SELECT name="priority">
+				<OPTION value="0" >$qos_highest</OPTION>
+				<OPTION value="1" selected>$qos_high</OPTION>			
+				<OPTION value="2" >$qos_normal</OPTION>
+				<OPTION value="3" >$qos_low</OPTION>
+			</SELECT>
+		</TD>
+	</TR>
+	$bluebar
+	</table>
+	<div id="real_app_port"></div>
+	<div id="hidden_app_port" style="VISIBILITY:hidden;POSITION:absolute;">
+	<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+	<TR>
+		<TD nowrap colspan=2><b>$qos_specified_port</b></TD>
+	</TR>
+	<TR>
+		<TD nowrap>$trigger_contype</TD>
+		<TD nowrap> 
+			<select name="port_type" size="1">
+				<option value="TCP/UDP">TCP/UDP</option>
+				<option value="TCP">TCP</option>
+				<option value="UDP">UDP</option>
+			</SELECT>
+		</TD>
+	</TR>	
+	<TR>
+		<TD nowrap>$block_ser_start_port</TD>
+		<TD nowrap>
+			<input type="text" name="portstart" size="6" maxlength="5" onKeyPress="return getkey('num', event)">(1~65535)
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>$block_ser_end_port</TD>
+		<TD nowrap> 
+			<input type="text" name="portend" size="6" maxlength="5" onKeyPress="return getkey('num', event)">(1~65535)
+		</TD>
+	</TR> 
+$bluebar	
+	</TABLE>
+</div>
+</div>
+<% help_box("0","_qos") %>
+</FORM>
+</BODY>
+</HTML>

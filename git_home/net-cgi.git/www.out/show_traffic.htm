@@ -1,0 +1,120 @@
+<% http_header("style/form.css", "/funcs.js", "/traffic.js") %>
+<% nobody_header("show_traffic.htm","show_traffic_reset") %>
+<div class="page_title">$traffic_status</div>
+<div id="main" class="main">
+<script>
+var master="<% cfg_get("http_loginname") %>";
+var timereset="<% cfg_sed_xss("show_traffic_timereset") %>";
+if (timereset == "")
+	timereset="5";
+if( timereset != "0")
+{
+	if(get_browser() == "IE")
+	{
+		setTimeout("location.href='/show_traffic.htm';", parseInt(timereset, 10)*1000);
+	}
+	else
+	{
+		document.write('<META http-equiv="refresh" content="'+timereset+'; url=show_traffic.htm">');
+	}
+}
+
+<% show_traffic_status() %>
+var warning_limit="<% cfg_get("traffic_warning_limit") %>";
+var warning_left="<% cfg_get("traffic_warning_left") %>";
+<% stop_traffic_warning() %>
+
+function loadvalue()
+{
+	var form=document.forms[0];
+
+	form.interval.value=timereset;
+	if(warning_value!="" && (warning_limit=="1" || warning_left=="1"))
+		alert(warning_value);
+}
+</script>
+
+<table width=100% border="0">
+$bluebar
+<!--TR><TD colSpan=2> <H1>$traffic_status</H1><br></TD></TR-->
+<tr>
+    <td align=center colspan=2>
+		<table width="300" border="0" cellspacing=0 cellpadding="0">
+		<script>
+			if( get_browser() == "IE" || get_browser() == "Opera" )
+				document.write('<tr><td colspan=2 class="thead1"><span class="thead">$traffic_period</span></td><td colspan=2 class="thead1"><span class="thead">$traffic_used &nbsp;&nbsp;</span></td></tr>');
+			else
+				document.write('<tr><td colspan=2><span class="thead">$traffic_period</span></td><td colspan=2><span class="thead">$traffic_used &nbsp;&nbsp;</span></td></tr>');
+		</script>
+		<tr>
+			<td><table width=100%  border="1" cellspacing=0 cellpadding="0" bordercolor="#000000">
+				<tr>
+					<td><table width=100%  border="0" cellspacing=0 cellpadding="0" height=100>
+<script>	
+if(traffic_day_persent!="0")
+{
+	var day_left=100-parseInt(traffic_day_persent);
+	if ( parseInt(traffic_day_persent) >= 100)
+		document.write('<tr><td bgcolor="#0000FF"></td></tr><tr><td width=20 height=100 bgcolor="#0000FF"></td></tr>');
+	else	
+		document.write('<tr><td height='+day_left+'></td></tr><tr><td width=20 height='+traffic_day_persent+' bgcolor="#0000FF"></td></tr>');
+}
+else
+	document.write('<tr><td></td></tr><tr><td width=20></td></tr>');
+</script>				
+						</table>
+					</td>
+				</tr>
+				</table>
+			</td>
+			<td><script>document.write(traffic_days)</script>$days_mark</td>
+			<td><table width=100%  border="1" cellspacing=0 cellpadding="0" bordercolor="#000000">
+				<tr>
+					<td><table width=100%  border="0" cellspacing=0 cellpadding="0" height=100>
+<script>	
+if(traffic_mbytes_persent!="0")	
+{
+	var mbytes_left=100-parseInt(traffic_mbytes_persent);
+	var persent=parseInt(traffic_mbytes_persent);
+	if ( persent >= 100)
+		document.write('<tr><td bgcolor=#FF0000></td></tr><tr><td width=20 height=100 bgcolor=#FF0000></td></tr>');
+	else if( persent < 90 )	
+		document.write('<tr><td height='+mbytes_left+'></td></tr><tr><td width=20 height='+traffic_mbytes_persent+' bgcolor="#00FF00"></td></tr>');
+	else
+		document.write('<tr><td></td></tr><tr><td width=20 height='+traffic_mbytes_persent+' bgcolor="#FF0000"></td></tr>');
+}
+else
+	document.write('<tr><td></td></tr><tr><td width=20></td></tr>');
+</script>				  
+						</table>
+					</td>
+				</tr>
+				</table>
+			</td>
+			<td><script>document.write(traffic_mbytes)</script></td>
+		</tr>
+    </table>
+	</td>
+  </tr>
+<TR> 
+	<TD nowrap>
+		<B>$statistics_poll :</B>
+		<input type="text" name="interval" id="interval" size="5" maxlength="5" onKeyPress="return getkey('num', event)"> $traffic_secs
+	</TD>
+	<script>
+	if( master == "admin" )
+		document.write('<TD nowrap><input class="long_common_bt" type="button" name="SetIntvl" id="set_intvl" VALUE="$statistics_set" WIDTH="80" onClick="return reset_time();"></TD>');
+	else
+		document.write('<TD nowrap><input class="long_common_gray_bt" type="button" name="SetIntvl" id="set_intvl" VALUE="$statistics_set" WIDTH="80" disabled></TD>');
+	</script>
+</TR>
+</TABLE>
+
+</div>
+
+</form>
+</BODY>
+<script>
+loadvalue();
+</script>
+</HTML>

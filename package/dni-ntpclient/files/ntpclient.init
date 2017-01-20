@@ -1,0 +1,15 @@
+#!/bin/sh /etc/rc.common
+START=30
+
+start() {
+	/usr/sbin/ntpclient
+}
+
+stop() {
+	killall ntpclient
+}
+
+restart() {
+	stop
+	start
+}

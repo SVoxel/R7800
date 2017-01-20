@@ -1,0 +1,76 @@
+--- a/arch/mips/ath79/Kconfig
++++ b/arch/mips/ath79/Kconfig
+@@ -139,6 +139,18 @@ config ATH79_MACH_AP96
+ 	select ATH79_DEV_M25P80
+ 	select ATH79_DEV_USB
+ 
++config ATH79_MACH_APH131
++	bool "Atheros APH131 reference board"
++	select SOC_QCA955X
++	select ATH79_DEV_GPIO_BUTTONS
++	select ATH79_DEV_LEDS_GPIO
++	select ATH79_DEV_SPI
++	select ATH79_DEV_USB
++	select ATH79_DEV_WMAC
++	help
++	  Say 'Y' here if you want your kernel to support the
++	  Atheros APH131 reference board.
++
+ config ATH79_MACH_CUS227
+ 	bool "Qualcomm Atheros CUS227 support"
+ 	select SOC_AR934X
+@@ -211,6 +223,18 @@ config ATH79_MACH_PB92
+ 	select ATH79_DEV_PB9X_PCI if PCI
+ 	select ATH79_DEV_USB
+ 
++config ATH79_MACH_REH132
++	bool "Atheros REH132 reference board"
++	select SOC_QCA955X
++	select ATH79_DEV_GPIO_BUTTONS
++	select ATH79_DEV_LEDS_GPIO
++	select ATH79_DEV_SPI
++	select ATH79_DEV_USB
++	select ATH79_DEV_WMAC
++	help
++	  Say 'Y' here if you want your kernel to support the
++	  Atheros REH132 reference board.
++
+ config ATH79_MACH_AW_NR580
+ 	bool "AzureWave AW-NR580 board support"
+ 	select SOC_AR71XX
+--- a/arch/mips/ath79/Makefile
++++ b/arch/mips/ath79/Makefile
+@@ -54,6 +54,7 @@ obj-$(CONFIG_ATH79_MACH_AP136)		+= mach-ap136.o
+ obj-$(CONFIG_ATH79_MACH_AP81)		+= mach-ap81.o
+ obj-$(CONFIG_ATH79_MACH_AP83)		+= mach-ap83.o
+ obj-$(CONFIG_ATH79_MACH_AP96)		+= mach-ap96.o
++obj-$(CONFIG_ATH79_MACH_APH131)		+= mach-aph131.o
+ obj-$(CONFIG_ATH79_MACH_AW_NR580)	+= mach-aw-nr580.o
+ obj-$(CONFIG_ATH79_MACH_CAP4200AG)	+= mach-cap4200ag.o
+ obj-$(CONFIG_ATH79_MACH_CUS227)		+= mach-cus227.o
+@@ -78,6 +79,7 @@ obj-$(CONFIG_ATH79_MACH_PB92)		+= mach-pb92.o
+ obj-$(CONFIG_ATH79_MACH_RB4XX)		+= mach-rb4xx.o
+ obj-$(CONFIG_ATH79_MACH_RB750)		+= mach-rb750.o
+ obj-$(CONFIG_ATH79_MACH_RB2011)		+= mach-rb2011.o
++obj-$(CONFIG_ATH79_MACH_REH132)		+= mach-reh132.o
+ obj-$(CONFIG_ATH79_MACH_RW2458N)	+= mach-rw2458n.o
+ obj-$(CONFIG_ATH79_MACH_TEW_632BRP)	+= mach-tew-632brp.o
+ obj-$(CONFIG_ATH79_MACH_TEW_673GRU)	+= mach-tew-673gru.o
+--- a/arch/mips/ath79/machtypes.h
++++ b/arch/mips/ath79/machtypes.h
+@@ -30,6 +30,7 @@ enum ath79_mach_type {
+ 	ATH79_MACH_AP81,		/* Atheros AP81 reference board */
+ 	ATH79_MACH_AP83,		/* Atheros AP83 */
+ 	ATH79_MACH_AP96,		/* Atheros AP96 */
++	ATH79_MACH_APH131,		/* Atheros APH131 */
+ 	ATH79_MACH_AW_NR580,		/* AzureWave AW-NR580 */
+ 	ATH79_MACH_CAP4200AG,		/* Senao CAP4200AG */
+ 	ATH79_MACH_CUS227,		/* Qualcomm Atheros CUS227 board */
+@@ -71,6 +72,7 @@ enum ath79_mach_type {
+ 	ATH79_MACH_RB_751G,		/* Mikrotik RouterBOARD 751G */
+ 	ATH79_MACH_RB_2011G,		/* Mikrotik RouterBOARD 2011UAS-2HnD */
+ 	ATH79_MACH_RB_2011L,		/* Mikrotik RouterBOARD 2011L */
++	ATH79_MACH_REH132,		/* Atheros REH132 */
+ 	ATH79_MACH_RW2458N,		/* Redwave RW2458N */
+ 	ATH79_MACH_TEW_632BRP,		/* TRENDnet TEW-632BRP */
+ 	ATH79_MACH_TEW_673GRU,		/* TRENDnet TEW-673GRU */

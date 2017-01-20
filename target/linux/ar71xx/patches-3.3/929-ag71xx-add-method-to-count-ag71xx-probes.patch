@@ -1,0 +1,51 @@
+From 8b1c0e600bf75c74fb5d397832f61a5655b95b2f Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Fri, 7 Jun 2013 15:18:16 -0500
+Subject: [ag71xx] add method to count ag71xx probes
+
+This patch is preparation for ag71xx usage of external, on-die
+resources.  Since these resources are limited, we need to track how
+many instances we have probed.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx.h      | 1 +
+ drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c | 3 +++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+index d6bf6e7..b4c6708 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+@@ -179,6 +179,7 @@ struct ag71xx {
+ 	struct platform_device	*pdev;
+ 	spinlock_t		lock;
+ 	struct napi_struct	napi;
++	unsigned int		gmac_num;
+ 
+ 	/*
+ 	 * From this point onwards we're not looking at per-packet fields.
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+index b4242e1..2e60df9 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+@@ -14,6 +14,8 @@
+ 
+ #include "ag71xx.h"
+ 
++static int ag71xx_gmac_num = 0;
++
+ #define AG71XX_DEFAULT_MSG_ENABLE	\
+ 	(NETIF_MSG_DRV			\
+ 	| NETIF_MSG_PROBE		\
+@@ -1222,6 +1224,7 @@ static int __devinit ag71xx_probe(struct platform_device *pdev)
+ 	ag->dev = dev;
+ 	ag->msg_enable = netif_msg_init(ag71xx_msg_level,
+ 					AG71XX_DEFAULT_MSG_ENABLE);
++	ag->gmac_num = ag71xx_gmac_num++;
+ 	spin_lock_init(&ag->lock);
+ 
+ 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "mac_base");
+-- 
+1.8.1.2
+

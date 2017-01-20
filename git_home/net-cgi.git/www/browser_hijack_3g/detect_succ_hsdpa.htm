@@ -1,0 +1,553 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_02_genieHelp.css" />
+<script language="javascript" type="text/javascript" src="script/funcs.js"></script>
+<script language="javascript" type="text/javascript" src="script/hsdpa.js"></script>
+<% hijack_language() %>
+</head>
+
+<body onLoad="loadvalue();" bgcolor=#ffffff>
+<% form_submit("apply", "simcard_yes_or_not_wait.htm", "succ_hsdpa") %>
+<script>
+<% save_timestamp("succ_hsdpa","succ_conn_evdo") %>
+var ts="<% cfg_get("succ_hsdpa") %>";
+var wan_cdma_region="<% cfg_get("wan_cdma_region") %>";
+var wan_cdma_isp="<% cfg_get("wan_cdma_isp") %>";
+var wan_cdma_provider_long="<% cat_file("/tmp/ppp/peers/card_imsi") %>";
+var wan_cdma_username="Guest";
+var wan_cdma_password="Guest";
+
+function loadvalue()
+{
+	var form=document.forms[0];
+	form.hsdpa_username.value = wan_cdma_username;
+	form.hsdpa_passwd.value = wan_cdma_password;
+
+	var  wan_cdma_provider = wan_cdma_provider_long.substr(0,5);
+	if(wan_cdma_provider=="46001" || wan_cdma_provider=="46006")
+	{
+		form.WRegion.value=5;
+		form.isp_type6.value="China Unicom";
+	}
+	else if(wan_cdma_provider=="46000" || wan_cdma_provider=="46002" ||wan_cdma_provider=="46007")
+	{
+		form.WRegion.value=5;
+		form.isp_type6.value="China Mobile";
+	}
+	else if(wan_cdma_provider=="25001" )
+	{
+		form.WRegion.value=14;
+		form.isp_type15.value="MTS";
+		form.hsdpa_username.value="mts";
+		form.hsdpa_passwd.value="mts";
+	}
+	else if(wan_cdma_provider=="25002")
+	{
+		form.WRegion.value=14;
+		form.isp_type15.value="MegaFon";
+		form.hsdpa_username.value="gdata";
+		form.hsdpa_passwd.value="gdata";
+	}
+	else if(wan_cdma_provider=="25028" || wan_cdma_provider=="25099")
+	{
+		form.WRegion.value=14;
+		form.isp_type15.value="BeeLine";
+		form.hsdpa_username.value="beeline";
+		form.hsdpa_passwd.value="beeline";
+	}
+	else if(wan_cdma_provider=="25020")
+	{
+		form.WRegion.value=14;
+		form.isp_type15.value="TELE2";
+		form.hsdpa_username.value="";
+		form.hsdpa_passwd.value="";
+	}
+
+	isp_display();
+
+	var btns_div = document.getElementById("btnsContainer_div");
+	btns_div.onclick = function()
+	{
+		if(set_hsdpa())
+			cf.submit();
+		//location.href = "BRS_04_applySettings.html";
+	}
+}
+
+function isp_display()
+{
+	var cf=document.forms[0];
+	var index = cf.WRegion.selectedIndex;
+	var i;
+	for(i=0;i<21;i++)
+	{
+		if(i == index){
+			document.getElementById("coun"+i).style.display="";
+			change_isp(i+1);
+		}
+		else
+			document.getElementById("coun"+i).style.display="none";
+	}
+}
+function change_isp(num)
+{
+	var cf=document.forms[0];
+	if( num == 6)
+	{
+		if(cf.isp_type6.selectedIndex == 2)
+		{
+			cf.hsdpa_username.value="ctnet@mycdma.cn";
+			cf.hsdpa_passwd.value="vnet.mobi";
+		}
+		else
+		{
+			cf.hsdpa_username.value="";
+			cf.hsdpa_passwd.value="";
+		}
+	}
+	else if( num == 15)
+	{
+		if(cf.isp_type15.selectedIndex == 0)
+		{
+			cf.hsdpa_username.value="mts";
+			cf.hsdpa_passwd.value="mts";
+		}
+		else if(cf.isp_type15.selectedIndex == 1)
+		{
+			cf.hsdpa_username.value="gdata";
+			cf.hsdpa_passwd.value="gdata";
+		}
+		else if(cf.isp_type15.selectedIndex == 2)
+		{
+			cf.hsdpa_username.value="beeline";
+			cf.hsdpa_passwd.value="beeline";
+		}
+		else if(cf.isp_type15.selectedIndex == 3)
+		{
+			cf.hsdpa_username.value="";
+			cf.hsdpa_passwd.value="";
+		}
+		else if(cf.isp_type15.selectedIndex == 4)
+		{
+			cf.hsdpa_username.value="mobile";
+			cf.hsdpa_passwd.value="internet";
+		}else{
+			cf.hsdpa_username.value = wan_cdma_username;
+			cf.hsdpa_passwd.value = wan_cdma_password;
+		}
+	}else{
+		cf.hsdpa_username.value = wan_cdma_username;
+		cf.hsdpa_passwd.value = wan_cdma_password;
+	}
+	if((num == 1 && cf.isp_type1.selectedIndex == 17) || (num == 2 && cf.isp_type2.selectedIndex == 6) || (num == 3 && cf.isp_type3.selectedIndex == 5) || (num == 4 && cf.isp_type4.selectedIndex == 5) || (num == 5 && cf.isp_type5.selectedIndex == 4) || (num == 6 && cf.isp_type6.selectedIndex == 3) || (num == 7 && cf.isp_type7.selectedIndex == 5) || (num == 8 && cf.isp_type8.selectedIndex == 5) || (num == 9 && cf.isp_type9.selectedIndex == 7) || (num == 10 && cf.isp_type10.selectedIndex == 5) || (num == 11 && cf.isp_type11.selectedIndex == 7) || (num == 12 && cf.isp_type12.selectedIndex == 3) || (num == 13 && cf.isp_type13.selectedIndex == 4) || (num == 14 && cf.isp_type14.selectedIndex == 1) || (num == 15 && cf.isp_type15.selectedIndex == 5) || (num == 16 && cf.isp_type16.selectedIndex == 3) || (num == 17 && cf.isp_type17.selectedIndex == 4) || (num == 18 && cf.isp_type18.selectedIndex == 6) || (num == 19 && cf.isp_type19.selectedIndex == 7) || (num == 20 && cf.isp_type20.selectedIndex == 15) || (num == 21 && cf.isp_type21.selectedIndex == 3)){
+		document.getElementById("access_number").style.display = "";
+		document.getElementById("apn_tag").style.display = "";
+		cf.hsdpa_username.value = "";
+		cf.hsdpa_passwd.value = "";
+	}else{
+		document.getElementById("access_number").style.display = "none";
+		document.getElementById("apn_tag").style.display = "none";
+	}
+}
+
+</script>
+<input type="hidden" name="hid_apn" value="other">
+<input type="hidden" name="hid_region">
+<input type="hidden" name="hid_isp">
+<input type="hidden" name="hid_accnum">
+<div class="wizard_content_div">
+<div class="wizard_words_div">
+	<h1><script>document.write(bh_detect_hsdpa_msg)</script></h1>
+<table width=100%>
+<tr><td  colspan=2><script>document.write(bh_detect_hsdpa_msg1)</script></td></tr>
+<tr><td  colspan=2><script>document.write(bh_detect_hsdpa_msg2)</script></td></tr>
+<tr><td>&nbsp;</td></tr>
+<tr><td><b><script>document.write(bh_country_3g)</script></b></td>
+<script>
+      document.write('<TD nowrap align=right>');
+		document.write('<select name="WRegion" size="1" onchange="isp_display()">');
+					document.write('<option value=0>');
+					document.write(bh_coun_austrilia);
+					document.write('</option>');
+					document.write('<option value=1>');
+					document.write(bh_coun_austria);
+					document.write('</option>');
+					document.write('<option value=2>');
+					document.write(bh_coun_belgium);
+					document.write('</option>');
+					document.write('<option value=3>');
+					document.write(bh_coun_brazil);
+					document.write('</option>');
+					document.write('<option value=4>');
+					document.write(bh_coun_chile);
+					document.write('</option>');
+					document.write('<option value=5>');
+					document.write(bh_coun_china);
+					document.write('</option>');
+					document.write('<option value=6>');
+					document.write(bh_coun_finland);
+					document.write('</option>');
+					document.write('<option value=7>');
+					document.write(bh_coun_germany);
+					document.write('</option>');
+					document.write('<option value=8>');
+					document.write(bh_coun_hk);
+					document.write('</option>');
+					document.write('<option value=9>');
+					document.write(bh_coun_italy);
+					document.write('</option>');
+					document.write('<option value=10>');
+					document.write(bh_coun_netherlands);
+					document.write('</option>'); //<!-- @@@ move up two line -->
+					document.write('<option value=11>');
+					document.write(bh_coun_newzealand);
+					document.write('</option>');
+					document.write('<option value=12>');
+					document.write(bh_coun_norway);
+					document.write('</option>');
+					document.write('<option value=13>');
+					document.write(bh_coun_peru);
+					document.write('</option>');
+					document.write('<option value=14>');
+					document.write(bh_coun_russia);
+					document.write('</option>');
+					document.write('<option value=15>');
+					document.write(bh_coun_singapore);
+					document.write('</option>');
+					document.write('<option value=16>');
+					document.write(bh_coun_south_africa);
+					document.write('</option>');
+					document.write('<option value=17>');
+					document.write(bh_coun_sweden);
+					document.write('</option>');
+					document.write('<option value=18>');
+					document.write(bh_coun_tw);
+					document.write('</option>');
+					document.write('<option value=19>');
+					document.write(bh_coun_uk);
+					document.write('</option>');
+					document.write('<option value=20>');
+					document.write(bh_coun_usa);
+					document.write('</option>');
+        document.write('</select></TD></TR>');
+</script>
+<TR id="coun0" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type1" onChange="change_isp(1)">
+		<option value="Optus (Fusion)">$coun1_isp_type1</option>
+		<option value="Optus (data plan)">$coun1_isp_type2</option>
+		<option value="Telstra">$coun1_isp_type3</option>
+		<option value="Telstra Turbo21 (internet)">$coun1_isp_type4</option>
+		<option value="Telstra Turbo21 (pcpack)">$coun1_isp_type5</option>
+		<option value="Telstra Turbo21 (datapack)">$coun1_isp_type6</option>
+		<option value="BigPond">$coun1_isp_type7</option>
+		<option value="3">$coun1_isp_type8</option>
+		<option value="3 (prepaid)">$coun1_isp_type9</option>
+		<option value="Virgin">$coun1_isp_type10</option>
+		<option value="Vodafone">$coun1_isp_type11</option>
+		<option value="Dodo">$coun1_isp_type12</option>
+		<option value="Dodo (prepaid)">$coun1_isp_type13</option>
+		<option value="Primus">$coun1_isp_type14</option>
+		<option value="Blink (postpaid)">$coun1_isp_type15</option>
+		<option value="iiNet (3)">$coun1_isp_type16</option>
+		<option value="Westnet">$coun1_isp_type17</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select></td>
+</tr>
+<TR id="coun1" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type2" onChange="change_isp(2)">
+		<option value="A1">$coun2_isp_type1</option>
+		<option value="T-Mobile">$coun2_isp_type2</option>
+		<option value="Orange">$coun2_isp_type3</option>
+		<option value="3">$coun2_isp_type4</option>
+		<option value="Tele.Ring A">$coun2_isp_type5</option>
+		<option value="Tele.Ring B">$coun2_isp_type6</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select></td>
+</tr>
+<TR id="coun2" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type3" onChange="change_isp(3)">
+		<option value="BASE">$coun3_isp_type1</option>
+		<option value="Mobistar (personal)">$coun3_isp_type2</option>
+		<option value="Mobistar (business)">$coun3_isp_type3</option>
+		<option value="Orange">$coun2_isp_type3</option>
+		<option value="Proximus">$coun3_isp_type4</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select></td>
+</tr>
+<TR id="coun3" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type4" onChange="change_isp(4)">
+		<option value="Claro">$coun4_isp_type1</option>
+		<option value="Oi">$coun4_isp_type2</option>
+		<option value="Oi (WAP)">$coun4_isp_type3</option>
+		<option value="TIM">$coun4_isp_type4</option>
+		<option value="Velox">$coun4_isp_type5</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select></td>
+</tr>
+<TR id="coun4" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type5" onChange="change_isp(5)">
+		<option value="Claro">$coun4_isp_type1</option>
+		<option value="Entel PCS">$coun5_isp_type2</option>
+		<option value="Movistar">$coun5_isp_type3</option>
+		<option value="Telefonica (Movil)">$coun5_isp_type4</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select></td>
+</tr>
+<TR id="coun5" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+    <TD nowrap align=right>
+	<select name="isp_type6" onChange="change_isp(6)">
+        <option value="China Mobile">$coun20_isp_type1</option>
+        <option value="China Unicom">$coun20_isp_type2</option>
+	<option value="China Telecom">$coun20_isp_type3</option>
+        <option value="Other">$coun1_isp_type18</option>
+    </select>
+</tr>
+<TR id="coun6" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type7" onChange="change_isp(7)">
+		<option value="Dna">$coun6_isp_type1</option>
+		<option value="Elisa (Kolumbus)">$coun6_isp_type2</option>
+		<option value="Saunalahti">$coun6_isp_type3</option>
+		<option value="Sonera">$coun6_isp_type4</option>
+		<option value="Song">$coun6_isp_type5</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select></td>
+</tr>
+<TR id="coun7" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type8" onChange="change_isp(8)">
+		<option value="O2 (time-based plans)">$coun7_isp_type1</option>
+		<option value="O2 (volume-based plans)">$coun7_isp_type2</option>
+		<option value="tagesflat">$coun7_isp_type3</option>
+		<option value="T-Mobile D1">$coun7_isp_type4</option>
+		<option value="Vodafone">$coun7_isp_type5</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select></td>
+</tr>
+<TR id="coun8" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type9" onChange="change_isp(9)">
+		<option value="CSL">$coun8_isp_type1</option>
+		<option value="New World">$coun8_isp_type2</option>
+		<option value="Orange">$coun2_isp_type3</option>
+		<option value="People">$coun8_isp_type4</option>
+		<option value="SmarTone">$coun8_isp_type5</option>
+		<option value="Sunday">$coun8_isp_type6</option>
+		<option value="3">$coun2_isp_type4</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select></td>
+</tr>
+<TR id="coun9" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type10" onChange="change_isp(10)">
+		<option value="Postemobile">$coun9_isp_type1</option>
+		<option value="3">$coun2_isp_type4</option>
+		<option value="TIM">$coun4_isp_type4</option>
+		<option value="Vodafone">$coun9_isp_type4</option>
+		<option value="WIND">$coun9_isp_type5</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select></td>
+</tr>
+<TR id="coun10" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type11" onChange="change_isp(11)">
+		<option value="Hi">$coun10_isp_type1</option>
+		<option value="KPN Mobile">$coun10_isp_type2</option>
+		<option value="O2">$coun10_isp_type3</option>
+		<option value="T-Mobile active">$coun10_isp_type4</option>
+		<option value="Telfort">$coun10_isp_type5</option>
+		<option value="Vodafone Live">$coun10_isp_type6</option>
+		<option value="Vodafone (business)">$coun10_isp_type7</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select></td>
+</tr>
+<TR id="coun11" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type12" onChange="change_isp(12)">
+		<option value="Vodafone Live">$coun11_isp_type1</option>
+		<option value="Vodafone(unrestricted)">$coun11_isp_type2</option>
+		<option value="Vodafone(restricted)">$coun11_isp_type3</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select></td>
+</tr>
+<TR id="coun12" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type13" onChange="change_isp(13)">
+		<option value="Netcom">$coun12_isp_type1</option>
+		<option value="TalkMore">$coun12_isp_type2</option>
+		<option value="Telenor Mobil">$coun12_isp_type3</option>
+		<option value="Ventelo">$coun12_isp_type4</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select></td>
+</tr>
+<TR id="coun13" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type14" onChange="change_isp(14)">
+		<option value="Claro (TIM)">$coun13_isp_type1</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select></td>
+</tr>
+<TR id="coun14" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type15" onChange="change_isp(15)">
+		<option value="MTS">$coun21_isp_type1</option>
+		<option value="MegaFon">$coun21_isp_type2</option>
+		<option value="BeeLine">$coun21_isp_type3</option>
+		<option value="TELE2">$coun21_isp_type4</option>
+		<option value="Skylink">$coun21_isp_type5</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select>
+</tr>
+<TR id="coun15" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type16" onChange="change_isp(16)">
+		<option value="M1">$coun14_isp_type1</option>
+		<option value="SingTel">$coun14_isp_type2</option>
+		<option value="Starhub">$coun14_isp_type3</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select></td>
+</tr>
+<TR id="coun16" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type17" onChange="change_isp(17)">
+		<option value="Cell-C">$coun15_isp_type1</option>
+		<option value="MTN">$coun15_isp_type2</option>
+		<option value="Virgin Mobile">$coun15_isp_type3</option>
+		<option value="Vodacom">$coun15_isp_type4</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select></td>
+</tr>
+<TR id="coun17" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type18" onChange="change_isp(18)">
+		<option value="Tele2 (Comviq)">$coun16_isp_type1</option>
+		<option value="Tele2 (3G)">$coun16_isp_type2</option>
+		<option value="Telenor(GPRS)">$coun16_isp_type3</option>
+		<option value="Telenor(3G)">$coun16_isp_type4</option>
+		<option value="Telia">$coun16_isp_type5</option>
+		<option value="Tre (3G)">$coun16_isp_type6</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select></td>
+</tr>
+<TR id="coun18" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type19" onChange="change_isp(19)">
+		<option value="Chunghwa Telecom">$coun17_isp_type1</option>
+		<option value="Far EasTone">$coun17_isp_type2</option>
+		<option value="Hinet">$coun17_isp_type3</option>
+		<option value="KG Telecom">$coun17_isp_type4</option>
+		<option value="Taiwan Cellular">$coun17_isp_type5</option>
+		<option value="Asia Pacific Telecom Group (APTG)">$coun17_isp_type6</option>
+		<option value="TransAsia">$coun17_isp_type7</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select></td>
+</tr>
+<TR id="coun19" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type20" onChange="change_isp(20)">
+		<option value="3">$coun2_isp_type4</option>
+		<option value="3 (broadband)">$coun18_isp_type2</option>
+		<option value="AirTel Vodafone">$coun18_isp_type3</option>
+		<option value="Jersey Telecom">$coun18_isp_type4</option>
+		<option value="O2">$coun10_isp_type3</option>
+		<option value="O2 (optimised)">$coun18_isp_type6</option>
+		<option value="O2 (pay)">$coun18_isp_type7</option>
+		<option value="O2 (prepaid)">$coun18_isp_type8</option>
+		<option value="Orange (Pay Monthly)">$coun18_isp_type9</option>
+		<option value="Orange (JustTalk)">$coun18_isp_type10</option>
+		<option value="T-Mobile">$coun18_isp_type11</option>
+		<option value="Tesco Mobile">$coun18_isp_type12</option>
+		<option value="Virgin Mobile">$coun18_isp_type13</option>
+		<option value="Vodafone (contract)">$coun18_isp_type14</option>
+		<option value="Vodafone (pre-pay)">$coun18_isp_type15</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select></td>
+</tr>
+<TR id="coun20" style="display:none">
+	<TD nowrap><b><script>document.write(bh_basic_intserv_provider)</script></b></TD>
+	<TD nowrap align=right>
+	<select name="isp_type21" onChange="change_isp(21)">
+		<option value="Cingular">$coun19_isp_type1</option>
+		<option value="T-Mobile">$coun19_isp_type2</option>
+		<option value="AT&T">$coun19_isp_type3</option>
+		<option value="Other">$coun1_isp_type18</option>
+	</select></td>
+</tr>
+<TR>
+	<TD nowrap><b><script>document.write(bh_pppoe_login_name)</script></b>
+	</TD>
+	<TD nowrap align=right>
+	<input type="text" name="hsdpa_username" maxLength="64" size="16" onKeyPress="return getkey('ssid', event)" value="">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><b><script>document.write(bh_ddns_passwd)</script></b>
+	</TD>
+	<TD nowrap align=right>
+	<input type="password" name="hsdpa_passwd" maxlength="64" size="16" onKeyPress="return getkey('ssid', event)" value="">
+	</TD>
+</TR>
+<tr id="access_number" style="display:none">
+	<td nowrap><b><script>document.write(bh_access_number_3g)</script></b></td>
+	<td nowrap align=right>
+		<select name="access_num" onChange="">
+			<option value="0">$access_num_type1</option>
+			<option value="1">$access_num_type2</option>
+			<option value="2">$access_num_type3</option>
+			<option value="3">$access_num_type4</option>
+			<option value="4">$access_num_type5</option>
+			<option value="5">$access_num_type6</option>
+			<option value="6">$access_num_type7</option>
+		</select>
+	</td>
+</tr>
+<tr id="apn_tag" style="display:none">
+	<td nowrap><b>$apn_tag</b></td>
+	<td nowrap align=right><input type="text" name="hsdpa_apn" maxlength="64" size="16" onFocus="" onKeyPress="return getkey('ssid', event)" value=""></td>
+</tr>
+<tr><td>&nbsp;</td></tr>
+</table>
+</div>
+
+<div id="buttons_div_02" class="wizard_buttons_div" align="center">
+	<div id="btnsContainer_div" class="buttons_img_div" align="center">
+		<img src="image/ca-little-purple-button.gif" />
+		<div class="buttons_words_div"><script>document.write(bh_next_mark)</script></div>
+	</div>
+</div>
+
+</div>
+
+</form>
+</body>
+
+</html>

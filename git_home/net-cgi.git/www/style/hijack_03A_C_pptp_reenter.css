@@ -1,0 +1,9 @@
+#mainContent_div { width:70%; margin:0 auto; }
+
+#allBtns_div { width:90%;}
+
+#btnsContainer_div1 { width:65%; float:left; }
+
+#btnsContainer_div2 { width:35%; float:right; } 
+
+.wizard_words_div .input_ip_div { height:30px; width:50%; line-height:30px; margin:0 0 5px 4%; float:right; position:relative; }

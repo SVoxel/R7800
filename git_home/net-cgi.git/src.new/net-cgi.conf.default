@@ -1,0 +1,358 @@
+####################################
+#      Sample of net-cgi.conf      #
+####################################
+
+### all variables which name is nc_*** in below contents could be set,
+### and all configs are optionaly, this sample list default value of
+### all configs if not supply in real net-cgi.conf file.
+
+### all lines begin with '#' are coments, will be ignored by net-cgi.
+
+### host name, same as project's name mostly
+#nc_host_name "R7500v2"
+
+### 
+#nc_ctl_mod "r7500v2"
+
+### 
+#nc_title_name "R7500v2"
+
+### Route type, Netgear PE will provide this string.
+#nc_router_type "Nighthawk X4 "
+
+### Max post site, limit post packets.
+#nc_max_post_size 0x1900000
+
+### enable guest management feature
+#nc_guest_manage OFF
+
+### supply path of image partition
+#nc_image_mtd "/dev/mtd8"
+
+### supply path of language partition
+#nc_lang_flash_part "/dev/mtd19/"
+
+### supply path of pot partition
+#nc_pot_mtd "/dev/mtd21"
+
+### LAN ethernet interface name
+#nc_lan_wired_ifname "eth1"
+
+### WAN ethernet interface name
+#nc_net_ifname "eth0"
+
+### LAN bridge name
+#nc_ipv6_lan_ifname "br0"
+
+### 2.4G wirelesss interface name
+#nc_wlan24_ifname "ath1"
+
+### 2.4G guest wireless interface name
+#nc_wlan24_gus1_ifname "ath11"
+
+### 5G wireless interface name
+#nc_wlan5_ifname "ath0"
+
+### 5G guest wireless interface name
+#nc_wlan5_gus1_ifname "ath01"
+
+### lan ports number
+#nc_lan_ports_num 4
+
+### have ethernet wan port
+#nc_ethernet_wan ON
+
+### enable SOAP feature
+#nc_soap_on ON
+
+### VPN information
+#nc_vpn_info "PPP 2.4.3"
+
+### firewall information
+#nc_firewall_info "net-wall 2.0"
+
+### version of smartagent
+#nc_smartagent_version "3.0"
+
+### version of spec net-cgi follow
+#nc_spec_version "1.6"
+
+### physical memory size (MB)
+#nc_phy_memory 32
+
+### physical flash size (MB)
+#nc_phy_flash 128
+
+### enable feature to solve SOAP vulnerability
+#nc_solve_soap_vulnerability OFF
+
+### enable netgear app system feature
+#nc_app_system OFF
+
+### enable HNAP feature
+#nc_hnap_on OFF
+
+### enable multiple language feature
+#nc_have_multi_language ON
+
+### specify default region
+#nc_default_region "English"
+
+### specify default language
+#nc_default_language "/www/languages-en.js"
+
+### max count of languages in flash
+#nc_lang_count 10
+
+### size of each language in flash
+#nc_lang_size 126976
+
+### erase size when write languages
+#nc_erase_size 126976
+
+### region code size in flash
+#nc_region_size 2
+
+### 
+#nc_gz_ball_name_size 21
+
+### 
+#nc_have_tpr ON
+#nc_have_pr ON
+#nc_have_jp ON
+#nc_have_ko ON
+
+### 
+#nc_default_eng ON
+#nc_default_gr ON
+#nc_default_pr OFF
+#nc_default_ko OFF
+#nc_default_ru ON
+#nc_default_pt ON
+
+### path of application detwan
+#nc_detwan_path "/usr/sbin/detwan"
+
+### enable quantenna codes, for R7500
+#nc_quantenna_code OFF
+
+### enable 802.11 an feature
+#nc_wireless_an ON
+
+### enable 802.11 ac feature
+#nc_wireless_ac ON
+
+### enable guest network feature of wireless
+#nc_have_guest_network ON
+
+### wireless speed mode 
+#nc_mode_1 "54"
+#nc_mode_2 "289"
+#nc_mode_3 "600"
+#nc_an_mode_1 "347"
+#nc_an_mode_2 "800"
+#nc_an_mode_3 "1733"
+
+### enable wireless transmit power control feature
+#nc_have_transmit_power_control ON
+
+### wireless DFS
+#nc_dfs_all OFF
+#nc_dfs_europe OFF
+#nc_dfs_japan OFF
+#nc_dfs_canada OFF
+#nc_dfs_australia OFF
+
+### 
+#nc_txctl_63_33 OFF
+
+### enables super WiFi
+#nc_super_wifi OFF
+
+### 
+#nc_video_network OFF
+
+### enable wireless co-exist feature
+#nc_an_coexist OFF
+#nc_basic_coexistence OFF
+#nc_adv_coexistence ON
+
+### enable WDS feature
+#nc_have_wds OFF
+#nc_wds_support_wpa OFF
+
+### enable facebook WiFi feature
+#nc_fb_wifi OFF
+
+### enable enterprise feature in wireless
+#nc_enterprise OFF
+
+### 
+#nc_airtime_fairness OFF
+#nc_fragment_an OFF
+#nc_dfs_radar_detect ON
+
+### enable Russian pptp feature
+#nc_russian_pptp ON
+
+### enable pppoe + intranet feature
+#nc_pppoe_intranet ON
+
+### enable russian pppoe feature
+#nc_russian_pppoe OFF
+
+### enable L2TP
+#nc_have_l2tp ON
+
+### enable bigpond
+#nc_have_bigpond OFF
+
+### enable pppoe mac clone
+#nc_pppoe_mac ON
+
+### support third DNS
+#nc_third_dns ON
+
+### enable broadband feature
+#nc_have_broadband OFF
+
+### enable igmp feature
+#nc_have_igmp ON
+#nc_have_bt_igmp OFF
+
+### enable auto connection feature, for Germany.
+#nc_auto_conn_reset ON
+
+### enable IPTV/VLAN feature
+#nc_bridge_iptv OFF
+
+### enable wizard feature for DSL
+#nc_dsl_wizard OFF
+
+### enable pppoa + intranet feature
+#nc_pppoa_intranet OFF
+
+### enable readyshare mobile feature
+#nc_readyshare_mobile OFF
+
+### enable LTE feature
+#nc_have_lte OFF
+
+### enable IP and MAC bind feature
+#nc_ip_mac OFF
+
+### enable VLAN feature
+#nc_have_vlan OFF
+
+### support nand flash
+#nc_nandwrite ON
+
+### enable open source feature
+#nc_open_source ON
+#nc_open_source_model_id "NETGEAR"
+
+### QoS
+#nc_have_old_qos OFF
+#nc_have_advanced_qos OFF
+#nc_have_dynamic_qos ON
+#nc_max_bandwidth 1000
+#nc_have_plc OFF
+#nc_have_ookla_speedtest ON
+#nc_have_priority_zone OFF
+#nc_trusted_ip OFF
+
+### enable USB feature
+#nc_have_usb_storage ON
+#nc_readycloud OFF
+#nc_geniecloud OFF
+#nc_have_vault ON
+#nc_readyshare_print ON
+#nc_have_itunes ON
+#nc_partition_df ON
+#nc_have_tivo ON
+#nc_hdd_multi_user OFF
+#nc_have_greendownload OFF
+#nc_fan_probe_set OFF
+
+### DDNS
+#nc_netgear_ddns ON
+#nc_dns_3322 ON
+#nc_nds_wildcards ON
+#nc_dns_noip ON
+#nc_dns_oray ON
+
+### multiple operation mode
+#nc_operation_modes 0
+#nc_have_old_ap ON
+#nc_bridge_mode ON
+
+### IPv6
+#nc_have_ipv6 ON
+#nc_ipv6_dns_manual OFF
+#nc_ipv6_6rd OFF
+#nc_have_map_t OFF
+#nc_ipv6_auto_detect ON
+#nc_ipv6_dhcp ON
+#nc_ipv6_pppoe ON
+
+### enable TR069 feature
+#nc_have_tr069 OFF
+
+### VPN
+#nc_have_vpn ON
+#nc_have_pptp_vpn OFF
+#nc_have_openvpn OFF
+#nc_have_smtp_port ON
+
+### email
+#nc_have_email ON
+#nc_smtp_auto_detect OFF
+#nc_second_email_addr OFF
+#nc_have_email_ssl OFF
+
+### CD-Less, setup wizard
+#nc_have_cd_less ON
+#nc_have_wizard ON
+#nc_cd_less_download ON
+#nc_ap_mode_detection OFF
+
+### postion in partition where record first time ntp connected
+#nc_ntpst_postion 253952
+
+### postion in partition where record MAC of first wireless client connected
+#nc_stamac_postion 256000
+
+### enable debug feature
+#nd_have_debug OFF
+
+### 
+#nc_logs_checkbox ON
+
+### enable the feature that disable vlan when wan is pppoe
+#nc_vlan_pppoe_support ON
+
+### 
+#nc_forward_range OFF
+#nc_smart_network OFF
+#nc_port_forwarding ON
+#nc_port_triggering ON
+
+### enable led setting
+#nc_led_setting ON
+
+### enable parental control
+#nc_parental_ctl ON
+
+### enable traffic meter
+#nc_have_traffic_meter ON
+
+### 
+#nc_have_fast_lane OFF
+#nc_single_device_name OFF
+
+### enable block site
+#nc_have_block_site ON
+
+### enable access control
+#nc_have_access_control ON
+#nc_access_control_edit OFF

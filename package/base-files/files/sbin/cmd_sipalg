@@ -1,0 +1,11 @@
+#!/bin/sh
+
+config=/bin/config
+
+/sbin/rmmod nf_nat_dnisip.ko > /dev/null
+/sbin/rmmod nf_conntrack_dnisip.ko > /dev/null
+
+if [ "$($config get wan_endis_sipalg)" != "1" ]; then
+	/sbin/insmod nf_conntrack_dnisip.ko
+	/sbin/insmod nf_nat_dnisip.ko
+fi

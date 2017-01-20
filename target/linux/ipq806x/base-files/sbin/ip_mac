@@ -1,0 +1,70 @@
+#!/bin/sh
+CONFIG=/bin/config
+
+# BRIC Wireless Router SW Feature Spec draft_July26.docx Requirement:
+# 10.2 2.Router will be set to use static ARP table for the LAN environment,
+# no longer receives ARP replies from LAN ports.
+
+# Enable this function for PRRU region or Ru language
+firmware_region=`cat /tmp/firmware_region | awk '{print $1}'`
+gui_region=$($CONFIG get GUI_Region)
+prru_feature=0
+if [ "x$firmware_region" = "xWW" ] || [ "x$firmware_region" = "x" ] ;then
+	if [ "x$gui_region" = "xRussian" -o "x$gui_region" = "xChinese" ] ;then
+		prru_feature=1
+	fi
+elif [ "x$firmware_region" = "xRU" -o "x$firmware_region" = "xPR" ] ;then
+	prru_feature=1
+fi
+
+# By default, this proc value is 0
+echo "0" > /proc/ipmac
+echo 0 > /proc/sys/net/ipv4/conf/br0/arp_drop_reply
+
+# ARP solicit times is 3 by default
+echo 3 > /proc/sys/net/ipv4/neigh/br0/mcast_solicit
+echo 3 > /proc/sys/net/ipv4/neigh/br0/ucast_solicit
+[ "$prru_feature" != "1" ] && exit
+
+# Start net-wall to generate rules
+/usr/sbin/net-wall restart
+
+# Clear static ARP
+static_arp=`/usr/sbin/ip neigh|grep br0|awk '{print $1}'`
+for s_ip in $static_arp
+do
+	/usr/sbin/ip neigh del $s_ip dev br0
+done
+
+# Turn off this function?
+if [ "x$($CONFIG get ipmac_binding_on)" != "x1" ] ;then
+	exit
+fi
+
+# flush ARP table
+/usr/sbin/ip neigh flush dev br0
+
+# Drop arp reply from Lan
+echo 1 > /proc/sys/net/ipv4/conf/br0/arp_drop_reply
+
+# Don't send arp request on br0
+echo 0 > /proc/sys/net/ipv4/neigh/br0/mcast_solicit
+echo 0 > /proc/sys/net/ipv4/neigh/br0/ucast_solicit
+
+# Set static ARP table for LAN environment
+# reservation1="192.168.1.2 00:01:02:03:04:05 devicename"
+count=1
+while [ 1 ]
+do
+	ipmac_list="$($CONFIG get reservation$count)"
+	if [ "x$ipmac_list" = "x" ] ;then
+		break;
+	fi
+	ipmac_mac=`echo $ipmac_list|awk '{print $2}'`
+	ipmac_ip=`echo $ipmac_list|awk '{print $1}'`
+	/usr/sbin/ip neigh replace $ipmac_ip lladdr $ipmac_mac dev br0
+	count=`expr $count + 1`
+
+	ipmac_value="$ipmac_ip $ipmac_mac"
+	echo "$ipmac_value" > /proc/ipmac
+done

@@ -1,0 +1,12 @@
+#! /bin/sh
+
+TRUE_SIZE=`du -b $1 | awk {'print $1'}`
+
+if [ $TRUE_SIZE -lt $2 ];then
+	exit 0
+else
+	echo "#############################################################"
+	echo "#  Oversize image($TRUE_SIZE)!, The maximum is $2"
+	echo "#############################################################"
+	exit 1
+fi

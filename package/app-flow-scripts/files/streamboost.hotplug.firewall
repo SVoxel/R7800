@@ -1,0 +1,22 @@
+#!/bin/sh
+
+. /etc/appflow/rc.appflow
+. $STREAMBOOST_USER_CFG
+
+[ "$enable_streamboost" != "yes" ] && exit
+
+[ "$ACTION" = "add" ] && [ "$INTERFACE" = "wan" ] && {
+	/etc/init.d/streamboost fwup&
+}
+
+[ "$ACTION" = "remove" ] && [ "$INTERFACE" = "wan" ] && {
+	/etc/init.d/streamboost fwdn&
+}
+
+[ "$ACTION" = "add" ] && [ "$INTERFACE" = "lan" ] && {
+	/etc/init.d/streamboost fwup&
+}
+
+[ "$ACTION" = "remove" ] && [ "$INTERFACE" = "lan" ] && {
+	/etc/init.d/streamboost fwdn&
+}

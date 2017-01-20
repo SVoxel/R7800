@@ -1,0 +1,40 @@
+#!/bin/sh /etc/rc.common
+
+#START=71
+
+MAXCONS="7"
+CONFIGFILE="/etc/netatalk/afpd.conf"
+PIDFILE="/var/run/afpd.pid"
+
+start()
+{
+	AFP_CONF_DIR=/tmp/netatalk
+	mkdir -p $AFP_CONF_DIR
+	cp -f /usr/config/netatalk/AppleVolumes.default $AFP_CONF_DIR
+
+	#/usr/sbin/cnid_metad
+	#/usr/sbin/afpd -F ${CONFIGFILE} -P ${PIDFILE} -c ${MAXCONS}
+
+# create users, groups
+	update_user
+
+# update AppleVolumes.default and start afpd if needed
+	update_afp 
+
+# FIXME: start sending WOL packet periodically
+   /usr/sbin/check_time_machine &
+}
+
+stop()
+{
+	killall afpd
+	killall cnid_metad
+	killall send_wol
+}
+
+reload()
+{
+	#kill -s HUP `cat ${PIDFILE}`
+	#start
+	update_afp
+}

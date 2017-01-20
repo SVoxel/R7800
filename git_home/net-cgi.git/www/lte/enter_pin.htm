@@ -1,0 +1,38 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% noload_header("_pin", "check_pin.htm", "pin_code") %>
+<div class="page_title">$sim_head</div>
+<div id="main" class="main">
+<script>
+
+function apply_pin()
+{
+	var cf=document.forms[0];
+	if(cf.pin_code.value.length <4)
+	{
+		alert("PIN Code should be 4-8 digits!");
+		return false;
+	}
+	cf.submit();
+	return true;
+}
+
+</script>
+
+<div id="main" class="main" >
+<% table_header() %>
+<tr><td colspan=3><img src=/liteblue.gif width=100% height=12></td></tr>
+<tr><td nowrap colspan=3><b>PIN Verify</b></td></tr>
+<tr>
+	<td nowrap>PIN Code:</td>
+	<td nowrap><input type="text" name="pin_code" size="16" maxLength="8" onKeyPress="return getkey('num', event)"></td>
+	<td nowrap><input type="button" name="apply_bt" id="apply_bt" class="common_bt" value="$apply_mark" onClick="return apply_pin();"></td>
+</tr>
+<tr>
+        <td nowrap colspan=2><b>PIN Remain count:<% cfg_get("lte_left_pin_times") %></b></td>
+</tr>
+</table>
+</form>
+</div>
+</div>
+</body>
+</html>

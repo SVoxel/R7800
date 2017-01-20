@@ -1,0 +1,17 @@
+--- a/utelnetd-o.c	2015-04-25 20:35:24.060901884 +0800
++++ b/utelnetd.c	2015-04-25 20:38:15.910902011 +0800
+@@ -256,11 +256,13 @@
+ #define SESSION_LIMIT 2
+ 
+ static int session_num;
+-
++static void free_session(struct tsession *ts);
+ static struct tsession *
+ make_new_session(int sockfd)
+ {
+ 	if (session_num == SESSION_LIMIT) {
++		free_session(sessions->next);
++                
+ 		fprintf(stderr, "Allow only %d sessions for Telnet at one time!\n", SESSION_LIMIT);
+ 		return 0;
+ 	}

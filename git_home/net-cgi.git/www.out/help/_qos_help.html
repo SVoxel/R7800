@@ -1,0 +1,14 @@
+<% help_head() %>
+</HEAD>
+<script>
+if(parent.click_fasttrack==1)
+	document.write("$h_qos_fast");
+else if(top.speedtest_flag == 1)
+        document.write("$h_qos_speedtest");
+
+else if(top.speedtest_flag == 1)
+	document.write("$h_qos_speedtest");
+else
+	document.write("$h_qos");
+</script>
+</HTML>

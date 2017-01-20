@@ -1,0 +1,194 @@
+#!/bin/sh
+config=/bin/config
+
+new_satadisknum=$(cat /tmp/satadisknum)
+new_usbdisknum=$(grep "Driver=usb-storage" /proc/bus/usb/devices | wc -l)
+
+if [ "x$new_usbdisknum" = "x" ]; then
+	new_usbdisknum=0
+fi
+if [ "x$new_satadisknum" = "x" ]; then
+	new_satadisknum=0
+fi
+
+if [ $new_satadisknum -eq 0 ]; then
+	satafolder_num=`$config show | grep "shared_usb_folder" | grep "External_Disk" | wc -l`
+	if [ $satafolder_num -ne 0 ]; then
+		local i=0
+		sharefolder_num=`$config show | grep "shared_usb_folder" | wc -l`
+		loop_num=`expr $sharefolder_num / 2`
+		while [ $i -le $loop_num -a $loop_num -ne 0 ]; do
+			sharefolder_item=`$config get shared_usb_folder$i`
+			sata_sharefolder_item=`echo $sharefolder_item | grep "External_Disk"`
+			if [ "x$sata_sharefolder_item" = "x" ];then
+				let i=$i+1
+				continue;
+			else
+				$config unset shared_usb_folder$i
+				$config unset shared_usb_folder_users$i
+				let i=$i+1
+			fi
+		done
+		$config commit
+	fi
+	echo "[eSATA port]: 0 eSATA disk detected."
+elif [ $new_satadisknum -ge 1 ]; then
+	#eSATA disk recognized.
+	#cd /sys/block/sdc; ls -l
+	#device -> ../../devices/platform/msm_sata.0/ahci.0/ata1/host0/target0:0:0/0:0:0:0
+	#To get ata1 when mounted
+	ls -l /sys/block | grep sd | awk '{print $9}' > /tmp/disk_1
+	while read LINE
+	do
+		sata_port=$(ls -l /sys/block/$LINE | grep ata | awk '{print $11}' | awk -F/ '{print $7}')
+		if [ "$sata_port" = "ata1" ]; then
+			echo "[eSATA port]: 1 eSATA disk detected."
+		fi
+	done</tmp/disk_1
+	rm /tmp/disk_1
+fi
+
+get_usb_serial_num()
+{
+	disk_name=`echo $1 | sed 's/[0-9]//g'`
+	disk_scsi_id=`ls /sys/block/$disk_name/device/scsi_device* | awk -F: '{print $1}'`
+	cat /proc/scsi/usb-storage/$disk_scsi_id > /tmp/disk_scsi_info_ftp
+	while read LINE
+	do
+		tag=`echo $LINE | awk -F: '{print $1}'`
+		if [ "$tag" = "Serial Number" ];then
+			serial_num=`echo $LINE | awk -F: '{print $2}' | sed 's/[[:space:]]*$//g' | sed 's/^[ ]*//'`  
+			break
+		fi
+	done</tmp/disk_scsi_info_ftp
+	echo "$serial_num"
+}
+
+if [ $new_usbdisknum -eq 0 ]; then
+	usbfolder_num1=`$config show | grep "shared_usb_folder" | grep "_Drive" | wc -l`
+	usbfolder_num2=`$config show | grep "shared_usb_folder" | grep "USB_Storage" | wc -l`
+	if [ $usbfolder_num1 -ne 0 -o $usbfolder_num2 -ne 0 ]; then
+		local j=0
+		sharefolder_num=`$config show | grep "shared_usb_folder" | wc -l`
+		loop_num=`expr $sharefolder_num / 2`
+		while [ $j -le $loop_num -a $loop_num -ne 0 ]; do
+			sharefolder_item=`$config get shared_usb_folder$j`
+			usb_sharefolder_item1=`echo $sharefolder_item | grep "_Drive"`
+			usb_sharefolder_item2=`echo $sharefolder_item | grep "USB_Storage"`
+			if [ "x$usb_sharefolder_item1" = "x" -a "x$usb_sharefolder_item2" = "x" ];then
+				let j=$j+1
+				continue;
+			else
+				$config unset shared_usb_folder$j
+				$config unset shared_usb_folder_users$j
+				let j=$j+1
+			fi
+		done
+		$config commit
+	fi
+	echo "[USB port  ]: 0 USB disk detected."
+elif [ $new_usbdisknum -eq 1 ]; then
+	ls -l /sys/block | grep sd | awk '{print $9}' > /tmp/disk_2
+	while read LINE
+	do
+		#cd /sys/block/sda; ls -l
+		#../../devices/platform/ipq-dwc3.0/dwc3.0/xhci-hcd.0/usb1/1-1/1-1:1.0/host4/target4:0:0/4:0:0:0
+		#../../devices/platform/ipq-dwc3.1/dwc3.1/xhci-hcd.1/usb3/4-1/4-1:1.0/host3/target3:0:0/3:0:0:0
+		# To get usb1 or usb3
+		#usb_port=$(ls -l /sys/block/$LINE | grep usb | awk '{print $11}' | awk -F/ '{print $8}')
+		#usb_name=`echo $usb_port | sed 's/[0-9]//g'`
+		#usb_num=`echo $usb_port | cut -c 4-`
+
+		usb_interface=$(ls -l /sys/block/$LINE | grep usb | awk '{print $11}' | awk -F/ '{print $6}')
+
+		#echo "usb_port= $usb_port" > /dev/console
+		#echo "usb_interface =$usb_interface" > /dev/console
+		if [ "x$usb_interface" != "x" ]; then
+			serial_num=`get_usb_serial_num "$LINE"`
+			if [ "x$serial_num" != "x" ]; then
+			usb_version=$(/bin/cat /proc/bus/usb/devices | /bin/grep "Driver=usb-storage" -B6 | /bin/grep $serial_num -B4 | /bin/grep "Ver" | awk '{print $3}')
+				if [ "$usb_interface" = "dwc3.0" ]; then
+					if [ "$usb_version" = "2.00" ]; then
+						echo "[USB port0 ]: 1 USB2.0 disk detected."
+					else
+						echo "[USB port0 ]: 1 USB3.0 disk detected."
+					fi
+				elif [ "$usb_interface" = "dwc3.1" ]; then
+					if [ "$usb_version" = "2.00" ]; then
+						echo "[USB port1 ]: 1 USB2.0 disk detected."
+					else
+						echo "[USB port1 ]: 1 USB3.0 disk detected."
+					fi
+				else
+					echo "interface deteced error!!!"
+				fi
+			fi
+		fi
+
+	done</tmp/disk_2
+	rm /tmp/disk_2
+elif [ $new_usbdisknum -eq 2 ]; then
+	ls -l /sys/block | grep sd | awk '{print $9}' > /tmp/disk_2
+	while read LINE
+	do
+		#cd /sys/block/sda; ls -l
+		#../../devices/platform/ipq-dwc3.0/dwc3.0/xhci-hcd.0/usb1/1-1/1-1:1.0/host4/target4:0:0/4:0:0:0
+		#../../devices/platform/ipq-dwc3.1/dwc3.1/xhci-hcd.1/usb3/4-1/4-1:1.0/host3/target3:0:0/3:0:0:0
+		# To get usb1 or usb3
+		#usb_port=$(ls -l /sys/block/$LINE | grep usb | awk '{print $11}' | awk -F/ '{print $8}')
+		#usb_name=`echo $usb_port | sed 's/[0-9]//g'`
+		#usb_num=`echo $usb_port | cut -c 4-`
+
+		usb_interface=$(ls -l /sys/block/$LINE | grep usb | awk '{print $11}' | awk -F/ '{print $6}')
+
+		#echo "usb_port= $usb_port" > /dev/console
+		#echo "usb_interface =$usb_interface" > /dev/console
+		if [ "x$usb_interface" != "x" ]; then
+			serial_num=`get_usb_serial_num "$LINE"`
+			if [ "x$serial_num" != "x" ]; then
+			usb_version=$(/bin/cat /proc/bus/usb/devices | /bin/grep "Driver=usb-storage" -B6 | /bin/grep $serial_num -B4 | /bin/grep "Ver" | awk '{print $3}')
+				if [ "$usb_interface" = "dwc3.0" ]; then
+					if [ "$usb_version" = "2.00" ]; then
+						echo "[USB port0 ]: 1 USB2.0 disk detected."
+					else
+						echo "[USB port0 ]: 1 USB3.0 disk detected."
+					fi
+					break
+				fi
+			fi
+		fi
+
+	done</tmp/disk_2
+	while read LINE
+	do
+		#cd /sys/block/sda; ls -l
+		#../../devices/platform/ipq-dwc3.0/dwc3.0/xhci-hcd.0/usb1/1-1/1-1:1.0/host4/target4:0:0/4:0:0:0
+		#../../devices/platform/ipq-dwc3.1/dwc3.1/xhci-hcd.1/usb3/4-1/4-1:1.0/host3/target3:0:0/3:0:0:0
+		# To get usb1 or usb3
+		#usb_port=$(ls -l /sys/block/$LINE | grep usb | awk '{print $11}' | awk -F/ '{print $8}')
+		#usb_name=`echo $usb_port | sed 's/[0-9]//g'`
+		#usb_num=`echo $usb_port | cut -c 4-`
+
+		usb_interface=$(ls -l /sys/block/$LINE | grep usb | awk '{print $11}' | awk -F/ '{print $6}')
+
+		#echo "usb_port= $usb_port" > /dev/console
+		#echo "usb_interface =$usb_interface" > /dev/console
+		if [ "x$usb_interface" != "x" ]; then
+			serial_num=`get_usb_serial_num "$LINE"`
+			if [ "x$serial_num" != "x" ]; then
+			usb_version=$(/bin/cat /proc/bus/usb/devices | /bin/grep "Driver=usb-storage" -B6 | /bin/grep $serial_num -B4 | /bin/grep "Ver" | awk '{print $3}')
+				if [ "$usb_interface" = "dwc3.1" ]; then
+					if [ "$usb_version" = "2.00" ]; then
+						echo "[USB port1 ]: 1 USB2.0 disk detected."
+					else
+						echo "[USB port1 ]: 1 USB3.0 disk detected."
+					fi
+				break
+				fi
+			fi
+		fi
+
+	done</tmp/disk_2
+	rm /tmp/disk_2
+fi
+

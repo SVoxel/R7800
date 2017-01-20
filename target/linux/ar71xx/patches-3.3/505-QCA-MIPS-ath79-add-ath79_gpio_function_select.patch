@@ -1,0 +1,74 @@
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+--- a/arch/mips/ath79/common.h
++++ b/arch/mips/ath79/common.h
+@@ -1,6 +1,7 @@
+ /*
+  *  Atheros AR71XX/AR724X/AR913X common definitions
+  *
++ *  Copyright (c) 2013 The Linux Foundation. All rights reserved.
+  *  Copyright (C) 2008-2011 Gabor Juhos <juhosg@openwrt.org>
+  *  Copyright (C) 2008 Imre Kaloz <kaloz@openwrt.org>
+  *
+@@ -26,6 +27,7 @@ void ath79_ddr_wb_flush(unsigned int reg
+ void ath79_gpio_function_enable(u32 mask);
+ void ath79_gpio_function_disable(u32 mask);
+ void ath79_gpio_function_setup(u32 set, u32 clear);
++void ath79_gpio_input_select(unsigned gpio, u8 val);
+ void ath79_gpio_output_select(unsigned gpio, u8 val);
+ void ath79_gpio_init(void);
+ 
+--- a/arch/mips/ath79/gpio.c
++++ b/arch/mips/ath79/gpio.c
+@@ -1,6 +1,7 @@
+ /*
+  *  Atheros AR71XX/AR724X/AR913X GPIO API support
+  *
++ *  Copyright (c) 2013 The Linux Foundation. All rights reserved.
+  *  Copyright (C) 2010-2011 Jaiganesh Narayanan <jnarayanan@atheros.com>
+  *  Copyright (C) 2008-2011 Gabor Juhos <juhosg@openwrt.org>
+  *  Copyright (C) 2008 Imre Kaloz <kaloz@openwrt.org>
+@@ -197,6 +198,34 @@ void ath79_gpio_function_setup(u32 set,
+ 
+ 	spin_unlock_irqrestore(&ath79_gpio_lock, flags);
+ }
++
++void __init ath79_gpio_input_select(unsigned gpio, u8 val)
++{
++	void __iomem *base = ath79_gpio_base;
++	unsigned long flags;
++	unsigned int reg;
++	u32 t, s;
++
++	BUG_ON(!soc_is_ar934x());
++
++	if (gpio >= AR934X_GPIO_COUNT)
++		return;
++
++	reg = AR934X_GPIO_REG_IN_ENABLE0 + 4 * (val / 4);
++	s = 8 * (val % 4);
++
++	spin_lock_irqsave(&ath79_gpio_lock, flags);
++
++	t = __raw_readl(base + reg);
++	t &= ~(0xff << s);
++	t |= gpio << s;
++	__raw_writel(t, base + reg);
++
++	/* flush write */
++	(void) __raw_readl(base + reg);
++
++	spin_unlock_irqrestore(&ath79_gpio_lock, flags);
++}
+ 
+ void __init ath79_gpio_output_select(unsigned gpio, u8 val)
+ {

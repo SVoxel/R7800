@@ -1,0 +1,12 @@
+#!/bin/sh
+
+LOGGER="logger -t jiggle_firewall -p daemon.notice"
+$LOGGER Checking firewall state...
+for i in 1 2 3 4 5 6 7 8 9 10; do
+	iptables -L forward | grep zone_lan_forward >/dev/null && break
+	$LOGGER Jiggling firewall - attempt $i
+	fw restart
+	sleep 1
+done
+
+iptables -L forward | grep zone_lan_forward >/dev/null || $LOGGER Firewall is still broken && $LOGGER Firewall looks ok

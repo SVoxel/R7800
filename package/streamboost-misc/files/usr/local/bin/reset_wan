@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# This script attempts to reset the WAN interface to known good values.
+# It is only used from the command line to help get out of bad situations
+# while attempting to debug some issues.
+
+# Try to reset network.wan to pristine
+uci set network.wan.ifname=eth0.2
+uci set network.wan.defaultroute=0
+uci set network.wan.peerdns=0
+uci set network.wan.macaddr=00:03:7F:FF:FF:FF
+uci set network.wan.mtu=1500
+uci set network.wan.proto=dhcp
+
+# Make sure these values don't exist;  Setting them to None isn't sufficient.
+uci delete network.wan.ipaddr 2>/dev/null
+uci delete network.wan.netmask 2>/dev/null
+uci delete network.wan.gateway 2>/dev/null
+uci delete network.wan.dns 2>/dev/null
+
+# 1Gbit up, 1Gbit down
+uci set appflow.tccontroller.uplimit=125000000
+uci set appflow.tccontroller.downlimit=125000000
+
+# commit to UCI
+uci commit
+# commit bandwidth settings to tc_controller and tc
+luci-reload appflow
+# restart the network and appflow
+luci-reload network

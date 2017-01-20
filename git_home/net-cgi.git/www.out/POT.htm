@@ -1,0 +1,27 @@
+<% http_header("style/form.css") %>
+
+<script>
+
+var pot_ntpst = "<% get_pot_ntpst() %>";
+var pot_stamac = "<% get_pot_stamac() %>";
+
+</script>
+
+<BODY bgcolor=#FFFFFF>
+
+<table border="0">
+<TR>
+	<TD nowrap><B>POT : </B></TD>
+	<TD nowrap> &nbsp;<% cat_file("/tmp/pot_value") %> &nbsp;min</TD>
+</TR>
+<tr>
+	<td nowrap><B><script>document.write("NTP synchronized date/time: ")</script></B></td>
+	<td nowrap><script>document.write(pot_ntpst)</script></td>
+</tr>
+<tr>
+	<td nowrap><B><script>document.write("MAC address of 1st STA connected: ")</script></B></td>
+	<td nowrap><script>document.write(pot_stamac)</script></td>
+</tr>
+</table>
+</BODY>
+</HTML>

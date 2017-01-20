@@ -1,0 +1,97 @@
+<% http_header("style/form.css", "/funcs.js", "/plc_available_device.js") %>
+<% body_header("_plc_avail_dev", "PLC_dev_configure.htm", "plc_avail_dev") %>
+<div class="page_title">$avail_dev_head</div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+
+<script>
+<% save_timestamp("plc_avail_dev", "plc_dev_reset", "plc_dev_led_control") %>
+var ts='<% cfg_get("plc_avail_dev") %>';
+
+<% plc_availible_devs() %>
+
+function loadvalue()
+{
+}
+</script>
+
+<input type="hidden" name="plc_dev_reset_mac" value="">
+<input type="hidden" name="plc_dev_led_mac" value="">
+<input type="hidden" name="plc_dev_led_set" value="">
+
+<TR><TD>
+<TABLE class=tables border="1" cellpadding="2" cellspacing="0" width="100%">
+<TR class=table_header>
+	<TD nowrap align="center" width="15"><span class="subhead">#</span></TD>
+	<TD nowrap align="center"><span class="subhead">$plc_model</span></TD>
+	<TD nowrap align="center"><span class="subhead">$info_mark_mac</span></TD>
+	<TD nowrap align="center"><span class="subhead">$info_mark_ip</span></TD>
+	<TD nowrap align="center"><span class="subhead">$info_mark_ver</span></TD>
+	<TD nowrap align="center"><span class="subhead">$plc_quality</span></TD>
+	<TD nowrap align="center"><span class="subhead">$plc_led_status</span></TD>
+	<TD nowrap align="center"><span class="subhead">$plc_reset_default</span></TD>
+</TR>
+<script>
+if(plc_avail_dev_num > 0)
+{
+	var i=0;
+	for(i=1; i<=plc_avail_dev_num; i++)
+	{
+		var str = eval("avail_dev_Array" + i);
+		str = str.replace(/^\s+/g,"");
+		var each_info = str.split(' ');
+		var firmware_name = trans_firmware_name(each_info[3]);
+		if( i%2== 0 )
+                       document.write("<TR class=\"even_line\">");
+               else
+                       document.write("<TR class=\"odd_line\">");
+		document.write('        <TD nowrap align="center">'+i+'</TD>');
+		document.write('	<TD nowrap align="center">'+each_info[0]+'</TD>');
+		document.write('	<TD nowrap align="center">'+each_info[1]+'</TD>');
+		if(each_info[2] != "N/A")
+		{
+			document.write('<TD nowrap align="center"><a class="linktype" href="http://'+each_info[2]+'" target="_blank">'+each_info[2]+'</a></TD>');
+		}
+		else
+		{
+			document.write('<TD nowrap align="center">'+each_info[2]+'</TD>');
+		}
+		document.write('        <TD nowrap align="center">'+firmware_name+'</TD>');
+		document.write('        <TD nowrap align="center">'+each_info[4]+'</TD>');
+		document.write('        <TD nowrap align="center">');	
+		if(each_info[5] == "1")
+		{
+			document.write('<input type="submit" value="$plc_led_disable" name="model_led" onClick=\'return set_led_status("'+each_info[1]+'","off");\'></TD>');
+		}
+		else
+		{
+			document.write('<input type="submit" value="$plc_led_enable" name="model_led" onClick=\'return set_led_status("'+each_info[1]+'","on");\'></TD>');
+	}
+		document.write('        <TD nowrap align="center">');
+		document.write('        <input type="submit" value="$plc_reset_default" name="mod_reset" onClick=\'return check_dev_reset("'+each_info[1]+'");\'></TD>');
+		document.write('</TR>');
+	}
+}
+</script>
+</TABLE>
+</TD></TR>
+<TR>
+	<TD nowrap align=center>
+	<input class="common_bt" type="submit" name="config" value="$advanced_settings">
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap align=center>
+	<input class="common_bt" type='button' name='refresh' value='$refresh_mark' onClick='location.href="PLC_wait_scan.htm";'>
+	</TD>
+</TR>
+</script>
+</TABLE>
+
+</div>
+
+</FORM>
+</BODY>
+</HTML>

@@ -1,0 +1,32 @@
+#
+# Copyright (c) 2013 Qualcomm Atheros, Inc.
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary.
+#
+
+export KERNELPATH=/lib/modules/`uname -r`/build 
+export BUILD_X86=y 
+cd hal/linux
+make i386-elf ATH_DEFINE_ENDIAN=0
+cd ../../os/linux
+make \
+	UMAC_SUPPORT_VAP_PAUSE=1 \
+	NO_SIMPLE_CONFIG=1 \
+	ATH_SUPPORT_P2P=1 \
+	ATH_SUPPORT_DFS=0 \
+	ATH_SUPPORT_UAPSD=0 \
+	ATH_CAP_AMSDU=0 \
+	UMAC_SUPPORT_STA_POWERSAVE=1 \
+	UMAC_SUPPORT_P2P_GO_POWERSAVE=1 \
+	ATH_SUPPORT_DESCFAST=0 \
+	ATHEROS_LINUX_P2P_DRIVER=1 \
+	ATH_GEN_TIMER=1 \
+	UMAC_SUPPORT_TSF_TIMER=1 \
+	UMAC_SUPPORT_IE_UTILS=1
+cd ../..
+rm -fr ../modules
+mkdir -p ../modules
+find . -name *.ko -exec cp {} ../modules \;
+cd os/linux/tools
+make wlanconfig pktlogconf pktlogdump
+cp wlanconfig pktlogconf pktlogdump ~/bin

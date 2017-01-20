@@ -1,0 +1,40 @@
+AC_INIT(./mod_wrap2.c)
+
+ac_wrap2_libs=""
+
+dnl Auto-detection of shadow passwords.
+AC_ARG_ENABLE(nis,
+  [  --enable-nis            enable use of NIS/netgroups (default=no)
+  ],
+  [
+    if test "$enableval" != "no" ; then
+      AC_DEFINE(WRAP2_USE_NIS)
+
+      dnl Hack to make sure that the correct libraries are linked on the right
+      dnl platforms: FreeBSD's libc itself defines the NIS/YP functions, rather
+      dnl than defining those functions in a separate libnsl library.  Same
+      dnl for Mac OSX as well, apparently.
+
+      ac_os=`uname`
+      if test x"$ac_os" != xFreeBSD -a x"$ac_os" != xDarwin; then
+        ac_wrap2_libs="$ac_wrap2_libs -lnsl"
+      fi
+    fi ])
+
+AC_ARG_ENABLE(wrapper-options,
+  [  --enable-wrapper-options
+                          enable use of tcpwrapper options (default=no)
+                          see hosts_options(5) man page for details
+  ],
+  [
+    if test "$enableval" != "no" ; then
+      AC_DEFINE(WRAP2_USE_OPTIONS)
+    fi
+  ])
+
+MODULE_LIBS="$ac_wrap2_libs"
+
+AC_SUBST(LDFLAGS)
+AC_SUBST(MODULE_LIBS)
+AC_CONFIG_HEADER(mod_wrap2.h)
+AC_OUTPUT(Makefile)

@@ -1,0 +1,365 @@
+<% http_header("style/form.css", "/funcs.js", "/ipv6.js", "/ipv6_fixed.js") %>
+<% body_header("_IPv6_fixed", "IPv6_index.htm", "ipv6_fixed") %>
+<div class="page_title">$ipv6_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if(master=="admin")
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'IPv6_fixed.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="submit" name="Apply" id="apply" value="$apply_mark" onClick="return check_ipv6_fixed(document.forms[0])";></TD>');
+else
+	document.write(' <TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit" name="Apply" id="apply" value="$apply_mark" disabled></TD>');
+</script>       
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button">
+
+<script>
+var ipv6_wan = "<% cfg_get("ipv6_fixed_wan_ip") %>";
+var ipv6_wan_prefix_len = "<% cfg_get("ipv6_fixed_wan_prefix_len") %>";
+var enable_vpn = "<% cfg_get("vpn_enable") %>";
+
+var ipv6_default_gw = "<% cfg_get("ipv6_fixed_gw_ip") %>";
+
+var ipv6_wan_primary_dns = "<% cfg_get("ipv6_fixed_dns1") %>";
+var ipv6_wan_second_dns = "<% cfg_get("ipv6_fixed_dns2") %>";
+
+var ipv6_ip_assign = "<% cfg_get("ipv6_dhcps_enable") %>";
+
+var ipv6_lan = "<% cfg_get("ipv6_fixed_lan_ip") %>";
+var ipv6_lan_prefix_len = "<% cfg_get("ipv6_fixed_lan_prefix_len") %>";
+
+var ipv6_cone_fitering = "<% cfg_get("wan_ipv6_cone_fitering") %>";
+
+/*------ mapt --------------------*/
+var have_mapt=top.have_mapt;
+var enable_value="<% cfg_get("mapt_enable") %>";
+var type_value="<% cfg_get("mapt_type") %>";
+var local_ipv6="<% cfg_get("mapt_loc_ip6pre") %>";
+var local_ipv6_pre_len="<% cfg_get("mapt_loc_ip6pre_len") %>";
+var local_ipv4="<% cfg_get("mapt_loc_ip4pre") %>";
+var local_ipv4_pre_len="<% cfg_get("mapt_loc_ip4pre_len") %>";
+var local_ea="<% cfg_get("mapt_loc_ealen") %>";
+var remote_ipv6="<% cfg_get("mapt_rmt_ip6pre") %>";
+var remote_ipv6_pre_len="<% cfg_get("mapt_rmt_ip6pre_len") %>";
+var loc_psidoffset="<% cfg_get("mapt_loc_psidoffset") %>";
+top.enable_mapt=enable_value;
+
+function loadvalue()
+{
+	var cf = document.forms[0];
+	var i;
+	
+	/* IPv6 Address/Prefix Length */
+	var ipv6_wan_ip = ipv6_wan.split(":");
+	for( i=1; i<=ipv6_wan_ip.length; i++ )
+	{
+		if(ipv6_wan_ip[i-1]=="" && ipv6_wan!="")
+			eval('document.getElementsByName("IPv6WanAddr'+i+'")[0]').value = "0";
+		else
+			eval('document.getElementsByName("IPv6WanAddr'+i+'")[0]').value = ipv6_wan_ip[i-1];
+	}
+	if(ipv6_wan_prefix_len=="" && ipv6_wan!="")
+		cf.ProfixWanLength.value = "0"
+	else
+		cf.ProfixWanLength.value = ipv6_wan_prefix_len;
+
+	/* Default IPv6 Gatewy */
+	var ipv6_gateway_ip = ipv6_default_gw.split(":");
+	for(i=1; i<=ipv6_gateway_ip.length; i++)
+	{
+		if(ipv6_gateway_ip[i-1]=="" && ipv6_default_gw!="")
+			eval('document.getElementsByName("IPv6Gateway'+i+'")[0]').value = "0";
+		else
+			eval('document.getElementsByName("IPv6Gateway'+i+'")[0]').value = ipv6_gateway_ip[i-1];
+	}
+
+	/* Primary DNS Server & Secondary DNS Server */
+	var ipv6_primary_dns = ipv6_wan_primary_dns.split(":");
+	for( i=1; i<=ipv6_primary_dns.length; i++ )
+	{
+		if(ipv6_primary_dns[i-1]=="" && ipv6_wan_primary_dns!="")
+			eval('document.getElementsByName("PDAddr'+i+'")[0]').value = "0";
+		else
+			eval('document.getElementsByName("PDAddr'+i+'")[0]').value = ipv6_primary_dns[i-1];
+	}
+
+	var ipv6_second_dns = ipv6_wan_second_dns.split(":");
+	for( i=1; i<=ipv6_second_dns.length; i++ )
+        {
+		if(ipv6_second_dns[i-1]=="" && ipv6_wan_second_dns!="")
+			eval('document.getElementsByName("SDAddr'+i+'")[0]').value = "0";
+		else
+                	eval('document.getElementsByName("SDAddr'+i+'")[0]').value = ipv6_second_dns[i-1];
+        }	
+	
+
+	/* IP Address Assignment */
+        if( ipv6_ip_assign == "1" )
+        {
+                cf.IpAssign[0].checked = true;
+        }
+        else if( ipv6_ip_assign == "0" )
+        {
+                cf.IpAssign[1].checked = true;
+        }
+
+	/* IPv6 Address/Prefix Length */
+	var ipv6_lan_ip = ipv6_lan.split(":");	
+	for( i=0; i<ipv6_lan_ip.length; i++ )
+	{
+		if(ipv6_lan_ip[i]=="" && ipv6_lan!="")
+			cf.IPv6_lan[i].value = "0";
+		else
+			cf.IPv6_lan[i].value = ipv6_lan_ip[i];
+	}
+	if(ipv6_lan_prefix_len=="" && ipv6_lan!="")
+		cf.IPv6_lan_prefix.value = "0";
+	else
+		cf.IPv6_lan_prefix.value = ipv6_lan_prefix_len;
+
+	/* IPv6 Filtering */
+        if(ipv6_cone_fitering == 0)
+        {
+                cf.IPv6Filtering[0].checked = true;
+        }
+        else if(ipv6_cone_fitering == 1)
+        {
+                cf.IPv6Filtering[1].checked = true;
+        }
+	if(have_mapt)
+	{
+		document.getElementById("mapt_html").style.display="";
+		load_mapt();
+		cf.rd_type[0].disabled = true;
+		cf.rd_type[1].checked = true;
+	}
+	else
+		document.getElementById("mapt_html").style.display="none";
+	login_type_show(cf);
+	cf.login_type.value = "fixed";	
+}
+</script>
+
+<input type="hidden" name="ipv6_wan_ip_fixed" value="">
+<input type="hidden" name="ipv6_wan_fixed_prefix" value="">
+<input type="hidden" name="ipv6_wan_gw_fixed" value="">
+<input type="hidden" name="ipv6_primary_dns_fixed" value="">
+<input type="hidden" name="ipv6_second_dns_fixed" value="">
+<input type="hidden" name="ipv6_lan_ip_fixed" value="">
+<input type="hidden" name="ipv6_lan_fixed_prefix" value="">
+<input type="hidden" name="ipv6_hidden_filtering" value="">
+<input type="hidden" name="ipv6_hidden_ip_assign" value="">
+
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR>
+        <TD nowrap>
+        <A tabindex=-1 href="javascript:loadhelp('_IPv6_fixed','internet')"><B>$ipv6_internet_con_type</B></A>
+        </TD>
+        <TD nowrap align=right>
+        <select name="login_type" id="login_type" onChange="change_ipv6(document.forms[0].login_type.value)">
+        </select>
+        </TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_IPv6_fixed','wan_ipaddr')"><B>$wan_setup_head</B></A></TD>	
+</TR>
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_IPv6_fixed','wan_ipaddr')">$ipv6_addr_pre_length</A></TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=20 height=12 border=0>
+	<input type="text" name="IPv6WanAddr1" id="ipv6wanaddr1" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="IPv6WanAddr2" id="ipv6wanaddr2" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="IPv6WanAddr3" id="ipv6wanaddr3" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="IPv6WanAddr4" id="ipv6wanaddr4" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="IPv6WanAddr5" id="ipv6wanaddr5" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="IPv6WanAddr6" id="ipv6wanaddr6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="IPv6WanAddr7" id="ipv6wanaddr7" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="IPv6WanAddr8" id="ipv6wanaddr8" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">/
+	<input type="text" name="ProfixWanLength" id="profixwanlength" size="2" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num', event);" onkeyup="keyup_n(event,this,3);">
+	</TD>
+</TR>
+<TR>
+        <TD nowrap><A tabindex=-1 href="javascript:loadhelp('_IPv6_fixed','wan_gtway')">$ipv6_default_gw</A></TD>
+</TR>	
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=20 height=12 border=0>
+        <input type="text" name="IPv6Gateway1" id="ipv6gateway1" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+        <input type="text" name="IPv6Gateway2" id="ipv6gateway2" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+        <input type="text" name="IPv6Gateway3" id="ipv6gateway3" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+        <input type="text" name="IPv6Gateway4" id="ipv6gateway4" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+        <input type="text" name="IPv6Gateway5" id="ipv6gateway5" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+        <input type="text" name="IPv6Gateway6" id="ipv6gateway6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+        <input type="text" name="IPv6Gateway7" id="ipv6gateway7" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+        <input type="text" name="IPv6Gateway8" id="ipv6gateway8" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">
+        </TD>
+</TR>
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_IPv6_fixed','dns_server')">$ipv6_primary_dns</A></TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=20 height=12 border=0>
+	<input type="text" name="PDAddr1" id="pdaddr1" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="PDAddr2" id="pdaddr2" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="PDAddr3" id="pdaddr3" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="PDAddr4" id="pdaddr4" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="PDAddr5" id="pdaddr5" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="PDAddr6" id="pdaddr6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="PDAddr7" id="pdaddr7" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="PDAddr8" id="pdaddr8" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_IPv6_fixed','dns_server')">$ipv6_secondary_dns</A></TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=20 height=12 border=0>
+	<input type="text" name="SDAddr1" id="sdaddr1" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SDAddr2" id="sdaddr2" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SDAddr3" id="sdaddr3" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SDAddr4" id="sdaddr4" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SDAddr5" id="sdaddr5" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SDAddr6" id="sdaddr6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SDAddr7" id="sdaddr7" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="SDAddr8" id="sdaddr8" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">
+	</TD>
+</TR>
+$bluebar
+<TR>
+        <TD nowrap><A tabindex=-1 href="javascript:loadhelp('_IPv6_fixed','lan_ip_assign')"><B>$lan_mark_head</B></A></TD>
+</TR>
+<TR>
+        <TD nowrap><A tabindex=-1 href="javascript:loadhelp('_IPv6_fixed','lan_ip_assign')">$ipv6_ip_assign</A></TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><input type="radio" name="IpAssign" id="ipassign_dhcp" value="dhcp">$ipv6_dhcp_server</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><input type="radio" name="IpAssign" id="ipassign_auto" value="auto">$ipv6_auto_config</TD>
+</TR>
+<TR>
+        <TD nowrap colspan=2><BR><A tabindex=-1 href="javascript:loadhelp('_IPv6_fixed','lan_ipaddr')">$ipv6_addr_pre_length</A></TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=20 height=12 border=0>
+	<input type="text" name="IPv6_lan" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="IPv6_lan" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="IPv6_lan" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="IPv6_lan" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="IPv6_lan" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="IPv6_lan" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="IPv6_lan" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="IPv6_lan" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">/
+	<input type="text" name="IPv6_lan_prefix" size="2" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num', event);" onkeyup="keyup_n(event,this,3);">
+	</TD>
+</TR>
+$bluebar
+<TR>
+        <TD nowrap>
+        <A tabindex=-1 href="javascript:loadhelp('_IPv6_fixed','nat')"><B>$ipv6_filtering</B></A>
+        </TD>
+        <TD nowrap align=right>
+        <input type="radio" name="IPv6Filtering" value="Secured">$adva_wansetup_nat_secured&nbsp;
+        <input type="radio" name="IPv6Filtering" value="Open">$adva_wansetup_nat_open&nbsp;&nbsp;
+        </TD>
+</TR>
+$bluebar
+</TABLE>
+
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0 id="mapt_html">
+<input type="hidden" name="hid_cb_enable" value="0">
+<input type="hidden" name="hid_tx_lol_ipv6" value="">
+<input type="hidden" name="hid_tx_lol_ipv4" value="">
+<input type="hidden" name="hid_tx_rmo_ipv6" value="">
+
+<TR>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="cb_enable">
+	<a tabindex=-1 href="javascript:loadhelp('_IPv6_fixed','internet')"><b>$mapt_ab</b></a>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=10 height=12 border=0><input type="radio" name="rd_type" value="0">$mapt_auto</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=10 height=12 border=0><input type="radio" name="rd_type" value="1">$mapt_set:</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=16 height=12 border=0><b>$mapt_local</b></TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=16 height=12 border=0><b>$mapt_ipv6</b></TD>
+</TR>
+
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=30 height=12 border=0>
+	<input type="text" name="tx_lol_ipv6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="tx_lol_ipv6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="tx_lol_ipv6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="tx_lol_ipv6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="tx_lol_ipv6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="tx_lol_ipv6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="tx_lol_ipv6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="tx_lol_ipv6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">/
+	<input type="text" name="tx_lol_ipv6_prefix" size="2" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num', event);" onkeyup="keyup_n(event,this,3);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=16 height=12 border=0><b>$mapt_ipv4</b></TD>
+</TR>
+<tr>
+	<td nowrap colspan=2><img src=/spacer.gif width=30 height=12 border=0>
+	<input type="text" name="tx_lol_ipv4" size="3" maxlength="3" autocomplete="off" onFocus="this.select();" onKeyPress="return getkey('num',event)" onkeydown="keydown(event,this);" onkeyup="keyup(event,this);">.
+	<input type="text" name="tx_lol_ipv4" size="3" maxlength="3" autocomplete="off" onFocus="this.select();" onKeyPress="return getkey('num',event)" onkeydown="keydown(event,this);" onkeyup="keyup(event,this);">.
+	<input type="text" name="tx_lol_ipv4" size="3" maxlength="3" autocomplete="off" onFocus="this.select();" onKeyPress="return getkey('num',event)" onkeydown="keydown(event,this);" onkeyup="keyup(event,this);">.
+	<input type="text" name="tx_lol_ipv4" size="3" maxlength="3" autocomplete="off" onFocus="this.select();" onKeyPress="return getkey('num',event)" onkeydown="keydown(event,this);" onkeyup="keyup(event,this);">/
+	<input type="text" name="tx_lol_ipv4_prefix" size="2" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num', event);" onkeyup="keyup_n(event,this,3);">
+	</td>
+</tr>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=16 height=12 border=0><b>$mapt_ea</b></TD>
+</TR>
+<tr>
+	<td nowrap colspan=2><img src=/spacer.gif width=30 height=12 border=0>
+	<input type="text" name="tx_lol_ea" size="3"  autocomplete="off" onFocus="this.select();" onKeyPress="return getkey('num',event)">
+	</td>
+</tr>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=16 height=12 border=0><b>$psid_offset</b></TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=30 height=12 border=0>
+	<input type="text" name="psidoffset" size="3" onKeyPress="return getkey('num',event)">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=16 height=12 border=0><b>$mapt_re</b></TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=16 height=12 border=0><b>$mapt_ipv6</b></TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><img src=/spacer.gif width=30 height=12 border=0>
+	<input type="text" name="tx_rmo_ipv6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="tx_rmo_ipv6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="tx_rmo_ipv6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="tx_rmo_ipv6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="tx_rmo_ipv6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="tx_rmo_ipv6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="tx_rmo_ipv6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">:
+	<input type="text" name="tx_rmo_ipv6" size="3" autocomplete="off" maxlength="4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkeya(event);" onkeyup="keyup_n(event,this,4);">/
+	<input type="text" name="tx_rmo_ipv6_prefix" size="2" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num', event);" onkeyup="keyup_n(event,this,3);">
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_IPv6_fixed") %>
+</FORM>
+</BODY>
+</HTML>
+

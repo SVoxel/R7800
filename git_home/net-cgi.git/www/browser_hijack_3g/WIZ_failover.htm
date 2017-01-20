@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_02_genieHelp.css" />
+<script language="javascript" type="text/javascript" src="/funcs.js"></script>
+<script language="javascript" type="text/javascript" src="/bas_pppoe.js"></script>
+<% hijack_language() %>
+</head>
+
+<body onLoad="loadvalue();" bgcolor=#ffffff>
+<% form_submit("apply", "BRS_04_applySettings.html", "failover") %>
+<script>
+var ts="<% cfg_get("failover") %>";
+var gui_region="<% cfg_get("GUI_Region") %>";
+var netgear_region=top.netgear_region;
+
+function loadvalue()
+{
+	var cf=document.forms[0];
+
+	var primary_link = "<% cfg_get("failover_primary_link") %>";
+	if( primary_link == "dhcp" || primary_link == "pppoe" || primary_link == "pptp" || primary_link == "l2tp" || primary_link == "static" )
+		cf.primary_link.value = "ethernet";
+	else
+		cf.primary_link.value = "3G";
+	
+	var detect_method = "<% cfg_get("failover_detect_method") %>";
+	if( detect_method == "0" )
+		cf.detect_method_rd[0].checked = true;
+	else
+		cf.detect_method_rd[1].checked = true;
+
+	cf.hostname_tx.value = "<% cfg_get("failover_detect_dns") %>";
+		
+	var detect_ip = "<% cfg_get("failover_detect_ip") %>";
+	if(detect_ip!="")
+	{
+		var ip_array=detect_ip.split('.');
+		cf.myip_1.value=ip_array[0];
+		cf.myip_2.value=ip_array[1];
+		cf.myip_3.value=ip_array[2];
+		cf.myip_4.value=ip_array[3];
+	}
+
+	cf.retry_inter_tx.value = "<% cfg_get("failver_retry_interval") %>";
+	cf.failover_tx.value = "<% cfg_get("failover_fail_after") %>";
+//	cf.resume_tx.value = "<% cfg_get("failover_resume_interval") %>";
+
+	var btns_div = document.getElementById("btnsContainer_div");
+	btns_div.onclick = function()
+	{
+		if(check_failover(cf))
+			cf.submit();
+		//location.href = "BRS_04_applySettings.html";
+	}
+}
+
+function check_failover(cf)
+{
+	if( cf.detect_method_rd[0].checked == true )
+		cf.hidden_detect_method.value = "0";
+	else
+		cf.hidden_detect_method.value = "1";
+
+	cf.hidden_detect_ip.value = cf.myip_1.value+'.'+cf.myip_2.value+'.'+cf.myip_3.value+'.'+cf.myip_4.value;
+
+	if( cf.detect_method_rd[0].checked == true )
+	{
+		if( cf.hostname_tx.value == "" )
+		{
+			alert("$multi_wan_failover_alert_1");
+			return false;
+		}
+	}
+
+	if( cf.detect_method_rd[1].checked == true )
+	{
+		if( cf.hidden_detect_ip.value != "..." )
+		{
+			if(checkipaddr(cf.hidden_detect_ip.value)==false)
+			{
+				alert("$invalid_myip");
+				return false;
+			}
+		}
+		else
+		{
+			alert("$ip_miss");
+			return false;
+		}
+	}
+
+	if( cf.failover_tx.value == "" )
+	{
+		alert("$failover_tx_miss");
+		return false;
+	}
+
+	if(! _isNumeric(cf.retry_inter_tx.value))
+	{
+		alert("Retry Interval: must be a digit!");
+		return false;
+	}
+	retry = parseInt(cf.retry_inter_tx.value, 10);
+	if( retry < 5 || retry > 300 )
+	{
+		alert("Retry Interval: must be in the range 5 - 300!");
+		return false;
+	}
+
+	if(! _isNumeric(cf.failover_tx.value))
+	{
+		alert("Failover after: must be a digit!");
+		return false;
+	}
+	fafter = parseInt(cf.failover_tx.value);
+	if( fafter < 3 || fafter > 10 )
+	{
+		alert("Failover after: must be in the range 2 - 10!");
+		return false;
+	}
+	
+
+	return true;
+}
+
+</script>
+<input type="hidden" name="hidden_detect_method">
+<input type="hidden" name="hidden_detect_ip">
+<input type="hidden" name="hidden_enable_hardware">
+<div class="wizard_content_div">
+<div class="wizard_words_div">
+	<h1>$multi_wan_failover_title</h1>
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+
+<TR>
+       <TD nowrap>$multi_wan_failover_primary_link:</TD>
+       <TD align=right>
+		<select name="primary_link">
+			<option value="ethernet">$multi_wan_failover_ether_conn</option>
+			<option value="3G">$multi_wan_failover_mobile_conn</option>
+		</select>
+       </TD>
+</TR>
+
+<TR>
+       <TD nowrap colspan=2><b>$multi_wan_failover_detect_method</b></TD>
+</TR>
+<TR>
+       <TD nowrap>
+       <input type="radio" name="detect_method_rd" value="0" onClick="">$multi_wan_failover_detect_dns
+       </TD>
+       <TD align=right>
+       <input type="text" name="hostname_tx" size="16" onKeyPress="return getkey('ssid', event)">
+       </TD>
+</TR>
+<TR>
+       <TD nowrap>
+       <input type="radio" name="detect_method_rd" value="1" onClick="">$multi_wan_failover_detect_ip
+       </TD>
+        <TD nowrap align=right>
+        <input type="text" name="myip_1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+        <input type="text" name="myip_2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+        <input type="text" name="myip_3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+        <input type="text" name="myip_4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+        </TD>
+</TR>
+<TR>
+        <TD nowrap>$multi_wan_failover_retry_interval</TD>
+        <TD align=right>
+		<select name="retry_inter_tx">
+			<option value="5">5</option>
+			<option value="10" selected>10</option>
+			<option value="20">20</option>
+			<option value="30">30</option>
+			<option value="60">60</option>
+		</select>($multi_wan_failover_unit_seconds)
+        </TD>
+</TR>
+<TR>
+        <TD nowrap>$multi_wan_failover_failover_after</TD>
+        <TD align=right>
+		<select name="failover_tx">
+			<option value="3">3</option>
+			<option value="4">4</option>
+			<option value="5">5</option>
+			<option value="6">6</option>
+			<option value="7">7</option>
+			<option value="8">8</option>
+			<option value="9">9</option>
+			<option value="10">10</option>
+		</select>($multi_wan_failover_unit_interval)
+        </TD>
+</TR>
+<TR style="display: none"><TD colspan=2>&nbsp;<br>&nbsp;</TD></TR>
+<TR style="display: none">
+        <TD nowrap colspan=2>
+        <input type="checkbox" name="enable_hardware_ch"><b>Enable Hardware link detection</b>
+        </TD>
+</TR>
+<TR style="display: none">
+        <TD nowrap>Failover after
+        </TD>
+        <TD align=right>
+        <input type="text" name="hardware_detect_fail_tx" size="3" onKeyPress="return getkey('num', event)">(In Seconds)
+        </TD>
+</TR>
+
+</TABLE>
+</div>
+	<div id="buttons_div_02" class="wizard_buttons_div" align="center">
+		<div id="btnsContainer_div" class="buttons_img_div" align="center">
+			<img src="image/ca-little-purple-button.gif" />
+			<div class="buttons_words_div"><script>document.write(bh_next_mark)</script></div>
+		</div>
+	</div>
+</div>
+
+</form>
+</body>
+
+</html>

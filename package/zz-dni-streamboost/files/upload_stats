@@ -1,0 +1,144 @@
+#!/bin/sh
+
+# Copyright (c) 2014 Qualcomm Atheros, Inc.
+#
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary
+
+# This script collects and sends various statistics from the router
+# to the callhome server on yeti.
+
+. /etc/appflow/rc.appflow
+
+# This is the yeti callhome server for statistics uploads
+URL=https://${UPLOAD_HOST}/api/v1/stats/
+
+# Active stats.  This is the list of functions to be called when all stats
+# are gathered.  See note about Statistics Collector Functions
+STAT_COLS="collect_uptime"
+
+# Note about Statistics Collector Functions:
+# Each stat collector should produce a json-formatted string
+# and should return this string by assigning it to a variable named
+# _RET before exiting.  The collect_stats function will call each stat
+# collector and concat the value of $_RET after each function call.
+
+collect_mac() {
+	_RET='{ "mac": "FF:FF:FF:FF:FF:FF" }'
+}
+
+collect_traffic_stats() {
+	local eth02_rx_bytes=$(ifconfig eth0.2 | grep "bytes" \
+				| awk -F: '{ print $2 }' | awk '{ print $1 }')
+	local eth02_tx_bytes=$(ifconfig eth0.2 | grep "bytes" \
+				| awk -F: '{ print $3 }' | awk '{ print $1 }')
+	local brlan_rx_bytes=$(ifconfig br0 | grep "bytes" \
+				| awk -F: '{ print $2 }' | awk '{ print $1 }')
+	local brlan_tx_bytes=$(ifconfig br0 | grep "bytes" \
+				| awk -F: '{ print $3 }' | awk '{ print $1 }')
+	_RET='"eth0.2_rx_bytes": "'${eth02_rx_bytes}'","eth0.2_tx_bytes": "'${brlan_tx_bytes}'","br0_rx_bytes": "'${brlan_rx_bytes}'","br0_tx_bytes": "'${brlan_tx_bytes}'"'
+}
+
+collect_uptime() {
+	local uptime=$(uptime)
+	_RET='{"name": "uptime", "value": "'$uptime'"}'
+}
+
+# Collects the following drflocs stats:
+# 	active connection count
+#	inactive connection count
+collect_drflocs() {
+	_RET=
+
+	[ -f /var/run/appflow/drflocs.pid ] || return
+
+	local tmplog=/tmp/collect_drflocs.tmp
+	local active="error"
+	local inactive="error"
+
+	# cause drflocs to dump memory info
+	kill -USR1 `cat /var/run/appflow/drflocs.pid`
+
+	# Drflocs may not dump memory info right away, so we
+	# may need to wait.  This probably isn't the best way
+	# to perform a retry loop, but w/e.
+	for i in 1 2 3 4 5
+	do
+		logread >$tmplog
+		grep "drflocs->sizeof" $tmplog >/dev/null 2>&1
+		if [ "$?" -eq "0" ]
+		then
+			# the beginning space in the grep is intentional
+			active=$(grep " active connections" $tmplog \
+				| tail -1 \
+				| awk -F: ' { print $NF } ' \
+				| tr -d " ")
+			# the beginning space in the grep is intentional
+			inactive=$(grep " inactive connections" $tmplog \
+				| tail -1 \
+				| awk -F: ' {print $NF } ' \
+				| tr -d " ")
+			break
+		fi
+		sleep 3
+	done
+
+	[ -f $tmplog ] && rm -f $tmplog
+
+	_RET='"active_ccount": "'${active}'","inactive_ccount": "'${inactive}'"'
+
+}
+
+collect_aperture() {
+	local log=$(cat /var/log/aperture.log)
+	local xlog=$(echo $log | uuencode -m aperture.log)
+	_RET='"aperture_log": "'${xlog}'"'
+}
+
+# POST json-formatted data to a URL using authcurl
+# $1: json-formatted data as a single string
+# $2: URL to which to post the data
+post_to_url() {
+	# write to file for debugging
+	tmpfile=/tmp/stats.txt
+	echo $1 >/$tmpfile
+	authcurl --dump-header - -H "Content-Type: application/json" -X POST --data "@$tmpfile" $2
+
+	# comment out for debugging
+	rm $tmpfile
+}
+
+# Calls each statistic collector in STAT_COLS and concats the return
+# values into a single string.
+# $1: A space-delimited list of Statistics Collector Function names
+collect_stats() {
+	local jstat=
+	local sep=","
+	
+	for sc in $1
+	do
+		$sc
+		if [ -n "$jstat" ]
+		then
+			jstat="$jstat$sep$_RET"
+		else
+			jstat="$_RET"
+		fi
+	done
+	
+	_RET="$jstat"
+}
+
+# Calls each statistic collector in STAT_COLS and uploads each stat separately
+# $1: A space-delimited list of Statistics Collector Function names
+post_stats() {
+	for sc in $1
+	do
+		$sc
+		post_to_url "$_RET" $URL
+	done
+}
+
+#collect_stats "$STAT_COLS"
+#post_to_url "$_RET" $URL
+post_stats "$STAT_COLS"

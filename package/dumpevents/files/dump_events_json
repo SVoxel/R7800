@@ -1,0 +1,3 @@
+#!/bin/sh
+
+redis-cli --eval /usr/bin/filter_events.lua eventdb:events , 0 -1 '*'

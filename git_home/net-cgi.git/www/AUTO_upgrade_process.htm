@@ -1,0 +1,95 @@
+<% http_header("style/form.css", "/funcs.js") %>
+
+<BODY onLoad="loadhelp('_upgrade');" bgcolor=#ffffff>
+<FORM>
+	<center>
+	<DIV id=show_upgrade style="display:none">
+		<font size=2>
+		<script>
+			document.write(getText(parent.bh_upgrade_str_1, "$upgrade_str_1") + "3 " + getText(parent.bh_upgrade_str_2, "$upgrade_str_2"));
+		</script>
+		</font><br>
+		<input type=text name=progress class=prgbar width=600 height=70><br><br>
+		<img src=/upload.gif width=200 height=70 border=0>
+	</DIV>
+	</center>
+</FORM>
+</BODY>
+
+<script >
+var upg_status= <% upgrade_status() %>;
+var pchar = "|"; // progress char
+var delay_time = 1000; // msecs
+var maxchars = 60;
+var percent = (upg_status - 1000) *  maxchars / 100;
+var charcount = percent;
+
+function refreshnexttime()
+{
+	document.location.href="AUTO_upgrade_process.htm";
+}
+
+function updateProgress()
+{
+	var cf = document.forms[0];
+	if (charcount < maxchars && ((charcount - percent) > 3))
+	{
+		percent = (upg_status - 1000) *  maxchars / 100;
+		charcount = percent;
+		updateInfo();
+	} 
+	else if (charcount < maxchars)
+	{
+		charcount++;
+		cf.progress.value = makeStr(charcount,pchar);
+		setTimeout("updateProgress()",delay_time);
+	}
+	else
+	{
+		document.location.href="/pls_wait.html";
+	}
+} 
+
+function menu_change() 
+{
+	top.enable_action=1;
+}
+
+function refreshError()
+{
+	top.topframe.location.href="top.html";
+	top.formframe.location.href="UPG_failure.htm";
+	menu_change();
+}
+
+function updateInfo()
+{
+	if (upg_status >= 10000)
+	{
+		refreshError();
+	}
+	else if (upg_status >= 1000 && upg_status < 2000)
+	{
+		document.getElementById("show_upgrade").style.display="";
+		if (upg_status == 1100)
+			document.location.href="/pls_wait.html";
+		else
+			updateProgress();
+	}
+	else if (upg_status != "")
+	{
+	//bug when upgrade from web site,the UI will show blank for a while,so add please wait message
+		document.write("<TR><TD colspan=2><BR> ");
+		document.write("<img src=liteblue.gif width=100%% height=12></TD></TR> ");
+		document.write("<TR><TD><BR><BR>"+getText(parent.bh_plz_wait_moment, "$wizard_pls_wait")+"<BR><BR></TD></TR> ");
+		document.write("<TR><TD colspan=2><img src=liteblue.gif width=100% height=12></TD></TR> ");
+
+		setTimeout("refreshnexttime()",3000);
+	}
+	else
+		refreshError();
+}
+updateInfo();
+</script>
+<iframe name="upg_status_frame" src="upg_get_status.htm" allowtransparency="true" scrolling="no" frameborder="0" ></iframe>
+</HTML>

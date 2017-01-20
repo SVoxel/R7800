@@ -1,0 +1,539 @@
+<% http_header("style/form.css","/funcs.js", "/mobile_internet.js") %>
+<% body_header("_BAS_mobile_internet", "BAS_mobile_internet.htm", "mobile_internet") %>
+<div class="page_title">$mobile_setup</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+	<TD nowrap colspan=2 align=center>
+		<input class="cancel_bt" type='button' name='Cancel' value='$cancel_mark' onClick='location.href="BAS_mobile_internet.htm";'>&nbsp;&nbsp;
+		<input class="apply_bt" type="submit" name="Apply" value="$apply_mark" onClick='return apply_submit(document.forms[0]);'>
+	</TD>
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button">
+<table width="100%" border="0" cellpadding="0" cellspacing="3">
+<tr><td colSpan="3"><h1></h1></td></tr>
+<input type="hidden" name="hid_isp" value="" />
+<input type="hidden" name="hid_apn" value="" />
+<input type="hidden" name="hid_accnum" value="" />
+<script>
+var old_wan_type="<% cfg_get("wan_proto") %>";
+var wanproto_type="lte";
+var wan_mtu_now='<% wan_mtu() %>';
+var wan_lte_region="<% cfg_get("lte_region") %>";
+var wan_lte_isp="<% cfg_get("lte_isp") %>";
+var wan_lte_apn="<% cfg_get("wan_lte_apn") %>";
+
+function loadvalue()
+{
+	var cf=document.forms[0];
+	var i,index;
+	var is_loginreq="<% cfg_get("mobile_loginreq") %>";
+
+	if(is_loginreq =="1")
+		cf.loginreq[0].checked=true;
+	else
+		cf.loginreq[1].checked=true;
+	click_loginreq();
+
+	index=parseInt(wan_lte_region,10);
+	for(i=0;i<21;i++)
+	{
+		if(i == index)
+			document.getElementById("coun"+i).style.display="";
+		else
+			document.getElementById("coun"+i).style.display="none";
+	}
+	if(index==0)
+	{
+		cf.isp_type0.value = wan_lte_isp;
+		cf.operator_txt0.value = wan_lte_apn;
+	}
+	else if(index==1)
+	{
+		cf.isp_type1.value = wan_lte_isp;
+		cf.operator_txt1.value = wan_lte_apn;
+	}
+	else if(index==2)
+	{
+		cf.isp_type2.value = wan_lte_isp;
+		cf.operator_txt2.value = wan_lte_apn;
+	}
+	else if(index==3)
+	{
+		cf.isp_type3.value = wan_lte_isp;
+		cf.operator_txt3.value = wan_lte_apn;
+	}
+	else if(index==4)
+	{
+		cf.isp_type4.value = wan_lte_isp;
+		cf.operator_txt4.value = wan_lte_apn;
+	}
+	else if(index==5)
+	{
+		cf.isp_type5.value = wan_lte_isp;
+		cf.operator_txt5.value = wan_lte_apn;
+	}
+	else if(index==6)
+	{
+		cf.isp_type6.value = wan_lte_isp;
+		cf.operator_txt6.value = wan_lte_apn;
+	}
+	else if(index==7)
+	{
+		cf.isp_type7.value = wan_lte_isp;
+		cf.operator_txt7.value = wan_lte_apn;
+	}
+	else if(index==8)
+	{
+		cf.isp_type8.value = wan_lte_isp;
+		cf.operator_txt8.value = wan_lte_apn;
+	}
+	else if(index==9)
+	{
+		cf.isp_type9.value = wan_lte_isp;
+		cf.operator_txt9.value = wan_lte_apn;
+	}
+	else if(index==10)
+	{
+		cf.isp_type10.value = wan_lte_isp;
+		cf.operator_txt10.value = wan_lte_apn;
+	}
+	else if(index==11)
+	{
+		cf.isp_type11.value = wan_lte_isp;
+		cf.operator_txt11.value = wan_lte_apn;
+	}
+	else if(index==12)
+	{
+		cf.isp_type12.value = wan_lte_isp;
+		cf.operator_txt12.value = wan_lte_apn;
+	}
+	else if(index==13)
+	{
+		cf.isp_type13.value = wan_lte_isp;
+		cf.operator_txt13.value = wan_lte_apn;
+	}
+	else if(index==14)
+	{
+		cf.isp_type14.value = wan_lte_isp;
+		cf.operator_txt14.value = wan_lte_apn;
+	}
+	else if(index==15)
+	{
+		cf.isp_type15.value = wan_lte_isp;
+		cf.operator_txt15.value = wan_lte_apn;
+	}
+	else if(index==16)
+	{
+		cf.isp_type16.value = wan_lte_isp;
+		cf.operator_txt16.value = wan_lte_apn;
+	}
+	else if(index==17)
+	{
+		cf.isp_type17.value = wan_lte_isp;
+		cf.operator_txt17.value = wan_lte_apn;
+	}
+	else if(index==18)
+	{
+		cf.isp_type18.value = wan_lte_isp;
+		cf.operator_txt18.value = wan_lte_apn;
+	}
+	else if(index==19)
+	{
+		cf.isp_type19.value = wan_lte_isp;
+		cf.operator_txt19.value = wan_lte_apn;
+	}
+	else if(index==20)
+	{
+		cf.isp_type20.value = wan_lte_isp;
+		cf.operator_txt20.value = wan_lte_apn;
+	}
+	change_isp(index);
+
+	cf.conn_type.value="<% cfg_get("mobile_conn_type") %>";
+	cf.antenna_type.value="<% cfg_get("mobile_antenna_type") %>";
+}
+
+
+</script>
+<input type="hidden" name="hid_mtu_value">
+<tr><td nowrap><b>$basic_top_info</b></td></tr>
+<tr>
+	<td nowrap><input type="radio" name="loginreq" value="1" checked onClick="click_loginreq();">$yes_mark</td>
+	<td nowrap><b>$basic_pppoe_login</b></td>
+	<td nowrap align="right"><input type="text" name="username" size="16" maxlength="60" value="<% cfg_sed_xss("lte_username"); %>" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+<tr>
+	<td nowrap><input type="radio" name="loginreq" value="0" onClick="click_loginreq();">$no_mark</td>
+	<td nowrap><b>$lte_passwd</b></td>
+	<td nowrap align="right"><input type="password" name="passwd" maxlength="64" size="16" value="<% cfg_sed_xss("lte_passwd"); %>" onKeyPress="return getkey('ssid', event)"></td>
+</tr>
+
+<tr><td colspan=3><img src=/liteblue.gif width=100% height=12></td></tr>
+
+<tr id="coun0" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type0" onChange="change_isp(0)">
+			<option value="Optus (Fusion)">$coun1_isp_type1</option>
+			<option value="Optus (data plan)">$coun1_isp_type2</option>
+			<option value="Telstra">$coun1_isp_type3</option>
+			<option value="Telstra Turbo21 (internet)">$coun1_isp_type4</option>
+			<option value="Telstra Turbo21 (pcpack)">$coun1_isp_type5</option>
+			<option value="Telstra Turbo21 (datapack)">$coun1_isp_type6</option>
+			<option value="BigPond">$coun1_isp_type7</option>
+			<option value="3">$coun1_isp_type8</option>
+			<option value="3 (prepaid)">$coun1_isp_type9</option>
+			<option value="Virgin">$coun1_isp_type10</option>
+			<option value="Vodafone">$coun1_isp_type11</option>
+			<option value="Dodo">$coun1_isp_type12</option>
+			<option value="Dodo (prepaid)">$coun1_isp_type13</option>
+			<option value="Primus">$coun1_isp_type14</option>
+			<option value="Blink (postpaid)">$coun1_isp_type15</option>
+			<option value="iiNet (3)">$coun1_isp_type16</option>
+			<option value="Westnet">$coun1_isp_type17</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt0" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun1" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type1" onChange="change_isp(1)">
+			<option value="A1">$coun2_isp_type1</option>
+			<option value="T-Mobile">$coun2_isp_type2</option>
+			<option value="Orange">$coun2_isp_type3</option>
+			<option value="3">$coun2_isp_type4</option>
+			<option value="Tele.Ring A">$coun2_isp_type5</option>
+			<option value="Tele.Ring B">$coun2_isp_type6</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt1" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun2" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type2" onChange="change_isp(2)">
+			<option value="BASE">$coun3_isp_type1</option>
+			<option value="Mobistar (personal)">$coun3_isp_type2</option>
+			<option value="Mobistar (business)">$coun3_isp_type3</option>
+			<option value="Orange">$coun2_isp_type3</option>
+			<option value="Proximus">$coun3_isp_type4</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt2" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun3" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type3" onChange="change_isp(3)">
+			<option value="Claro">$coun4_isp_type1</option>
+			<option value="Oi">$coun4_isp_type2</option>
+			<option value="Oi (WAP)">$coun4_isp_type3</option>
+			<option value="TIM">$coun4_isp_type4</option>
+			<option value="Velox">$coun4_isp_type5</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt3" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun4" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type4" onChange="change_isp(4)">
+			<option value="Claro">$coun4_isp_type1</option>
+			<option value="Entel PCS">$coun5_isp_type2</option>
+			<option value="Movistar">$coun5_isp_type3</option>
+			<option value="Telefonica (Movil)">$coun5_isp_type4</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt4" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun5" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type5" onChange="change_isp(5)">
+			<option value="China Mobile">$coun20_isp_type1</option>
+			<option value="China Unicom">$coun20_isp_type2</option>
+			<option value="China Telecom">$coun20_isp_type3</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt5" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun6" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type6" onChange="change_isp(6)">
+			<option value="Dna">$coun6_isp_type1</option>
+			<option value="Elisa (Kolumbus)">$coun6_isp_type2</option>
+			<option value="Saunalahti">$coun6_isp_type3</option>
+			<option value="Sonera">$coun6_isp_type4</option>
+			<option value="Song">$coun6_isp_type5</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt6" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun7" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type7" onChange="change_isp(7)">
+			<option value="O2 (time-based plans)">$coun7_isp_type1</option>
+			<option value="O2 (volume-based plans)">$coun7_isp_type2</option>
+			<option value="tagesflat">$coun7_isp_type3</option>
+			<option value="T-Mobile D1">$coun7_isp_type4</option>
+			<option value="Vodafone">$coun7_isp_type5</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt7" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun8" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type8" onChange="change_isp(8)">
+			<option value="CSL">$coun8_isp_type1</option>
+			<option value="New World">$coun8_isp_type2</option>
+			<option value="Orange">$coun2_isp_type3</option>
+			<option value="People">$coun8_isp_type4</option>
+			<option value="SmarTone">$coun8_isp_type5</option>
+			<option value="Sunday">$coun8_isp_type6</option>
+			<option value="3">$coun2_isp_type4</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt8" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun9" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type9" onChange="change_isp(9)">
+			<option value="Postemobile">$coun9_isp_type1</option>
+			<option value="3">$coun2_isp_type4</option>
+			<option value="TIM">$coun4_isp_type4</option>
+			<option value="Vodafone">$coun9_isp_type4</option>
+			<option value="WIND">$coun9_isp_type5</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt9" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun10" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type10" onChange="change_isp(10)">
+			<option value="Hi">$coun10_isp_type1</option>
+			<option value="KPN Mobile">$coun10_isp_type2</option>
+			<option value="O2">$coun10_isp_type3</option>
+			<option value="T-Mobile active">$coun10_isp_type4</option>
+			<option value="Telfort">$coun10_isp_type5</option>
+			<option value="Vodafone Live">$coun10_isp_type6</option>
+			<option value="Vodafone (business)">$coun10_isp_type7</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt10" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun11" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type11" onChange="change_isp(11)">
+			<option value="Vodafone Live">$coun11_isp_type1</option>
+			<option value="Vodafone(unrestricted)">$coun11_isp_type2</option>
+			<option value="Vodafone(restricted)">$coun11_isp_type3</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt11" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun12" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type12" onChange="change_isp(12)">
+			<option value="Netcom">$coun12_isp_type1</option>
+			<option value="TalkMore">$coun12_isp_type2</option>
+			<option value="Telenor Mobil">$coun12_isp_type3</option>
+			<option value="Ventelo">$coun12_isp_type4</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt12" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun13" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type13" onChange="change_isp(13)">
+			<option value="Claro (TIM)">$coun13_isp_type1</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+        </td>
+	<td nowrap align="right"><input type="text" name="operator_txt13" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun14" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type14" onChange="change_isp(14)">
+			<option value="MTS">$coun21_isp_type1</option>
+			<option value="MegaFon">$coun21_isp_type2</option>
+			<option value="BeeLine">$coun21_isp_type3</option>
+			<option value="TELE2">$coun21_isp_type4</option>
+			<option value="Skylink">$coun21_isp_type5</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt14" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun15" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type15" onChange="change_isp(15)">
+			<option value="M1">$coun14_isp_type1</option>
+			<option value="SingTel">$coun14_isp_type2</option>
+			<option value="Starhub">$coun14_isp_type3</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt15" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun16" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type16" onChange="change_isp(16)">
+			<option value="Cell-C">$coun15_isp_type1</option>
+			<option value="MTN">$coun15_isp_type2</option>
+			<option value="Virgin Mobile">$coun15_isp_type3</option>
+			<option value="Vodacom">$coun15_isp_type4</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt16" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun17" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type17" onChange="change_isp(17)">
+			<option value="Tele2 (Comviq)">$coun16_isp_type1</option>
+			<option value="Tele2 (3G)">$coun16_isp_type2</option>
+			<option value="Telenor(GPRS)">$coun16_isp_type3</option>
+			<option value="Telenor(3G)">$coun16_isp_type4</option>
+			<option value="Telia">$coun16_isp_type5</option>
+			<option value="Tre (3G)">$coun16_isp_type6</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt17" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun18" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type18" onChange="change_isp(18)">
+			<option value="Chunghwa Telecom">$coun17_isp_type1</option>
+			<option value="Far EasTone">$coun17_isp_type2</option>
+			<option value="Hinet">$coun17_isp_type3</option>
+			<option value="KG Telecom">$coun17_isp_type4</option>
+			<option value="Taiwan Cellular">$coun17_isp_type5</option>
+			<option value="Asia Pacific Telecom Group (APTG)">$coun17_isp_type6</option>
+			<option value="TransAsia">$coun17_isp_type7</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt18" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun19" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type19" onChange="change_isp(19)">
+			<option value="3">$coun2_isp_type4</option>
+			<option value="3 (broadband)">$coun18_isp_type2</option>
+			<option value="AirTel Vodafone">$coun18_isp_type3</option>
+			<option value="Jersey Telecom">$coun18_isp_type4</option>
+			<option value="O2">$coun10_isp_type3</option>
+			<option value="O2 (optimised)">$coun18_isp_type6</option>
+			<option value="O2 (pay)">$coun18_isp_type7</option>
+			<option value="O2 (prepaid)">$coun18_isp_type8</option>
+			<option value="Orange (Pay Monthly)">$coun18_isp_type9</option>
+			<option value="Orange (JustTalk)">$coun18_isp_type10</option>
+			<option value="T-Mobile">$coun18_isp_type11</option>
+			<option value="Tesco Mobile">$coun18_isp_type12</option>
+			<option value="Virgin Mobile">$coun18_isp_type13</option>
+			<option value="Vodafone (contract)">$coun18_isp_type14</option>
+			<option value="Vodafone (pre-pay)">$coun18_isp_type15</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt19" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+
+<tr id="coun20" style="display:none">
+	<td nowrap><b>$network_operator</b></td>
+	<td nowrap>
+		<select name="isp_type20" onChange="change_isp(20)">
+			<option value="Cingular">$coun19_isp_type1</option>
+			<option value="T-Mobile">$coun19_isp_type2</option>
+			<option value="AT&T">$coun19_isp_type3</option>
+			<option value="Other">$coun1_isp_type18</option>
+		</select>
+	</td>
+	<td nowrap align="right"><input type="text" name="operator_txt20" size="16" maxlength="60" value="" onKeyPress="return getkey('apname',event)"></td>
+</tr>
+<tr>
+	<td nowrap><b>$trigger_contype</b></td>
+	<td nowrap>
+		<select name="conn_type">
+			<option value="auto">$sec_auto</option>
+			<option value="4g">$conn_4g_only</option>
+			<option value="3g">$conn_3g_only</option>
+		</select>
+	</td>
+</tr>
+
+<tr>
+	<td nowrap><b>$antenna_type</b></td>
+	<td nowrap>
+		<select name="antenna_type">
+			<option value="extern">$extern_antenna</option>
+			<option value="intern">$intern_antenna</option>
+		</select>
+	</td>
+</tr>
+
+<tr><td colspan=3><img src=/liteblue.gif width=100% height=12></td></tr>
+
+<tr>
+	<td colspan=3 align="center">
+		<input class="common_key_bt" type="button" name="mobile_info" value="$mobile_info" onClick="click_mobile_info()">&nbsp;&nbsp;
+		<input class="common_key_bt" type="button" name="conn_status" value="$constatus_head" onClick="click_conn_status()">
+	</td>
+</tr>
+
+</table>
+</div>
+</form>
+</body>
+</html>

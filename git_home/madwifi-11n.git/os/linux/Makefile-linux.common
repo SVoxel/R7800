@@ -1,0 +1,313 @@
+#
+# Copyright (c) 2013 Qualcomm Atheros, Inc.
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary.
+#
+
+
+# default to Linux
+ifeq ($(OS),)
+OS := linux
+endif
+
+include $(obj)/$(DEPTH)/lmac/Makefile.inc
+
+#
+# TARGET defines the target platform ISA per GNU rules.
+# It must match one of the target platforms supported by
+# the HAL.  To set the set of target platforms look at
+# hal/linux/*.inc.  You can set this in the environment
+# to override the default setting.
+#
+ifeq ($(TARGET),)
+TARGET := i386-elf
+endif
+
+# BUS defines the bus type to which the wireless devices is attached.
+# Currently, the valid BUS types are PCI and AHB.  If BUS is not
+# defined, then, we assume the bus type is PCI
+
+# TBD:dakota - Set BUS to dual after AHB support is pushed
+
+ifndef BUS
+BUS := dual
+endif
+
+ifeq ($(strip ${DIRECT_ATTACH}),1)
+COPTS += -DDIRECT_ATTACH
+endif
+
+ifdef HOST_OFFLOAD
+COPTS += -DHOST_OFFLOAD
+endif
+
+ifndef PERF_PWR_OFFLOAD_DIR_PATH
+#PERF_PWR_OFFLOAD_DIR_PATH := $(WLAN_TOP)/firmware
+export PERF_PWR_OFFLOAD_DIR_PATH=$(WLAN_TOP)/../../perf_pwr_offload/drivers/
+endif
+
+ifeq ($(strip ${BUS}),AHB)
+COPTS += -DATH_AHB
+BUSNAME=ahb
+endif
+
+
+
+ifeq ($(strip ${BUS}),PCI)
+COPTS += -DATH_PCI
+BUSNAME=pci
+endif
+
+ifeq ($(strip ${BUS}),USB)
+COPTS += -DATH_USB
+BUSNAME=usb
+endif
+
+ifeq ($(strip ${BUS}),SDIO)
+COPTS += -DATH_SDIO
+BUSNAME=sdio
+endif
+
+ifeq ($(strip ${ATH_SUPPORT_FW_SIGN}),1)
+COPTS += -DATH_CONFIG_FW_SIGN
+endif
+
+ifeq ($(strip ${BUS}),dual)
+COPTS += -DATH_AHB
+COPTS += -DATH_PCI
+BUSNAME=dual
+ifneq  ($(strip ${AH_CAL_IN_DRAM_FROM_HOST}),1)
+ifneq ($(strip ${AH_CAL_IN_FLASH_PCI}),1)
+ifneq ($(strip ${AH_CAL_IN_FLASH_AHB}),1)
+ifneq ($(strip ${AH_CAL_IN_OTP}),1)
+ifneq ($(strip ${AH_CAL_IN_FILE_HOST}),1)
+$(warning "AH_CAL_IN_DRAM_FROM_HOST/AH_CAL_IN_FLASH_PCI/AH_CAL_IN_FLASH_AHB/AH_CAL_IN_FILE_HOST should be defined")
+endif
+endif
+endif
+endif
+endif
+ifeq  ($(strip ${AH_CAL_IN_FLASH_PCI}),1)
+COPTS += -DAH_CAL_IN_FLASH_PCI -DAH_CAL_LOCATIONS_PCI=${AH_CAL_LOCATIONS_PCI} -DAH_CAL_RADIOS_PCI=${AH_CAL_RADIOS_PCI}
+ifeq ($(strip ${ATH_CAL_NAND_FLASH}), 1)
+COPTS += -DATH_CAL_NAND_FLASH -DATH_CAL_NAND_PARTITION=\"$(strip ${ATH_CAL_NAND_PARTITION})\"
+endif
+endif
+ifeq  ($(strip ${AH_CAL_IN_FLASH_AHB}),1)
+COPTS += -DAH_CAL_IN_FLASH_AHB -DAH_CAL_LOCATIONS_AHB=${AH_CAL_LOCATIONS_AHB} -DAH_CAL_RADIOS_AHB=${AH_CAL_RADIOS_AHB}
+endif
+ifeq  ($(strip ${AH_CAL_IN_DRAM_FROM_HOST}),1)
+COPTS += -DAH_CAL_IN_DRAM_FROM_HOST
+ifeq ($(strip ${AH_CAL_RADIOS_AHB}),1)
+COPTS += -DAH_CAL_IN_DRAM_AHB -DAH_CAL_RADIOS_AHB=${AH_CAL_RADIOS_AHB} -DAH_CAL_LOCATIONS_DRAM_AHB=${AH_CAL_LOCATIONS_DRAM_AHB}
+endif
+ifeq ($(strip ${AH_CAL_RADIOS_PCI}),1)
+COPTS += -DAH_CAL_IN_DRAM_PCI -DAH_CAL_RADIOS_PCI=${AH_CAL_RADIOS_PCI} -DAH_CAL_LOCATIONS_DRAM_PCI=${AH_CAL_LOCATIONS_DRAM_PCI}
+endif
+endif
+ifeq ($(strip ${AH_CAL_IN_FILE_HOST}),1)
+COPTS += -DAH_CAL_IN_FILE_HOST=1
+COPTS += -DCALDATA0_FILE_PATH=\"${CALDATA0_FILE_PATH}\"
+COPTS += -DCALDATA1_FILE_PATH=\"${CALDATA1_FILE_PATH}\"
+endif
+ifeq  ($(strip ${AH_CAL_IN_FLASH}),1)
+$(error "AH_CAL_IN_FLASH should not be defined. Define either AH_CAL_IN_DRAM_FROM_HOST/AH_CAL_IN_FLASH_PCI/AH_CAL_IN_FLASH_AHB/AH_CAL_IN_FILE_HOST")
+endif
+else
+ifeq ($(strip ${AH_CAL_IN_FLASH}),1)
+COPTS += -DAH_CAL_IN_FLASH_${BUS} -DAH_CAL_LOCATIONS_${BUS}=${AH_CAL_LOCATIONS} -DAH_CAL_RADIOS_${BUS}=${AH_CAL_RADIOS}
+ifeq ($(strip ${ATH_CAL_NAND_FLASH}), 1)
+COPTS += -DATH_CAL_NAND_FLASH -DATH_CAL_NAND_PARTITION=\"$(strip ${ATH_CAL_NAND_PARTITION})\"
+endif
+else
+ifeq  ($(strip ${AH_CAL_IN_FLASH_PCI}),1)
+COPTS += -DAH_CAL_IN_FLASH_PCI -DAH_CAL_LOCATIONS_PCI=${AH_CAL_LOCATIONS_PCI} -DAH_CAL_RADIOS_PCI=${AH_CAL_RADIOS_PCI}
+ifeq ($(strip ${ATH_CAL_NAND_FLASH}), 1)
+COPTS += -DATH_CAL_NAND_FLASH -DATH_CAL_NAND_PARTITION=\"$(strip ${ATH_CAL_NAND_PARTITION})\"
+endif
+endif
+ifeq  ($(strip ${AH_CAL_IN_FLASH_AHB}),1)
+COPTS += -DAH_CAL_IN_FLASH_AHB -DAH_CAL_LOCATIONS_AHB=${AH_CAL_LOCATIONS_AHB} -DAH_CAL_RADIOS_AHB=${AH_CAL_RADIOS_AHB}
+ifeq ($(strip ${ATH_CAL_NAND_FLASH}), 1)
+COPTS += -DATH_CAL_NAND_FLASH -DATH_CAL_NAND_PARTITION=\"$(strip ${ATH_CAL_NAND_PARTITION})\"
+endif
+endif
+ifeq ($(strip ${AH_CAL_IN_FILE_HOST}),1)
+COPTS += -DAH_CAL_IN_FILE_HOST=1
+COPTS += -DCALDATA0_FILE_PATH=\"${CALDATA0_FILE_PATH}\"
+COPTS += -DCALDATA1_FILE_PATH=\"${CALDATA1_FILE_PATH}\"
+endif
+endif
+ifeq  ($(strip ${AH_CAL_IN_DRAM_FROM_HOST}),1)
+COPTS += -DAH_CAL_IN_DRAM_${BUS} -DAH_CAL_LOCATIONS_DRAM_$(BUS)=${AH_CAL_LOCATIONS} -DAH_CAL_RADIOS_${BUS}=${AH_CAL_RADIOS}
+endif
+endif
+
+ifeq ($(TARGET),ANDROID)
+COPTS += -DANDROID
+endif
+
+#
+# Disable the !#@$!@# packet log
+#
+
+#COPTS += -DREMOVE_PKT_LOG
+
+ifeq ($(QCA_THIRDPARTY), 1)
+ifeq ($(strip ${QCA_PARTNER_MAKE_F_INC}),1)
+include $(QCA_THIRDPARTY_PATH)/Makefile.cust.inc
+endif
+endif
+export QCA_PARTNER_MAKE_F_INC=0
+
+# Include path
+ifneq ($(strip ${UMAC_SUPPORT_APONLY}),0)
+INCS += -include $(COMINC)/compat.h -I$(COMINC) -I$(COMINC)/sys -I$(WLAN_TOP)/os/$(OS)/include -I$(WLAN_TOP)/os/$(OS)/src -I$(KERNELPATH)/include -I$(WLAN_TOP)/lmac/ath_pktlog/ -I$(WLAN_TOP)/lmac/ratectrl/
+else
+INCS += -include $(COMINC)/compat.h -I$(COMINC) -I$(COMINC)/sys -I$(WLAN_TOP)/os/$(OS)/include -I$(WLAN_TOP)/os/$(OS)/src -I$(KERNELPATH)/include -I$(WLAN_TOP)/lmac/ath_pktlog/
+endif
+
+INCS += -I$(KERNELPATH)
+INCS += -I$(KERNELPATH)/arch/${KERNELARCH}/include
+ifeq ($(ATH_SUPPORT_HYFI_ENHANCEMENTS), 1)
+INCS += -I$(WLAN_TOP)/../hyfi-multicast -I$(WLAN_TOP)/umac/include/ -I$(WLAN_TOP)/include/sys
+endif
+
+
+INCS += -I$(WLAN_TOP)/umac
+INCS += -I$(WLAN_TOP)/asf/include
+INCS += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/include
+INCS += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/os/linux/include
+INCS += -I$(PERF_PWR_OFFLOAD_DIR_PATH)/include
+
+ifeq ($(BUILD_ARM), y)
+ifneq ($(BUILD_CFG_ARM),y)
+INCS+= \
+	-I${KERNELPATH}/include/linux \
+	-I${KERNELPATH}/include/asm/mach-default \
+	-I${KERNELPATH}/include/asm/mach-generic \
+	-I${KERNELPATH}/include \
+	-I${KERNELPATH}/arch/arm/include/ \
+	-I${KERNELPATH}/arch/arm/include/asm \
+	-I${KERNELPATH}/arch/arm/include/asm/mach-generic \
+	-I${KBUILDPATH}/arch/arm/include/generated/ \
+	-I${KBUILDPATH}/include \
+    -I${KBUILDPATH}/ \
+	-I${KERNELPATH}/arch/arm/mach-msm/include/
+endif
+#COPTS += -D__LINUX_ARM_ARCH__=${ARM_VERSION}
+endif
+
+ifneq ($(ATH_SUPPORT_HTC),1)
+INCS +=                            \
+    -I$(WLAN_TOP)/adf/include/os   \
+    -I$(WLAN_TOP)/adf/include/net  \
+    -I$(WLAN_TOP)/adf/include/nbuf
+INCS +=                            \
+    -I$(WLAN_TOP)/adf/os/$(OS)     \
+    -I$(WLAN_TOP)/adf/net/$(OS)    \
+    -I$(WLAN_TOP)/adf/nbuf/$(OS)
+endif
+
+ifeq ($(CONFIG_FLOWMAC), 1)
+INCS +=	-I$(FLOWMACDIR)
+endif
+
+ifeq ($(CONFIG_FLOWMAC_MODULE), 1)
+INCS +=	-I$(FLOWMACDIR)
+endif
+
+ifeq ($(ATH_SUPPORT_SPECTRAL),1)
+#OS_VERSION:=$(shell uname -r)
+#INCS +=-I/usr/src/linux-headers-$(OS_VERSION)/include/
+INCS +=-I$(WLAN_TOP)/lmac/spectral
+endif
+
+ifneq ($(BUILD_X86),y)
+COPTS += -Wno-undef
+else
+COPTS += -Wno-undef -DBUILD_X86
+ifeq ($(CROSS_COMPILE),1)
+COPTS += $(CROSS_MARCH_FLAGS)
+endif
+endif
+
+ifeq ($(BUILD_ARM),y)
+COPTS += -D__LINUX_ARM_ARCH__=7
+endif
+
+ifeq ($(WLAN_ENABLE_ERROR_ON_WARN),1)
+COPTS += -Werror
+endif
+
+ifneq ($(USE_WLAN_PBO_DATA),y)
+#COPTS += -Werror 
+endif
+
+ifeq ($(QCA_THIRDPARTY), 1)
+COPTS+= -I$(QCA_THIRDPARTY_PATH)
+COPTS+= -DQCA_PARTNER_PLATFORM=1
+include $(QCA_THIRDPARTY_PATH)/Makefile.cust.inc
+endif
+
+ifneq ($(AP71_DEBUG),1)
+ifeq ($(BUILD_OPTIMIZED),y)
+ifeq ($(KERNELARCH),mips)
+COPTS += -Os -funit-at-a-time -pipe -mtune=mips32r2
+else
+COPTS += -Os -funit-at-a-time -pipe
+endif
+else
+COPTS += -O2 
+endif
+endif
+
+ifneq ($(TARGET),ANDROID)
+include $(HAL)/$(OS)/public/$(TARGET).inc
+endif
+include $(WLAN_TOP)/os/$(OS)/BuildCaps.inc
+
+#
+# Path to the 802.11 include files.
+#
+WLAN := $(WLAN_TOP)/umac/include/
+
+# Protocol interface
+IF_WLAN := $(WLAN_TOP)/umac/if_lmac/
+
+# HTC support
+ifeq ($(ATH_SUPPORT_HTC),1)
+include $(obj)/$(DEPTH)/os/linux/Makefile-htc.inc
+else
+ifeq ($(ATH_SUPPORT_TX99),1)
+INCS += -I$(TX99)
+COPTS += -DATH_TX99_DIAG=1
+endif
+endif
+
+# Vendor support
+ifeq ($(ATH_SUPPORT_LINUX_VENDOR), 1)
+include $(obj)/$(DEPTH)/os/linux/vendor/Makefile-vendor.inc
+endif
+
+ifeq ($(BUILD_WLAN_PBO_DATA),y)
+GCOV_PROFILE := y
+COPTS += -fprofile-arcs -ftest-coverage
+endif
+
+ifeq ($(USE_WLAN_PBO_DATA),y)
+COPTS += -fprofile-use -fprofile-correction
+endif
+
+INCS += -I$(WLAN_TOP)/../../include
+ifeq ($(DIRECT_ATTACH),1)
+INCS += -I$(ACFGAPPDIR)/
+endif
+
+ifeq ($(strip ${USE_PLATFORM_FRAMEWORK}),1)
+COPTS += -DUSE_PLATFORM_FRAMEWORK
+endif
+
+ifeq ($(QCA_NSS_PLATFORM),1)
+INCS += -I$(QCA_NSS_INCLUDE)
+endif

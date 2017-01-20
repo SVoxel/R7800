@@ -1,0 +1,13 @@
+Package: qca-wpc
+Version: 10.4-4.0.5.020-1
+Depends: libc, kmod-qca-wifi, libpthread
+Provides: 
+Source: package/qca-wpc
+Section: QCA
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: Qualcomm Atheros
+Architecture: ipq806x
+Installed-Size: 12730
+Description:  QCA Wifi Positioning

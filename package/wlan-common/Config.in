@@ -1,0 +1,20 @@
+config WLAN_COMMON_GIT_TREEISH
+	string
+	prompt "treeish of wlan-common git repository"
+	default "edc0e48444349ce395b3343988d441595cf4ffdb"
+	help
+           Input the treeish of wlan-common git repository which you want to build
+
+config WLAN_COMMON_GIT_REPOSITORY
+	string
+	prompt "name of wlan-common git repository"
+	default "wlan-common.git"
+	help
+	   Input the name of wlan-common git repository which you want to build
+
+config WLAN_COMMON_GIT_URL
+	string
+	prompt "url of wlan-common git repository"
+	default "ssh://dniserver/scm/dnigit/apps/wlan-common/spencer/wlan-common.git"
+	help
+	   Input the url of wlan-common git repository which you want to build

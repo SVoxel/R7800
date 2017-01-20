@@ -1,0 +1,233 @@
+Index: iptables-1.4.10/extensions/libxt_VLANTAG.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ iptables-1.4.10/extensions/libxt_VLANTAG.c	2014-03-03 11:07:23.051507339 -0800
+@@ -0,0 +1,190 @@
++/*
++ **************************************************************************
++ * Copyright (c) 2014, The Linux Foundation. All rights reserved.
++ * Permission to use, copy, modify, and/or distribute this software for
++ * any purpose with or without fee is hereby granted, provided that the
++ * above copyright notice and this permission notice appear in all copies.
++ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
++ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
++ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
++ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
++ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
++ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
++ * OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
++ **************************************************************************
++ */
++
++/* Shared library add-on to iptables for VLANTAG */
++
++#include <stdio.h>
++#include <netdb.h>
++#include <string.h>
++#include <stdlib.h>
++#include <getopt.h>
++#include <xtables.h>
++#include <linux/netfilter/xt_VLANTAG.h>
++
++/*
++ * tg_help()
++ *	Prints the usage of this target.
++ */
++static void tg_help(void)
++{
++	printf(
++"VLANTAG target options\n"
++"	--omask value			Output mask value\n"
++"	--oval value			This value will be OR'ed with the input packet's\n"
++"					VLAN value masked with the omask\n"
++"\n"
++);
++}
++
++/*
++ * mt_help()
++ *	Prints the usage of this match.
++ */
++static void mt_help(void)
++{
++	printf(
++"VLANTAG match options\n"
++"	--imask value			Current input mask value of the packet\n"
++"	--itag value			Input VLAN tag value\n"
++"\n"
++);
++}
++
++static struct option tg_opts[] = {
++	{"omask", 1, 0, '1' },
++	{"oval", 1, 0, '2' },
++	{ 0 }
++};
++
++static struct option mt_opts[] = {
++	{"imask", 1, 0, '1'},
++	{"itag", 1, 0, '2' },
++	{ 0 }
++};
++
++/*
++ * tg_parse()
++ *	Parses target parameters.
++ */
++static int tg_parse(int c, char **argv, int invert, unsigned int *flags, const void *entry, struct xt_entry_target **target)
++{
++	struct xt_vlantag_target_info *info = (struct xt_vlantag_target_info *)(*target)->data;
++
++	switch(c) {
++		case '1':
++			info->omask = strtol(optarg, NULL, 0);
++			return 1;
++		case '2':
++			info->oval = strtol(optarg, NULL, 0);
++			return 1;
++		default:
++			return 0;
++	}
++}
++
++/*
++ * mt_parse()
++ *	Parses match parameters.
++ */
++static int mt_parse(int c, char **argv, int invert, unsigned int *flags, const void *entry, struct xt_entry_match **target)
++{
++	struct xt_vlantag_match_info *info = (struct xt_vlantag_match_info *)(*target)->data;
++
++	switch(c) {
++		case '1':
++			info->imask = strtol(optarg, NULL, 0);
++			return 1;
++		case '2':
++			info->itag = strtol(optarg, NULL, 0);
++			return 1;
++		default:
++			return 0;
++	}
++}
++
++/*
++ * tg_print()
++ *	Prints the target parameter values.
++ */
++static void tg_print(const void *ip, const struct xt_entry_target *target)
++{
++	struct xt_vlantag_target_info *info = (struct xt_vlantag_target_info *)target->data;
++
++	printf("--omask: %x --oval: %x\n", info->omask, info->oval);
++}
++
++/*
++ * mt_print()
++ *	Prints the match parameter values.
++ */
++static void mt_print(const void *ip, const struct xt_entry_match *target)
++{
++	struct xt_vlantag_match_info *info = (struct xt_vlantag_match_info *)target->data;
++
++	printf("--imask: %x --itag: %x\n", info->imask, info->itag);
++}
++
++/*
++ * tg_save()
++ *	Saves the target info in parsable form to stdout.
++ */
++static void tg_save(const void *ip, const struct xt_entry_target *target)
++{
++	struct xt_vlantag_target_info *info = (struct xt_vlantag_target_info *)target->data;
++
++	printf("--omask: %x --oval: %x\n", info->omask, info->oval);
++
++}
++
++/*
++ * mt_save()
++ *	Saves the match info in parsable form to stdout.
++ */
++static void mt_save(const void *ip, const struct xt_entry_match *target)
++{
++	struct xt_vlantag_match_info *info = (struct xt_vlantag_match_info *)target->data;
++
++	printf("--imask: %x --itag: %x\n", info->imask, info->itag);
++
++}
++
++static struct xtables_match vlantag_match = {
++	.name           = "VLANTAG",
++	.revision 	= 1,
++	.version        = XTABLES_VERSION,
++	.family         = NFPROTO_UNSPEC,
++	.size           = XT_ALIGN(sizeof(struct xt_vlantag_match_info)),
++	.userspacesize  = XT_ALIGN(sizeof(struct xt_vlantag_match_info)),
++	.help           = &mt_help,
++	.parse          = &mt_parse,
++	.print          = &mt_print,
++	.save           = &mt_save,
++	.extra_opts     = mt_opts
++};
++
++static struct xtables_target vlantag_target = {
++	.name           = "vlantag",
++	.revision 	= 1,
++	.version        = XTABLES_VERSION,
++	.family         = NFPROTO_UNSPEC,
++	.size           = XT_ALIGN(sizeof(struct xt_vlantag_target_info)),
++	.userspacesize  = XT_ALIGN(sizeof(struct xt_vlantag_target_info)),
++	.help           = &tg_help,
++	.parse          = &tg_parse,
++	.print          = &tg_print,
++	.save           = &tg_save,
++	.extra_opts     = tg_opts
++};
++
++/*
++ * _init()
++ *	Extension init function.
++ */
++void _init(void)
++{
++	xtables_register_match(&vlantag_match);
++	xtables_register_target(&vlantag_target);
++}
+Index: iptables-1.4.10/include/linux/netfilter/xt_VLANTAG.h
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ iptables-1.4.10/include/linux/netfilter/xt_VLANTAG.h	2014-03-03 11:05:34.135507352 -0800
+@@ -0,0 +1,33 @@
++/*
++ **************************************************************************
++ * Copyright (c) 2014, The Linux Foundation. All rights reserved.
++ * Permission to use, copy, modify, and/or distribute this software for
++ * any purpose with or without fee is hereby granted, provided that the
++ * above copyright notice and this permission notice appear in all copies.
++ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
++ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
++ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
++ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
++ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
++ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
++ * OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
++ **************************************************************************
++ */
++
++/* VLAN tagging iptables target info. */
++
++#ifndef _XT_VLANTAG_H
++#define _XT_VLANTAG_H
++
++#include <linux/types.h>
++
++struct xt_vlantag_target_info {
++	__u16 omask;
++	__u16 oval;
++};
++
++struct xt_vlantag_match_info {
++	__u16 imask;
++	__u16 itag;
++};
++#endif /* _XT_VLANTAG_H */

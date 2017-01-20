@@ -1,0 +1,104 @@
+config MSM_CAMERA_V4L2
+        bool "MSM Camera V4L2 Interface"
+        depends on MSM_CAMERA
+        default n
+        ---help---
+          This flag enables V4L2 interface of MSM
+          camera driver. If enabled, application interacts
+          with /dev/video0 through V4L2 APIs. Otherwise,
+          native APIs are used through /dev/config0, /dev/frame0,
+          and /dev/control0.
+
+comment "Camera Sensor Selection"
+config AD5046_ACT
+	bool "Lens actuator ad5046"
+	depends on MSM_CAMERA && OV5647
+	---help---
+	  ad5046 lens actuator driver for ov5647.
+	  Say Y here if this is msm7627A variant platform.
+
+config IMX074_ACT
+	bool "Actuator IMX074 (BAYER 13.5M)"
+	depends on MSM_CAMERA
+	---help---
+	Actuator for SONY 13.5 MP Bayer Sensor
+
+config DW9712_ACT
+	bool "Lens actuator dw9721"
+	depends on MSM_CAMERA && S5K4E1
+	---help---
+	  dw9721 lens actuator driver for S5K4E1.
+	  Say Y here if this is msm7627A variant platform.
+
+config MSM_CAMERA_FLASH_SC628A
+	bool "Qualcomm MSM camera sc628a flash support"
+	depends on MSM_CAMERA
+	default n
+	---help---
+	  Enable support for LED flash for msm camera.
+	  It is a samtech charge pump flash driver and it
+	  supports spotlight and flash light modes with
+	  differrent current levels.
+
+config MSM_CAMERA_FLASH_TPS61310
+	bool "Qualcomm MSM camera tps61310 flash support"
+	depends on MSM_CAMERA
+	default n
+	---help---
+	  Enable support for LED flash for msm camera.
+	  It is a Texas Instruments multiple LED Flash
+	  for camera flash and video light applications.
+
+config MSM_VPE
+	tristate "Qualcomm MSM Video Pre-processing Engine support"
+	depends on MSM_CAMERA && (ARCH_MSM7X30 || ARCH_MSM8X60)
+	default y
+	---help---
+	  Enable support for Video Pre-processing Engine
+
+config MSM_CPP
+        bool "Qualcomm MSM Camera Post Processing Engine support"
+        depends on MSM_CAMERA && MSM_CAMERA_V4L2
+        ---help---
+          Enable support for Camera Post-processing Engine
+          The Post processing engine is capable of scaling
+          and cropping image. The driver support V4L2 subdev
+          APIs.
+
+config QUP_EXCLUSIVE_TO_CAMERA
+	bool "QUP exclusive to camera"
+	depends on MSM_CAMERA
+	default y
+	---help---
+	  This flag enabled states that QUP
+	  is exclusive to camera. In case this
+	  is disabled, the lvs1 voltage is enabled
+	  by QUP in the board file as QUP is used by
+	  applications other than camera.
+
+config MSM_CSI20_HEADER
+        bool "Qualcomm MSM CSI 2.0 Header"
+        depends on MSM_CAMERA
+        ---help---
+          Enable support for CSI drivers to include 2.0
+          header. This header has register macros and its
+          values and bit mask for register configuration bits
+          This config macro is required targets based on 8960,
+          8930 and 8064 platforms.
+
+config MSM_CSI30_HEADER
+        bool "Qualcomm MSM CSI 3.0 Header"
+        depends on MSM_CAMERA
+        ---help---
+          Enable support for CSI drivers to include 3.0
+          header. This header has register macros and its
+          values and bit mask for register configuration bits
+          This config macro is required for targets based on
+          8064 platforms.
+
+config IMX091
+        bool "Sensor imx091 (Sony 13MP)"
+        depends on MSM_CAMERA
+	---help---
+	  Sony 13MP sensor back camera that uses 4 mipi lanes,
+	  runs at 30 fps preview and 14 fps snapshot

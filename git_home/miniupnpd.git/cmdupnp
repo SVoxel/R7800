@@ -1,0 +1,81 @@
+#!/bin/sh
+
+config=/bin/config
+upnp_enable=$($config get upnp_enable)
+
+MINIUPNPD_CONF=/tmp/etc/miniupnpd.conf
+
+print_upnp_conf() {
+cat <<EOF
+ext_ifname=$1
+listening_ip=$2
+port=5555
+bitrate_up=1000000
+bitrate_down=1000000
+notify_interval=$3
+time_to_live=$4
+friendly_name=$5
+listening_net=$6
+allow 1024-65535 192.168.0.0/24 1024-65535
+allow 1024-65535 192.168.1.0/24 1024-65535
+allow 0-65535 0.0.0.0/0 0-65535
+appsystem_location=http://updates1.netgear.com/r7800/ww/r7800.ddf
+appsystem_os=Linux/3.4
+appsystem_product=r7800
+non_igd=${7:-0}
+EOF
+}
+
+upnp_start() {
+	local proto=$($config get wan_proto)
+
+	if [ "$proto" = "pppoe" -o "$proto" = "pptp" -o "$proto" = "mulpppoe1" ]; then
+		wan_ifname="ppp0"
+	else
+		wan_ifname="brwan"
+	fi
+
+	local name=$($config get netbiosname)
+	if [ "x$name" = "x" ]; then
+		name=$($config get Device_name)
+		[ "x$name" = "x" ] && [ -e /hardware_version ] && name="$(cat /hardware_version)"
+	fi
+	name="$name (Gateway)"
+
+	local opmode=$($config get i_opmode)
+	local non_igd=0
+	if [ "$opmode" = "apmode" -o "$opmode" = "brmode" ] || \
+		[ "$opmode" = "normal" -a "$upnp_enable" != "1" ]; then
+		non_igd=1
+	fi
+
+	local listenip=$(ip addr show dev br0|sed -n 's#.*inet \([0-9.]*\)/.*#\1#p')
+
+	[ -f $MINIUPNPD_CONF ] && rm -f $MINIUPNPD_CONF
+	[ ! -d /tmp/etc ] && mkdir /tmp/etc
+	print_upnp_conf "$wan_ifname" "$listenip" "$($config get upnp_AdverTime)" "$($config get upnp_TimeToLive)" "$name" "$($config get lan_netmask)" "$non_igd" > $MINIUPNPD_CONF
+
+	# wait a moment ...
+	sleep 2
+
+	/usr/sbin/miniupnpd &
+}
+
+case "$1" in
+	stop)
+		[ "$upnp_enable" = "1" ] && cp /tmp/upnp_pmlist /tmp/upnp_pmlist.bak 2>/dev/null
+		killall miniupnpd
+	;;
+	start)
+		[ "$upnp_enable" = "1" ] && cp /tmp/upnp_pmlist /tmp/upnp_pmlist.bak 2>/dev/null
+		killall miniupnpd
+		upnp_start
+	;;
+	restart)
+		# To fix bug 22659, do nothing for "cmdupnp restart" command if /tmp/upnpIgnoreRestart exits
+		[ -f /tmp/upnpIgnoreRestart ] && exit
+		[ "$upnp_enable" = "1" ] && cp /tmp/upnp_pmlist /tmp/upnp_pmlist.bak 2>/dev/null
+		killall miniupnpd
+		upnp_start
+	;;
+esac

@@ -1,0 +1,65 @@
+#!/bin/sh
+#
+# Simple Redis init.d script conceived to work on Linux systems
+# as it does use of the /proc filesystem.
+
+. ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+#
+# Environment config
+#
+BINARY=redis-server
+NAME=${BINARY}
+DISPLAY_NAME=redis-server
+REDISPORT=6379
+EXEC=/usr/bin/redis-server
+CLIEXEC=/usr/bin/redis-cli
+
+PIDFILE=/var/run/appflow/redis.pid
+CONF="/etc/appflow/redis.conf"
+
+boot() {
+	start "$@"
+}
+
+start() {
+        if [ -f $PIDFILE ]
+        then
+                echo "$PIDFILE exists, process is already running or crashed"
+        else
+                echo "Starting Redis server..."
+		mkdir -p /var/redis
+                $EXEC $CONF
+        fi
+	retval=$?
+
+	return ${retval}
+}
+
+stop() {
+        if [ ! -f $PIDFILE ]
+        then
+                echo "$PIDFILE does not exist, process is not running"
+        else
+                PID=$(cat $PIDFILE)
+                echo "Stopping ..."
+                $CLIEXEC -p $REDISPORT shutdown
+                if [ $? -e 0 ]
+                then
+	                while [ -x /proc/${PID} ]
+	                do
+	                    echo "Waiting for Redis to shutdown ..."
+	                    sleep 1
+	                done
+	        else
+			kill $PID
+	        fi
+                echo "Redis stopped"
+        fi
+	retval=$?
+
+	return ${retval}
+}
+
+action "$@"
+exit $?

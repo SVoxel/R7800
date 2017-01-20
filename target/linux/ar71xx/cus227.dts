@@ -1,0 +1,50 @@
+/*
+ * Copyright (c) 2013 The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 as published
+ * by the Free Software Foundation.
+ */
+
+/dts-v1/;
+
+/ {
+	model = "Qualcomm Atheros CUS227";
+	compatible = "ath79,cus227";
+
+	ssid-prefix = "cus227_";
+	serial = "XXXXXXXX";
+
+	gpios: ath79-gpio {
+		#gpio-cells = <2>;
+		gpio-controller;
+	};
+
+	keys {
+		compatible = "gpio-keys";
+		s1 {
+			label = "s1";
+			gpios = <&gpios 12 1>;
+			linux,code = <529>; /* KEY_WPS_BUTTON */
+		};
+		s2 {
+			label = "s2";
+			gpios = <&gpios 13 1>;
+			linux,code = <258>; /* BTN_1 */
+		};
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		s3 {
+			label = "cus227:green:s3";
+			gpios = <&gpios 14 1>;
+			linux,default-trigger = "timer";
+		};
+		s4 {
+			label = "cus227:green:s4";
+			gpios = <&gpios 15 1>;
+			linux,default-trigger = "timer";
+		};
+	};
+};

@@ -1,0 +1,286 @@
+1) List the model number. If the open source code archive applies to multiple models, list each model individually.
+
+R7800
+
+2) List the version number of the firmware/software that correlates with the open source code archive.
+
+R7800-V1.0.1.2
+
+7) List the main HW platform utilized such as CPU, main chipset, RF chipset, DSP, Switch IC¡­etc.
+
+IPQ8065(CPU) + QCA8337(Switch) + QCA9984(5GHz) + QCA9884(2.4GHz)
+
+8) List the name, version, license, and modification status of the OS for the product
+
+Linux kernel 3.4.103, GPL, Yes
+
+9) List the name, version, license, and modification status of the boot loader for the product
+
+u-boot, 2009.08, GPL, Yes
+
+10) List the name, version, license, and modification status of the toolchain for the product
+
+gcc, 4.6, GPL, No
+
+11) List the name, version, license, and modification status of the tools for the product
+
+genext2fs, 1.4.1, GPL, No
+
+ipkg-utils, 1.7, GPL, No
+
+lzma, 4.65, GPL, No
+
+m4, 1.4.16, GPL, No
+
+sed, 4.2.1, GPL, No
+
+squashfs, 4.2, GPL, No
+
+tcpdump, 3.9.8, BSD, Yes
+
+12) List the name, version, license, and modification status of the application modules for the product
+
+acl, 1, DNI, Yes
+
+ap-mode, 1, DNI, Yes
+
+artmtd, 1, DNI, Yes
+
+bridge-utils, 1.5, GPL, No
+
+bridge-mode, 1, DNI, Yes
+
+blockman, g594cecb, Atheros, Yes
+
+curl, 7.29.0, GPL, No
+
+customer-keys, 1-netgear-r7800, Atheros, Yes
+
+dnibusybox, 1.4.2, GPL, Yes
+
+datalib, 1.0, DNI, Yes
+
+detwan, 1.0, GPL, Yes
+
+detcable, 1, DNI, Yes
+
+disktype, 1, GPL, Yes
+
+dni-libmtd,1, DNI, Yes
+
+dni-rip, 1.0, DNI, Yes
+
+dni-mtdoops, 2, GPL, Yes
+
+dnsmasq, 2.39, GPL, Yes
+
+netgear-integration-api, 1, DNI, Yes
+
+e2fsprogs, 1.42, GPL, No
+
+ebtables, 2.0.10, GPL, No
+
+expat, 2.0.1, GPL No
+
+ez-ipupdate, 3.0.10, GPL, Yes
+
+fast-classifier,1, Dual BSD/GPL, Yes
+
+hotplug2, 201, GPL, No
+
+igmpproxy, 1, GPL, No
+
+ipp, 1, GPL, Yes
+
+iproute2, 3.3.0, GPL, No
+
+iptables, 1.4.10, GPL, Yes
+
+lltd, MICROSOFT WINDOWS RALLY PROGRAM LICENSE
+
+lua, 5.1.4, GPL, No
+
+minidlna, 1, GPL, Yes
+
+miniupnp, 20070127, BSD, Yes
+
+mtd, 5, GPL, No
+
+net6conf, 0.1, GPL, Yes
+
+net-disk, 1, GPL, Yes
+
+net-dump, 1, GPL, Yes
+
+net-scan, 1.0, GPL, Yes
+
+net-util, 1.0, DNI, Yes
+
+net-wall, 2.0, DNI, Yes
+
+net-cgi, 1.0, DNI, Yes
+
+radardetect, 1.0, DNI, Yes
+
+dni_enet, 1.0, DNI, Yes
+
+noip2, 2.1.9-1, GPL, Yes
+
+dni-ntpclient, 2003_194, GPL, Yes
+
+pot, 1.0.0, GPL, Yes
+
+phddns, 2.0.2.16556, GPL, Yes
+
+proccgi, 1.1.2.1, GPL, Yes
+
+dnippp, 2.4.3, GPL, Yes
+
+fbwifi, 1.0.3, netgear, No
+
+parted, 3.0, GPL, Yes
+
+ppp-nas, GPL, Yes
+
+proftpd, 1.3.0, GPL, Yes
+
+px5g, 1, GPL, No
+
+radvd, 1.5, GPL, Yes
+
+samba, 3.0.24, GPL, Yes
+
+samba-scripts, 1, GPL, Yes
+
+ssmtp, 2.64, GPL, No
+
+guest_dhcp, 1, Atheros, Yes
+
+kmod-dni-qos, 1, DNI, Yes
+
+telnetenable, 1.0, GPL, Yes
+
+trafficmeter, 2.0, DNI, Yes
+
+uci, 2013-01-04, GPL, No
+
+udev, 106, GPL, Yes
+
+udhcp, 0.9.8, GPL, Yes
+
+uhttpd, 1, Apache, Yes
+
+utelnetd, 0.1.9, GPL, Yes
+
+util-linux-ng, 2.21.2, GPL, Yes
+
+wide-dhcpv6, 20080615. GPL, Yes
+
+wireless-tools, 29, GPL, Yes
+
+wlan-common, 1, DNI, Yes
+
+xfsprogs, 3.1.6, GPL, No
+
+xtables-addons, 1.42, GPL, Yes
+
+zebra, 0.95a, GPL, No
+
+qca-mcs,1, Dual BSD/GPL, Yes
+
+qca-nss-drv,2.4.3.1008.232, Dual BSD/GPL, Yes
+
+qca-nss-ecm,2.4.3.1008.232 ,Dual BSD/GPL, Yes
+
+qca-nss-gmac,2.4.3.1008.232 , GPL, Yes
+
+qca-nss-clients,2.4.3.1008.232 , Dual BSD/GPL, Yes
+
+qca-nss-crypto,1 , Dual BSD/GPL, Yes
+
+qca-ssdk,2.4.3.1008.232 , Dual BSD/GPL, Yes
+
+qca-acfg, 10.4-r38329.1, Atheros, Yes
+
+qca-wpc, 10.4-r38329.1, Atheros, Yes
+
+qca-wrapd, 10.4-r38329.1, Atheros, Yes
+
+qca-wifi-fw, CNSS.BL.1.0-00453-S-1, Atheros, Yes
+
+qcmbr, 10.4, Atheros, Yes
+
+radardetect, 1, DNI, Yes
+
+shortcut-fe, 1,Dual BSD/GPL, Yes
+
+13) List the name, version, license, and modification status of the library modules for the product
+
+cyassl, 1.6.5, GPL, No
+
+ffmpeg, 0.11.2, GPL, No
+
+libexif, 0.6.17, GPL, No
+
+libflac, 1.2.1, GPL, No
+
+libid3tag, 0.15.1b, GPL, No
+
+libjpeg, 6b, GPL, No
+
+libogg, 1.1.3, GPL, No
+
+libpcap, 1.1.1, GPL, No
+
+libtool, 2.4, GPL, No
+
+libvorbis, 1.2.3, GPL, No
+
+libwxwidgets, 2.8.12, GPL, No
+
+linux-atm, 2.5.2, GPL, No
+
+lvm2 2.02.91, GPL, No
+
+ncurses, 5.7, GPL, NO
+
+openssl, 0.9.8p, GPL, Yes
+
+sqlite3, 3.6.16, GPL, No
+
+zlib, 1.2.7, GPL, Yes
+
+14) List any other relevant notes.
+
+List the name, version, license, and modification status of the application modules of the third party for the product
+
+avahi, 0.6.31, GPL, Yes
+
+db47, 4.7.25, GPL, Yes
+
+expat, 2.0.1, GPL, No
+
+gdbm, 1.8.3, GPL, No
+
+gettext, 0.18.1.1, GPL, Yes
+
+libdaemon, 0.14, GPL, No
+
+libgcrypt, 1.5.0, GPL, Yes
+
+libgpg-error, 1.9, GPL, Yes
+
+libiconv, 1.11, GPL, Yes
+
+libpng, 1.4.3, GPL, Yes
+
+ready-genie-cloud, 20161026, netgear, Yes
+
+netatalk, 2.2.1, GPL, Yes
+
+netatalk-utility, 1.0, GPL, No
+
+NetUSB, 1, KCodes, No
+
+ufsd, 1, paragon, No
+

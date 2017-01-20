@@ -1,0 +1,27 @@
+From 195a7b2fa09e79bab62fa3b84bfdf269b4f47510 Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Tue, 11 Jun 2013 19:14:41 -0500
+Subject: [ag71xx] remove unused dev last_rx
+
+Remove the unused update to last_rx in the netdev structure.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+index 4bfa09f..6886fda 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+@@ -998,7 +998,6 @@ static int ag71xx_rx_packets(struct ag71xx *ag, struct net_device *dev, int limi
+ 		 *		    rx_buf_size, DMA_FROM_DEVICE);
+ 		 */
+ 
+-		dev->last_rx = jiffies;
+ 		dev->stats.rx_packets++;
+ 		dev->stats.rx_bytes += pktlen;
+ 
+-- 
+1.8.1.2
+

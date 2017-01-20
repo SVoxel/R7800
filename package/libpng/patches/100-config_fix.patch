@@ -1,0 +1,10 @@
+--- libpng-1.4.3/scripts/libpng-config-body.in.orig	2010-09-03 11:41:53.000000000 +0530
++++ libpng-1.4.3/scripts/libpng-config-body.in	2010-09-03 11:42:52.000000000 +0530
+@@ -83,6 +83,7 @@
+ 
+     --static)
+         R_opts=""
++        libs=${all_libs}
+         ;;
+ 
+     *)

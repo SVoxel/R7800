@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_03A_wanInput.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/funcs.js"></script>
+<% hijack_language() %>
+<% deleteFiles("/tmp/ping_result_error", "/tmp/ping_ip_result_error", "/tmp/ping_gateway_result_error")%>
+<% deleteFiles("/tmp/ping_result", "/tmp/wget_file_result") %>
+</head>
+<script>
+var enable_vlan_id = "<% cfg_get("dsl_wan_enable_vlanidActive") %>";
+var vlan_id = "<% cfg_get("dsl_wan_data_vid") %>";
+var enable_iptv = "<% cfg_get("dsl_wan_video_enable") %>";
+var display_iptv = "<% cfg_get("dsl_wan_video_vid") %>";
+var display_iptv2 = "<% cfg_get("wan2_active") %>";
+var wan2_bridge="<% cfg_get("dsl_wan2_bridge_mode") %>";
+addLoadEvent(initPage);
+function initPage()
+{
+	var forms = document.getElementsByTagName("form");
+	var inputconnect = document.getElementById("inputconnect");
+	inputconnect.onkeypress = ssidKeyCode;
+	var mac = document.getElementById("mac_add");
+	mac.onkeypress = macKeyCode;
+    var cf = forms[0];
+	var btns_container_div = document.getElementById("btnsContainer_div");
+	cf.use_vlanid.checked = true;
+	cf.use_vlanid.disabled = true;
+	cf.dhcp_vlanid.disabled=true;
+	cf.mac_address.disabled = true;
+	if( master == "admin" )
+	{
+		btns_container_div.onclick = function()
+		{
+			return checkdhcp();
+		}
+	}
+}
+function checkdhcp()
+{
+	var forms = document.getElementsByTagName("form");
+    	var cf = forms[0];	
+	if(cf.use_vlanid.checked == true)
+		cf.hid_use_vlanid.value = "1";
+	else
+		cf.hid_use_vlanid.value = "0";
+	if(!cf.enablemac.checked)
+		cf.hid_mac_enable.value ="0";
+	else{
+		cf.hid_mac_enable.value ="2";
+		var mac_input = document.getElementById("mac_add");
+		var the_mac = mac_input.value;
+
+		if(the_mac.indexOf(":")==-1 && the_mac.length=="12")
+		{
+			var tmp_mac=the_mac.substr(0,2)+":"+the_mac.substr(2,2)+":"+the_mac.substr(4,2)+":"+the_mac.substr(6,2)+":"+the_mac.substr(8,2)+":"+the_mac.substr(10,2);
+
+			mac_input.value = tmp_mac;
+		}
+		else if (the_mac.split("-").length == 6)
+		{
+			var tmp_mac = the_mac.replace(/-/g,":");
+			mac_input.value = tmp_mac;
+		}
+
+		if(maccheck_multicast(mac_input.value) == false)
+		return false;
+	}
+	cf.submit();
+	return true;
+}
+function enable_vlanid()
+{
+	var cf = document.forms[0];
+	if(!cf.use_vlanid.checked)
+	{
+		cf.dhcp_vlanid.disabled = true;
+	}
+	else
+	{
+		cf.dhcp_vlanid.disabled = false;
+	}
+}
+function enable_mac()
+{
+	var cf = document.forms[0];
+	if(!cf.enablemac.checked)
+	{
+		cf.mac_address.disabled = true;
+	}
+	else
+	{
+		cf.mac_address.disabled = false;
+	}
+}
+</script>
+<body>
+<% form_submit("apply", "BRS_dsl_type_detc.html", "hijack_dhcp_uk") %>
+<style type="text/css">
+.wizard_content_div{ margin:0;  overflow:auto; height:99%; position:absolute;}
+</style>
+<input type="hidden" name="WANAssign" value="0" />
+<input type="hidden" name="hid_use_vlanid" />
+<input type="hidden" name="hid_mac_enable" />
+<input type="hidden" name="hid_username" />
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+			<h1><script>document.write(bh_dhcp_head)</script></h1>
+			<p><script>document.write(bh_enter_info_below)</script></p>
+			
+			<div class="wanInput_content_div">
+				
+				<div id="connection_identi" class="wanInput_left_div" align="left">
+					<script>document.write(bh_dhcp_client_id)</script>
+				</div>
+				<div class="wanInput_Img_div">
+					<img src="image/ca_text_pic.gif" />
+					<input type="text" id="inputconnect" maxlength="64" align="right" name="client_option" />
+				</div>
+				
+				<div id="vlanid" class="wanInput_left_div" align="left">
+					<input type="checkbox" name="use_vlanid" value="1" onclick="enable_vlanid()">
+					<script>document.write(bh_use_vlanid)</script>
+				</div>
+				<div class="wanInput_Img_div">
+					<img src="image/ca_text_pic.gif" />
+					<input type="text" id="inputvlanid" maxlength="16" align="right" name="dhcp_vlanid" value="101" />
+				</div>
+				<div id="mac" class="wanInput_left_div" align="left">
+					<input type="checkbox" name="enablemac" value="1" onclick="enable_mac()">
+					<script>document.write(bh_use_mac)</script>
+				</div>
+				<div class="wanInput_Img_div">
+					<img src="image/ca_text_pic.gif" />
+					<input type="text" id="mac_add" maxlength="17" align="right" name="mac_address" />
+				</div>
+				<div style="clear:both"></div>
+			</div>
+		
+	</div>
+	
+	<div id="allBtns_div" class="wizard_buttons_div" align="right">
+		<div id="btnsContainer_div" class="buttons_img_div">
+			<script>
+			var master="<% cfg_get("http_loginname") %>";
+			if( master == "admin" )
+				document.write('<img src="image/ca-little-purple-button.gif" />');
+			else
+				document.write('<img src="image/ca-little-grey-button.png" />');
+			</script>
+			<div id="btn_text_div" class="buttons_words_div" align="center"><script>document.write(bh_next_mark)</script></div>
+		</div>	
+	</div>
+	
+
+</div>
+
+</form>
+</body>
+
+</html>

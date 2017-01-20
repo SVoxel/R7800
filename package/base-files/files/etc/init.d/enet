@@ -1,0 +1,22 @@
+#!/bin/sh /etc/rc.common
+START=19
+. /lib/cfgmgr/cfgmgr.sh
+. /lib/cfgmgr/enet.sh
+
+detect_wan_port_status()
+{
+	if [ "x$(detcable show | grep "WAN  : Plug off")" != "x" ]; then
+		echo -n 0 > /tmp/port_status
+	else
+		echo -n 1 > /tmp/port_status
+		ledcontrol -n wan -c amber -s on
+	fi
+}
+
+boot()
+{
+	et_init
+	detect_wan_port_status
+	/etc/init.d/qca-nss-ecm start
+}
+

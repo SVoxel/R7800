@@ -1,0 +1,1189 @@
+/*
+Format:
+[package name]
+        Complete package name
+        From Where
+        License
+        Binary or Source code
+*/
+
+User application
+[acl]
+        acl
+        DNI
+        DNI
+        Binary
+[alsa-lib]
+        alsa-lib-1.0.24.1.tar.bz2
+        http://www.alsa-project.org/
+        GPL
+        Source Code
+[amule]
+        aMule-2.3.1
+        http://amule.en.softonic.com/
+        GPL
+        Source Code
+[angular-loadcontent]
+        angular-loadcontent
+        Atheros
+        Atheros
+        Binary
+[angular-ozker]
+        angular-ozker
+        Atheros
+        Atheros
+        Binary
+[aperture]
+        aperture
+        Atheros
+        Atheros
+        Binary
+[app-flow-scripts]
+        app-flow-scripts
+        Atheros
+        Atheros
+        Binary
+[artmtd]
+        artmtd
+        DNI
+        DNI
+        Binary
+[avahi]
+        avahi-0.6.31
+        http://avahi.org/download/
+        GPL
+        Source Code
+[avl]
+        libavl_0.3.5
+        http://avahi.org/download/
+        GPL
+        Source Code
+[base-files]
+        base-files
+        DNI
+        GPL
+        Source Code
+[bc]
+        bc-1.06
+		http://packages.debian.org/bc
+        GPL
+        Source Code
+[blockman]
+		blockman
+		Atheros
+		Atheros
+        Binary
+[bridge-mode]
+        bridge-mode
+        DNI
+        DNI
+        Source Code
+[bridge-utils]
+        bridge-utils-1.5
+        http://bridge.sourceforge.net/
+        GPL
+        Source Code
+[bwestd]
+	bwestd
+	Atheros
+	Atheros
+	Binary
+[callhomeclient]
+        callhomeclient
+        Atheros
+        Atheros
+        Binary
+[cape]
+        cape
+        Atheros
+        Atheros
+        Binary
+[celes]
+	celes	
+	Atheros
+	Atheros
+	Binary
+[checkpcap]
+        checkpcap
+        Atheros
+        Atheros
+        Source Code
+[confuse]
+        confuse-2.6.tar.gz
+        http://www.nongnu.org/confuse/
+        GPL
+        Source Code
+[curl]
+        curl-7.29.0.tar.bz2
+        http://curl.haxx.se/
+        GPL
+        Source Code
+[customer-keys]
+        customer-keys
+        Atheros
+        Atheros
+        Source Code
+[cyassl]
+        libcyassl
+        http://www.yassl.com/
+        GPL
+        Source Code
+[datalib]
+        datalib
+        DNI
+        DNI
+        Binary
+[db47]
+        db-4.7.25.NC
+        http://download.oracle.com/berkeley-db/
+        GPL
+        Source Code
+[dbus]
+        dbus-1.4.14.tar.gz
+        http://dbus.freedesktop.org/
+        GPL
+        Source Code
+[detcable]
+        detcable
+        DNI
+        DNI
+        Binary
+[detwan]
+        detwan
+        DNI
+        GPL
+        Source Code
+[disktype]
+	disktype
+    disktype.sourceforge.net
+	GPL
+	Source Code
+[dnibusybox]
+        busybox-1.4.2
+        http://busybox.net/downloads/
+        GPL
+        Source Code
+[dni_enet]
+	dni_enet
+	DNI
+	DNI
+	Binary
+[dni-mtdoops]
+	dni-mtdoops
+	lists.infradead.org
+	GPL
+	Source Code
+[dnippp]
+        ppp-2.4.3
+        ftp://ftp.samba.org/pub/ppp
+        GPL
+        Source Code
+[dni-ripd]
+        dni-ripd
+        DNI
+        DNI
+        Binary
+[dni-ntpclient]
+        ntpclient_2003_194
+        http://doolittle.faludi.com/ntpclient
+        GPL
+        Source Code
+[dnsmasq]
+        dnsmasq
+        http://www.thekelleys.org.uk/dnsmasq
+        GPL
+        Source Code
+[drflocs]
+        drflocs
+        Atheros
+        Atheros
+        Binary
+[dumpevents]
+        dumpevents
+        Atheros
+        Atheros
+        Source Code
+[e2fsprogs]
+        e2fsprogs-1.42
+        http://e2fsprogs.sourceforge.net/
+        GPL
+        Source Code
+[ebtables]
+        ebtables-v2.0.9-1
+        http://ebtables.sourceforge.net
+        GPL
+        Source Code
+[ethtool]
+        ethtool-3.4.1
+        http://www.kernel.org/pub/software/network/ethtool/
+        GPL
+        Source Code
+[expat]
+        expat-2.0.1
+        http://downloads.sourceforge.net/expat
+        GPL
+        Source Code
+[ez-ipupdate]
+        ez-ipupdate-3.0.10
+        http://ez-ipupdate.com
+        GPL
+        Source Code
+[factory-tools]
+        factory-tools
+        DNI
+        DNI
+        Binary
+[fast-classifier]
+        fast-classifier
+        https://www.codeaurora.org/cgit/quic/qsdk/oss
+        Dual BSD/GPL
+        Source Code
+[fcgi]
+        fcgi-2.4.0.tar.gz
+        http://www.fastcgi.com/
+        GPL
+        Source Code
+[flowman]
+        flowman
+        Atheros
+        Atheros
+        Binary
+[flowmark]
+        flowmark
+        Atheros
+        Atheros
+        Binary
+[flux]
+        flux
+        Atheros
+        Atheros
+        Binary
+[ffmpeg]
+        ffmpeg-0.11.2
+        http://ffmpeg.org/releases
+        GPL
+        Source Code
+[forked-daapd]
+		forked-daapd-23.0-dni1.tar.bz2
+        https://github.com/jasonmc/forked-daapd
+        GPL
+        Source Code
+[fbwifi]
+		fbwifi
+		netgear
+		netgear
+		Binary
+[gdbm]
+        gdbm-1.8.3
+        ftp://ftp.gnu.org/gnu/gdbm
+        GPL
+        Source Code
+[gettext]
+        gettext-0.18.1.1
+        ftp://ftp.gnu.org/gnu/gettext
+        GPL
+        Source Code
+[green-download]
+        green-download
+        DNI
+        DNI
+        Binary
+[guest_dhcp]
+	guest_dhcp
+	Atheros
+	Atheros
+	Source Code
+[hd-idle]
+        hd-idle-1.04.tgz
+        http://hd-idle.sourceforge.net/
+        GPL
+        Source Code
+[hiredis]
+        hiredis
+        Atheros
+        Atheros
+        Binary
+[hotplug2]
+        hotplug2-201
+        http://isteve.bofh.cz/~isteve/hotplug2
+        GPL
+        Source Code
+[igmpproxy]
+        N/A
+        DNI
+        GPL
+        Source Code
+[ipp]
+        ipp, iproute2-2.6.29-1
+        http://developer.osdl.org/dev/iproute2/download
+        GPL
+        Source Code
+[iproute2]
+        iproute2-3.3.0.tar.bz2
+        http://linux-net.osdl.org/index.php/Iproute2
+        GPL
+        Source Code
+[iptables]
+        iptables-1.4.10
+        http://www.netfilter.org/projects/iptables/files
+        GPL
+        Source Code
+[jansson]
+        jansson-2.4.tar.gz
+        http://www.digip.org/jansson/releases/
+        GPL
+        Source Code
+[jigglyp0f]
+        jigglyp0f
+        Atheros
+        Atheros
+        Binary
+[jq]
+        jq-1.3.tar.gz
+        openwrt
+        GPL
+        Source Code
+[leash]
+        leash
+        Atheros
+        Atheros
+        Binary
+[led-control]
+        led-control
+        DNI
+        DNI
+        Binary
+[led-extender]
+        led-extender
+        DNI
+        DNI
+        Binary
+[libantlr3c]
+        libantlr3c-3.2-.tar.gz
+        http://www.antlr.org/
+        GPL
+        Source Code
+[libcryptoxx]
+        libcryptoxx-5.6.0.tar.gz
+        http://www.antlr.org/
+        GPL
+        Source Code
+[libdaemon]
+        libdaemon-0.14
+        http://0pointer.de/lennart/projects/libdaemon/
+        GPL
+        Source Code
+[libevent2]
+        libevent-2.0.19-stable
+        http://www.monkey.org/~provos/
+        GPL
+        Source Code
+[libexif]
+        libexif-0.6.17
+        http://libexif.sourceforge.net/
+        GPL
+        Source Code
+[libflac]
+        flac-1.2.1
+        http://www.xiph.org/
+        GPL
+        Source Code
+[libgcrypt]
+        libgcrypt-1.5.0
+        ftp://ftp.gnupg.org/gcrypt/libgcrypt/
+        GPL
+        Source Code
+[libgpg-error]
+        libgpg-error-1.9
+        ftp://ftp.gnupg.org/gcrypt/libgpg-error/
+        GPL
+        Source Code
+[libiconv]
+        libiconv-1.11
+        http://www.gnu.org/software/libiconv/
+        GPL
+        Source Code
+[libid3tag]
+        libid3tag-0.15.1b
+        http://www.underbit.com/products/mad/
+        GPL
+        Source Code
+[libjpeg]
+		jpegsrc.v6b
+        http://www.ijg.org/files/
+        GPL
+        Source Code
+[libjson-c]
+        libjson-c-0.9.tar.gz
+        http://oss.metaparadigm.com/json-c/
+        GPL
+        Source Code
+[libnetfilter-conntrack]
+        libnetfilter_conntrack-0.9.1.tar.bz2
+        http://www.netfilter.org/projects/libnetfilter_conntrack/
+        GPL
+        Source Code
+[libnfnetlink]
+        libnfnetlink-1.0.0.tar.bz2
+        http://netfilter.org/projects/libnfnetlink/
+        GPL
+        Source Code
+[libnl-bf]
+        libnl-bf-g7d47666eb3c414feb8901970d35b96461214c2bf.tar.gz
+        git://github.com/tgraf/libnl.git
+        GPL
+        Source Code
+[libogg]
+        libogg-1.1.3
+        http://www.xiph.org
+        GPL
+        Source Code
+[libpcap]
+        libpcap-1.1.1
+        http://www.tcpdump.org/release/
+        GPL
+        Source Code
+[libplist]
+        libplist-1.8.tar.bz2
+        http://www.libimobiledevice.org/
+        GPL
+        Source Code
+[libpng]
+        libpng-1.4.3
+        http://www.libpng.org/pub/png/libpng.html
+        GPL
+        Source Code
+[libreadline]
+        readline-5.2
+        http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
+        GPL
+        Source Code
+[libsbdaemon]
+        libsbdaemon
+        Atheros
+        Atheros
+        Binary
+[libtool]
+        libtool
+        http://www.gnu.org/software/libtool/
+        GPL
+        Source Code
+[libubox]
+        libubox-2013-07-04-11e8afea0f7eb34f8c23a8e589ee659c46f3f8aa.tar.gz
+        git://nbd.name/luci2/libubox.git
+        GPL
+        Source Code
+[libunistring]
+        libunistring-0.9.3.tar.gz
+        http://ftp.gnu.org/gnu/libunistring
+        GPL
+        Source Code
+[libvorbis]
+        libvorbis-1.2.3
+        http://www.xiph.org
+        GPL
+        Source Code
+[libwxwidgets]
+		wxWidgets-2.8.12.tar.gz
+		http://www.wxwidgets.org/
+        GPL
+        Source Code
+[libxml2]
+        libxml-2.7.8
+        http://xmlsoft.org/
+        GPL
+        Source Code
+[libyaml]
+        yaml-0.1.4.tar.gz
+        http://pyyaml.org/download/libyaml/
+        GPL
+        Source Code
+[lltd]
+        lltd
+        http://www.microsoft.com/whdc/connect/rally/rallykit.mspx
+        MICROSOFT WINDOWS RALLY PROGRAM LICENSE
+        Binary
+[logrotate]
+        logrotate_3.8.1.orig.tar.gz
+        http://packages.debian.org/unstable/admin/logrotate
+        GPL
+        Source Code
+[lua]
+        lua
+        http://www.lua.org/ftp/
+        GPL
+        Source Code
+[luci-app-streamboost]
+	luci-app-streamboost
+	Atheros
+	Atheros
+	Binary
+[luci-theme-steelbule]
+	luci-theme-steelbule
+	Atheros
+	Atheros
+	Binary
+[lvm2]
+        LVM2.2.02.91.tgz
+        http://sourceware.org/dm/
+        GPL
+        Source Code
+[lzo]
+        lzo-2.06.tar.gz
+        http://www.oberhumer.com/opensource/lzo/
+        GPL
+        Source Code
+[macoui-db]
+        macoui-db
+        Atheros
+        Atheros
+        Binary
+[minidlna]
+        minidlna
+        http://sourceforge.net/projects/minidlna
+        GPL
+        Source Code
+[miniupnpd]
+        miniupnpd-20070127
+        http://miniupnp.free.fr
+        BSD
+        Binary
+[mtd]
+        mtd
+        DNI
+        GPL
+        Source Code
+[mtd-utils]
+        mtd-utils-1.5.0.tar.bz2
+        http://www.linux-mtd.infradead.org/
+        GPL
+        Source Code
+[mxml]
+        mxml-2.6.tar.gz
+        http://www.minixml.org/
+        GPL
+        Source Code
+[ncurses]
+        ncurses-5.7
+        http://www.gnu.org/software/ncurses
+        GPL
+        Source Code
+[net6conf]
+        net6conf
+        DNI
+        GPL
+        Source Code
+[netatalk]
+        netatalk-2.2.1
+        http://downloads.sourceforge.net/netatalk
+        GPL
+        Source Code
+[netatalk-utility]
+        netatalk-utility-1.0.0
+        Alumnux
+        GPL
+        Source Code
+[net-cgi]
+        net-cgi
+        DNI
+        BSD
+        Binary
+[net-dump]
+        net-dump
+        DNI
+        GPL
+        Source Code
+[netgear-integration-api]
+	netgear-integration-api
+	DNI
+	DNI
+	Binary
+[net-scan]
+        net-scan
+        DNI
+        GPL
+        Source Code
+[net-util]
+        net-util
+        DNI
+        DNI
+        Binary
+[net-wall]
+        net-wall
+        DNI
+        DNI
+        Binary
+[ngrep]
+        ngrep-1.45.tar.bz2
+        http://ngrep.sourceforge.net
+        GPL
+        Source Code
+[nodedetectd]
+        nodedetectd
+        Atheros
+        Atheros
+        Binary
+[noip2]
+        noip2
+        http://www.no-ip.com/client/linux/noip-duc-linux.tar.gz
+        GPL
+        Source Code
+[ntgrddns]
+        ntgrddns
+        DNI
+        DNI
+        Binary
+[ookla]
+        Ookla
+        Ookla
+        Ookla
+        Binary
+[openssl]
+        openssl-0.9.8p
+        http://www.openssl.org/source/
+        GPL
+        Source Code
+[openvpn]
+        openvpn-2.3.2.tar.gz
+        http://openvpn.net
+        GPL
+        Source Code
+[openvpn-easy-rsa]
+        openvpn-easy-rsa-2013-01-30-ff5bfd1dd8e548cb24d302742af3894f893ef92f.tar.gz
+        http://openvpn.net
+        GPL
+        Source Code
+[openvpn-miscprogs]
+        openvpn-miscprogs
+        DNI
+        DNI
+        Binary
+[opkg]
+        opkg-618.tar.gz
+        http://wiki.openmoko.org/wiki/Opkg
+        GPL
+        Source Code
+[overlord]
+        overlord
+        Atheros
+        Atheros
+        Binary
+[ozker]
+        ozker
+        Atheros
+        Atheros
+        Binary
+[p0f]
+        p0f-3.06b.tgz
+        http://lcamtuf.coredump.cx/p0f.shtml
+        GPL
+        Source Code
+[p0f-db]
+        p0f-db
+        Atheros
+        Atheros
+        Binary
+[parted]
+        parted-3.0.tar.gz
+        http://www.gnu.org/software/parted/index.shtml
+        GPL
+        Source Code
+[pcre]
+        pcre-7.6.tar.bz2
+        http://www.pcre.org/
+        GPL
+        Source Code
+[phddns]
+        phddns
+        http://open.oray.com/doc/phddns-sdk-1.0.4.17314.tar.gz
+        GPL
+        Source Code
+[policy-reader]
+        policy-reader-0.0.1
+        Atheros
+        Atheros
+        Source Code
+[policy-redis]
+        policy-redis
+        Atheros
+        Atheros
+        Binary
+[popt]
+        popt-1.7.tar.gz
+        http://rpm5.org/files/popt/
+        GPL
+        Source Code
+[pot]
+        pot
+        DNI
+        GPL
+        Source Code
+[ppp-nas]
+        ppp-nas, iproute2-2.6.29-1
+        http://developer.osdl.org/dev/iproute2/download
+        GPL
+        Source Code
+[proccgi]
+	proccgi
+	www.fpx.de/fp/Software
+	GPL
+	Source Code
+[proftpd]
+        proftpd-1.3.3
+        http://www.proftpd.org
+        GPL
+        Source Code
+[px5g]
+        px5g
+        openwrt
+        GPL
+        Source Code
+[qca-acfg]
+	qca-acfg
+	Atheros
+	Atheros
+	Binary
+[qca-hostap]
+        hostap-10.2.2.39.1
+        Atheros
+        Atheros
+        Binary
+[qca-mcs]
+	qca-mcs
+	https://www.codeaurora.org/cgit/quic/qsdk/oss
+	Dual BSD/GPL
+	Source Code
+[qca-nss-clients]
+	qca-nss-clients
+	https://www.codeaurora.org/cgit/quic/qsdk/oss
+	Dual BSD/GPL
+	Source Code
+[qca-nss-crypto]
+	qca-nss-crypto
+	https://www.codeaurora.org/cgit/quic/qsdk/oss
+	Dual BSD/GPL
+	Source Code
+
+[qca-nss-drv]
+        qca-nss-drv
+        https://www.codeaurora.org/cgit/quic/qsdk/oss
+        Dual BSD/GPL
+        Source Code
+[qca-nss-ecm]
+        qca-nss-ecm
+        https://www.codeaurora.org/cgit/quic/qsdk/oss
+		Dual BSD/GPL
+        Source Code
+[qca-nss-gmac]
+        qca-nss-gmac
+        https://www.codeaurora.org/cgit/quic/qsdk/oss
+		GPL
+        Source Code
+[qca-nss-fw]
+        NSS.AK.1.0.c8-00014.tar.tar.bz2
+        https://www.codeaurora.org/cgit/quic/qsdk/oss
+		GPL
+        Source Code
+[qca-spectral]
+        qca-spectral
+        Atheros
+        Atheros
+        Binary
+[qca-ssdk]
+        qca-ssdk
+        https://www.codeaurora.org/cgit/quic/qsdk/oss
+		Dual BSD/GPL
+        Source Code
+[qca-ssdk-shell]
+        qca-ssdk-shell
+        Atheros
+        Atheros
+        Source Code
+[qca-wifi]
+        qca-wifi
+        Atheros
+        Atheros
+        Binary
+[qca-wifi-fw]
+	qca-wifi-fw-QCA9984_hw_1-CNSS.BL.3.0.r1-00003-S-1.tar.bz2
+	http://www.qca.qualcomm.com
+	Dual BSD/GPL
+        Source Code
+[qca-wpc]
+	qca-wpc
+	Atheros
+	Atheros
+	Binary
+[qca-wrapd]
+	qca-wrapd
+	Atheros
+	Atheros
+	Binary
+[qca-wifi-fw]
+	qca-wifi-fw-QCA9984_hw_1-CNSS.BL.3.0.2-00043-s-1.tar.gz2
+	Atheros
+	Atheros
+	Binary
+[qcmbr]
+	qcmbr
+	Atheros
+	Atheros
+	Binary
+[qdiscman]
+        qdiscman
+        Atheros
+        Atheros
+        Binary
+[qsdk-wifi-script]
+        qsdk-wifi-script
+        DNI
+        DNI
+        Binary
+[radardetect]
+        radardetect
+        DNI
+        DNI
+        Binary
+[radvd]
+        radvd-1.5
+        http://v6web.litech.org/radvd/dist
+        GPL
+        Source Code
+[redis]
+        redis-2.6.13.tar.gz
+        http://redis.googlecode.com/files/
+        GPL
+        Source Code
+[samba]
+        samba-3.0.24
+        http://www.samba.org
+        GPL
+        Source Code
+[samba-scripts]
+        samba-scripts
+        DNI
+        GPL
+        Source Code
+[sbmacouid]
+        sbmacouid
+        Atheros
+        Atheros
+        Binary
+[sbnamed]
+        sbnamed
+        Atheros
+        Atheros
+        Binary
+[sbnoded]
+        sbnoded
+        Atheros
+        Atheros
+        Binary
+[sbsaved]
+        sbsaved
+        Atheros
+        Atheros
+        Binary
+[sea]
+        sea
+        Atheros
+        Atheros
+        Binary
+[settings-loader]
+        settings-loader
+        Atheros
+        Atheros
+        Source Code
+[smoketest]
+        smoketest
+        Atheros
+        Atheros
+        Source Code
+[shortcut-fe]
+        shortcut-fe
+        Atheros
+        Atheros
+        Source Code
+[shortcut-fe-simulated-driver]
+		shortcut-fe-simulated-driver
+        Atheros
+        Atheros
+        Source Code
+[sqlite3]
+        sqlite-3.6.16
+        http://www.sqlite.org
+        GPL
+        Source Code
+[ssmtp]
+        ssmtp-2.64
+        http://ftp.debian.org/debian/pool/main/s/ssmtp
+        GPL
+        Source Code
+[streamboost]
+        streamboost
+        Atheros
+        Atheros
+        Source Code
+[streamboost-misc]
+        streamboost-misc
+        Atheros
+        Atheros
+        Source Code
+[swconfig]
+        swconfig
+        openwrt
+        GPL
+        Source Code
+[sysstat]
+        sysstat-10.1.7.tar.bz2
+        http://pagesperso-orange.fr/sebastien.godard/index.html
+        GPL
+        Source Code
+[tar]
+        tar-1.23.tar.gz
+        http://www.gnu.org/software/tar/
+        GPL
+        Source Code
+[tcpdump]
+	tcpdump
+	http://www.tcpdump.org/release/
+	BSD
+	Source Code
+[telnetenable]
+        telnetenable
+        http://www.opentom.org/Mkttimage; http://www.seattlewireless.net/telnetenable.c
+        GPL
+        Source Code
+[tftp-hpa]
+        tftp-hpa-0.48.tar.gz
+        http://www.kernel.org/pub/software/network/tftp
+        GPL
+        Source Code
+[toolchain]
+        toolchain
+        openwrt
+        GPL
+        Source Code
+[trafficmeter]
+        trafficmeter
+        DNI
+        DNI
+        Binary
+[transmission]
+		transmission-2.76.tar.bz2
+		http://www.transmissionbt.com
+        GPL
+        Source Code
+[tresbar]
+        tresbar
+        Atheros
+        Atheros
+        Binary
+[ubus]
+        dl/ubus-2013-01-13-bf566871bd6a633e4504c60c6fc55b2a97305a50.tar.gz
+        git://nbd.name/luci2/ubus.git
+        GPL
+        Source Code
+[uci]
+        uci
+        http://downloads.openwrt.org/sources
+        GPL
+        Source Code
+[uclibc++]
+        uClibc++-0.2.4.tar.bz2
+        http://cxx.uclibc.org/src/
+        GPL
+        Source Code
+[udev]
+        udev-106
+        ftp://ftp.kernel.org/pub/linux/utils/kernel/hotplug
+        GPL
+        Source Code
+[udevtrigger]
+        udevtrigger
+		http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html
+        GPL
+        Source Code
+[udhcp]
+        udhcp-0.9.8
+        http://udhcp.busybox.net/source
+        GPL
+        Source Code
+[uhttpd]
+        uhttpd
+        openwrt
+        Apache
+        Source Code
+[utelnetd]
+        utelnetd-0.1.9
+        http://gentoo.osuosl.org/distfiles
+        GPL
+        Source Code
+[vmstat]
+        vmstat
+        DNI
+        DNI
+        Binary
+[wget]
+	wget-1.13.4.tar.bz2
+	http://download.openwrt.org/sources/wget
+	GPL
+	Source Code
+[wide-dhcpv6]
+        wide-dhcpv6-20080615
+        https://sourceforge.net/projects/wide-dhcpv6
+        GPL
+        Source Code
+[wireless-tools]
+        wireless-tools-29.pre1
+        http://hplabs.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html
+        GPL
+        Source Code
+[wlan-common]
+        wlan-common
+        DNI
+        GPL
+        Source Code
+[wopr-db]
+        wopr-db
+        Atheros
+        Atheros
+        Binary
+[xfsprogs]
+        xfsprogs-3.1.7.tar.gz
+        http://oss.sgi.com/projects/xfs
+        GPL
+        Source Code
+[xtables-addons]
+	xtables-addons
+	@SF/xtables-addons	
+	GPL
+	Source Code
+[zebra]
+        zebra-0.95a
+        http://zebra.sourceforge.net
+        GPL
+        Source Code
+[zip]
+        zip232.zip
+        http://infozip.sourceforge.net/Zip.html
+        GPL
+        Source Code
+[zlib]
+        zlib-1.2.7
+        http://www.zlib.net
+        GPL
+        Source Code
+[zz-dni-streamboost]
+        zz-dni-streamboost
+        Atheros
+        Atheros
+        Binary
+
+Kernel Modules
+[Linux]
+        Linux-3.4.103
+atm
+        http://www.kernel.org
+        GPL
+        Source Code
+[kmod-conenat]
+        kmod-conenat
+        DNI
+        DNI
+        Binary
+[kmod-dnih323]
+        netfilter
+        http://www.netfilter.org
+        GPL
+        Source Code
+[kmod-dni-qos]
+	kmod-dni-qos
+	DNI
+	DNI
+	Binary
+[kmod-dnirtsp]
+        netfilter
+        http://www.netfilter.org
+        GPL
+        Source Code
+[kmod-dnisip]
+        netfilter
+        http://www.netfilter.org
+        GPL
+        Source Code
+[kmod-dnshijack]
+        kmod-dnshijack
+        DNI
+        DNI
+        Binary
+[kmod-ftp-alg]
+        netfilter
+        http://www.netfilter.org
+        GPL
+        Source Code
+[kmod-ipv6-cone]
+        kmod-ipv6-cone
+        DNI
+        DNI
+        Binary
+[kmod-kcode]
+        kmod-kcode
+        kcode
+        kcode
+        Binary
+[kmod-l2tp]
+        linux-2.6.31
+        http://www.kernel.org
+        GPL
+        Source Code
+[kmod-nat2.5]
+        kmod-nat2.5
+        DNI
+        DNI
+        Binary
+[kmod-netgear-reject]
+        kmod-netgear-reject
+        http://www.netfilter.org
+        GPL
+        Source Code
+[kmod-pptp]
+        linux-2.6.31
+        http://www.kernel.org
+        GPL
+        Source Code
+[kmod-pptp-alg]
+        netfilter
+        http://www.netfilter.org
+        GPL
+        Source Code
+[kmod-spiadvdos]
+        kmod-spiadvdos
+        DNI
+        DNI
+        Binary
+[kmod-spidos]
+        kmod-spidos
+        DNI
+        DNI
+        Binary
+[kmod-starcraft]
+        kmod-starcraft
+        DNI
+        DNI
+        Binary
+[kmod-trigger]
+        netfilter
+        http://www.netfilter.org
+        GPL
+        Source Code
+[kmod-urlblock]
+        kmod-urlblock
+        DNI
+        DNI
+        Binary
+[madwifi-11n]
+	qca-wifi
+	DNI
+	DNI
+	Binary

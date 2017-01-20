@@ -1,0 +1,54 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<body bgcolor="#ffffff" onload="loadvalue();">
+<% hijack_language() %>
+<script language="javascript" type="text/javascript">
+var is_in_cd_less = isCDLESS();
+function loadvalue()
+{
+	if(top.hidden_upgrade || is_in_cd_less)
+	{
+		document.getElementById("few_seconds").style.display = "none";
+		document.getElementById("cancel_btn").style.display = "";
+	}
+	else
+	{
+		document.getElementById("few_seconds").style.display = "";
+		document.getElementById("cancel_btn").style.display = "none";
+		setTimeout("goback()", 4000);
+	}
+}
+
+function goback()
+{
+	if(top.hidden_upgrade)  //if top.hidden_upgrade exits, top is CheckNewFirmware.htm
+		this.location.href = "CheckNewFW_upgrade.htm";
+	else if ( is_in_cd_less || isWIZARD())
+		toInternet();
+	else
+		this.location.href = "UPG_upgrade.htm";
+}
+var className = getText("short_common_bt", "cancel_bt");
+var quit_mark = getText(bh_ok_mark, "$quit_mark");
+</script>
+
+<div class="page_title"><script>printText(bh_failure_head, "$failure_head");</script></div>
+
+<div id="main" class="main">
+	<img src="/liteblue.gif" width="100%" height="12" />
+	<div align="center">
+		<br />
+		<b><script>printText(bh_download_confile_fail, "$download_confile_fail");</script></b>
+	</div>
+	<img src="/liteblue.gif" width="100%" height="12" />
+	<div id="few_seconds" align="center">
+		<script>printText(bh_few_second, "$few_second");</script>
+	</div>
+	<div id="cancel_btn" align="center">
+	<script>
+		document.write('<input type="button" class="'+className+'" name="Cancel" value="'+quit_mark+'" onclick="close_top_window();" />');
+	</script>
+
+	</div>
+</div>
+</body>
+</html>

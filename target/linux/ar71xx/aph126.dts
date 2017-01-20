@@ -1,0 +1,187 @@
+/*
+ * Copyright (c) 2013 The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 as published
+ * by the Free Software Foundation.
+ */
+
+/dts-v1/;
+
+/ {
+	model = "Qualcomm Atheros APH126";
+	compatible = "ath79,aph126";
+	#address-cells = <1>;
+	#size-cells = <1>;
+	interrupt-parent = <&vic>;
+
+	gpios: ath79-gpio {
+		#gpio-cells = <2>;
+		gpio-controller;
+	};
+
+	ahb {
+		compatible = "simple-bus";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		vic: intc {
+			compatible = "interrupt-controller";
+			interrupt-controller;
+			#interrupt-cells = <1>;
+		};
+
+		ehci@1b000000 {
+			compatible = "qcom,ag71xx-ehci";
+			reg = <0x1b000000 0x20000>;
+			interrupts = <3>;
+			interrupt-parent = <&vic>;
+		};
+
+		spi@1f000000 {
+			compatible = "qcom,ag71xx-spi";	 /* master */
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0x1f000000 0x01000000>;
+
+			flash: m25p80@0 {
+				compatible = "st,m25p80";	/* modalias */
+				#address-cells = <1>;
+				#size-cells = <1>;
+				spi-max-frequency = <25000000>; /* max_speed_hz */
+				reg = <0>;			/* chip_select */
+				spi-controller-data = <1 0 0>;  /* is_flash cs_type cs_line */
+
+				partition@u-boot {
+					label = "u-boot";
+					reg = <0x00000000 0x00040000>;
+                                        read-only;
+                                };
+				partition@u-boot-env {
+					label = "u-boot-env";
+					reg = <0x00040000 0x00010000>;
+                                        read-only;
+                                };
+                                partition@rootfs {
+                                        label = "rootfs";
+                                        reg = <0x00050000 0x00620000>;
+                                };
+                                partition@kernel {
+                                        label = "kernel";
+                                        reg = <0x00670000 0x00160000>;
+                                        read-only;
+                                };
+                                partition@pib {
+                                        label = "pib";
+                                        reg = <0x007d0000 0x00010000>;
+                                };
+                                partition@dtb {
+                                        label = "dtb";
+                                        reg = <0x007e0000 0x00010000>;
+                                        read-only;
+                                };
+                                partition@art {
+                                        label = "art";
+                                        reg = <0x007f0000 0x00010000>;
+                                        read-only;
+                                };
+                                partition@firmware {
+                                        label = "firmware";
+                                        reg = <0x00050000 0x00780000>;
+                                };
+			};
+		};
+
+		wmac@18100000 {
+			compatible = "qcom,ag71xx-wmac";
+			reg = <0x18100000 0x20000>;
+			interrupts = <47>;
+			interrupt-parent = <&vic>;
+		};
+
+		MDIO0: mdio@19000000 {
+			compatible = "qcom,ag71xx-mdio";
+			reg = <0x19000000 0x200>;
+			reg-names = "mdio_base";
+
+			bi-phy-addr = <0>;
+			bi-port0-cfg = <1 2 1 1 1>; /* force_link speed:1G txpause rxpause duplex */
+			bi-led-cfg = <0 0xc737c737 0 0x00c30c00 1>; /* led_ctrl0 led_ctrl1 led_ctrl2 led_ctrl3 open_drain*/
+			bi-pad0-cfg = <6 0 0 0 1 1 1 2 0 0>; /* mode rxclk_sel txclk_sel pipe_rxclk_sel txclk_delay_en
+				rxclk_delay_en txclk_delay_sel rxclk_delay_sel sgmii_txclk_phase_sel sgmii_rxclk_phase_sel */
+			bi-port6-cfg = <1 2 0 0 1>; /* force_link speed:1G txpause rxpause duplex */
+			bi-pad6-cfg = <6 0 0 0 1 1 1 2 0 0>; /* mode rxclk_sel txclk_sel pipe_rxclk_sel txclk_delay_en
+				rxclk_delay_en txclk_delay_sel rxclk_delay_sel sgmii_txclk_phase_sel sgmii_rxclk_phase_sel */
+		};
+
+		ETH0: ethernet@19000000 {
+			compatible = "qcom,ag71xx-eth";
+			reg = <0x19000000 0x200>,
+			      <0x18070000 0x14>;
+			reg-names = "mac_base",
+				"cfg_base";
+			interrupts = <4>;
+			interrupt-names = "mac_irq";
+			interrupt-parent = <&vic>;
+			mdio-handle = <&MDIO0>;
+
+			eth-cfg = <0x00000041>; /* RGMII_GMAC0 | SW_ONLY_MODE */
+			eth-phy-cfg = <6 1 1000 1>; /* phy_if_mode:RGMII phy_mask:1 speed:1G duplex:DUPLEX_FULL */
+			eth-pll-data = <0 0 0x06000000>; /* pll_10 pll_100 pll_1000 */
+		};
+	};
+
+	gpio-keys {
+		compatible = "gpio-keys";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		wps {
+			label = "wps";
+			gpios = <&gpios 16 1>;
+			linux,code = <529>; /* KEY_WPS_BUTTON */
+			debounce-interval = <60>;
+		};
+	};
+
+	gpio-leds {
+		compatible = "gpio-leds";
+
+		pwr-green {
+			label = "aph126:green:pwr";
+			gpios = <&gpios 17 1>;
+			linux,default-trigger = "default-on";
+		};
+
+		pwr-red {
+			label = "aph126:red:pwr";
+			gpios = <&gpios 21 1>;
+			default-state = "off";
+		};
+
+		wlan2g {
+			label = "aph126:green:wlan-2g";
+			gpios = <&gpios 13 1>;
+			default-state = "off";
+		};
+
+		wlan5g {
+			label = "aph126:green:wlan-5g";
+			gpios = <&gpios 4 1>;
+			default-state = "off";
+		};
+
+		wps {
+			label = "aph126:green:wps";
+			gpios = <&gpios 15 1>;
+			default-state = "off";
+		};
+
+		usb {
+			label = "aph126:green:usb";
+			gpios = <&gpios 11 1>;
+			default-state = "off";
+		};
+	};
+};

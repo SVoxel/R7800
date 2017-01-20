@@ -1,0 +1,26 @@
+HKCR
+{
+	PhEmbedCom.PhDDNS.1 = s 'PhDDNS Class'
+	{
+		CLSID = s '{260F073F-F564-499C-B7C3-0020F0330C7D}'
+	}
+	PhEmbedCom.PhDDNS = s 'PhDDNS Class'
+	{
+		CLSID = s '{260F073F-F564-499C-B7C3-0020F0330C7D}'
+		CurVer = s 'PhEmbedCom.PhDDNS.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {260F073F-F564-499C-B7C3-0020F0330C7D} = s 'PhDDNS Class'
+		{
+			ProgID = s 'PhEmbedCom.PhDDNS.1'
+			VersionIndependentProgID = s 'PhEmbedCom.PhDDNS'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			'TypeLib' = s '{5CE20F14-F268-4198-899F-4D1AFA140686}'
+		}
+	}
+}

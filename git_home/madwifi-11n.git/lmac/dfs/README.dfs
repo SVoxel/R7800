@@ -1,0 +1,34 @@
+This README explains the various files that make up the DFS module. The files are split up by functionality to make the module easier to maintain.  
+
+
+<dfs.c> This was the original huge file which has now been split up into multiple files. 
+It contains the dfs_attach() and dfs_detach() functions as well as the dfs_control() function which is used to process ioctls related to DFS. For Linux/Mac, "radartool" is the command line tool that can be used to call various ioctls to set and get radar detection thresholds.  
+
+<dfs_process_phyerr.c> For each radar pulse that the HW detects, a single radar PHY error is reported to the driver. This PHY error contains information like the RSSI, the pulse duration, the pulse location (primary/extension/DC) and possibly FFT data.
+
+This is the file that contains the functionality to process the radar PHY error that is reported by the chip to the driver. Once ath_recv figures out that this is a radar PHY error it will call ath_process_phyerr() and pass it the descriptor of the PHY error. A very basic level of filtering is done on the PHY error and a radar event is generated.
+
+<dfs_process_radarevent.c> This contains the functionality to process the radar event generated for a pulse. This will group together pulses and call various detection functions to figure out whether a valid radar has been detected.
+
+<dfs_bindetects.c> DFS specs specify various types of radars to be detected. Each separate type is called a Bin and has different characteristics. This file contains the functionality to look at a group of pulses and to detect whether we have detected a valid radar waveform. To do that, it must match the group against each different Bin's characteristics.  
+
+<dfs_fcc_bin5.c> FCC Bin5 are special type of radars because they "chirp". Basically the pulses move across the frequency band and are called chirping pulses. dfs_check_chirping() actually examines the FFT data contained in the PHY error information to figure out whether the pulse is moving across frequencies. 
+
+<dfs_staggered.c> ETSI 1.5.1 introduced new waveforms which use staggered PRIs within the same waveform. This file contains the detection implementation for these specific types of radars. This logic is different from the other detection because it must detect waveforms that may have 2 or more different PRIs (pulse repetition intervals).
+
+<dfs_nol.c> This contains NOL related functionality, NOL being the non occupancy list. After radar has been detected in a particular channel, the channel cannot be used for a period of 30 minutes which is called the non occupancy. The NOL is basically a list of all the channels that radar has been detected on. Each channel has a 30 minute timer associated with it. This file contains the functionality to add a channel to the NOL, the NOL timer function and the functionality to remove a channel from the NOL when its time is up. 
+
+<ath_dfs.mod.c> This contains module related definitions (for Linux only). 
+
+<dfs_init.c> This file contains initialization functions and functions that reset internal data structures.
+
+In this file, dfs_init_radar_filters() is the function that initializes the radar filter tables based on the regulatory domain set. This is called at initialization and every time a country code is set (i.e. when a new regulatory domain is set and a different set of filter tables needs to be used)
+
+
+<dfs_misc.c> This file really does contain miscellaneous functions that didn't fit in anywhere else.
+
+<dfs_debug.c> As per its name, it contains useful print functions that can be used for debug. Add all debug related functionality into this file. 
+
+
+<dfs_ar.c> This file contains now obsolete code which used to implement AR (Adaptive Radio) feature for older chipsets. This is kept for historical reasons only and is not used.
+

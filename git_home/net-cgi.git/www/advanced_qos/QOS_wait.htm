@@ -1,0 +1,68 @@
+<% start_netscan() %>
+
+<HTML>
+<HEAD>
+<META http-equiv="content-type" content='text/html; charset=UTF-8'>
+<LINK rel="stylesheet" type="text/css" href="style/hijack_style.css">
+</HEAD>
+<BODY bgcolor=#ffffff  onLoad="loadvalue()">
+<script>
+var basic_dynamic_page="<% cfg_get("basic_dynamic_page") %>";
+var delay_time=6000;
+var wait_time_count = 8;
+var time_increment = delay_time/8;
+var middle_bar_length = 0;
+function gotoload()
+{
+	this.location.href = "QOS_basic_setting.htm";
+}
+function loadvalue(){
+	var location_url = window.location.href;
+	if(location_url.indexOf("?"))
+		var location_url_arr = location_url.split("?");
+	if(location_url_arr[1] == "adv_qos")
+		setTimeout("updateProgress()",time_increment);
+	else
+		if(basic_dynamic_page == "dynamic")
+			this.location.href = "QOS_dynamic.htm";
+		else if (basic_dynamic_page == "basic"){
+			setTimeout("updateProgress()",time_increment);	
+		}
+		else
+			this.location.href = "QOS_basic_dynamic.htm";
+		
+}
+
+function updateProgress()
+{
+	var cf = document.forms[0];
+	if(wait_time_count > 1)		
+		middle_bar_length = middle_bar_length + 30;		
+	else if(wait_time_count == 1)
+		middle_bar_length = middle_bar_length + 28;
+	document.getElementById("bluebar_middle").style.width = middle_bar_length;
+	wait_time_count--;
+	if(wait_time_count != 0)
+		setTimeout("updateProgress()",time_increment);
+	else if(wait_time_count == 0)
+		gotoload();
+}
+</script>
+<div class="wizard_words_div" align="center" ><BR><BR><B>
+<script>
+var qos_endis_on="<% cfg_get("qos_endis_on") %>";
+var streamboost_enable="<% cfg_get("streamboost_enable") %>";
+var en_basic_dyn = "<% cfg_get("en_basic_dyn") %>";
+document.write("$wizard_pls_wait");
+	
+</script></B><BR><BR></div>
+<div class="new_waiting_img_div" align="center"><img src="image/progress_bar.png" alt="waiting" /></div>
+<div class="wait_main_content" >
+<div class="bluebar_div" >
+	<div class="bluebar_left"></div>
+	<div class="bluebar_middle" id="bluebar_middle"></div>
+	<div class="bluebar_right"></div> 
+</div>
+</div>
+</BODY>
+</HTML>

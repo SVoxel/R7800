@@ -1,0 +1,132 @@
+diff --git a/iwconfig.c b/iwconfig.c
+index d01f29a..12dd2e0 100644
+--- a/iwconfig.c
++++ b/iwconfig.c
+@@ -100,7 +100,7 @@ get_info(int			skfd,
+ #ifndef WE_ESSENTIAL
+   /* Get NickName */
+   wrq.u.essid.pointer = (caddr_t) info->nickname;
+-  wrq.u.essid.length = IW_ESSID_MAX_SIZE + 1;
++  wrq.u.essid.length = IW_ESSID_MAX_SIZE + 2;
+   wrq.u.essid.flags = 0;
+   if(iw_get_ext(skfd, ifname, SIOCGIWNICKN, &wrq) >= 0)
+     if(wrq.u.data.length > 1)
+@@ -619,7 +619,7 @@ set_essid_info(int		skfd,
+ {
+   struct iwreq		wrq;
+   int			i = 1;
+-  char			essid[IW_ESSID_MAX_SIZE + 1];
++  char			essid[4 * IW_ESSID_MAX_SIZE + 1];
+   int			we_kernel_version;
+ 
+   if((!strcasecmp(args[0], "off")) ||
+@@ -634,7 +634,7 @@ set_essid_info(int		skfd,
+ 	/* Get old essid */
+ 	memset(essid, '\0', sizeof(essid));
+ 	wrq.u.essid.pointer = (caddr_t) essid;
+-	wrq.u.essid.length = IW_ESSID_MAX_SIZE + 1;
++	wrq.u.essid.length = IW_ESSID_MAX_SIZE + 2;
+ 	wrq.u.essid.flags = 0;
+ 	if(iw_get_ext(skfd, ifname, SIOCGIWESSID, &wrq) < 0)
+ 	  return(IWERR_GET_EXT);
+@@ -653,9 +653,12 @@ set_essid_info(int		skfd,
+ 	      return(IWERR_ARG_NUM);
+ 	  }
+ 
+-	/* Check the size of what the user passed us to avoid
+-	 * buffer overflows */
+-	if(strlen(args[i]) > IW_ESSID_MAX_SIZE)
++	/* First size check : check if fits in our internal buffer.
++	 * We do a two pass size check because of unescaping (its
++	 * not supported in this version, but supported in the later).
++	 * TODO: Add support for user entering weird char ESSID.
++	 */
++	if(strlen(args[i]) > 4 * IW_ESSID_MAX_SIZE)
+ 	  {
+ 	    errmax = IW_ESSID_MAX_SIZE;
+ 	    return(IWERR_ARG_SIZE);
+diff --git a/iwevent.c b/iwevent.c
+index c31964b..7513658 100644
+--- a/iwevent.c
++++ b/iwevent.c
+@@ -341,7 +341,7 @@ print_event_token(struct iw_event *	event,		/* Extracted token */
+     case SIOCSIWESSID:
+     case SIOCGIWESSID:
+       {
+-	char essid[IW_ESSID_MAX_SIZE+1];
++	char essid[4 * IW_ESSID_MAX_SIZE + 1];
+ 	memset(essid, '\0', sizeof(essid));
+ 	if((event->u.essid.pointer) && (event->u.essid.length))
+ 	  memcpy(essid, event->u.essid.pointer, event->u.essid.length);
+diff --git a/iwgetid.c b/iwgetid.c
+index bbd48a1..84e6db4 100644
+--- a/iwgetid.c
++++ b/iwgetid.c
+@@ -84,8 +84,8 @@ print_essid(int			skfd,
+ 	    int			format)
+ {
+   struct iwreq		wrq;
+-  char			essid[IW_ESSID_MAX_SIZE + 1];	/* ESSID */
+-  char			pessid[IW_ESSID_MAX_SIZE + 1];	/* Pcmcia format */
++  char			essid[IW_ESSID_MAX_SIZE + 2];	/* ESSID */
++  char			pessid[4 * IW_ESSID_MAX_SIZE + 1];	/* Printable format */
+   unsigned int		i;
+   unsigned int		j;
+ 
+@@ -94,7 +94,7 @@ print_essid(int			skfd,
+ 
+   /* Get ESSID */
+   wrq.u.essid.pointer = (caddr_t) essid;
+-  wrq.u.essid.length = IW_ESSID_MAX_SIZE + 1;
++  wrq.u.essid.length = IW_ESSID_MAX_SIZE + 2;
+   wrq.u.essid.flags = 0;
+   if(iw_get_ext(skfd, ifname, SIOCGIWESSID, &wrq) < 0)
+     return(-1);
+diff --git a/iwlib.c b/iwlib.c
+index 0afa8c1..03c8de3 100644
+--- a/iwlib.c
++++ b/iwlib.c
+@@ -707,7 +707,7 @@ iw_get_basic_config(int			skfd,
+ 
+   /* Get ESSID */
+   wrq.u.essid.pointer = (caddr_t) info->essid;
+-  wrq.u.essid.length = IW_ESSID_MAX_SIZE + 1;
++  wrq.u.essid.length = IW_ESSID_MAX_SIZE + 2;
+   wrq.u.essid.flags = 0;
+   if(iw_get_ext(skfd, ifname, SIOCGIWESSID, &wrq) >= 0)
+     {
+diff --git a/iwlib.h b/iwlib.h
+index 31cf39b..a60596f 100644
+--- a/iwlib.h
++++ b/iwlib.h
+@@ -183,7 +183,7 @@ typedef struct wireless_config
+   int		key_flags;		/* Various flags */
+   int		has_essid;
+   int		essid_on;
+-  char		essid[IW_ESSID_MAX_SIZE + 1];	/* ESSID (extended network) */
++  char		essid[IW_ESSID_MAX_SIZE + 2];	/* ESSID (extended network) */
+   int		has_mode;
+   int		mode;			/* Operation mode */
+ } wireless_config;
+@@ -197,7 +197,7 @@ typedef struct wireless_info
+   int		has_sens;
+   iwparam	sens;			/* sensitivity */
+   int		has_nickname;
+-  char		nickname[IW_ESSID_MAX_SIZE + 1]; /* NickName */
++  char		nickname[IW_ESSID_MAX_SIZE + 2]; /* NickName */
+   int		has_ap_addr;
+   sockaddr	ap_addr;		/* Access point address */
+   int		has_bitrate;
+diff --git a/iwlist.c b/iwlist.c
+index 4a633a3..43bd9f1 100644
+--- a/iwlist.c
++++ b/iwlist.c
+@@ -496,7 +496,7 @@ print_scanning_token(struct stream_descr *	stream,	/* Stream of events */
+       break;
+     case SIOCGIWESSID:
+       {
+-	char essid[IW_ESSID_MAX_SIZE+1];
++	char essid[4 * IW_ESSID_MAX_SIZE + 1];
+ 	memset(essid, '\0', sizeof(essid));
+ 	if((event->u.essid.pointer) && (event->u.essid.length))
+ 	  memcpy(essid, event->u.essid.pointer, event->u.essid.length);

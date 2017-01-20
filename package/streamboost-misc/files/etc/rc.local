@@ -1,0 +1,31 @@
+# enable core dumps to tmp. all of these are required
+echo 2 > /proc/sys/fs/suid_dumpable
+echo 1 > /proc/sys/kernel/core_uses_pid
+touch /.init_enable_core
+sysctl -w "kernel.core_pattern=/tmp/%e.%p.%s.%t.core"
+ulimit -c unlimited
+
+# TODO: put these in /etc/init.d
+
+# make sure atheros drivers are found
+# This borks us. see Ben or Ryan.  Probably Ryan.
+#depmod -A
+
+# hack until we can fix init.d nodedetect proper
+# back to using init.d because the scapy p0f stuff was killing us anyway
+# -- RAN 20110726
+#nodedetect > /var/log/nodedetect.log 2>&1 &
+
+# Don't start app detect here any more and instead allow the individual
+# start scripts to control debug vs. prod startup, keyed on the presence
+# of the file "/etc/krouter_debug".
+#app_flow_control.sh start debug
+
+# This needs to be done by TC Controller.  However, TC Controller is in such
+# a borked state, I don't want to further bork it by adding cruft right now.
+# So, this setting, which converts our conntrack marks into skb->mark values,
+# will live here until the switch is made to a non-borked tc conntroller.
+# - BenM 20111216
+# Removing - this is done in tc_controller init now
+#iptables -t mangle -A POSTROUTING -j CLASSIFY --set-class 
+#iptables -t mangle -A POSTROUTING -j CONNMARK --restore-mark

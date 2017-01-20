@@ -1,0 +1,15 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=99
+
+start() {
+
+	# init the mtdoops to capture kernel crash log
+        #insmod mtdoops oops_part="reserve"
+	# start the console log capture when user set debug boot up when boot up
+	if [ "$($CONFIG get debug_boot_up)" = "1" ]; then
+		echo 1 > /tmp/collect_debug
+		/sbin/enable_collect_console_log.sh
+	fi	
+}

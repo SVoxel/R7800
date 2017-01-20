@@ -1,0 +1,53 @@
+From b3e5491ca8a22e4daf680d7f65ccddce01489e10 Mon Sep 17 00:00:00 2001
+From: "harry.lin" <harry.lin@dniserver.dnish.net>
+Date: Mon, 11 May 2015 18:30:32 +0800
+Subject: [PATCH] Fix segmentation fault triggered by scanning specific XML
+ file
+
+In "forked-daapd" of R7800, it was found that segmentation fault could
+happen if data_size=2 is passed to base64decode_block():
+
+static int base64decode_block(unsigned char *target, const char *data, size_t data_size)
+{
+	...
+	int n,i;  /* (1) */
+	...
+	n = 0;  /* (2) */
+	...
+	while (n < data_size-3) {  /* (3) */
+	...
+
+As shown in Line (1) and function prototype of base64decode_block(), "n"
+is of type "int" and "data_size" is of unsigned type "size_t". When
+while loop at Line (3) is entered for the first time, n=0 (see Line (2))
+and (data_size-3)=0xffffffff because "data_size" is of unsigned type.
+
+(0<0xffffffff) causes while loop at Line (3) be executed for too many
+times and trigger segmentation fault eventually after memory is
+exhausted.
+
+"forked-daapd" uses this lib, and thus it will exit after specific XML
+file is scanned because of segmentation fault triggered in this library.
+
+Signed-off-by: harry.lin <harry.lin@dniserver.dnish.net>
+Signed-off-by: George Hsiao <george.hsiao@dniserver.dnish.net>
+---
+ src/base64.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/base64.c b/src/base64.c
+index 65c6061..01a8573 100644
+--- a/src/base64.c
++++ b/src/base64.c
+@@ -76,7 +76,7 @@ static int base64decode_block(unsigned char *target, const char *data, size_t da
+ 	int w1,w2,w3,w4;
+ 	int n,i;
+ 
+-	if (!data || (data_size <= 0)) {
++	if (!data || (data_size <= 0) || (data_size < 3)) {
+ 		return 0;
+ 	}
+ 
+-- 
+1.7.10.4
+

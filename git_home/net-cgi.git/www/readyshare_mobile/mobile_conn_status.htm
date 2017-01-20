@@ -1,0 +1,58 @@
+<% http_header("style/form.css") %>
+<% nobody_header("mobile_conn_status.htm", "mobile_connect") %>
+<div class="page_title">$constatus_head</div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+
+<script>
+<% save_timestamp("mobile_connect", "mobile_disconnect") %>
+var ts='<% cfg_get("mobile_connect") %>';
+
+var mobile_status='<% cfg_get("wan_mobile_status") %>';
+function loadvalue()
+{
+	if(mobile_status=='3')
+		alert("$mobile_pincode_warn");
+}
+
+function click_refresh()
+{
+	location.href="mobile_conn_status.htm";
+}
+
+function click_disconnect()
+{
+	cf=document.forms[0];
+	cf.submit_flag.value="mobile_disconnect";
+	cf.action="/apply.cgi?/mobile_conn_status.htm timestamp="+ts;
+	cf.submit();
+}
+
+</script>
+</TABLE>
+
+<TABLE border=1 cellpadding=2 cellspacing=0 width=100%>
+<% show_mobile_status() %>
+</TABLE>
+
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR><TD nowrap colspan=2 align=center><br/><br/><input class="common_bt" type="submit" name="connect" value="$connect_mark">&nbsp;&nbsp;
+<input class="common_bt"  type="button" name="disconnect" value="$disconnect_mark" onclick="click_disconnect();" > &nbsp;&nbsp;
+<input class="common_bt"  type="button" name="refresh" value="$refresh_mark" onclick="click_refresh();" ></TD></TR>
+$bluebar
+<TR>
+	<TD nowrap align=center>
+	<input  class="delete_bt" type=button name="close" value="$close_win_mark" onclick="self.close();">
+	</TD>
+</TR>
+</TABLE>
+
+</div>
+
+</FORM>
+</BODY>
+<script>
+loadvalue();
+</script>
+</HTML>

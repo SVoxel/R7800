@@ -1,0 +1,38 @@
+From 675435ecaecbc21aa97064beda3f88d48db07d79 Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Fri, 7 Jun 2013 09:36:25 -0500
+Subject: [ag71xx] change tx and rx ring max and defaults
+
+At significant speed, we were frequently hitting ring full for TX,
+causing stalls and backpressure.  Doubling the default ring size
+prevents the issue.  However, rings that are too large begin to see
+a performance decrease as cache coolness effects begin to dominate.
+We set the maximums to these empirically determined values.
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/ag71xx.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+index 2812cda..e79e8f9 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+@@ -57,11 +57,11 @@
+ 	(ETH_FRAME_LEN + ETH_FCS_LEN + VLAN_HLEN)
+ #define AG71XX_RX_BUF_SIZE (AG71XX_RX_PKT_SIZE + NET_SKB_PAD + NET_IP_ALIGN)
+ 
+-#define AG71XX_TX_RING_SIZE_DEFAULT	64
++#define AG71XX_TX_RING_SIZE_DEFAULT	128
+ #define AG71XX_RX_RING_SIZE_DEFAULT	128
+ 
+-#define AG71XX_TX_RING_SIZE_MAX		256
+-#define AG71XX_RX_RING_SIZE_MAX		256
++#define AG71XX_TX_RING_SIZE_MAX		128
++#define AG71XX_RX_RING_SIZE_MAX		128
+ 
+ #define AG71XX_JUMBO_LEN		9000
+ 
+-- 
+1.8.1.2
+

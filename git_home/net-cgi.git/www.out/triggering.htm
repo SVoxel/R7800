@@ -1,0 +1,132 @@
+<% cfg_master_set("port_forward_trigger", "1") %>
+<% echo_set("triggering.htm", "/tmp/p_ft") %>
+
+<% http_header("style/form.css", "/funcs.js", "/triggering.js") %>
+<% body_header("_FW_trigger", "triggering.htm", "triggering_apply") %>
+<div class="page_title">$port_forward_trigger_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'triggering.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onClick="return check_triggering_apply(document.forms[0])"></TD>');
+else
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="button" name="Apply" id="apply" value="$apply_mark" disabled></TD>');
+        
+</script>
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+<% refresh_timestamp("triggering_add", "triggering_edit") %>
+<script>
+<% trigger_items_xss() %>
+<% save_timestamp("triggering_apply", "triggering_editnum", "triggering_del") %>
+var ts='<% cfg_get("triggering_apply") %>';
+var get_disable_port_trigger='<% cfg_get("disable_port_trigger") %>';
+
+function loadvalue(endis,cf)
+{
+	var cf=document.forms[0];
+	if(get_disable_port_trigger == '1')
+		cf.fwpt_enable.checked =true;
+	else
+		cf.fwpt_enable.checked =false;
+}
+</script>
+<input type="hidden" name="select_edit">
+<input type="hidden" name="select_del">
+<input type="hidden" name="disable_trigger_on">
+<input type="hidden" name="endis_trigger_value" value="">
+
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_FW_trigger','select')"><B>$select_service_type</B></a>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<input type="radio" name="serv_type" id="serv_pf"value="pf" onclick="doPortChange(0)">$port_forward
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><input type="radio" name="serv_type" id="serv_pt" checked value="pt">$port_trigger</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="fwpt_enable" id="fwpt_enable"><a tabindex=-1 href="javascript:loadhelp('_FW_trigger','pt_enable')"><B>$trigger_turn_on</B></a>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><a tabindex=-1 href="javascript:loadhelp('_FW_trigger','pt_timeout')"><B>$trigger_timeout</B>$adva_upnp_min</a></td>
+	<TD nowrap>
+	<input type="text" name="fwpt_timeout" id="fwpt_timeout" size="5" maxlength="4" value="<% cfg_sed_xss("porttrigger_timeout") %>" onKeyPress="return getkey('num', event)" onFocus="this.select();">
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap><B>$trigger_portmap_table</B></TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<TABLE id="pt_record" class=tables border=0 cellpadding=2 cellspacing=0 width=100%>
+	<TR class=table_header>
+		<TD nowrap align=center>&nbsp; 	 	</TD>
+		<TD nowrap align=center><span class="subhead"># </span></TD>
+		<TD nowrap align=center><span class="subhead">$r_enable</span></TD>
+		<TD nowrap align=center><span class="subhead">$forward_service_name</span></TD>
+		<TD nowrap align=center><span class="subhead">$block_ser_service_type</span></TD>
+		<TD nowrap align=center><span class="subhead">$trigger_in_connect</span></TD>
+		<TD nowrap align=center><span class="subhead">$trigger_ser_user</span></TD>
+	</TR> 
+		<script>
+var array_num=trigger_array_num;
+if (array_num > 0)
+{
+	for(i=1,j=0;i<=array_num;i++,j++)
+	{
+		var str = eval ( 'triggeringArray' + i );
+		var each_info=str.split(' ');
+	     if( i%2== 0 )
+			document.write("<TR class=\"even_line\">");
+		else
+			document.write("<TR class=\"odd_line\">");
+		document.write('<TD nowrap align=center><input type="radio" name="serviceSelect" id="service_select'+(j+1)+'" value="'+j+'"></TD><TD nowrap align=center><span class="subhead">'+i+'</span></TD>');
+		
+		if( each_info[8] == "1")
+			document.write('<TD nowrap align=center><input type="checkbox" name="enable_triggering" value="1" checked></TD>');
+		else
+			document.write('<TD nowrap align=center><input type="checkbox" name="enable_triggering" value="1"></TD>');
+		each_service_name=each_info[0].replace(/&harr;/g," ");
+		each_service_name=each_service_name.replace(/ /g,"&nbsp;").replace(/\</g, "&#60;").replace(/\>/g, "&#62;");
+		document.write('<TD nowrap align=center>'+each_service_name+'</TD><TD nowrap align=center>'+each_info[3]+':'+each_info[4]+ '<TD nowrap align=center>'+each_info[5]+':'+each_info[6]+'..'+each_info[7]+'<TD nowrap align=center>'+each_info[2]+'</TD></TR>');
+	}
+}		
+</script>
+	</TABLE>
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2 align=center>
+	<input class="middle_add_bt" type="button" name="Add Service" id="service_add" value="$trigger_add_service" onClick="check_maxNumAdd(document.forms[0],array_num,20,'$trigger_length_20','triggering_add.htm');">&nbsp;&nbsp;
+	<input class="middle_edit_bt" type="button" name="Edit Service" id="service_edit" value="$forward_edit_service" onClick="check_triggering_edit(document.forms[0]);">&nbsp;&nbsp;
+	<script>
+	if( master == "admin" )
+		document.write('<input class="middle_delete_bt" type="button" name="Delete Service" id="service_delete" value="$forward_del_service" onClick=" check_triggering_del(document.forms[0]);">');
+	else
+		document.write('<input class="middle_delete1_bt" type="button" name="Delete Service" id="service_delete" value="$forward_del_service" disabled>');
+	</script>
+	</TD>
+</TR>
+<TR><TD>&nbsp;</TD></TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_FW_trigger") %>
+</FORM>
+</BODY>
+</HTML>

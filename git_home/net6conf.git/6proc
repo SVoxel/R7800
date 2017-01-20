@@ -1,0 +1,34 @@
+#!/bin/sh
+
+. /etc/net6conf/6data.conf
+
+start ()
+{
+	local logo_test=`$CONFIG get endis_ipv6_logo_test`
+
+	echo 1 > /proc/sys/net/ipv6/conf/all/forwarding
+	echo 1 > /proc/sys/dni_netfilter/ipv6_ip6frag_not_check_icmp
+
+	echo 0 > /proc/sys/net/ipv6/conf/${WAN}/autoconf
+	if [ "x$logo_test" = "x1" -a "x$wan6_type" = "xfixed" ]; then
+		echo 1 > /proc/sys/net/ipv6/ipv6_srcrt_type_2
+		echo 1 > /proc/sys/net/ipv6/ipv6_ping6_interface
+	else
+		echo 0 > /proc/sys/net/ipv6/ipv6_srcrt_type_2
+		echo 0 > /proc/sys/net/ipv6/ipv6_ping6_interface
+		echo 0 > /proc/sys/dni_netfilter/ipv6_ip6frag_not_check_icmp
+		# Enable DAD, and randomly generate another IPv6 link-local address if
+		# MAC-based duplicate link-local address has been found
+		echo 3 > /proc/sys/net/ipv6/conf/${WAN}/accept_dad
+		# make WAN interface send NS packets
+		echo 0 > /proc/sys/net/ipv6/neigh/${WAN}/not_send_neighbor_solicitation
+		# make LAN interface send NS packets
+		echo 0 > /proc/sys/net/ipv6/neigh/$bridge/not_send_neighbor_solicitation
+	fi
+}
+
+case "$1" in
+        start)
+        start
+        ;;
+esac

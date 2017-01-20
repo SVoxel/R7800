@@ -1,0 +1,116 @@
+<% http_header("style/form.css", "/funcs.js", "/bas_mulpppoe.js","mp_lang.js") %>
+<% body_header( "", "BAS_update.htm", "mulpppoe_add") %>
+<% table_header( "$basic_intserv_mulpppoe" ) %>
+$bluebar
+
+<script>
+<% multipppoe_items() %>
+str1_div="";
+str2_div="";
+str3_div="";
+str4_div="";
+function loadvalue()
+{
+//	loadMPhelp("_BAS_mulpppoe");
+	var cf=document.forms[0];
+	str1_div=getObj("hidden_protocol").innerHTML;
+	getObj("hidden_protocol").innerHTML='';
+	str2_div=getObj("hidden_port").innerHTML;
+	getObj("hidden_port").innerHTML='';
+	str3_div=getObj("hidden_doname").innerHTML;
+	getObj("hidden_doname").innerHTML='';
+	str4_div=getObj("hidden_ip").innerHTML;
+	getObj("hidden_ip").innerHTML='';
+	cf.pppoe2_policy.value='<% cfg_get("mul_addnum") %>';
+	cf.hidden_pppoe2_policy.value='<% cfg_get("mul_addnum") %>';	
+	setPolicy();
+}
+</script>
+
+<input type="hidden" name="hidden_pppoe2_policy">
+<input type="hidden" name="hidden_userdefined">
+<input type="hidden" name="hidden_ip_start">
+<input type="hidden" name="hidden_ip_end">
+<input type="hidden" name="hidden_portstart">
+<input type="hidden" name="hidden_portend">
+<input type="hidden" name="hidden_protocol_value">
+<input type="hidden" name="ip_start">
+<input type="hidden" name="ip_end">
+<tr>
+	<td nowrap><script>document.write(policy_setting)</script></td>
+	<td nowrap align=right>
+		<SELECT name="pppoe2_policy" disabled onChange="setPolicy();">
+			<option value="0"><script>document.write(pppoe2_domain_name)</script></option>
+			<option value="1"><script>document.write(pppoe2_ip_protocol)</script></option>
+			<option value="2"><script>document.write(pppoe2_port_protocol)</script></option>
+			<option value="3"><script>document.write(pppoe2_ip_protocol)</script></option>
+		</SELECT>
+	</td>
+  </tr>
+</table>
+<div id="mul_protocol"></div>
+<div id="hidden_protocol" style="VISIBILITY:hidden;POSITION:absolute;">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<tr>
+	<td nowrap><script>document.write(block_ser_setup_pro)</script></td>	
+	<td nowrap align=right> 
+		<select NAME="protocol" size="1" >
+			<option value="TCP"><script>document.write(block_ser_setup_tcp)</script></option>
+			<option value="UDP"><script>document.write(block_ser_setup_udp)</script></option>
+			<option value="TCP/UDP"><script>document.write(block_ser_setup_tcp_udp)</script></option> 
+		</select>
+	</td>
+</tr>
+</table>
+</div>	
+<div id="mul_port"></div>
+<div id="hidden_port" style="VISIBILITY:hidden;POSITION:absolute;">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<tr>
+	<td nowrap><script>document.write(block_ser_port_range)</script></td>
+	<td nowrap align=right><input type="text" name="portstart" size="7" maxlength="5" onKeyPress="return getkey('num', event)"> --- 
+	<input type="text" name="portend" size="7" maxlength="5" onKeyPress="return getkey('num', event)">
+	</td>
+</tr>
+</table>
+</div>
+<div id="mul_doname"></div>
+<div id="hidden_doname" style="VISIBILITY:hidden;POSITION:absolute;">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<tr>
+	<td nowrap><script>document.write(pppoe2_domain_name)</script></td>
+	<td nowrap align=right><input type="text" name="userdefined" size="20" maxlength="30" onKeyPress="return getkey('ddns_hostname', event)"></td>
+</tr>
+</table>
+</div>
+<div id="mul_ip"></div>
+<div id="hidden_ip" style="VISIBILITY:hidden;POSITION:absolute;">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<tr><td nowrap><br><script>document.write(block_ser_setup_ip_jp)</script></td>
+	<td nowrap align=right>
+	<input type="text" name="start_ip1"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">.
+        <input type="text" name="start_ip2"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">.
+        <input type="text" name="start_ip3"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">.
+        <input type="text" name="start_ip4"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);"> ---
+        <input type="text" name="end_ip4"  size="3" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">
+        </td>
+</tr>
+</table>
+</div>
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+<TR>
+    <TD align=center colSpan=3 nowrap>
+	<script>
+		var master="<% cfg_get("http_loginname") %>";
+		if( master=="admin" )
+			document.write('<input class="add_bt" type="submit"  value="'+add_mark+'" onClick="return check_mulpppoe_add(document.forms[0],\'add\')">&nbsp;&nbsp;<input class="cancel_bt" type="button" value="'+cancel_mark+'" onClick="location.href=\'BAS_mulpppoe.htm\';">');	
+		else
+			document.write('<input class="add1_bt" type="submit"  value="'+add_mark+'" disabled>&nbsp;&nbsp;<input class="cancel1_bt" type="button" value="'+cancel_mark+'" disabled>');
+	</script>
+	</td>
+</TR>
+</TABLE>
+</form>
+</body>
+</html>

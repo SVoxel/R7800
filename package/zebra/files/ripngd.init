@@ -1,0 +1,25 @@
+#!/bin/sh /etc/rc.common
+# chkconfig: - 16 84
+# description: A RIP routing engine for use with Zebra and IPv6
+#
+# processname: ripngd
+# config: /etc/ripngd.conf
+
+#START=23
+
+start() {
+        local retval
+        echo -n "Starting ripngd: "
+        /usr/sbin/ripngd -d -f /etc/ripngd.conf
+        retval=$?
+        [ $retval -eq 0 ] && touch /tmp/ripngd
+        echo
+}
+
+stop() {
+       local retval
+       echo -n "Shutting down ripngd: "
+       killall ripngd
+       retval=$?
+       [ $retval -eq 0 ] && rm -f /tmp/ripngd
+}

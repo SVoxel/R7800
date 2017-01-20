@@ -1,0 +1,39 @@
+ifeq ($(obj),)
+obj := .
+endif
+
+DEPTH := ../..
+
+ifeq ($(strip ${QCA_PARTNER_MAKE_F_SUPPORT}),1)
+export QCA_PARTNER_MAKE_F_INC=1
+endif
+include $(obj)/$(DEPTH)/os/linux/Makefile-linux.common
+
+INCS += -I$(HAL) -I$(HAL)/$(OS) -I$(ATH) -I$(ATH_RATE) -I$(ATH_PKTLOG) -I$(WLAN) -I$(IF_WLAN) -I$(ATH_DFS) -I$(ATH_SPECTRAL) -I$(ATHEROSPATH) -I$(obj)/$(DEPTH)/../../apps/spectral/common
+
+obj-m += ath_spectral.o
+
+EXTRA_CFLAGS+= $(INCS) $(COPTS) -DATH_SUPPORT_SPECTRAL=1 -DSPECTRAL_USE_NETLINK_SOCKETS=1
+
+ifeq ($(strip ${QCA_PARTNER_MAKE_F_SUPPORT}),1)
+MOD_CFLAGS = -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(ath_spectral.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(ath_spectral)" 
+endif
+
+ath_spectral-objs := spectral.o spectral_netlink.o spectral_cmds.o spectral_process_data.o spectral_phyerr.o spectral_sim.o
+
+ifeq ($(strip ${QCA_PARTNER_MAKE_F_SUPPORT}),1)
+all: ath_spectral.ko
+
+ath_spectral.mod.o: ath_spectral.mod.c
+	${CC} -c -o $@ ${EXTRA_CFLAGS} ${MOD_CFLAGS} $<
+
+ath_spectral.o: ${ath_spectral-objs}
+	$(LD) -m elf32btsmip -r -o ath_spectral.o $(ath_spectral-objs)
+	$(KERNELPATH)/scripts/mod/modpost ath_spectral.o
+
+ath_spectral.ko: ath_spectral.o ath_spectral.mod.o
+	$(LD) $(LDOPTS) -o ath_spectral.ko ath_spectral.o ath_spectral.mod.o
+
+%.o: %.c 
+	${CC} -c -o $@ ${EXTRA_CFLAGS} $<
+endif

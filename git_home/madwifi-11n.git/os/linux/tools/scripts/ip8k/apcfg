@@ -1,0 +1,287 @@
+###################################################################################
+##  apcfg
+##
+##  Configuration file for Atheros AP.
+##  This file will "predefine" default configuration data for the AP.  This
+##  will first read all configuration data from flash (cfg -e), then fill in any
+##  defaults that are missing.  Thus the defaults will appear on the web pages
+##  even if the configuration store has been cleared.
+##
+###################################################################################
+##
+## Get the current settings from flash/cache area
+##
+
+cfg -e > /tmp/vars.$$
+. /tmp/vars.$$
+rm /tmp/vars.$$
+
+##
+## Set Network configuration
+##
+## AP_IPADDR  = IP address of the bridge
+## WAN_IPADDR = Fixed IP address of the WAN, if it's not bridged
+## WAN_MODE   = bridged for attached to bridged, Get address if dhcp, fixed address
+##              if static
+##
+###################################################################################
+
+cfg -a AP_IPADDR=${AP_IPADDR:="192.168.1.2"}
+cfg -a AP_NETMASK=${AP_NETMASK:="255.255.255.0"}
+cfg -a WAN_MODE=${WAN_MODE:="bridged"}
+cfg -a WAN_IPADDR=${WAN_IPADDR:="192.168.2.1"}
+cfg -a WAN_NETMASK=${WAN_NETMASK:="255.255.255.0"}
+
+#
+# Indicate if you want the WLAN to be activated on boot up.
+#
+
+cfg -a WLAN_ON_BOOT=${WLAN_ON_BOOT:="n"}
+
+#
+# AP Start Mode
+# This can be overridded by environmental variables
+# Modes can be
+#    standard := standard single AP start mode
+#      rootap := WDS root AP for WDS modes
+#    repeater := WDS repeater station
+#      client := WDS "virtual wire" client
+#       multi := Multiple BSSID with all encryption types
+#      stafwd := Station mode with address forwarding enabled
+#
+#
+
+cfg -a AP_STARTMODE=${AP_STARTMODE:="standard"}
+cfg -a AP_RADIO_ID=${AP_RADIO_ID:=0}
+cfg -a AP_RADIO_ID_2=${AP_RADIO_ID_2:=1}
+export NUMRADIO_AHB=1
+
+
+#################################################################################
+## Default Parameters
+## If these are not set explictly by exporting environmental variables, the following
+## Defaults will be applied
+#################################################################################
+#
+# AP_PRIMARY_CH could be
+#                a number or
+#                11ng (which means auto-scan in 11ng mode)
+
+cfg -a AP_PRIMARY_CH=${AP_PRIMARY_CH:=6}
+cfg -a AP_CHMODE=${AP_CHMODE:="11NGHT20"}
+
+##
+## Set up the channel for dual mode
+##
+
+cfg -a AP_PRIMARY_CH_2=${AP_PRIMARY_CH_2:=40}
+cfg -a AP_CHMODE_2=${AP_CHMODE_2:="11NAHT40MINUS"}
+
+##
+## This is for pure G or pure N operations.  Hmmmm...
+##
+
+cfg -a PUREG=${PUREG:=0}
+cfg -a PUREN=${PUREN:=0}
+
+##
+## Channel Configuration Section
+##
+
+cfg -a TXQUEUELEN=${TXQUEUELEN:=1000}
+cfg -a SHORTGI=${SHORTGI:=1}
+cfg -a SHORTGI_2=${SHORTGI_2:=1}
+
+#
+# Aggregation.  First parameter enables/disables,
+# second parameter sets the size limit
+#
+
+cfg -a AMPDUENABLE=${AMPDUENABLE:=1}
+cfg -a AMPDUENABLE_2=${AMPDUENABLE_2:=1}
+cfg -a AMPDUFRAMES=${AMPDUFRAMES:=32}
+cfg -a AMPDUFRAMES_2=${AMPDUFRAMES_2:=32}
+cfg -a AMPDULIMIT=${AMPDULIMIT:=50000}
+cfg -a AMPDULIMIT_2=${AMPDULIMIT_2:=50000}
+cfg -a AMPDUMIN=${AMPDUMIN:=32768}
+cfg -a AMPDUMIN_2=${AMPDUMIN_2:=32768}
+cfg -a CWMMODE=${CWMMODE:=1}
+cfg -a CWMMODE_2=${CWMMODE_2:=1}
+cfg -a RATECTL=${RATECTL:="auto"}
+cfg -a MANRATE=${MANRATE:=0x8c8c8c8c}
+cfg -a MANRETRIES=${MANRETRIES:=0x04040404}
+cfg -a RX_CHAINMASK=${RX_CHAINMASK:=3}
+cfg -a RX_CHAINMASK_2=${RX_CHAINMASK_2:=3}
+cfg -a TX_CHAINMASK=${TX_CHAINMASK:=3}
+cfg -a TX_CHAINMASK_2=${TX_CHAINMASK_2:=3}
+cfg -a SWAP_LED=${SWAP_LED:=1}
+cfg -a LED_CUSTOM=${LED_CUSTOM:=3}
+
+##
+## AP Identification Section
+##
+
+cfg -a AP_SSID="${AP_SSID:=Atheros_XSpan_2G}"
+
+if [ "${AP_STARTMODE}" = "dual" ]; then
+cfg -a AP_SSID_2="${AP_SSID_2:=Atheros_XSpan_5G}"
+fi
+
+##
+## Set the default modes for multi configuration
+##
+
+cfg -a AP_MODE=${AP_MODE:="ap"}
+cfg -a AP_MODE_2=${AP_MODE_2:="ap"}
+cfg -a AP_MODE_3=${AP_MODE_3:="ap"}
+cfg -a AP_MODE_4=${AP_MODE_4:="ap"}
+cfg -a AP_MODE_5=${AP_MODE_5:="ap"}
+cfg -a AP_MODE_6=${AP_MODE_6:="ap"}
+cfg -a AP_MODE_7=${AP_MODE_7:="ap"}
+cfg -a AP_MODE_8=${AP_MODE_8:="ap"}
+
+##
+## Set default security modes
+##
+export MAX_VAPS_PER_RADIO=8
+
+cfg -a AP_SECMODE=${AP_SECMODE:="None"}
+cfg -a AP_SECMODE_2=${AP_SECMODE_2:="None"}
+cfg -a AP_SECMODE_3=${AP_SECMODE_3:="None"}
+cfg -a AP_SECMODE_4=${AP_SECMODE_4:="None"}
+cfg -a AP_SECMODE_5=${AP_SECMODE_5:="None"}
+cfg -a AP_SECMODE_6=${AP_SECMODE_6:="None"}
+cfg -a AP_SECMODE_7=${AP_SECMODE_7:="None"}
+cfg -a AP_SECMODE_8=${AP_SECMODE_8:="None"}
+
+##
+## Set default secfile to PSK, only valid in WPA mode
+##
+## For the 4 wep keys, set the default values.  Note that the first key uses the _1
+## trailer - it's not a VAP number, it's the number of the key.  This is done for
+## both radios.
+##
+
+my_wep_keys="_1 _2 _3 _4"
+for i in $my_wep_keys;
+do
+    if [ "${i}" = "''" ]; then
+        i=""
+    fi
+    ITER_AP_WEP_RADIO_NUM0_KEY="WEP_RADIO_NUM0_KEY$i"
+    ITER_AP_WEP_RADIO_NUM1_KEY="WEP_RADIO_NUM1_KEY$i"
+    eval ITER_WEP_RADIO_NUM0_KEY=\$$ITER_AP_WEP_RADIO_NUM0_KEY
+    eval ITER_WEP_RADIO_NUM1_KEY=\$$ITER_AP_WEP_RADIO_NUM1_KEY
+    cfg -a $ITER_AP_WEP_RADIO_NUM0_KEY=${ITER_WEP_RADIO_NUM0_KEY:=""}
+    cfg -a $ITER_AP_WEP_RADIO_NUM1_KEY=${ITER_WEP_RADIO_NUM1_KEY:=""}
+done
+
+##
+## Now, for each radio, set the primary key and the mode value
+##
+
+cfg -a AP_PRIMARY_KEY_0="${AP_PRIMARY_KEY_0:=1}"
+cfg -a AP_PRIMARY_KEY_1="${AP_PRIMARY_KEY_1:=1}"
+cfg -a AP_WEP_MODE_0="${AP_WEP_MODE_0:=1}"
+cfg -a AP_WEP_MODE_1="${AP_WEP_MODE_1:=1}"
+
+my_vaps="'' _2 _3 _4 _5 _6 _7 _8 _9 _10 _11 _12 _13 _14 _15 _16"
+for i in $my_vaps;
+do
+    if [ "${i}" = "''" ]; then
+        i=""
+    fi
+    ITER_AP_MODE="AP_MODE$i"
+    ITER_AP_SECMODE="AP_SECMODE$i"
+    ITER_AP_SECFILE="AP_SECFILE$i"
+    ITER_AP_WPS_ENABLE="WPS_ENABLE$i"
+    eval ITER_MODE=\$$ITER_AP_MODE
+    eval ITER_SECMODE=\$$ITER_AP_SECMODE
+    eval ITER_SECFILE=\$$ITER_AP_SECFILE
+    eval ITER_WPS_ENABLE=\$$ITER_AP_WPS_ENABLE
+    cfg -a $ITER_AP_MODE=${ITER_MODE:="ap"}
+    cfg -a $ITER_AP_SECMODE=${ITER_SECMODE:="None"}
+    cfg -a $ITER_AP_SECFILE=${ITER_SECFILE:="PSK"}
+    cfg -a $ITER_AP_WPS_ENABLE=${ITER_WPS_ENABLE:="0"}
+done
+
+cfg -a AP_SECFILE=${AP_SECFILE:="PSK"}
+cfg -a AP_SECFILE_2=${AP_SECFILE_2:="PSK"}
+cfg -a AP_SECFILE_3=${AP_SECFILE_3:="PSK"}
+cfg -a AP_SECFILE_4=${AP_SECFILE_4:="PSK"}
+cfg -a AP_SECFILE_5=${AP_SECFILE_5:="PSK"}
+cfg -a AP_SECFILE_6=${AP_SECFILE_6:="PSK"}
+cfg -a AP_SECFILE_7=${AP_SECFILE_7:="PSK"}
+cfg -a AP_SECFILE_8=${AP_SECFILE_8:="PSK"}
+
+
+cfg -a WPS_ENABLE=${WPS_ENABLE:="0"}
+cfg -a WPS_ENABLE_2=${WPS_ENABLE_2:="0"}
+cfg -a WPS_ENABLE_3=${WPS_ENABLE_3:="0"}
+cfg -a WPS_ENABLE_4=${WPS_ENABLE_4:="0"}
+cfg -a WPS_ENABLE_5=${WPS_ENABLE_5:="0"}
+cfg -a WPS_ENABLE_6=${WPS_ENABLE_6:="0"}
+cfg -a WPS_ENABLE_7=${WPS_ENABLE_7:="0"}
+cfg -a WPS_ENABLE_8=${WPS_ENABLE_8:="0"}
+
+##
+## Default keys are Decimal (NOT hex)
+##
+
+cfg -a WEP_IS_HEX1=${WEP_IS_HEX1:="0"}
+cfg -a WEP_IS_HEX2=${WEP_IS_HEX2:="0"}
+cfg -a WEP_IS_HEX3=${WEP_IS_HEX3:="0"}
+cfg -a WEP_IS_HEX4=${WEP_IS_HEX4:="0"}
+cfg -a WEP_IS_HEX5=${WEP_IS_HEX5:="0"}
+cfg -a WEP_IS_HEX6=${WEP_IS_HEX6:="0"}
+cfg -a WEP_IS_HEX7=${WEP_IS_HEX7:="0"}
+cfg -a WEP_IS_HEX8=${WEP_IS_HEX8:="0"}
+
+cfg -a WPA_IS_HEX=${WPA_IS_HEX:="0"}
+cfg -a WPA_IS_HEX_2=${WPA_IS_HEX_2:="0"}
+cfg -a WPA_IS_HEX_3=${WPA_IS_HEX_3:="0"}
+cfg -a WPA_IS_HEX_4=${WPA_IS_HEX_4:="0"}
+cfg -a WPA_IS_HEX_5=${WPA_IS_HEX_5:="0"}
+cfg -a WPA_IS_HEX_6=${WPA_IS_HEX_6:="0"}
+cfg -a WPA_IS_HEX_7=${WPA_IS_HEX_7:="0"}
+cfg -a WPA_IS_HEX_8=${WPA_IS_HEX_8:="0"}
+
+##
+## Export the variables again to catch the defaults
+##
+
+cfg -e > /tmp/vars.$$
+. /tmp/vars.$$
+rm /tmp/vars.$$
+
+##
+## Set the proper radio parameter values depending on the
+## interface selected.  These are exported vice included
+## in cache. These should really be in apup vice here,
+## but this works OK.
+##
+
+for i in $my_vaps;
+do
+    if [ "${i}" = "''" ]; then
+        i=""
+fi
+    ITER_RADIO_ID="AP_RADIO_ID$i"
+    ITER_RFPARAM="AP_RFPARAM$i"
+    eval ITER_RADIO_ID=\$$ITER_RADIO_ID
+    if [ "${ITER_RADIO_ID}" = "1" ]; then
+        export $ITER_RFPARAM=RF:$AP_PRIMARY_CH_2:$AP_CHMODE_2
+else
+        export $ITER_RFPARAM=RF:$AP_PRIMARY_CH:$AP_CHMODE
+fi
+done
+
+#####################################################################################
+## The following parameters are board specific, and should not be modified
+#####################################################################################
+
+export ATH_use_eeprom=0
+# SET it to 1 if no "A" band support 
+# export AP_NO_A_BAND=1
+
+

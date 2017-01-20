@@ -1,0 +1,113 @@
+<% ca_http_header("style/hijack_style.css","style/hijack_ru_welcome.css", "/funcs.js","/bas_l2tp.js") %>
+<% nohelp_header("RU_isp_fail.htm", "RU_welcome") %>
+
+<script>
+//load_default(1); 
+var isp_type=parent.isp_type;
+
+function loadvalue()
+{
+	var cf=document.forms[0];
+	parent.l2tp_server_ipaddr=parent.vpn_server;
+
+	cf.l2tp_username.value=parent.l2tp_username;
+	cf.l2tp_passwd.value=parent.l2tp_password;
+	cf.l2tp_serv_ip.value=parent.l2tp_server_ipaddr;
+
+        //buttons left
+        var btns_div1 = document.getElementById("btnsContainer_div1");
+		if( master == "admin" )
+		{
+			btns_div1.onclick = function()
+			{
+                location.href="RU_welcome.htm";
+			}
+		}
+
+        //buttons right
+        var btns_div2 = document.getElementById("btnsContainer_div2");
+		if( master == "admin" )
+		{
+			btns_div2.onclick = function()
+			{
+                RU_l2tp_user_info();
+			}
+		}
+
+}
+
+</script>
+
+<input type="hidden" name="l2tp_myip">
+<input type="hidden" name="l2tp_mynetmask">
+<input type="hidden" name="l2tp_gateway">
+<input type="hidden" name="l2tp_conn_id" value="">
+<input type="hidden" name="DNSAssign">
+<input type="hidden" name="WANAssign">
+<input type="hidden" name="change_wan_type" value="0">
+<input type="hidden" name="run_test">
+<input type="hidden" name="l2tp_dod" value="0">
+<input type="hidden" name="STATIC_DNS">
+<input type="hidden" name="l2tp_dnsaddr1">
+<input type="hidden" name="l2tp_dnsaddr2">
+<input type="hidden" name="conflict_wanlan">
+<input type="hidden" name="ether_ipaddr">
+<input type="hidden" name="ether_subnet">
+<input type="hidden" name="ether_gateway">
+<input type="hidden" name="ether_dnsaddr1">
+<input type="hidden" name="ether_dnsaddr2">
+<input type="hidden" name="basic_type" value="0">
+<input type="hidden" name="ppp_login_type" value="2">
+<input type="hidden" name="welcome_wan_type">
+
+<div class="wizard_content_div">
+<div class="wizard_words_div">
+	<H1><script>document.write(RU_CA_head)</script></H1>
+<TABLE>
+<tr>
+	<td colspan=2><script>document.write(RU_isp_l2tp_head)</script></td>
+</tr>
+	<tr><td><br></td></tr>
+<tr>
+	<td><script>document.write(basic_pppoe_login)</script></td><td><input type=text name=l2tp_username></td>	
+</tr>
+<tr>
+	<td><script>document.write(basic_pppoe_passwd)</script></td><td><input type=text name=l2tp_passwd></td>	
+</tr>
+<tr>
+	<td><script>document.write(bh_basic_pptp_servip)</script></td><td><input type=text name=l2tp_serv_ip></td>	
+</tr>
+<tr><td><br></td></tr>
+</TABLE>
+</div><!--wizard_words_div -->
+<div id="center_buttons">
+  <div id="allBtns_div" class="wizard_buttons_div" align="center">
+                <div id="btnsContainer_div1" class="buttons_img_div" align="center">
+				<script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							document.write('<img src="image/ca-little-grey-button.png" />');
+                        </script>
+                        <div class="buttons_words_div"><script>document.write(RU_back)</script></div>
+                </div>
+                <div class="buttons_split"></div>
+                <div id="btnsContainer_div2" class="buttons_img_div" align="center">
+						<script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							
+							document.write('<img src="image/ca-little-grey-button.png" />');
+						</script>
+                        
+                        <div class="buttons_words_div"><script>document.write(RU_next)</script></div>
+                </div>
+  </div><!--allBtns_div -->
+</div>
+</div><!--wizard_content_div -->
+</form>
+</BODY>
+</HTML>

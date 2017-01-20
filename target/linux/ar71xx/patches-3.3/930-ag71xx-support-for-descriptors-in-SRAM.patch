@@ -1,0 +1,158 @@
+From 033f8542b4dfb49629813ca8adade695d8ac6eae Mon Sep 17 00:00:00 2001
+From: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+Date: Fri, 7 Jun 2013 15:25:00 -0500
+Subject: [ag71xx] support for descriptors in SRAM
+
+Adds support to the ag71xx to use SRAM for descriptors for a limited
+number of ag71xx instances.  This is a significant performance
+improvement over using non-cacheable RAM (~4% overall bridging
+performance).
+
+Signed-off-by: Ben Menchaca <ben.menchaca@qca.qualcomm.com>
+---
+ drivers/net/ethernet/atheros/ag71xx/Kconfig       |  8 ++++
+ drivers/net/ethernet/atheros/ag71xx/ag71xx.h      |  1 +
+ drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c | 57 +++++++++++++++++++----
+ 3 files changed, 57 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/ethernet/atheros/ag71xx/Kconfig b/drivers/net/ethernet/atheros/ag71xx/Kconfig
+index 42d544f..dbffdc7 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/Kconfig
++++ b/drivers/net/ethernet/atheros/ag71xx/Kconfig
+@@ -8,6 +8,14 @@ config AG71XX
+ 
+ if AG71XX
+ 
++config AG71XX_SRAM_DESCRIPTORS
++	bool "Atheros AR71xx built-in ethernet driver SRAM descriptor rings"
++	default n
++	help
++	  Atheros AR71xx built-in ethernet driver normally uses non-cached RAM
++	  for descriptor rings.  If set to 'y', this option puts those rings in
++	  SRAM, improving performance.
++
+ config AG71XX_DEBUG
+ 	bool "Atheros AR71xx built-in ethernet driver debugging"
+ 	default n
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+index b4c6708..9df5053 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx.h
+@@ -119,6 +119,7 @@ struct ag71xx_ring {
+ 	uint16_t		desc_size;
+ 	u8			*descs_cpu;
+ 	dma_addr_t		descs_dma;
++	void __iomem		*iomem;
+ };
+ 
+ struct ag71xx_mdio {
+diff --git a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+index 2e60df9..7909159 100644
+--- a/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
++++ b/drivers/net/ethernet/atheros/ag71xx/ag71xx_main.c
+@@ -14,6 +14,10 @@
+ 
+ #include "ag71xx.h"
+ 
++#ifndef UNUSED
++#define UNUSED(__x)	(void)(__x)
++#endif
++
+ static int ag71xx_gmac_num = 0;
+ 
+ #define AG71XX_DEFAULT_MSG_ENABLE	\
+@@ -31,6 +35,17 @@ static int ag71xx_msg_level = -1;
+ module_param_named(msg_level, ag71xx_msg_level, int, 0);
+ MODULE_PARM_DESC(msg_level, "Message level (-1=defaults,0=none,...,16=all)");
+ 
++#ifdef CONFIG_AG71XX_SRAM_DESCRIPTORS
++#define MAX_AG71XX_USING_SRAM		2
++#define MAX_AG71XX_SRAM_RINGS		(MAX_AG71XX_USING_SRAM) * 2
++static unsigned long ag71xx_ring_bufs[MAX_AG71XX_SRAM_RINGS] = {
++	0x1d000000UL,
++	0x1d001000UL,
++	0x1d002000UL,
++	0x1d003000UL
++};
++#endif /* CONFIG_AG71XX_SRAM_DESCRIPTORS */
++
+ #ifdef DEBUG
+ static void ag71xx_dump_dma_regs(struct ag71xx *ag)
+ {
+@@ -94,12 +109,17 @@ static void ag71xx_ring_free(struct ag71xx_ring *ring)
+ {
+ 	kfree(ring->buf);
+ 
+-	if (ring->descs_cpu)
+-		dma_free_coherent(NULL, ring->size * ring->desc_size,
+-				  ring->descs_cpu, ring->descs_dma);
++	if (ring->descs_cpu) {
++		if (ring->iomem) {
++			iounmap(ring->iomem);
++		} else {
++			dma_free_coherent(NULL, ring->size * ring->desc_size,
++					  ring->descs_cpu, ring->descs_dma);
++		}
++	}
+ }
+ 
+-static int ag71xx_ring_alloc(struct ag71xx_ring *ring)
++static int ag71xx_ring_alloc(struct ag71xx_ring *ring, unsigned int id)
+ {
+ 	int i;
+ 
+@@ -111,13 +131,32 @@ static int ag71xx_ring_alloc(struct ag71xx_ring *ring)
+ 		ring->desc_size = roundup(ring->desc_size, cache_line_size());
+ 	}
+ 
+-	ring->descs_cpu = dma_alloc_coherent(NULL, ring->size * ring->desc_size,
+-					     &ring->descs_dma, GFP_ATOMIC);
++#ifdef CONFIG_AG71XX_SRAM_DESCRIPTORS
++	if (id < MAX_AG71XX_USING_SRAM) {
++		DBG("ag71xx: descriptors in SRAM\n");
++		ring->iomem = ioremap_nocache(ag71xx_ring_bufs[id], 0x1000);
++		if (ring->iomem == NULL)
++			return -ENOMEM;
++
++		ring->descs_cpu = (u8 *)ring->iomem;
++		ring->descs_dma = ((dma_addr_t)(ring->iomem) & 0x1fffffff);
++		goto descs_allocated;
++	}
++#else
++	UNUSED(id);
++#endif /* CONFIG_AG71XX_SRAM_DESCRIPTORS */
++	ring->iomem = NULL;
++	ring->descs_cpu = dma_alloc_coherent(NULL,
++					     ring->size * ring->desc_size,
++					     &ring->descs_dma,
++					     GFP_ATOMIC);
+ 	if (!ring->descs_cpu) {
+ 		return -ENOMEM;
+ 	}
+ 
+-
++#ifdef CONFIG_AG71XX_SRAM_DESCRIPTORS
++descs_allocated:
++#endif /* CONFIG_AG71XX_SRAM_DESCRIPTORS */
+ 	ring->buf = kzalloc(ring->size * sizeof(*ring->buf), GFP_KERNEL);
+ 	if (!ring->buf) {
+ 		return -ENOMEM;
+@@ -269,13 +308,13 @@ static int ag71xx_rings_init(struct ag71xx *ag)
+ {
+ 	int ret;
+ 
+-	ret = ag71xx_ring_alloc(&ag->tx_ring);
++	ret = ag71xx_ring_alloc(&ag->tx_ring, (ag->gmac_num * 2));
+ 	if (ret)
+ 		return ret;
+ 
+ 	ag71xx_ring_tx_init(ag);
+ 
+-	ret = ag71xx_ring_alloc(&ag->rx_ring);
++	ret = ag71xx_ring_alloc(&ag->rx_ring, (ag->gmac_num * 2) + 1);
+ 	if (ret)
+ 		return ret;
+ 
+-- 
+1.8.1.2
+

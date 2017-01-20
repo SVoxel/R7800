@@ -1,0 +1,77 @@
+config MINIUPNPD_GIT_TREEISH
+	string
+	prompt "treeish of miniupnpd git repository"
+	default "HEAD"
+	help
+	  input the treeish of miniupnpd git repository which you want to build
+
+config MINIUPNPD_FRIENDLYNAME
+	string
+	prompt "Friendly name of the router"
+	default "NETGEAR WPN824N Wireless Router"
+	help
+	  Friendly name of the router, such as NETGEAR WPN824N Wireless Router
+
+config MINIUPNPD_MODELNAME
+	string
+	prompt "Model name of the router"
+	default "RangeMax N150 Wireless Router"
+	help
+	  Model name of the router, such as RangeMax N150 Wireless Router
+
+config MINIUPNPD_MODELNUMBER
+	string
+	prompt "Model number of the router"
+	default "WPN824N"
+	help
+	  Model number of the router, such as WPN824N
+
+config MINIUPNPD_MODELURL
+	string
+	prompt "Model url of the router"
+	default "http://www.netgear.com/home/products/wirelessrouters"
+	help
+	  Model url of the router, such as http://www.netgear.com/home/products/wirelessrouters/simplesharing/WPN824N.aspx
+
+config MINIUPNPD_SUPPORT_PNPX
+	bool "Support Microsoft PnP-X function"
+	default n
+	help
+	  Under Windows Vista and Windows 7, Plug and Play Extensions (PnP-X) allows network-connected
+	  devices to be discovered and installed on a PC client as if they were connected physically.
+	  URL: http://www.microsoft.com/whdc/connect/rally/rallypnpx.mspx
+
+	  If unsure, say N.
+
+config MINIUPNPD_PNPX_HWID
+	depends on MINIUPNPD_SUPPORT_PNPX
+	string
+	prompt "PnP-X HW ID"
+	default "VEN_01f2&DEV_8000&REV_01 VEN_0033&DEV_0008&REV_01"
+	help
+	  For NETGEAR Router, the PnP-X HW ID have 3 parts: [NTGR Specific HW ID] [NTGR Generic HW ID] VEN_0033&DEV_0008&REV_01
+	  thereinto, [NTGR Specific HW ID] is assigned by NTGR and each ID is used specifically for a specific model.
+	  [NTGR Generic HW ID] For a router product without a USB port, use VEN_01f2&DEV_8000&REV_01; for a router product with
+	  a USB port, use VEN_01f2&DEV_8000&SUBSYS_01&REV_01 VEN_01f2&DEV_8000&REV_01.
+	  VEN_0033&DEV_0008&REV_01 is Microsoft Specific HW ID for IGD
+
+config MINIUPNPD_PATCH_GEN_UUID
+	bool "Apply patch to generate UUID according MAC Address"
+	default n
+	help
+	  Say Y if you want to generate UUID according MAC Address
+
+	  If unsure, say N.
+
+config WAN_IFNAME
+	string
+	prompt "wan interface name"
+	default "brwan"
+	help
+	  the name of wan interface 
+
+config MINIUPNPD_DEVUPC
+	string
+	prompt "universal product code"
+	help
+	  "MINIUPNPD configuration with universal product code"

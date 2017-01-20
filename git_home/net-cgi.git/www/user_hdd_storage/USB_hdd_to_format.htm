@@ -1,0 +1,168 @@
+<% http_header("style/form.css", "/funcs.js", "/hdd_sata.js") %>
+<% body_header("", "USB_hdd_format_wait.htm", "format_hdd") %>
+
+<div class="page_title">   </div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+       <TD nowrap colspan=2 align=center>
+		<input class="cancel_bt" type='reset' name='Cancel' value='$cancel_mark' onClick='location.href="USB_advanced.htm";'>&nbsp;&nbsp;
+        <input class="apply_bt" type="submit" name="Apply" value="$apply_mark" onClick="return hdd_format(document.forms[0]);">
+       </TD>
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<!--% table_header() %-->
+<table width="100%" border="0" cellpadding="0" cellspacing="3">
+<tr><td colSpan="2"><h1></h1></td></tr>
+<script>
+var sata_exist="<% cfg_get("sata_diskname") %>";
+//var sata_num="<% cfg_get("sata_partition_count") %>"; //need one var which not ready
+var sata_recognized="<% sata_if_regnizd() %>";
+var sata_partition_status="<% cfg_get("sata_partition_status") %>";
+var show_deviceName="<% cfg_sed_xss("usb_deviceName") %>";
+var show_lanip="<% cfg_sed_xss("lan_ipaddr") %>";
+<% show_usb_fileder_items() %>
+<% check_ftp() %>
+<% show_devices() %>
+var ts="<% cfg_get("format_hdd") %>";
+
+function loadvalue()
+{
+	if(sata_partition_status ==0 || sata_recognized == 0) //detected but not formated, for new hdd and detected but not recognized. format directly
+		document.getElementById("partition_show").style.display="none";
+	else
+		document.getElementById("partition_show").style.display="";
+}
+
+function create_hdd_rule(n, value)
+{
+	cf = document.forms[0];
+	value = value.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+	one_rule = document.createElement('input');
+	one_rule.type = "hidden";
+	one_rule.name = "hid_hdd_list"+n;
+	one_rule.value=""+value+"";
+	cf.appendChild(one_rule);
+}
+
+function hdd_format( cf )
+{
+var check_box = document.getElementsByName("hdd_partition");
+var partition_name = document.getElementsByName("hdd_partition_name");
+var k = 0;
+
+	cf.hid_uncheck_all.value = 0;
+	
+		for (i=0; i<hdd_num;i++)
+		{	
+			if(check_box[i].checked == true )
+			{
+				create_hdd_rule(k, partition_name[i].value);
+				k++;
+			}
+		}
+		if( hdd_num == k || hdd_num ==1)
+			cf.check_num_full.value = 1;
+		else
+			cf.check_num_full.value = 0;
+}
+
+function check_num(cf, num)
+{
+var check_box = document.getElementsByName("hdd_partition");
+var check_one = 0;
+		
+		for(i=0; i<hdd_num; i++)
+		{
+			if(check_box[i].checked == true )
+				check_one =1;
+		}
+		
+		if(check_one == 0)
+			check_box[num].checked = true;
+}
+</script>
+<input type="hidden" name="check_num_full">
+<input type="hidden" name="hid_uncheck_all">
+
+
+<TR id="partition_show">
+ 	<TD nowrap colspan=2>
+	<TABLE class=tables border ="0" cellpadding ="2" cellspacing ="0" width="100%">
+	<TR class=table_header>
+		<TD nowrap><span class="thead">&nbsp;</span></TD>
+		<TD nowrap type=hidden></TD>
+		<TD nowrap><span class="thead">$share_name</span></TD>
+		<TD nowrap><span class="thead">$total_sapce</span></TD>
+		<TD nowrap><span class="thead">$free_space</span></TD>
+	</TR>
+<script>
+var j = 0;
+var hdd_num;
+var k=0; // for save item num
+sata_vol();
+//alert("sata partition "+sata_vol_num)
+sata_reserved();
+
+for( i=(have_reserved==1?1:0); i<sata_vol_num; i++)
+{
+	for(j=0; j<folder_number; j++)
+	{
+		//alert("should be here");
+		 var str = eval('usb_sharefolder' + j).replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");;
+		each_info = str.split('*');
+		
+		if(each_info[1].indexOf(sata_part_name[i]) != -1)
+		{
+			//alert("should be here 111");
+			show_folderName = each_info[4].replace( / /g,"&nbsp;");
+			if( i%2== 0 )
+				document.write("<TR class=\"odd_line\">");
+			else
+				document.write("<TR class=\"even_line\">");
+				
+			document.write('<TD nowrap><input type="checkbox" name="hdd_partition" value="'+k+'" checked onClick="check_num(document.forms[0],'+k+');"></TD>');
+			document.write('<TD nowrap><input type="hidden" name="hdd_partition_name" value="'+each_info[1].substr(5)+'"></TD>');
+			
+			if( each_info[9] == "Not Shared" )
+					document.write('<TD nowrap>'+show_folderName+'</TD>');
+			else
+			{
+				/*Bug 24943: follow spec 2.0 12.8.2, all displayed as \\readyshare\.. */
+				if(isIE())//bug 25057:USB share name string not in one line with others,so delete <pre>
+					document.write('<TD nowrap><a class="linktype" href="\\\\'+show_deviceName+'\\'+each_info[4]+'" target="_blank">\\\\'+show_deviceName+'\\'+show_folderName+'</a></TD>');
+				else if( get_browser() == "Safari" )
+					document.write('<TD nowrap><a class="linktype" href="smb://'+show_lanip+'\\'+each_info[4]+'">\\\\'+show_deviceName+'\\'+show_folderName+'</a></TD>');
+				else
+					document.write('<TD nowrap>\\\\'+show_deviceName+'\\'+show_folderName+'</TD>');
+			}
+			
+			document.write('<TD nowrap >'+each_info[2]+'</TD>');  //total space
+			document.write('<TD nowrap >'+each_info[3]+'</TD>');	//free space
+			document.write('</TR>');
+			
+			k++;
+			hdd_num = k;
+			
+			break;
+		}
+	}
+}
+</script>
+	</TABLE>
+	</TD>
+</TR>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR id="warn_mess">
+	<TD nowrap colspan=2 align=center>
+	<b>Formatting the internal disk will erase all data in it. Are you sure you want to do this?</b></TD>
+</TR>
+
+</TABLE>
+</div>
+<!--% help_box("0","_STR_routes") %-->
+</FORM>
+</BODY>
+</HTML>

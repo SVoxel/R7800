@@ -1,0 +1,6 @@
+#!/bin/sh /sbin/sysdebug
+
+for dev in $(ls -1 /sys/class/net/); do
+	[ -d /sys/class/net/${dev} ] || continue
+	log tc -s qdisc show dev ${dev}
+done

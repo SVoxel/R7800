@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_hijack_index.js"></script>
+<% hijack_language() %>
+<script language="javascript" type="text/javascript">
+var dns_hijack = "<% cfg_get("dns_hijack") %>";
+var ap_mode = "<% cfg_get("ap_mode") %>";
+var apmode_get_ip="<% ap_mode_ip() %>";
+var lanip = "<% cfg_get("lan_ipaddr") %>";
+var from_restore = "<% cfg_get("from_restore") %>";
+var from_nowan = "<% cfg_get("from_nowan_retry") %>";
+var from_setting = "<% cfg_get("from_setting") %>";
+var form_set2 = "<% cfg_get("form_set2") %>";
+var first_hdd_nofind = "<% cfg_get("hddnofind") %>"; ////when no hdd is find, run this case. and we set one value hddnofind to 1(default is 0). after reboot router.the BRS_index to check hddnofind,if 1,show hdd_not_find page. if 0, run previous old process.
+var browser_lang = "<% get_browser_language() %>";
+var netgear_region="<% get_firmware_region() %>"
+var from_download = "<% cfg_get("from_download") %>";
+<% cfg_set("from_restore", "0") %>
+<% cfg_set("from_nowan_retry", "0") %>
+<% cfg_set("have_click_take_me_to_internet", "0") %>
+<% cfg_set("hijack_language", "1") %>
+<% cfg_set("hddnofind", "0") %>
+<% cfg_set("from_download", "0") %>
+<% ru_web_flag() %>
+<% web_flag() %>
+
+wan_port=0;
+
+//bpa
+var telstra_bigpond_user_name="";
+var telstra_bigpond_password="";
+var telstra_idletime=5;
+var telstra_bigpond_ip="";
+var wl0_ssid="NETGEAR";
+var wl_country="7"
+var wl0_sec_mode="none";
+var wl0_pskkey="";
+var wl0_wpaenc="";
+var temp_password="";
+var wirelessMode=2;
+
+//for ca_10_EnterWEP_Key.cgi
+var wl0_key1="";
+var wl0_keylength="40";
+var wl0_txkey="";
+var w10_keystr="";
+
+//Failover & Loadbalance
+var multi_wan_mode="none";  // none, multi
+var multi_wan_mode_ether="0";//0:unconfigured, 1:configured
+var multi_wan_mode_mobile="0";//0:unconfigured, 1:configured
+
+var is_ru_version = ((browser_lang ==  "Russian" && ( netgear_region.toUpperCase() == "WW" || netgear_region == "")) || netgear_region.toUpperCase() == "RU") ? 1 : 0;
+var is_pr_version = ((browser_lang ==  "Chinese" && ( netgear_region.toUpperCase() == "WW" || netgear_region == "")) || netgear_region.toUpperCase() == "PR") ? 1 : 0;
+
+</script>
+</head>
+
+<body>
+
+<div id="page_container">
+
+	<div id="header">
+		<iframe id="header_frame" name="header_frame" allowtransparency="true" height="97px" width="980px" scrolling="no" frameborder="0" class="header_frame" src="BRS_top.html">
+		</iframe>
+	</div>
+	
+	<div class="wizard_body_container">
+		<iframe id="content_frame" name="content_frame" allowtransparency="true" height="100%" width="100%" scrolling="auto" frameborder="0" class="body_frame">
+		</iframe>
+	</div>
+	
+	<div class="bottom_margin"></div>
+
+</div>
+
+</body>
+
+</html>

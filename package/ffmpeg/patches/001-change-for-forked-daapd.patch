@@ -1,0 +1,39 @@
+diff -aurN ffmpeg-0.11.2.orig/libavcodec/avcodec.h ffmpeg-0.11.2/libavcodec/avcodec.h
+--- ffmpeg-0.11.2.orig/libavcodec/avcodec.h	2014-02-27 18:48:17.378638034 +0800
++++ ffmpeg-0.11.2/libavcodec/avcodec.h	2014-02-27 18:50:37.768635122 +0800
+@@ -3376,7 +3376,6 @@
+  *
+  * @deprecated use avcodec_open2
+  */
+-attribute_deprecated
+ int avcodec_open(AVCodecContext *avctx, AVCodec *codec);
+ #endif
+ 
+@@ -3655,7 +3654,7 @@
+  * @return On error a negative value is returned, otherwise the number of bytes
+  * used or zero if no frame data was decompressed (used) from the input AVPacket.
+  */
+-attribute_deprecated int avcodec_decode_audio3(AVCodecContext *avctx, int16_t *samples,
++int avcodec_decode_audio3(AVCodecContext *avctx, int16_t *samples,
+                          int *frame_size_ptr,
+                          AVPacket *avpkt);
+ #endif
+diff -aurN ffmpeg-0.11.2.orig/libavformat/avformat.h ffmpeg-0.11.2/libavformat/avformat.h
+--- ffmpeg-0.11.2.orig/libavformat/avformat.h	2014-02-27 18:48:17.438637981 +0800
++++ ffmpeg-0.11.2/libavformat/avformat.h	2014-02-27 18:50:10.998634484 +0800
+@@ -1353,7 +1353,6 @@
+  *
+  * @deprecated use avformat_find_stream_info.
+  */
+-attribute_deprecated
+ int av_find_stream_info(AVFormatContext *ic);
+ #endif
+ 
+@@ -1529,7 +1528,6 @@
+  *
+  * @param s media file handle
+  */
+-attribute_deprecated
+ void av_close_input_file(AVFormatContext *s);
+ #endif
+ 

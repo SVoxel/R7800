@@ -1,0 +1,2 @@
+# enable bridge nf options so the nss conntrack can detect these
+dev.nss.general.redirect=1

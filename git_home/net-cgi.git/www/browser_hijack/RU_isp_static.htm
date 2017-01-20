@@ -1,0 +1,194 @@
+<% ca_http_header("style/hijack_style.css","style/hijack_ru_welcome.css", "/funcs.js", "/bas_ether.js") %>
+<% nohelp_header("RU_macspoof.htm", "RU_welcome") %>
+
+<script>
+//load_default(1); 
+var lan_ip="<% cfg_get("lan_ipaddr") %>";
+var lan_subnet="<% cfg_get("lan_netmask") %>";
+function loadvalue()
+{
+	var tmp;
+	cf=document.forms[0];
+
+	var tmp_ip=parent.static_ip.replace(/x/g,"");
+	var tmp_subnet=parent.static_subnet.replace(/x/g,"");
+	var tmp_gate=parent.static_gateway.replace(/x/g,"");
+	var tmp_dns1=parent.static_dns1.replace(/x/g,"");
+	var tmp_dns2=parent.static_dns2.replace(/x/g,"");
+
+	if(tmp_ip != "" )  
+	{
+		tmp=tmp_ip.split('.');
+		cf.WPethr1.value=tmp[0];
+		cf.WPethr2.value=tmp[1];
+		cf.WPethr3.value=tmp[2];
+		cf.WPethr4.value=tmp[3];
+	}
+	if(tmp_subnet != "")
+	{    
+		tmp=tmp_subnet.split('.');
+		cf.WMask1.value=tmp[0];
+		cf.WMask2.value=tmp[1];
+		cf.WMask3.value=tmp[2];
+		cf.WMask4.value=tmp[3];
+	}
+	if(tmp_gate != "")
+	{    
+		tmp=tmp_gate.split('.');
+		cf.WGateway1.value=tmp[0];
+		cf.WGateway2.value=tmp[1];
+		cf.WGateway3.value=tmp[2];
+		cf.WGateway4.value=tmp[3];
+	}
+	if(tmp_dns1 != "")
+	{   
+		tmp=tmp_dns1.split('.');
+		cf.DAddr1.value=tmp[0];
+		cf.DAddr2.value=tmp[1];
+		cf.DAddr3.value=tmp[2];
+		cf.DAddr4.value=tmp[3];
+	}
+	if(tmp_dns2 != "")
+	{    
+		tmp=tmp_dns2.split('.');
+		cf.PDAddr1.value=tmp[0];
+		cf.PDAddr2.value=tmp[1];
+		cf.PDAddr3.value=tmp[2];
+		cf.PDAddr4.value=tmp[3];
+	}
+
+	//buttons left
+        var btns_div1 = document.getElementById("btnsContainer_div1");
+		if( master == "admin" )
+		{
+			btns_div1.onclick = function()
+			{
+				location.href="RU_welcome.htm";
+			}
+		}
+
+        //buttons right
+        var btns_div2 = document.getElementById("btnsContainer_div2");
+		if( master == "admin" )
+		{
+			btns_div2.onclick = function()
+			{
+                RU_welcome_static();
+			}
+		}
+}
+
+</script>
+
+<input type="hidden" name="conflict_wanlan">
+<input type="hidden" name="ether_ipaddr">
+<input type="hidden" name="ether_subnet">
+<input type="hidden" name="ether_gateway">
+<input type="hidden" name="ether_dnsaddr1">
+<input type="hidden" name="ether_dnsaddr2">
+<input type="hidden" name="basic_type" value="1">
+<input type="hidden" name="ppp_login_type" value="0">
+<input type="hidden" name="run_test">
+<input type="hidden" name="welcome_wan_type">
+<input type="hidden" name="DNSAssign">
+<input type="hidden" name="change_wan_type" value="0">
+<input type="hidden" name="WANAssign">
+
+
+<div class="wizard_content_div">
+<div class="wizard_words_div">
+	<H1><script>document.write(RU_CA_head)</script></H1>
+<TABLE width=100%>
+<TR><TD colspan=2 ><script>document.write(RU_isp_static_head)</script></TD></TR>
+<TR><TD colspan=2><br></TD></TR>
+<TR><TD colspan=2 align=center><script>document.write(RU_ip)</script></TD></TR>
+
+
+<TR>
+	<TD><script>document.write(bh_info_mark_ip)</script></TD>
+	<TD nowrap align=right>
+	<input type="text" name="WPethr1"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="WPethr2"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="WPethr3"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="WPethr4"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR>
+	<TD><script>document.write(lan_mark_subnet)</script></TD>
+	<TD nowrap align=right>
+	<input type="text" name="WMask1"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="WMask2"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="WMask3"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="WMask4"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD> 
+</TR>
+<TR>
+	<TD><script>document.write(lan_mark_gateway)</script></TD>
+	<TD nowrap align=right>
+	<input type="text" name="WGateway1"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="WGateway2"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="WGateway3"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="WGateway4"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+
+<tr><td><br></td></tr>
+<TR>
+	<TD colspan=2 align=center><script>document.write(basic_dns)</script></TD>
+</TR>
+<TR>
+	<TD nowrap><script>document.write(basic_int_primary_dns)</script></TD>
+	<TD nowrap align=right>
+	<input type="text" name="DAddr1"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="DAddr2"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="DAddr3"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="DAddr4"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+
+
+<TR>
+	<TD nowrap><script>document.write(basic_int_second_dns)</script></TD>
+	<TD nowrap align=right>
+	<input type="text" name="PDAddr1"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="PDAddr2"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="PDAddr3"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="PDAddr4"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">	
+	</TD>
+</TR>
+
+<TR><TD colspan=2><br></TD></TR>
+
+</TABLE>
+</div><!--wizard_words_div -->
+<div id="center_buttons">
+  <div id="allBtns_div" class="wizard_buttons_div" align="center">
+                <div id="btnsContainer_div1" class="buttons_img_div" align="center">
+                         <script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							document.write('<img src="image/ca-little-grey-button.png" />');
+                        </script>
+                        <div class="buttons_words_div"><script>document.write(RU_back)</script></div>
+                </div>
+                <div class="buttons_split"></div>
+                <div id="btnsContainer_div2" class="buttons_img_div" align="center">
+						<script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							
+							document.write('<img src="image/ca-little-grey-button.png" />');
+						</script>
+                        <div class="buttons_words_div"><script>document.write(RU_next)</script></div>
+                </div>
+  </div><!--allBtns_div -->
+</div>
+</div><!--wizard_content_div -->
+<script>scroll_show();</script>
+</FORM>
+</BODY>
+</HTML>

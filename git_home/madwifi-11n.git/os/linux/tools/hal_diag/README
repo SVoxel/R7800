@@ -1,0 +1,17 @@
+#
+# Copyright (c) 2013 Qualcomm Atheros, Inc.
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary.
+#
+
+This directory has tools that use the diagnostic interface to fetch data.
+Note that most of these can only be used (currently) when the HAL is built
+with AH_PRIVATE_DIAG enabled.
+
+For the moment the only supported tools are:
+
+ani		Modify ANI parameters
+reg		Read/Write registers
+
+Note that these tools do very little error checking so if they are
+out of sync wrt the HAL they can easily do the wrong thing.

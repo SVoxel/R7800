@@ -1,0 +1,33 @@
+#!/bin/sh /etc/rc.common
+START=99
+
+KVER=`uname -r | cut -f 1`
+MODULE_PATH=/lib/modules/$KVER
+
+start() {
+	# Check is cable attached to WAN port, exit if "yes"
+	detcable show | grep "WAN  : Plug in" > /dev/null
+	if [ $? -eq 0 ]; then
+		exit 0;
+	fi
+
+	# Add kernel object and switch mode of modem
+	/sbin/insmod $MODULE_PATH/rndis_host.ko
+	/sbin/usbmode -s
+	/bin/sleep 10
+
+	# Check is modem attached
+	/sbin/ifconfig eth0 up
+	if [ $? -eq 0 ]; then
+		/etc/init.d/net-wan stop
+		/etc/init.d/detcable stop
+		/etc/init.d/watchdog stop
+		echo -n 1 > /tmp/port_status
+		echo modem > /tmp/modem
+		/etc/init.d/net-wan start
+		/usr/sbin/net-wall restart
+	else
+	# No modem found, restore kernel objects
+		/sbin/rmmod rndis_host
+	fi
+}

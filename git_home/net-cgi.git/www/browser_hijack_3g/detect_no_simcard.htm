@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_02_genieHelp.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/detect_no_sim.js"></script>
+<% hijack_language() %>
+</head>
+
+<body>
+<% form_submit("apply", "config_3g_wait_page.htm", "wizard_3g_detwan") %>
+<% save_timestamp("wizard_3g_detwan", "wizard_lte_detwan" ) %>
+<script language="javascript" type="text/javascript">var ts="<% cfg_get("wizard_3g_detwan") %>";</script>
+
+<div class="wizard_content_div">
+	<div id="choices_div" class="wizard_words_div">
+		<h1><!--bh_detect_not_simcard--></h1>
+		<p><!--bh_detect_not_simcard_msg1--></p>
+		<p><!--bh_detect_not_simcard_msg2--></p>
+		<p><!--bh_detect_not_simcard_msg3 --></p>
+		<p><!--bh_detect_not_simcard_msg4 --></p>
+		<p><!--bh_detect_not_simcard_msg5 --></p>
+	</div>
+
+	<div id="allBtns_div" class="wizard_buttons_div">
+		<div id="btnsContainer_div1" class="buttons_img_div" align="center">
+			<img src="image/ca-little-purple-button.gif" />
+			<div id="btn_div" class="buttons_words_div"><!--back_mark--></div>
+		</div>
+		<div id="btnsContainer_div2" class="buttons_img_div" align="center">
+			<img src="image/ca-little-purple-button.gif" />
+			<div id="btn_div" class="buttons_words_div"><!--bh_try_again--></div>
+		</div>
+		<div id="btnsContainer_div3" class="buttons_img_div" align="center">
+			<img src="image/ca-little-purple-button.gif" />
+			<div id="btn_div" class="buttons_words_div"><!--quit_mark--></div>
+		</div>
+	</div>
+</div>
+
+</form>
+</body>
+
+</html>

@@ -1,0 +1,54 @@
+--- a/fp_tcp.c
++++ b/fp_tcp.c
+@@ -11,6 +11,8 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <unistd.h>
++#include <endian.h>
++#include <byteswap.h>
+ 
+ #include <netinet/in.h>
+ #include <sys/types.h>
+@@ -43,6 +45,19 @@ static u8 guess_dist(u8 ttl) {
+   return 255 - ttl;
+ }
+ 
++/* Byte swap the tcp options for proper hashing on big-endian systems */
++static void tcp_opts_htole32(u8 opts[MAX_TCP_OPT], size_t opts_count) {
++  int i, len;
++  u32 *w;
++  len = opts_count + (4 - (opts_count & 3));
++  for (i = 0; i < len; i += 4) {
++    w = (u32 *) &(opts[i]);
++    /* note: htole32 is not available in the Cameo build environment because
++       it uses an older uclibc */
++    /* *w = htole32(*w); */
++    *w = bswap_32(htonl(*w));
++  }
++}
+ 
+ /* Figure out if window size is a multiplier of MSS or MTU. We don't take window
+    scaling into account, because neither do TCP stack developers. */
+@@ -545,6 +560,7 @@ void tcp_register_sig(u8 to_srv, u8 gene
+ 
+   val++;
+ 
++  tcp_opts_htole32(opt_layout, opt_cnt);
+   opt_hash = hash32(opt_layout, opt_cnt, hash_seed);
+ 
+   /* Quirks */
+@@ -734,7 +750,13 @@ void tcp_register_sig(u8 to_srv, u8 gene
+ 
+ static void packet_to_sig(struct packet_data* pk, struct tcp_sig* ts) {
+ 
+-  ts->opt_hash = hash32(pk->opt_layout, pk->opt_cnt, hash_seed);
++  u8 opts[MAX_TCP_OPT];
++
++  memset(opts, 0, sizeof(opts));
++  memcpy(opts, pk->opt_layout, pk->opt_cnt);
++  tcp_opts_htole32(opts, pk->opt_cnt);
++
++  ts->opt_hash = hash32(opts, pk->opt_cnt, hash_seed);
+ 
+   ts->quirks      = pk->quirks;
+   ts->opt_eol_pad = pk->opt_eol_pad;

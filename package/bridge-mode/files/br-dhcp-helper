@@ -1,0 +1,30 @@
+#!/bin/sh
+
+if [ "x`config get bridge_band_choose`" = "x2.4g" ]; then
+	old_status=`cat /proc/sys/net/ath1/status | awk 'NR==3'`
+	wlan_connected="RUN"
+
+else
+	old_status=`cat /proc/sys/net/ath0/status | awk 'NR==3'`
+	wlan_connected="RUN"
+fi
+
+while [ 1 ]; do
+	sleep 5
+	if [ "x`config get bridge_band_choose`" = "x2.4g" ]; then
+		current_status=`cat /proc/sys/net/ath1/status | awk 'NR==3'`
+	else
+		current_status=`cat /proc/sys/net/ath0/status | awk 'NR==3'`
+	fi
+	if [ "x$current_status" = "x$wlan_connected" ]; then
+		if [ "x$old_status" != "x$current_status" -o "x`ifconfig br0 | grep "inet addr:169.254"`" != "x" ]; then
+			if [ "x`pidof udhcpc`" != "x" ]; then
+				killall -SIGUSR1 udhcpc
+			else
+				# maybe udhcpc is stoped for some reason
+				udhcpc -a -b -i br0 -h "$(config get bridge_netbiosname)" -r $(config get ap_dhcp_ipaddr) &
+			fi
+		fi
+	fi
+	old_status=$current_status
+done

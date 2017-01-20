@@ -1,0 +1,210 @@
+#!/bin/sh
+# Common stuff for appflow pipeline stages
+
+# make system configuration overridable for easier debugging on read-only platforms
+STREAMBOOST_SYS_CFG=${STREAMBOOST_SYS_CFG:-"${STREAMBOOST_RUNDIR:-/var/run/appflow}/streamboost.sys.conf"}
+STREAMBOOST_SYS_DEFAULTS=${STREAMBOOST_SYS_DEFAULTS:-"${STREAMBOOST_CFGDIR:-/etc/appflow}/streamboost.sys.conf"}
+
+. /usr/share/libubox/jshn.sh
+
+print_interface_device() {
+        json_load "$(ubus call network.interface.$1 status)"
+        json_get_var dev_name device
+        echo "$dev_name"
+}
+
+is_interface_up() {
+        json_load "$(ubus call network.interface.$1 status)"
+	json_get_var iface_up up
+	return $((! ${iface_up:-0}))
+}
+
+. /lib/functions.sh
+. /lib/firewall/core.sh
+
+is_firewall_up() {
+	fw_is_loaded
+}
+
+[ -f $STREAMBOOST_SYS_CFG ] || {
+	mkdir -p $(dirname $STREAMBOOST_SYS_CFG)
+	sed "s/%UBUS_LAN_DEV%/$(print_interface_device lan)/" <$STREAMBOOST_SYS_DEFAULTS | \
+	sed "s/%UBUS_WAN_DEV%/$(print_interface_device wan)/" >$STREAMBOOST_SYS_CFG
+}
+. $STREAMBOOST_SYS_DEFAULTS
+. $STREAMBOOST_SYS_CFG
+
+# This must be done AFTER sourcing $STREAMBOOST_SYS_CFG, or RUNDIR won't be defined
+STREAMBOOST_USER_CFG=${STREAMBOOST_USER_CFG:-"$RUNDIR/streamboost.user.conf"}
+
+
+# override these in each daemon's init script as needed
+# values for overrides may be set before or after sourcing this script
+DEFAULT_ACTION=${DEFAULT_ACTION:-status}
+RELOAD_SENDS_HUP=${RELOAD_SENDS_HUP:-no}
+# also needed for default action implementations: BINARY
+
+check_for_zombies() {
+	local PID=$1
+	if grep "^State:.*Z" /proc/$PID/status &>/dev/null; then
+		echo "$DISPLAY_NAME (pid $PID) is a zombie"
+		return 2
+	fi
+}
+
+default_status() {
+	if [ -r "$PIDFILE" ]; then
+		PID=$(cat $PIDFILE 2>/dev/null)
+		if [ -e /proc/$PID/maps ]; then
+			check_for_zombies $PID || return 2
+			echo "$DISPLAY_NAME (pid $PID) is running."
+		else
+			echo "$DISPLAY_NAME is not running."
+			return 1
+		fi
+	else
+		echo "$DISPLAY_NAME is not running."
+		return 1
+	fi
+}
+status() {
+	default_status
+}
+
+restart() {
+	stop "$@"
+	start "$@"
+}
+
+send_signal() {
+	SIGNUM=${1:-HUP}
+	[ -r "$PIDFILE" -a -e /proc/$(cat $PIDFILE 2>/dev/null) ] && kill -s $SIGNUM $(cat $PIDFILE 2>/dev/null)
+}
+
+reload() {
+	if [ "$RELOAD_SENDS_HUP" == "no" ]; then
+		restart
+	else
+		send_signal HUP
+	fi
+}
+
+boot() {
+	start "$@"
+}
+
+init() {
+	boot "$@"
+}
+
+default_start() {
+	echo -n "Starting ${DISPLAY_NAME}... "
+	start-stop-daemon -S -q -p "$PIDFILE" -x "$BINDIR/$BINARY" -- $OPTIONS_RUN "$@"
+	retval=$?
+	[ $retval -eq 0 ] && echo "[  OK  ]" || echo "[ FAIL ]"
+	return $retval
+}
+start() {
+	default_start
+}
+
+default_stop() {
+	echo -n "Stopping ${DISPLAY_NAME}... "
+	local PID=$(cat "$PIDFILE" 2>/dev/null)
+	if [ -n "$PID" ]; then
+		if [ -f /proc/$PID/maps ]; then
+			if [ "$STOP_IS_BLOCKING" = "yes" ]; then
+				local count=0
+				local maxcount=${STOP_MAXCOUNT:-5}
+				kill -TERM $PID 2>/dev/null
+				while [ -f /proc/$PID/maps ]; do
+					sleep 1
+					let count++
+					[ "$count" -gt $maxcount ] && kill -9 $PID 2>/dev/null
+				done
+				true
+			else
+				kill -TERM $PID 2>/dev/null
+			fi
+		else
+			true
+		fi
+		retval=$?
+		if [ $retval -eq 0 ]; then
+			echo "[  OK  ]"
+			rm -f $PIDFILE
+		else
+			echo "[ FAIL ]"
+		fi
+		return $retval
+	else
+		echo "PID file $PIDFILE does not exist"
+	fi
+}
+stop() {
+	default_stop
+}
+
+action() {
+	action=${1:-$DEFAULT_ACTION}
+	# this shift is required because the start() function accepts
+	# parameters from the command line and passes them through to the
+	# daemon
+	shift
+
+	BINARY=${BINARY:-$(echo $0 | sed 's/.*\///')}
+	DISPLAY_NAME=${DISPLAY_NAME:-${NAME:-$BINARY}}
+	PIDFILE=${PIDFILE:-$RUNDIR/$BINARY.pid}
+
+	case "${action}" in
+		boot|init)
+			boot "$@"
+			;;
+		start|stop|restart|reload|status)
+			${action} "$@"
+			;;
+		*)
+			echo "Usage: $0 {start|stop|restart|reload|boot|init|status}"
+			exit 3
+	esac
+}
+
+queue_to_drflocs() {
+	local tname=$1
+	## Strip filename of any tag extensions
+	local name=`basename $tname .gz`
+	## Remove any reference to the file
+	rm -f $ENQUEUE_DIR/$name
+	rm -f $ENQUEUE_DIR/$tname
+	rm -f $UPLOADABLE_DIR/$name
+	rm -f $UPLOADABLE_DIR/$tname
+	## .... and give the filename back to drflocs
+	echo $INCOMING_DIR/$name > $FCAP_CMD_FIFO
+}
+
+# adds a cron entry
+# note: this function is idempotent
+# $1: the full text to add to the crontab, e.g., "0 * * * * echo hello"
+add_to_cron() {
+	crontab -l 2>/dev/null | grep -qF "$1"
+	if [ "$?" = "1" ]; then
+		(crontab -l 2>/dev/null; echo "$1") | crontab -
+	fi
+}
+
+# creates CIDR notation given an ip address and netmask
+# $1: IP Address
+# $2: Netmask
+ipaddr_netmask_to_cidr() {
+	local addr=$1
+	local mask=$2
+	local pre=$(awk -v "NMSK=${mask}" 'BEGIN {bits=8; for (i = 255; i >= 0; i -= 2^i++) cidr[i] = bits--; split(NMSK, arr, "[.]"); for (i = 1; i <= 4; i++) {total += cidr[arr[i]]; if (arr[i] < 255) break} print total}')
+	local net=$({ echo "${addr}"; echo "${mask}"; } | { IFS=. read A B C D; IFS=. read N1 N2 N3 N4; echo $(($A & $N1)).$(($B & $N2)).$(($C& $N3)).$(($D & $N4)); })
+	echo "${net}/${pre}"
+}
+
+# tests whether the NSS QDisc package is installed
+nss_qdisc_is_installed() {
+	opkg list | grep 'kmod-qca-nss-.*qdisc' >/dev/null 2>&1
+	[ "$?" = "0" ] || return 1
+}

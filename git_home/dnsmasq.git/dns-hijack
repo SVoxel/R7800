@@ -1,0 +1,15 @@
+#!/bin/sh
+
+config="/bin/config"
+
+if [ "$($config get dns_hijack)" = "1" ]; then
+	# Enable DNS Hijack mode
+	killall -SIGUSR1 dnsmasq
+	sleep 1
+	killall -SIGUSR1 dnsmasq
+else
+	# Disable DNS Hijack mode
+	killall -SIGUSR2 dnsmasq
+	sleep 1
+	killall -SIGUSR2 dnsmasq
+fi

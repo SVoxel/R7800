@@ -1,0 +1,118 @@
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+--- a/arch/mips/ath79/Kconfig
++++ b/arch/mips/ath79/Kconfig
+@@ -71,6 +71,18 @@ config ATH79_MACH_AP121
+ 	  Say 'Y' here if you want your kernel to support the
+ 	  Atheros AP121 reference board.
+ 
++config ATH79_MACH_AP135
++	bool "Atheros AP135 reference board"
++	select SOC_QCA955X
++	select ATH79_DEV_GPIO_BUTTONS
++	select ATH79_DEV_LEDS_GPIO
++	select ATH79_DEV_SPI
++	select ATH79_DEV_USB
++	select ATH79_DEV_WMAC
++	help
++	  Say 'Y' here if you want your kernel to support the
++	  Atheros AP135 reference board.
++
+ config ATH79_MACH_AP136
+ 	bool "Atheros AP136 reference board"
+ 	select SOC_QCA955X
+@@ -114,6 +126,19 @@ config ATH79_MACH_AP96
+ 	select ATH79_DEV_M25P80
+ 	select ATH79_DEV_USB
+ 
++config ATH79_MACH_CUS227
++	bool "Qualcomm Atheros CUS227 support"
++	select SOC_AR934X
++	select ATH79_DEV_ETH
++	select ATH79_DEV_GPIO_BUTTONS
++	select ATH79_DEV_LEDS_GPIO
++	select ATH79_DEV_NAND
++	select ATH79_DEV_USB
++	select ATH79_DEV_WMAC
++	help
++	  Say 'Y' here if you want your kernel to support the
++	  Qualcomm Atheros CUS227 board.
++
+ config ATH79_MACH_DB120
+ 	bool "Atheros DB120 reference board"
+ 	select SOC_AR934X
+@@ -129,6 +154,21 @@ config ATH79_MACH_DB120
+ 	  Say 'Y' here if you want your kernel to support the
+ 	  Atheros DB120 reference board.
+ 
++config ATH79_MACH_DB120_TB388
++	bool "Atheros DB120 reference board with TB388 extension"
++	select SOC_AR934X
++	select ATH79_DEV_AP9X_PCI if PCI
++	select ATH79_DEV_AUDIO
++	select ATH79_DEV_ETH
++	select ATH79_DEV_GPIO_BUTTONS
++	select ATH79_DEV_LEDS_GPIO
++	select ATH79_DEV_M25P80
++	select ATH79_DEV_USB
++	select ATH79_DEV_WMAC
++	help
++	  Say 'Y' here if you want your kernel to support the
++	  Atheros DB120 reference board with TB388 extension.
++
+ config ATH79_MACH_PB42
+ 	bool "Atheros PB42 board support"
+ 	select SOC_AR71XX
+--- a/arch/mips/ath79/Makefile
++++ b/arch/mips/ath79/Makefile
+@@ -47,12 +47,15 @@ obj-$(CONFIG_ATH79_MACH_ALL0258N)	+= mac
+ obj-$(CONFIG_ATH79_MACH_ALL0315N)	+= mach-all0315n.o
+ obj-$(CONFIG_ATH79_MACH_AP113)		+= mach-ap113.o
+ obj-$(CONFIG_ATH79_MACH_AP121)		+= mach-ap121.o
++obj-$(CONFIG_ATH79_MACH_AP135)		+= mach-ap135.o
+ obj-$(CONFIG_ATH79_MACH_AP136)		+= mach-ap136.o
+ obj-$(CONFIG_ATH79_MACH_AP81)		+= mach-ap81.o
+ obj-$(CONFIG_ATH79_MACH_AP83)		+= mach-ap83.o
+ obj-$(CONFIG_ATH79_MACH_AP96)		+= mach-ap96.o
+ obj-$(CONFIG_ATH79_MACH_AW_NR580)	+= mach-aw-nr580.o
++obj-$(CONFIG_ATH79_MACH_CUS227)		+= mach-cus227.o
+ obj-$(CONFIG_ATH79_MACH_DB120)		+= mach-db120.o
++obj-$(CONFIG_ATH79_MACH_DB120_TB388)	+= mach-db120-tb388.o
+ obj-$(CONFIG_ATH79_MACH_DIR_600_A1)	+= mach-dir-600-a1.o
+ obj-$(CONFIG_ATH79_MACH_DIR_615_C1)	+= mach-dir-615-c1.o
+ obj-$(CONFIG_ATH79_MACH_DIR_825_B1)	+= mach-dir-825-b1.o
+--- a/arch/mips/ath79/machtypes.h
++++ b/arch/mips/ath79/machtypes.h
+@@ -1,6 +1,7 @@
+ /*
+  *  Atheros AR71XX/AR724X/AR913X machine type definitions
+  *
++ *  Copyright (c) 2013 The Linux Foundation. All rights reserved.
+  *  Copyright (C) 2008-2010 Gabor Juhos <juhosg@openwrt.org>
+  *  Copyright (C) 2008 Imre Kaloz <kaloz@openwrt.org>
+  *
+@@ -24,12 +25,15 @@ enum ath79_mach_type {
+ 	ATH79_MACH_AP113,		/* Atheros AP113 reference board */
+ 	ATH79_MACH_AP121,		/* Atheros AP121 reference board */
+ 	ATH79_MACH_AP121_MINI,		/* Atheros AP121-MINI reference board */
++	ATH79_MACH_AP135,		/* Atheros AP135 reference board */
+ 	ATH79_MACH_AP136,		/* Atheros AP136 reference board */
+ 	ATH79_MACH_AP81,		/* Atheros AP81 reference board */
+ 	ATH79_MACH_AP83,		/* Atheros AP83 */
+ 	ATH79_MACH_AP96,		/* Atheros AP96 */
+ 	ATH79_MACH_AW_NR580,		/* AzureWave AW-NR580 */
++	ATH79_MACH_CUS227,		/* Qualcomm Atheros CUS227 board */
+ 	ATH79_MACH_DB120,		/* Atheros DB120 reference board */
++	ATH79_MACH_DB120_TB388,		/* Atheros DB120/TB388 ref board */
+ 	ATH79_MACH_PB44,		/* Atheros PB44 reference board */
+ 	ATH79_MACH_DIR_600_A1,		/* D-Link DIR-600 rev. A1 */
+ 	ATH79_MACH_DIR_615_C1,		/* D-Link DIR-615 rev. C1 */

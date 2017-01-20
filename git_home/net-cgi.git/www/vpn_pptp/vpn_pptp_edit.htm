@@ -1,0 +1,55 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% noload_header("_vpn", "vpn_pptp.htm", "vpn_pptp_edit") %>
+<div class="page_title">$vpn_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+<% pptpd_all_users() %>
+var edit_num=<% cfg_get("vpn_pptp_user_editnum") %>;
+function check_value()
+{
+	var cf = document.forms[0];
+	var tx_namm = cf.pptp_username.value;
+
+	for(var i=1; i<=pptp_user_num; i++)
+	{
+		var cp_name = eval("user_name"+i);
+		if(cp_name == tx_namm && i != edit_num)
+		{
+			alert("Duplicate Name!");
+			return false;
+		}
+	}
+	
+	return true;
+}
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" value="$cancel_mark" onClick="location.href=\'vpn_pptp.htm\';">&nbsp;<input class="apply_bt" type="submit" name="Add" value="$edit_mark" onClick="return check_value();"></TD></TR>');
+else
+	document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" value="$cancel_mark" disabled>&nbsp;<input class="apply1_bt" type="submit" name="Add" value="$edit_mark" disabled></TD></TR>');
+
+</script>
+</TABLE>
+</div>
+<div id="main" class="main_top_button">
+<input type="hidden" name="action" value="add">
+<% table_header() %>
+<TR><TD colspan=2  nowrap><b>User Account</b></TD></TR>
+<tr>
+        <td nowrap>Username</td>
+        <td nowrap><input type="text" name="pptp_username" maxLength="60" size="16" onKeyPress="return getkey('ssid', event)" value="<% cfg_sed_xss("tmp_pptp_user_name") %>">
+        </td>
+</tr>
+<tr>
+        <td nowrap>Password</td>
+        <input type="hidden" name="hid_pw_changed" value=0>
+        <td nowrap><input type="text" name="pptp_passwd" maxlength="50" size="16" onKeyPress="return getkey('ssid', event)" value="<% cfg_sed_xss("tmp_pptp_user_pwd") %>"></td>
+</tr>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_vpn") %>
+</FORM>
+</BODY>
+</HTML>

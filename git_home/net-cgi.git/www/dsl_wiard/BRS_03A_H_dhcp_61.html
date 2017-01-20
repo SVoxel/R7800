@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_03A_wanInput.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/funcs.js"></script>
+<% hijack_language() %>
+ <script language="javascript" type="text/javascript">
+var netgear_region="<% get_firmware_region() %>";
+
+</script>
+<style>
+.wizard_words_div .wanInput_content_div { width:80%;  }
+.wanInput_content_div .wanInput_left_div {  width:40%;}
+.wanInput_content_div .wanInput_Img_div { width:45%; }
+</style>
+<% deleteFiles("/tmp/ping_result_error", "/tmp/ping_ip_result_error", "/tmp/ping_gateway_result_error")%>
+<% deleteFiles("/tmp/ping_result", "/tmp/wget_file_result") %>
+</head>
+
+<body>
+<% form_submit("apply", "BRS_04_applySettings.html", "hijack_dhcp61") %>
+
+<input type="hidden" name="WANAssign" value="0" />
+
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+		<h1><script>document.write(bh_dhcp_head)</script></h1>
+			<p><script>document.write(bh_enter_info_below)</script></p>
+			
+			<div class="wanInput_content_div">
+				<div class="wanInput_left_div" align="left">
+					<script>document.write(bh_dhcp_client_id)</script>
+				</div>
+				
+				<div class="wanInput_Img_div">
+					<img src="image/ca_text_pic.gif" />
+					<input type="text" id="inputId" maxlength="64" align="right" name="client_id" />
+				</div>				
+				<div class="wanInput_left_div" align="left">
+					<input type="checkbox" name="use_vlan">
+					<input type="hidden" name="use_vlan_value">
+					<script>document.write(bh_use_vlan)</script>
+				</div>
+				<div class="wanInput_Img_div">
+					<img src="image/ca_text_pic.gif" />
+					<input type="text" id="inputId" maxlength="64" align="right" name="vlan_id" />
+				</div>
+				
+				<div id="passwd" class="wanInput_left_div" align="left">
+					<input type="checkbox" name="use_mac">
+					<input type="hidden" name="use_mac_value">
+					<script>document.write(bh_use_mac)</script>
+				</div>
+				<div class="wanInput_Img_div">
+					<img src="image/ca_text_pic.gif" />
+					<input type="text" id="inputMac" maxlength="16" align="right" name="mac_addr" />
+				</div>
+				
+				<div style="clear:both"></div>
+			</div>														
+	</div>
+	
+	<div id="allBtns_div" class="wizard_buttons_div" align="right">
+		<div id="btnsContainer_div" class="buttons_img_div" onclick="checkPPPoA()">
+			<img src="image/ca-little-purple-button.gif" />
+			<div id="btn_text_div" class="buttons_words_div" align="center"><script>document.write(bh_next_mark)</script></div>
+		</div>	
+	</div>
+	
+
+</div>
+
+</form>
+</body>
+<script>
+function checkPPPoA()
+{
+		var forms = document.getElementsByTagName("form");
+        var cf = forms[0];
+
+		if(cf.use_vlan.checked == true)
+			cf.use_vlan_value.value="1";
+		else
+			cf.use_vlan_value.value="0";
+
+		if(cf.use_mac.checked == true)
+			cf.use_mac_value.value="1";
+		else
+			cf.use_mac_value.value="0";		
+		
+        cf.submit();
+
+		return true;
+}
+</script>
+</html>

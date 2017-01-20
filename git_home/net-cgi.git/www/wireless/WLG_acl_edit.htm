@@ -1,0 +1,59 @@
+<% http_header("style/form.css", "/funcs.js", "/wlacl.js") %>
+<% body_header("_WLG_acl_add", "WLG_acl.htm", "wlacl_edit") %>
+<div class="page_title">$adva_wlan_acl_edit</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" value="$cancel_mark" name="Cancel" onClick="location.href=\'WLG_acl.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="submit" value="$accept_mark" name="Accept" onClick="return check_wlacl_edit(document.forms[0],\'edit\')"></TD>');
+else
+	document.write(' <TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" value="$cancel_mark" name="Cancel" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit" value="$accept_mark" name="Accept" disabled></TD>');
+</script>
+       
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<script>
+
+<% wlacl_items_xss() %>
+<% refresh_timestamp("wlacl_editnum") %>
+
+var select_edit=<% cfg_get("wl_acl_editnum") %>;
+
+function loadvalue(cf)
+{
+	var cf=document.forms[0];
+	var str = eval ( 'wlaclArray' + select_edit ).replace(/&#92;/g, "\\").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+	var each_info=str.split(' ');
+	cf.device.value=each_info[0];
+	cf.adr.value=each_info[1];
+}
+</script>
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_WLG_acl_add','entry')"><B>$adva_wlan_acl_entry</B></A>
+	</TD>
+</TR>	
+<TR>
+	<TD nowrap>$lan_mark_name</TD>
+	<TD nowrap>
+	<input type="text" name="device" maxLength="20" size="16" onKeyPress="return getkey('ssid', event)">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$info_mark_mac</TD>
+	<TD nowrap>
+	<input type="text" value="" name="adr" maxlength="17" size="20" onKeyPress="return getkey('mac',event)">
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+</div>
+</FORM>
+</BODY>
+</HTML>

@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_05_networkIssue.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<% hijack_language() %>
+<% deleteFiles("/tmp/ping_result_error", "/tmp/ping_ip_result_error", "/tmp/ping_gateway_result_error")%>
+<% deleteFiles("/tmp/ping_result", "/tmp/wget_file_result") %>
+</head>
+
+<body>
+<% form_submit("func", "BRS_03A_detcInetType.html", "wizard_detwan")  %>
+<% save_timestamp("wizard_detwan", "hijack_toBasic")%>
+
+<script language="javascript" type="text/javascript">
+var ts="<% cfg_get("hijack_toBasic") %>";
+var ap_mode = "<% cfg_get("ap_mode") %>";
+var hijack_process="<% cfg_get("hijack_process") %>";
+var netgear_region="<% get_firmware_region() %>";
+wan_phy_mode="<% cfg_get("wan_phy_mode") %>";
+var wan_phy_auto="<% cfg_get("wan_phy_auto") %>";
+var wan_phy="<% cfg_get("wan_phy") %>";
+document.write('<input type="hidden" name="wizard_select_country" value="<% wiz_country_id() %>')
+if (netgear_region == "GR"){	
+			document.write('<input type=hidden name=wizard_select_isp value="<% wiz_isp_id() %>">');
+}
+<% cfg_set("config_myself_reson", "2") %>
+
+addLoadEvent(initPage);
+
+function initPage()
+{
+		var btns_container_div = document.getElementById("btnsContainer_div");
+	//if( master == "admin" )
+	btns_container_div.onclick = function() 
+	{
+		return clickNext();
+	}
+}
+
+function clickNext()
+{
+	var choices_div = document.getElementById("choices_div");
+	var choices = choices_div.getElementsByTagName("input");
+
+	var forms = document.getElementsByTagName("form");
+	var cf = forms[0];
+	
+	if(choices[0].checked)
+	{
+		if(top.apmode_flag == "1" && ap_mode == "1")
+		{
+			this.location.href="BRS_00_02_ap_select.html";
+		}
+		else if((top.have_broadband == "1" && (top.is_ru_version == 1 || top.is_pr_version == 1)) || top.have_lte_flag == "1" )
+		{
+			top.multi_wan_mode_ether = "0";
+			this.location.href = "WIZ_sel_3g_adsl.htm";
+		}
+		else {
+			showFirmVersion("none");
+			this.location.href="BRS_log13_networkIssue_try_again.html";
+			return true;
+		}
+	}
+	else if(choices[1].checked)
+	{
+		this.location.href="BRS_log13_networkIssue_config_myself.html";
+		return true;
+	}
+}
+
+</script>
+
+<div class="wizard_content_div">
+
+
+	<div class="wizard_words_div">
+		
+		<h1 class="h1_red"><script>document.write(bh_netword_issue);</script></h1>
+		
+		<p><script>document.write(bh_cannot_connect_internet);</script></p>
+		
+		<b><script>document.write(bh_issue_cont1);</script></b><br>
+
+                <a class="linktype" href="http://www.netgear.com" target="_blank">www.netgear.com</a><br><br>
+
+		<b><script>document.write(bh_issue_cont2);</script></b><br>
+		
+		<p><script>document.write(bh_plz_reveiw_items);</script></p>
+
+		<ul style="list-style:none">
+				<li><script>document.write(bh_cable_connection);</script></li>
+				<li><script>document.write(bh_modem_power_properly);</script></li>
+		</ul>
+		
+		<div id="choices_div" class="radio_choice_divs">
+			<p><script>document.write(bh_try_again_or_manual_config);</script></p>
+			<div class="radio_div">
+				<input type="radio" name="help_choice" value="0" checked="checked" /><script>document.write(bh_yes_mark);</script>
+			</div>
+			<div class="radio_div">
+				<input type="radio" name="help_choice" value="1" /><script>document.write(bh_I_want_manual_config);</script>
+			</div>
+		</div>
+		
+	</div>
+
+	<div class="wizard_buttons_div" align="center">
+		<div id="btnsContainer_div" class="buttons_img_div">
+			<img src="image/ca-little-purple-button.gif" />
+			<div id="btn_div" class="buttons_words_div"><script>document.write(bh_next_mark);</script></div>
+		</div>
+	</div>
+	
+</div>
+
+</form>
+</body>
+
+</html>

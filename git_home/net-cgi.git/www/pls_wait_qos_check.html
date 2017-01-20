@@ -1,0 +1,38 @@
+<HTML>
+<HEAD>
+<META http-equiv="Refresh" content="3; url=pls_wait_qos_check.html">
+<META http-equiv=content-type content='text/html; charset=UTF-8'>
+<LINK rel="stylesheet" href="style/form.css">
+</HEAD>
+<BODY onLoad="loadvalue();" bgcolor=#ffffff>
+<script>
+var qos_auto_uprate = "<% cat_file("/tmp/detec_uprate")  %>";
+var qos_check_time = parent.qos_check_time;
+function loadvalue()
+{
+	if( qos_auto_uprate != "" )
+	{
+		if(parent.is_pr_version =='1' || parent.is_ru_version == '1')
+			location.href="QOS_prru_main.htm";
+		else
+			location.href="QOS_main.htm";
+	}
+	else if( qos_check_time >= 180 ) //the max waiting time to 3 minute
+	{
+		if(parent.is_pr_version =='1' || parent.is_ru_version == '1')
+			location.href="QOS_prru_main.htm";
+		else
+			location.href="QOS_main.htm";
+	}
+	else
+		parent.qos_check_time = parent.qos_check_time + 3;
+		
+}
+</script>
+<% table_header() %>
+<TR><TD colspan=2><BR>
+<img src=/liteblue.gif width=100%% height=12></TD></TR>
+<TR><TD><BR><BR>$qos_check_wait<BR><BR></TD></TR>
+<TR><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+</table>
+</BODY></HTML>

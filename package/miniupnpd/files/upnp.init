@@ -1,0 +1,14 @@
+#!/bin/sh /etc/rc.common
+
+start() {
+	/sbin/cmdupnp start
+}
+
+stop() {
+	/sbin/cmdupnp stop
+}
+
+restart() {
+	/sbin/cmdupnp restart
+}
+

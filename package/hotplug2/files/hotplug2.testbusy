@@ -1,0 +1,73 @@
+#!/bin/sh
+# $1 = `USB_approved_device*`, where `*` is the number which one should be checked.
+
+test_usb_busy()
+{
+	sync
+
+	fuser -m "$1" 1> /dev/dull
+	if [ $? -eq 0 ]; then
+		# one access is found at least
+		return 1
+	else
+		# no process is accessing this device
+		return 0
+	fi
+}
+
+str="`/bin/config get $1`"
+volume="`echo "$str" | cut -d'*' -f1`"
+device="`echo "$str" | cut -d'*' -f2`"
+# take off all space characters at tail of `device`
+device="`echo $device`"
+dir="/tmp/mnt/"
+RESULT="/tmp/testbusy_result"
+
+[ -f $RESULT ] && /bin/rm $RESULT
+
+if [ $# -eq 0 ] ; then
+	test_usb_busy $dir
+	[ $? -eq 0 ] && echo 0 > $RESULT || echo 1 > $RESULT
+	exit
+fi
+
+/bin/config show | grep shared_usb_folder | while read tmp
+do
+	if [ "X$tmp" = "X" ]; then
+		test_usb_busy $dir
+		[ $? -eq 0 ] && echo 0 > $RESULT || echo 1 > $RESULT
+		exit
+	fi
+
+	vol="`echo $tmp | cut -d'*' -f5`"
+	dev="`echo $tmp | cut -d'*' -f6`"
+	if [ "X$vol" != "X$volume" -o "X$dev" != "X$device" ]; then
+		continue
+	fi
+
+	num=`echo $tmp | cut -c18`
+	count=0
+	for temp in `ls $dir`
+	do
+		if [ "$count" = "$num" ]; then
+			# pre is the prefix of device name, such as 'sda', 'sdb', etc.
+			pre="`echo $temp | cut -c1-3`"
+			break
+		fi
+		let count=$count+1
+	done
+
+	sig=0
+	for temp in `ls $dir`
+	do
+		if [ "X`echo $temp | cut -c1-3`" = "X$pre" ]; then
+			test_usb_busy "$dir$temp"
+			if [ $? -ne 0 ] ; then
+				sig=1
+				break
+			fi
+		fi
+	done
+	[ $sig -eq 0 ] && echo 0 > $RESULT || echo 1 > $RESULT
+	exit
+done

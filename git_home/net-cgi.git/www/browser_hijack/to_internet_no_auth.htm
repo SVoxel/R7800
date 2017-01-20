@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+</head>
+<body onload="loadvalue()">
+<script>
+var have_click_take_me_to_internet = "<% cfg_get("have_click_take_me_to_internet") %>";
+var ts = "<% hijack_get_timestamp("hijack_success") %>";
+function loadvalue()
+{
+var cf=document.forms[0];
+
+cf.action="/apply.cgi?/BRS_netgear_success.html timestamp=" + ts;
+cf.submit_flag.value = "hijack_success";
+		
+if(have_click_take_me_to_internet != "1" )
+	cf.submit();
+else
+	this.location.href = "BRS_netgear_success.html";
+}
+</script>
+<form method="POST">
+<input type="hidden" name="submit_flag">
+</form>
+</body>
+
+</html>

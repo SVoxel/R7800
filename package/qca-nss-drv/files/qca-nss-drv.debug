@@ -1,0 +1,8 @@
+#!/bin/sh /sbin/sysdebug
+
+log cat /sys/kernel/debug/qca-nss-drv/stats/pppoe
+log cat /sys/kernel/debug/qca-nss-drv/stats/n2h
+log cat /sys/kernel/debug/qca-nss-drv/stats/ipv6
+log cat /sys/kernel/debug/qca-nss-drv/stats/ipv4
+log cat /sys/kernel/debug/qca-nss-drv/stats/gmac
+log cat /sys/kernel/debug/qca-nss-drv/stats/drv

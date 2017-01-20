@@ -1,0 +1,542 @@
+<% http_header("style/form2.css", "/funcs.js", "style/priority_zone.css", "/jquery-1.7.2.min.js") %>
+<% body_header("_edit_device", "priority_zone.htm", "priority_zone") %>
+<script language="javascript" type="text/javascript">
+var bandwidth_type="<% cfg_get("bandwidth_type") %>";
+
+var uplimit="<% cfg_get("uplimit") %>";
+var downlimit="<% cfg_get("downlimit") %>";
+var ookla_uplimit="<% cfg_get("ookla_uplimit") %>";
+var ookla_downlimit="<% cfg_get("ookla_downlimit") %>";
+var uplink_value=show_uplimit*8/1000000;
+var downlink_value=show_downlimit*8/1000000;
+var streamboost_enable="<% cfg_get("streamboost_enable")%>";
+var show_uplimit="";
+var show_downlimit="";
+var priority_zone_list=[];
+var all_device_list=[];
+var device_available_flag=[];
+var ByZoneNumDev={};
+var dev_toRemove;
+var dev_toAdd;
+var zoneNum_toRemove;
+var zoneNum_toadd;
+var last_choosed_itemid;
+var priority_zone_enable = "<% cfg_get("priority_zone_enable") %>";
+var dup_zonename_flag = 0;
+<% get_priority_zone_list() %>
+
+if(bandwidth_type == "0") {
+	show_uplimit=ookla_uplimit;
+	show_downlimit=ookla_downlimit;
+} else {
+	show_uplimit=uplimit;
+	show_downlimit=downlimit;
+}
+
+
+
+	
+function priority_zone(name, download_percent, upload_percent, download_bandwidth, upload_bandwidth)
+{
+	this.name = name;
+	this.download_percent = download_percent;
+	this.upload_percent = upload_percent;
+	this.down_rate = download_bandwidth;
+	this.up_rate = upload_bandwidth;
+	
+	
+}
+
+function device(mac, ip, name, devtype, contype, priority, access_control)
+{
+	this.mac = mac;
+	this.ip = ip;
+	this.name = name;
+	this.devtype = devtype;
+	this.contype = contype;
+	this.priority = priority;
+	this.down_rate=0.00;
+	this.up_rate=0.00;
+	this.up_show_sub=0;
+	this.down_show_sub=0
+	this.access_control = access_control;
+	
+
+	function update_device(ip, name, devtype, contype, priority, access_control)
+	{
+		this.ip = ip;
+		this.name = name.replace(/[ ]/g, "&nbsp;");
+		this.devtype = devtype;
+		this.contype = contype;
+		this.priority = priority;
+		this.access_control = access_control;
+	}
+		
+	
+}
+
+function loadvalue()
+{
+	var dvo = { device:[ <% json_device_info("json") %> ]}
+	var dev_num = 0;
+	if(priority_zone_enable == "1"){
+		document.getElementById("on_bt").className="switch_clicked_bt ui-corner-all";
+		document.getElementById("off_bt").className="switch_unclicked_bt ui-corner-all";
+	}
+	else{
+		document.getElementById("on_bt").className="switch_unclicked_bt ui-corner-all";
+		document.getElementById("off_bt").className="switch_clicked_bt ui-corner-all";
+	}
+	for(var i in dvo.device){
+		dev = dvo.device[i];
+		if(dev.mac){
+			all_device_list[dev_num] = new device(dev.mac, dev.ip, dev.name, dev.devtype, dev.contype, dev.priority, dev.access_control);
+			device_available_flag[dev_num] = "1";//1 means available;
+			//alert(device_available_flag[dev_num].name);
+			dev_num ++;
+		}
+	}
+	for(var i = 0; i < zone_num; i++)
+        {
+                var tmp_zone = eval("priority_zone"+i);
+                var tmp_zone_info = tmp_zone.split("\t");
+                var zone_name = tmp_zone_info[0];
+				
+                priority_zone_list[i] = new priority_zone(tmp_zone_info[0], tmp_zone_info[1], tmp_zone_info[2], tmp_zone_info[3], tmp_zone_info[4]);
+                if(!ByZoneNumDev[i])
+                        ByZoneNumDev[i] = new Array;
+                var j=5;
+                while(tmp_zone_info[j])
+                {
+                        var device_info = tmp_zone_info[j].split("*");
+                        var tmp_device = new device(device_info[0], device_info[1], device_info[2], device_info[3], device_info[4], device_info[5], device_info[6]);
+						
+                        ByZoneNumDev[i].push(tmp_device);
+						for(var k in all_device_list )
+							if(all_device_list[k].mac == tmp_device.mac){
+								device_available_flag[k] = 0;
+								break;
+							}
+                        j++;
+                }
+				
+
+        }
+	for(var i in priority_zone_list)
+		load_priority_zone(priority_zone_list[i], i);
+
+	
+}
+
+
+function add_new_zone()
+{
+	var zone_No = zone_num +1;
+	
+	priority_zone_list[zone_num] = new priority_zone("Zone "+zone_No, 10, 10, downlink_value*0.1, uplink_value*0.1);
+	load_priority_zone(priority_zone_list[zone_num], zone_num);
+	zone_num++;		
+	
+}
+
+function choose_all_dev(zone_num, dev_num)
+{
+	dev_toAdd = all_device_list[dev_num];
+	zoneNum_toadd = zone_num;
+	if(last_choosed_itemid && document.getElementById(last_choosed_itemid))
+		document.getElementById(last_choosed_itemid).className = "dev_item";
+	document.getElementById(zone_num + "_alldev_" + dev_num).className = "sel_dev_item";
+	last_choosed_itemid = zone_num + "_alldev_" + dev_num;
+	
+}
+
+function choose_zone_dev(zone_num, dev_num)
+{
+	//var tmp_name = priority_zone_list[zone_num].name;
+	var subDevList = ByZoneNumDev[zone_num];
+	dev_toRemove = subDevList[dev_num];
+	zoneNum_toRemove = zone_num;
+	if(last_choosed_itemid && document.getElementById(last_choosed_itemid))
+		document.getElementById(last_choosed_itemid).className = "dev_item";
+	document.getElementById(zone_num + "_zonedev_" + dev_num).className = "sel_dev_item";
+	last_choosed_itemid = zone_num + "_zonedev_" + dev_num;
+
+}
+
+function change_zone_name(sort_num)
+{
+	for(var i in priority_zone_list)
+	{
+		if(sort_num != i && priority_zone_list[i].name == document.getElementById("zone_name"+sort_num).value){
+			dup_zonename_flag=1;
+			break;
+		}
+		else{
+			dup_zonename_flag=0;
+			priority_zone_list[i].name = document.getElementById("zone_name"+sort_num).value;		
+		}
+	}
+}
+
+function change_downpercent(sort_num)
+{
+	var new_downpercent = document.getElementById("down_percent"+sort_num).value;
+	var downpercent_sum = parseInt(new_downpercent);
+	for(var i in priority_zone_list){
+		alert(priority_zone_list[i].download_percent);
+		if(i != sort_num)
+			downpercent_sum += parseInt(priority_zone_list[i].download_percent);
+	}
+	if(downpercent_sum > 100){
+		document.getElementById("down_percent"+sort_num).value = priority_zone_list[sort_num].download_percent;
+		return;
+	}
+	
+	
+	priority_zone_list[sort_num].download_percent = new_downpercent;
+	var rate = (downlink_value*new_downpercent*0.01).toFixed(2);
+	if( isNaN(rate) )
+		rate=0;
+	priority_zone_list[sort_num].download_bandwidth = rate;
+	document.getElementById("download_bandwidth"+sort_num).innerHTML = rate + " Mbps";
+	
+	load_downpercent_again(sort_num, new_downpercent);
+}
+
+function load_downpercent_again(sort_num, new_downpercent)
+{
+	sort_num++;
+	var percent_sum;
+	var percent_limit;
+	var percent;
+	while(sort_num < zone_num){
+		percent_sum=0;
+		if(priority_zone_list[sort_num].name){
+			for(var i in priority_zone_list)
+			{
+				if(i<sort_num)
+					percent_sum = percent_sum + priority_zone_list[i].download_percent;
+
+			}
+			document.getElementById("down_percent"+sort_num).length=0;
+			var select = document.getElementById("down_percent"+sort_num);
+			for(var percent=5; percent <= 95-percent_sum; percent=percent+5)
+				select.options.add(new Option(percent+"%", percent));
+			select.value = priority_zone_list[sort_num].download_percent;
+
+		}
+		sort_num++;
+		
+	}	
+}
+
+function change_uppercent(sort_num)
+{
+	var new_uppercent = document.getElementById("upload_percent"+sort_num).value;
+	var uppercent_sum = parseInt(new_uppercent);
+	
+	for(var i in priority_zone_list){
+		if(i != sort_num)
+			uppercent_sum += parseInt(priority_zone_list[i].upload_percent);
+	}
+	if(uppercent_sum > 100){
+		document.getElementById("upload_percent"+sort_num).value = priority_zone_list[sort_num].upload_percent;
+		return;
+	}
+	//reload uppercent
+	
+	priority_zone_list[sort_num].upload_percent = new_uppercent;
+	var rate = (uplink_value*new_uppercent*0.01).toFixed(2);
+	if(isNaN(rate))
+		rate = 0;
+	priority_zone_list[sort_num].upload_bandwidth = rate;
+	document.getElementById("upload_bandwidth"+sort_num).innerHTML = rate + " Mbps, ";
+	
+	load_uppercent_again(sort_num, new_uppercent);
+}
+
+function load_uppercent_again(sort_num, new_uppercent)
+{
+	sort_num++;
+        var percent_sum;
+        var percent_limit;
+        var percent;
+        while(sort_num < zone_num){
+                percent_sum=0;
+                if(priority_zone_list[sort_num].name){
+                        for(var i in priority_zone_list)
+                        {
+                                if(i<sort_num)
+                                        percent_sum = percent_sum + priority_zone_list[i].upload_percent;
+
+                        }
+                        document.getElementById("upload_percent"+sort_num).length=0;
+                        var select = document.getElementById("upload_percent"+sort_num);
+                        for(var percent=5; percent <= 95-percent_sum; percent=percent+5)
+                                select.options.add(new Option(percent+"%", percent));
+						select.value = priority_zone_list[sort_num].upload_percent;
+
+                }
+                sort_num++;
+
+        }
+	
+}
+
+function load_priority_zone(priority_zone, sort_num)
+{
+	var line_html="";
+	var uppercent_limit = 95;
+	var downpercent_limit = 95;
+	var percent = 5;
+	
+	line_html = "<div class=\"priority_zone_item\" id=\"priority_zone_item"+sort_num+"\">";
+	line_html += "<input name='priority_zone"+sort_num+"' type='hidden' value='hhhhh'>";
+	line_html += "<div class=\"priority_zone_left\">";
+	line_html += "<input type=\"text\" class=\"zone_name\" id=\"zone_name"+sort_num+"\" value=\""+ priority_zone.name +"\" onchange=\"change_zone_name("+sort_num+")\">";
+	line_html += "<input type=\"button\" name=\"remove\" value=\"Remove\" class=\"remove_bt ui-corner-all\" onclick=\"remove_zone("+sort_num+")\" >";
+	line_html += "</div>";
+	line_html += "<div class=\"priority_zone_middle\"></div>";
+	line_html += "<div class=\"priority_zone_right\">";
+	line_html += "<table border=0 cellspacing=0 width=100%>";
+	line_html += "<tr style=\"height:38px;\"><td ><b style=\"font-size:15px; vertical-align:middle \">Bandwidth</b>";
+	line_html += "<img src=\"../image/priority_up_arrow.png\" style=\"float:right\"></td>";
+	line_html += "<td ><select name=\"upload_percent\" size=\"1\" class=\"percent_select\" id=\"upload_percent"+sort_num+"\" onchange=\"change_uppercent("+sort_num+")\">";
+	for(var i in priority_zone_list)
+	{
+		if(i<sort_num)
+			uppercent_limit = uppercent_limit - priority_zone_list[i].upload_percent;
+	}
+	for(percent = 5; percent <= uppercent_limit; percent = percent + 5){
+		line_html += "<option value='"+percent+"'>"+percent+"%</option>";
+		if(percent == priority_zone.upload_percent)
+			line_html += "<option value='"+percent+"' selected>"+percent+"%</option>";
+	}
+	
+	line_html += "</select> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img src=\"../image/priority_down_arrow.png\" >";
+	line_html += "<select name=\"down_percent\" size=\"1\" class=\"percent_select\" id=\"down_percent"+sort_num+"\" onchange=\"change_downpercent("+sort_num+")\">";
+	for(var i in priority_zone_list)
+	{
+		if(i<sort_num)
+			downpercent_limit = downpercent_limit - priority_zone_list[i].download_percent;
+	}
+	for(percent = 5; percent <= downpercent_limit; percent = percent + 5){
+	
+		line_html += "<option value='"+percent+"'>"+percent+"%</option>";
+		if(percent == priority_zone.download_percent)
+			line_html += "<option value='"+percent+"' selected>"+percent+"%</option>";
+	}
+	line_html += "</select></td>";
+	var rate = (uplink_value*priority_zone.upload_percent*0.01).toFixed(2);
+	
+	if(isNaN(rate)){
+		rate = 0;
+	}
+	line_html += "<td><div id=\"upload_bandwidth"+sort_num+"\" class=\"bandwidth\" >"+rate+" Mbps, </div>";
+	rate = (downlink_value*priority_zone.download_percent*0.01).toFixed(2);
+	if(isNaN(rate))
+		rate = 0;
+	line_html += "<div id=\"download_bandwidth"+sort_num+"\" class=\"bandwidth\" >"+rate+" Mbps </div></td>"
+	line_html += "</tr>";
+	line_html += "<tr><td width=\"20%\" valign=\"top\"><b >Device in the zone</b></td>";
+	line_html += "<td width=\"30%\"><div class=\"device_list\" id=\"zone_devlist_"+sort_num+"\">"
+	var subDevList = ByZoneNumDev[sort_num];
+	for(var i in subDevList){
+		 
+		line_html += "<div style='cursor:pointer;' class='dev_item' id='"+sort_num+"_zonedev_"+i+"' onclick='choose_zone_dev("+sort_num+","+i+")'>"+subDevList[i].name+"</div>";
+	}
+	line_html += "</div></td>";
+	line_html += "<td width=\"20%\" valign=\"top\">";
+	line_html += "<span style=\"display:block\" ><b>Devices Available:</b></span><br>";
+	line_html += "<div class=\"device_add\" id=\"device_add_"+sort_num+"\" style=\"display:block\" onClick=\"addDeviceToZone("+sort_num+")\">Add</div><br>";
+	line_html += "<div class=\"device_remove\" id=\"device_remove_"+sort_num+"\"style=\"display:block\" onClick=\"removeDeviceFromZone("+sort_num+")\">Remove</div><br></td>";
+	line_html += "<td><div class=\"device_list\" id=\"all_devlist_"+sort_num+"\">";
+	line_html += "</div></td></tr>";
+	line_html += "</table></div></div>";
+	$$('#priority_zone_list').append(line_html);
+	load_available_device(sort_num);
+	
+}
+function load_available_device(sort_num)
+{
+	var showstr = "";
+	$$("#all_devlist_"+sort_num).empty();
+	for(var i in all_device_list){
+		if(device_available_flag[i] == 1 && all_device_list[i].mac){
+			
+			showstr += "<div style='cursor:pointer;' class='dev_item' id='"+sort_num+"_alldev_"+i+"' onclick='choose_all_dev("+sort_num+","+i+")'>"+all_device_list[i].name+"</div>";
+		}
+	}
+	$$("#all_devlist_"+sort_num).append(showstr);
+}
+function addDeviceToZone(zone_num)
+{
+	var showstr = "";
+	if(zone_num != zoneNum_toadd || !dev_toAdd)
+		return;
+	if(!ByZoneNumDev[zone_num])
+		ByZoneNumDev[zone_num] = new Array;
+	ByZoneNumDev[zone_num].push(dev_toAdd);
+	var dev_num = ByZoneNumDev[zone_num].length-1;
+	showstr="<div style='cursor:pointer;' class='dev_item' id='"+zone_num+"_zonedev_"+dev_num+"' onclick='choose_zone_dev("+zone_num+","+dev_num+")'>"+dev_toAdd.name+"</div>";
+	$$("#zone_devlist_"+zone_num).append(showstr);
+	for(var j in all_device_list){
+		if(all_device_list[j] == dev_toAdd){
+			device_available_flag[j] = 0;
+			var item_id = zone_num + "_alldev_" + j;
+			document.getElementById("all_devlist_"+zone_num).removeChild(document.getElementById(item_id));
+			break;
+		}
+	}
+	
+	for(var i in priority_zone_list){
+		if(!priority_zone_list[i])
+			return;
+		load_available_device(i);
+	}
+	
+}
+
+function removeDeviceFromZone(zone_num)
+{
+	if(zone_num != zoneNum_toRemove || !dev_toRemove){
+		return;
+	}
+	var subDevList = ByZoneNumDev[zone_num];
+	for(var i in subDevList){
+		if(subDevList[i].mac == dev_toRemove.mac){
+			ByZoneNumDev[zone_num][i]={};
+			var item_id=zone_num + "_zonedev_"+i;
+			var parent_zone_devid="zone_devlist_"+zone_num;
+			
+			document.getElementById(parent_zone_devid).removeChild(document.getElementById(item_id));
+			for(var j in all_device_list){
+				if(all_device_list[j].mac == dev_toRemove.mac)
+					device_available_flag[j] = 1;
+			}
+			break;
+			}
+	}
+	for(var i in priority_zone_list){
+		if(!priority_zone_list[i].name)
+			return;
+		load_available_device(i);
+	}
+	
+	
+}
+
+function remove_zone(zone_num)
+{
+	//use removeChild
+	var subDevList = ByZoneNumDev[zone_num];
+	for(var i in subDevList){
+		for(var j in all_device_list){
+				if(all_device_list[j].mac == subDevList[i].mac)
+					device_available_flag[j] = 1;
+			}
+	}
+	document.getElementById("priority_zone_list").removeChild(document.getElementById("priority_zone_item"+zone_num));
+	priority_zone_list[zone_num] = [];
+	
+	for(var i in priority_zone_list){
+		if(!priority_zone_list[i].name)
+			return;
+		load_available_device(i);
+	}
+}
+
+function check_priority_zone()
+{
+	var cf = document.forms[0];
+	var zone_count=0;
+	if(streamboost_enable == "1" ){
+		for(var i in priority_zone_list){
+			if(!priority_zone_list[i].name)
+				return;
+			var zone_string="";
+			var tmp_zone = priority_zone_list[i];
+			zone_string = tmp_zone.name + "\t" +tmp_zone.download_percent + "\t" + tmp_zone.upload_percent + "\t" + tmp_zone.down_rate + "\t" + tmp_zone.up_rate;
+			var subDevList = ByZoneNumDev[i];
+			for(var j in subDevList){
+				if(!subDevList[j].mac)
+					return;
+				var tmp_dev = subDevList[j];
+				zone_string += "\t"+tmp_dev.mac+"*"+tmp_dev.ip+"*"+tmp_dev.name+"*"+tmp_dev.devtype+"*"+tmp_dev.contype+"*"+tmp_dev.priority+"*"+tmp_dev.access_control;
+			}
+			tmp_zone = eval("cf.priority_zone"+i);
+			tmp_zone.value = zone_string;
+			//tmp_zone.value = zone_string;
+			
+			zone_count++;
+			
+		}
+	}
+	cf.priority_zone_num.value = zone_count;
+	
+	return true;
+}
+
+</script>
+<input type="hidden" name="priority_zone_endis" value="1">
+<input type="hidden" name="priority_zone_num" value="0">
+<div class="page_title">$priority_zone</div>
+<div class="fix_button" id="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+	<TD nowrap align=center>
+	<script>
+		var master="<% cfg_get("http_loginname") %>";
+		if( master=="admin" )
+			document.write('<input class="new_cancel_bt ui-corner-all" type="reset" name="Cancel" value="$cancel_mark" onClick="location.href=\'priority_zone.htm\';"><input id="new_apply_bt" class="new_apply_bt ui-corner-all" type="submit" name="Apply" value="$apply_mark" onClick="return check_priority_zone();">');
+		else
+			document.write('<input class="new_cancel_bt ui-corner-all" type="reset" name="Cancel" value="$cancel_mark" disabled><input class="new_apply_bt ui-corner-all" type="submiti" name="Apply" value="$apply_mark" disabled>');
+	</script>
+	</TD>
+</TR>
+</TABLE>
+</div>
+
+<div class="priority_head">
+<div class="priority_zone_switch">
+<b>$priority_zone:</b>&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="button" name="on" id="on_bt"  value="On" class="switch_clicked_bt ui-corner-all" onclick="open_prio_zone()">&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="button" name="off" id="off_bt" value="Off" class="switch_unclicked_bt ui-corner-all" onclick="close_prio_zone()">
+</div>
+<div class="streamboost_bandwidth">
+<div class="total_bandwith">$total_band</div>
+<div class="down_rate"><div class="ratefont"><script>document.write(parseFloat(show_downlimit*8/1000000).toFixed(2)+" Mbps")</script></div></div>
+<div class="up_rate"><div class="ratefont"><script>document.write(parseFloat(show_uplimit*8/1000000).toFixed(2)+" Mbps")</script></div></div>
+</div>
+</div>
+<script>
+function open_prio_zone()
+{
+	var cf = document.forms[0];
+	document.getElementById("on_bt").className="switch_clicked_bt ui-corner-all";
+	document.getElementById("off_bt").className="switch_unclicked_bt ui-corner-all";
+	cf.priority_zone_endis.value = 1;
+}
+
+function close_prio_zone()
+{
+	var cf = document.forms[0];
+	document.getElementById("on_bt").className="switch_unclicked_bt ui-corner-all";
+	document.getElementById("off_bt").className="switch_clicked_bt ui-corner-all";
+	cf.priority_zone_endis.value = 0;
+}
+</script>
+<div class="main" id="main">
+<div class="priority_zone_list" id="priority_zone_list">
+
+</div>
+<div class="priority_zone_foot">
+<div class="add_zone ui-corner-all" onClick="add_new_zone()">
+<div class="inner_add_zone ui-corner-all">&nbsp;<b>New Zone</b></div>
+</div>
+</div>
+</div>
+<% help_box("1","_priority_zone") %>
+</form>
+</body>
+</html>

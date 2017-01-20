@@ -1,0 +1,17 @@
+# Makefile for the clients using the NSS driver
+
+ccflags-y := -I$(obj) -I$(obj)/..
+
+# Profiler
+obj-y+= profiler/
+
+#IPsec manager
+obj-m += qca-nss-ipsecmgr.o
+qca-nss-ipsecmgr-objs := nss_ipsecmgr.o
+ccflags-y += -DNSS_IPSECMGR_DEBUG_LEVEL=3
+
+#NSS NETLINK
+obj-y+= netlink/
+
+obj ?= .
+

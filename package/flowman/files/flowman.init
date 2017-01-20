@@ -1,0 +1,87 @@
+#!/bin/sh
+
+. ${STREAMBOOST_CFGDIR:-/etc/appflow}/rc.appflow
+
+# standard settings - accept overrides from the calling environment
+[ -z "$KROUTER_DEBUG_FILE" ] && KROUTER_DEBUG_FILE="/etc/krouter_debug"
+BINARY="flowman"
+export RUNDIR BINDIR BINARY
+
+# configuration items
+DAEMON_BIN="${BINDIR}/${BINARY}"
+DISPLAY_NAME="Flowman"
+PIDFILE="${RUNDIR}/${BINARY}.pid"
+REDIS_PORT=6379
+REDIS_HOST=127.0.0.1
+REDIS_UNIXSOCK=/var/run/appflow/redis.sock
+REDIS_TIMEOUT=3000
+FLOWMAN_LOG_LEVEL=6
+CONN_LINGER=$(cat /proc/sys/net/netfilter/nf_conntrack_tcp_timeout_time_wait 2>/dev/null)
+[ -z "$CONN_LINGER" ] && CONN_LINGER=120
+
+# Format the command line parameters
+OPTIONS_REDIS="--redis-unixsocket=$REDIS_UNIXSOCK --redis-timeout=$REDIS_TIMEOUT"
+OPTIONS_PARAMS="--connection-linger=$CONN_LINGER"
+OPTIONS_DAEMON="--daemon --use-syslog --pid-file=$PIDFILE"
+OPTIONS_LOG="--log-level=$FLOWMAN_LOG_LEVEL"
+OPTIONS_ALL="$OPTIONS_REDIS $OPTIONS_DAEMON $OPTIONS_LOG $OPTIONS_PARAMS"
+OPTIONS_DEBUG="--no-daemon --log-level=7 --no-syslog"
+
+start() {
+	echo -n "Starting ${DISPLAY_NAME}: "
+	start-stop-daemon -S -q -p $PIDFILE -x $DAEMON_BIN -- $OPTIONS_ALL "$@"
+	retval=$?
+	echo
+	return ${retval}
+}
+
+debug() {
+	[ ! -d "$RUNDIR" ] && {
+		mkdir -p $RUNDIR
+	}
+
+	echo -n "Running ${DISPLAY_NAME} in debug mode: "
+	$DAEMON_BIN -- $OPTIONS_ALL $OPTIONS_DEBUG "$@"
+	retval=$?
+	echo
+	return ${retval}
+}
+
+boot() {
+	[ ! -d "$RUNDIR" ] && {
+		mkdir -p $RUNDIR
+	}
+
+	if [ -n "$KROUTER_DEBUG_FILE" ] && [ -e "$KROUTER_DEBUG_FILE" ]; then
+		# debug file is present
+		echo "$DISPLAY_NAME: booting in debug mode"
+		start $OPTIONS_DEBUG "$@"
+	else
+		start "$@"
+	fi
+}
+
+restart() {
+	stop
+	start
+}
+
+action() {
+	action=${1:-boot}
+	shift
+
+	case "${action}" in
+		boot|init)
+			boot "$@"
+			;;
+		start|stop|restart|status|debug)
+			${action} "$@"
+			;;
+		*)
+			echo "Usage: $0 start|boot|stop|restart|status|debug"
+			exit 1
+	esac
+}
+
+action "$@"
+exit $?

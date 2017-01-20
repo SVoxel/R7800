@@ -1,0 +1,52 @@
+--- wxWidgets-2.8.12/include/wx/app.h	2011-03-22 07:59:29.000000000 -0400
++++ wxWidgets-2.8.12/include/wx/app.h	2012-05-07 13:29:14.008175725 -0400
+@@ -171,7 +171,7 @@
+     // default behaviour simply by overriding CreateTraits() and returning his
+     // own traits object) or which is GUI/console dependent as then wxAppTraits
+     // allows us to abstract the differences behind the common façade
+-    wxAppTraits *GetTraits();
++   wxAppTraits *GetTraits();
+ 
+     // the functions below shouldn't be used now that we have wxAppTraits
+ #if WXWIN_COMPATIBILITY_2_4
+@@ -186,7 +186,7 @@
+ 
+         // similar to CreateLogTarget() but for the global wxMessageOutput
+         // object
+-    wxDEPRECATED( virtual wxMessageOutput *CreateMessageOutput() );
++//    wxDEPRECATED( virtual wxMessageOutput *CreateMessageOutput() );
+ 
+ #endif // WXWIN_COMPATIBILITY_2_4
+ 
+@@ -237,31 +237,6 @@
+     static bool IsMainLoopRunning() { return false; }
+ 
+ 
+-    // debugging support
+-    // -----------------
+-
+-#ifdef __WXDEBUG__
+-    // this function is called when an assert failure occurs, the base class
+-    // version does the normal processing (i.e. shows the usual assert failure
+-    // dialog box)
+-    //
+-    // the arguments are the location of the failed assert (func may be empty
+-    // if the compiler doesn't support C99 __FUNCTION__), the text of the
+-    // assert itself and the user-specified message
+-    virtual void OnAssertFailure(const wxChar *file,
+-                                 int line,
+-                                 const wxChar *func,
+-                                 const wxChar *cond,
+-                                 const wxChar *msg);
+-
+-    // old version of the function without func parameter, for compatibility
+-    // only, override OnAssertFailure() in the new code
+-    virtual void OnAssert(const wxChar *file,
+-                          int line,
+-                          const wxChar *cond,
+-                          const wxChar *msg);
+-#endif // __WXDEBUG__
+-
+     // check that the wxBuildOptions object (constructed in the application
+     // itself, usually the one from IMPLEMENT_APP() macro) matches the build
+     // options of the library and abort if it doesn't

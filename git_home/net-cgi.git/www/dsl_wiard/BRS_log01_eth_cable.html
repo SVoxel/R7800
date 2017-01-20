@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<% hijack_language() %>
+</head>
+<% wizlog_detCable_ck01("1") %>
+<% cfg_set("dsl_wan_preference", "2") %>
+<% cfg_set("have_dsl_preference", "1") %>
+<body onLoad="loadvalue()">
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+		<div class="waiting_connect_div" align="center">
+			<h1>
+				<script>document.write(bh_check_ap);</script>
+			</h1>
+		</div>
+		
+		<div class="waiting_img_div" align="center">
+			<img src="image/wait30.gif" />
+		</div>
+	
+	</div>
+</div>
+</body>
+<script>
+function loadvalue()
+{
+	if(top.apmode_flag == "1")
+		setTimeout("this.location.href = 'BRS_00_01_check_ap.html';", 3000);
+	else
+		this.location.href = "BRS_01_checkNet_ideth_ping.html";
+}
+</script>
+</html>

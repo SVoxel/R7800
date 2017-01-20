@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<% http_header("style/top.css", "funcs.js", "top.js") %>
+<% top_body_header("lang_check.html", "select_language") %>
+
+<script>
+var language_oriArray = "<% lang_en() %>".split(" ");
+var language_showArray="<% lang_show() %>".split(" ");
+var gui_region = "<% cfg_get("GUI_Region") %>";
+var browser_lang = "<% get_browser_language() %>";
+var lang_select = "<% cfg_get("Language_Selection") %>";
+//var type = parent.type;
+var dis_lang_crl = "<% cfg_get("Enable_GUIStringTable") %>";
+var jp_multiPPPoE = "<% cfg_get("jp_multiPPPoE") %>";
+var netgear_region=top.netgear_region;
+var wds_support_wpa=top.wds_support_wpa;
+var security_mode="<% cfg_get("wl_sectype") %>";
+var security_mode_a="<% cfg_get("wla_sectype") %>";
+var old_wds_endis_fun="<% cfg_get("wds_endis_fun") %>";
+var old_wds_endis_fun_a="<% cfg_get("wla_wds_endis_fun") %>";
+var an_router_flag = parent.an_router_flag;
+var bgn_pr_wds_support_wpa=0;
+var an_pr_wds_support_wpa=0;
+
+if( wds_support_wpa == 1 && gui_region == "Chinese" && (netgear_region == "" || netgear_region.toUpperCase() == "WW"))
+{
+	if((security_mode=="3" ||  security_mode=="4" || security_mode == "5") && old_wds_endis_fun == "1")
+		bgn_pr_wds_support_wpa=1;
+
+	if(an_router_flag == 1 )
+	{
+		if( (security_mode_a == "3" || security_mode_a == "4" || security_mode_a == "5") && old_wds_endis_fun_a == "1" )
+			an_pr_wds_support_wpa=1;
+
+	}	
+}
+
+//for firmware version checking
+var wan_status = "<% detwan_valid() %>";
+var config_status = <% autoup_status() %>;
+<% check_version() %>
+var master="<% cfg_get("http_loginname") %>";
+
+function loadvalue()
+{
+	load_top_value();
+
+	if(lang_select != "Auto")
+		lang_select = gui_region;
+	document.forms[0].language.value = lang_select;
+
+	if( dis_lang_crl == "0" )
+		document.forms[0].language.disabled = true;
+	else
+	{
+		/* if select is "Auto", change languae to browser_langauge */
+		if(lang_select == "Auto" && browser_lang != gui_region && master == "admin")
+		{
+			if(bgn_pr_wds_support_wpa == 1 || an_pr_wds_support_wpa == 1 )
+				return;
+			var form = document.forms[0];
+			top.auto_change_lang = 1;
+	                form.language.disabled=true;
+        	        form.hidden_lang_avi.value=form.language.value;
+                	form.target="formframe";
+                	form.submit();
+		}
+
+	}
+}
+
+window.onresize = function(){
+	load_top_value();
+}
+</script>
+<style>
+.label_click .label_left { width: 15px; height: 30px; background: url(../image/tops.gif) no-repeat 0 -23px; float: left; position: relative }
+.label_click .label_middle { width: auto; height: 30px; background: url(../image/tops.gif) no-repeat -5px -23px; float: left; position: relative }
+.label_click .label_right { width: 15px; height: 30px; background: url(../image/tops.gif) no-repeat -210px -23px;  float: left; position: relative }
+.label_unclick .label_left { width: 15px; height: 30px; background: url(../image/tops.gif) no-repeat -225px -23px; float: left; position: relative }
+.label_unclick .label_middle { width: auto; height: 30px; background: url(../image/tops.gif) no-repeat -230px -23px; float: left; position: relative }
+.label_unclick .label_right { width: 15px; height: 30px; background: url(../image/tops.gif) no-repeat -435px -23px;  float: left; position: relative }
+</style>
+<input type=hidden name=hidden_lang_avi>
+<div id="logo"></div>
+<div id="logout" class="logout_bt" onclick='top.location.href="LGO_logout.htm";'><b>$logout_head</b></div>
+<% top_hardware_version() %>
+<div id="labels">
+	<div id="basic_lab" class="label_unclick" onclick="goto_top('index.htm');">
+		<div class="label_left"></div>
+		<div class="label_middle"><b><span id="basic_label">$basic_title</span></b></div>
+		<div class="label_right"></div>
+	</div>
+	<div id="advanced_lab" class="label_unclick" onclick="goto_top('adv_index.htm');">
+		<div class="label_left"></div>
+		<div class="label_middle"><b><span id="advanced_label">$advanced_title</span></b></div>
+		<div class="label_right"></div>
+	</div>
+</div>
+<div id="firm_version" name="firm_version">$router_firmware_version<br /><% cat_file("/firmware_version") %><% get_firmware_region("single_blank", "ww_blank") %></div>
+<div id="update_info" class="update_info_down" onclick="firmwareUpgrade();">
+	<div id="update_info_left"></div>
+	<div id="update_info_middle"><i>$firmware_upgrade_is_available_click_to_get</i></div>
+	<div id="update_info_right"></div>
+</div>
+<% top_signal_strength() %>
+<div id="select_language" align=right>
+	<script language="javascript" type="text/javascript">
+	if( master == "admin" )
+		document.write('<select align=right name="language" id="language" size=1 onChange="change_select();">');
+	else
+		document.write('<select align=right name="language" id="language" size=1 disabled>');
+	
+	
+		languageShowlist();
+	</script>
+	</select>
+</div>
+
+</form>
+</body>
+</html>
+
