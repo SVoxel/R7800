@@ -7,7 +7,7 @@ CC = gcc
 
 FILES = main.o nvram.o pppnas.o session.o route.o iprule.o iproute.o
 
-CFLAGS += -Wall -Wunused -g -O2 -pipe -mcpu=cortex-a15 -mfpu=neon-vfpv4 -mtune=cortex-a15 -mfloat-abi=softfp
+CFLAGS += -Wall -Wunused -g -O2 -pipe -march=armv7-a -mcpu=cortex-a9 -mfpu=neon-vfpv4 -mtune=cortex-a9 -mfloat-abi=softfp
 
 all : ppp-nas
 

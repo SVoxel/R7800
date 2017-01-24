@@ -10,7 +10,7 @@ MANDIR=/usr/share/man
 
 EXTRA_FLAG = -DUSE_ATH_HEADER
 # CFLAGS=-g
-CFLAGS=-O2 -pipe -mcpu=cortex-a15 -mfpu=neon-vfpv4 -mtune=cortex-a15 -mfloat-abi=softfp
+CFLAGS=-O2 -pipe -march=armv7-a -mcpu=cortex-a9 -mfpu=neon-vfpv4 -mtune=cortex-a9 -mfloat-abi=softfp
 CFLAGS += $(EXTRA_FLAGS) -DUSE_ATH_HEADER -DDNI_MULTI_LAN_SUPPORT
 
 default : build.h igmpproxy
