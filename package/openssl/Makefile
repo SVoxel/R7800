@@ -37,7 +37,7 @@ PKG_CONFIG_DEPENDS:= \
 
 include $(INCLUDE_DIR)/package.mk
 
-TARGET_CFLAGS:=-O3 -pipe -march=armv7-a -mcpu=cortex-a9 -mfpu=neon-vfpv4 -mtune=cortex-a9 -mfloat-abi=softfp -fhonour-copts $(FPIC)
+TARGET_CFLAGS:=-O3 -pipe -mcpu=cortex-a15 -mfpu=neon-vfpv4 -mtune=cortex-a15 -mfloat-abi=softfp -fhonour-copts $(FPIC)
 
 ifneq ($(CONFIG_CCACHE),)
 HOSTCC=$(HOSTCC_NOCACHE)

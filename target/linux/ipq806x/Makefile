@@ -14,7 +14,7 @@ CUSTOMER:=dni
 LINUX_TREEISH:=linux-v3.4-dni1
 NETFILTER_TREEISH:=netfilter-v3.4-dni1
 
-CFLAGS:=-O2 -pipe -march=armv7-a -mcpu=cortex-a9 -mfpu=neon-vfpv4 -mtune=cortex-a9 -mfloat-abi=softfp
+CFLAGS:=-O2 -pipe -mcpu=cortex-a15 -mfpu=neon-vfpv4 -mtune=cortex-a15 -mfloat-abi=softfp
 
 include $(INCLUDE_DIR)/target.mk
 
