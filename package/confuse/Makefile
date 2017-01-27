@@ -8,13 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=confuse
-PKG_VERSION:=2.7
+PKG_VERSION:=3.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://savannah.nongnu.org/download/confuse/
-PKG_MD5SUM:=45932fdeeccbb9ef4228f1c1a25e9c8f
-PKG_MAINTAINER:=Steven Barth <cyrus@openwrt.org>
+PKG_SOURCE_URL:=https://github.com/martinh/libconfuse/releases/download/v$(PKG_VERSION)
+PKG_MD5SUM:=bf03099ef213647451c70e54ad4b6e81
 PKG_LICENSE:=ISC
 
 PKG_FIXUP:=autoreconf
