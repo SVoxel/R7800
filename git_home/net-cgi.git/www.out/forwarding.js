@@ -118,11 +118,6 @@ function Check_add(cf)
 		alert("$diff_lan_this_subnet");
 		return false;
 	}
-	if(isSameIp(cf.service_ip.value,lan_ip) == true)
-	{
-		alert("$invalid_ip");
-		return false;    
-	}
 	var selectService=cf.svs_gm.options[cf.svs_gm.selectedIndex].value;
 	var s = cf.svs_gm.selectedIndex;
 	for(i=1;i<=forward_array_num;i++)
@@ -512,11 +507,6 @@ function check_forwarding_add_range(cf,flag)
 	if(isSameSubNet(cf.service_ip.value,lan_subnet,lan_ip,lan_subnet)== false)
 	{
 		alert("$diff_lan_this_subnet");
-		return false;
-	}
-	if(isSameIp(cf.service_ip.value,lan_ip) == true)
-	{
-		alert("$invalid_ip");
 		return false;
 	}
 	

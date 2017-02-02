@@ -21,6 +21,4 @@ if [ "$1" = "rule" ]; then
 	cat $config > /tmp/netwall-rules
 	cat /tmp/netwall-rules.tmp >> /tmp/netwall-rules
 	rm -f /tmp/netwall-rules.tmp
-else
-	iptables -I INPUT -p icmp --icmp-type 8 -i brwan -j DROP
 fi

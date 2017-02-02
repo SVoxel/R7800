@@ -148,11 +148,6 @@ function loadvalue()
 		cf.rspToPing.checked = true;
 	else
 		cf.rspToPing.checked = false;
-	if(vpn_enable == '1'){
-		setDisabled(true, cf.rspToPing);
-		document.getElementById("rspToPingString").style.color="grey";
-		
-	}
 		
 		
 	cf.wan_mtu.value = '<% wan_mtu() %>';
