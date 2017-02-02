@@ -11,8 +11,8 @@ include $(INCLUDE_DIR)/kernel.mk
 PKG_NAME:=bridge-utils
 PKG_RELEASE:=1
 PKG_SOURCE_URL:=@SF/bridge
-PKG_VERSION:=1.5
-PKG_MD5SUM:=ec7b381160b340648dede58c31bb2238
+PKG_VERSION:=1.6
+PKG_MD5SUM:=f369e90e85e4bb46baa26a7b9d66b578
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 
@@ -37,7 +37,6 @@ define Build/Prepare
 $(call Build/Prepare/Default)
 	( cd $(PKG_BUILD_DIR) ; \
 		[ -f ./configure ] || { \
-			ln -sf configure.in configure.ac ; \
 			autoconf ; \
 		} \
 	)
