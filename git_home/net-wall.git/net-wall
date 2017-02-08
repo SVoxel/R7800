@@ -16,9 +16,9 @@ if [ "$1" = "rule" ]; then
 		exit 0
 	fi
 
-	# Add own rules
-	mv /tmp/netwall-rules /tmp/netwall-rules.tmp
+	# Add own rules and remove "_lz4" occurrences if any
+	mv -f /tmp/netwall-rules /tmp/netwall-rules.tmp
 	cat $config > /tmp/netwall-rules
-	cat /tmp/netwall-rules.tmp >> /tmp/netwall-rules
+	sed 's/_lz4//g' /tmp/netwall-rules.tmp >> /tmp/netwall-rules
 	rm -f /tmp/netwall-rules.tmp
 fi
