@@ -134,6 +134,11 @@ function check_triggering_add(cf,flag)
 			alert("$diff_lan_this_subnet");
 			return false;
 		}
+		if(isSameIp(cf.service_ip.value,lan_ip) == true)
+		{
+			alert("$invalid_ip");
+			return false;
+		} 
 	}
 	if(checkPort("$trigger_port", cf.pt_port.value)==false)
 		return false;
