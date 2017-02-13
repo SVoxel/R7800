@@ -64,10 +64,18 @@ function loadvalue()
 		cf.vpn_type[0].checked = true;
 	else if(type == "tcp")
 		cf.vpn_type[1].checked = true;
+	else if(type == "udp_lz4")
+		cf.vpn_type[2].checked = true;
+	else if(type == "tcp_lz4")
+		cf.vpn_type[3].checked = true;
 	if(tun_type == "udp")
                 cf.tun_vpn_type[0].checked = true;
         else if(tun_type == "tcp")
                 cf.tun_vpn_type[1].checked = true;
+        else if(tun_type == "udp_lz4")
+                cf.tun_vpn_type[2].checked = true;
+        else if(tun_type == "tcp_lz4")
+                cf.tun_vpn_type[3].checked = true;
 	
 	if(access_mode == "auto")
 		cf.vpn_access[0].checked = true;
@@ -133,7 +141,9 @@ $bluebar
 <TR>
 	<TD><a href="javascript:loadhelp('_openvpn','tun_mode_type')" tabindex="-1">$tun_mode_type</a>&nbsp;&nbsp;&nbsp;
 	<input type="radio" name="tun_vpn_type" value="udp">UDP&nbsp;&nbsp;
-	<input type="radio" name="tun_vpn_type" value="tcp">TCP
+	<input type="radio" name="tun_vpn_type" value="tcp">TCP&nbsp;&nbsp;
+	<input type="radio" name="tun_vpn_type" value="udp_lz4">UDP (2.4.x clients)&nbsp;&nbsp;
+	<input type="radio" name="tun_vpn_type" value="tcp_lz4">TCP (2.4.x clients)
 	</TD>
 	
 </TR>
@@ -145,7 +155,9 @@ $bluebar
 <TR>
 	<TD><a href="javascript:loadhelp('_openvpn','tap_mode_type')" tabindex="-1">$tap_mode_type</a>&nbsp;&nbsp;&nbsp;
 	<input type="radio" name="vpn_type" value="udp">UDP&nbsp;&nbsp;
-	<input type="radio" name="vpn_type" value="tcp">TCP
+	<input type="radio" name="vpn_type" value="tcp">TCP&nbsp;&nbsp;
+	<input type="radio" name="vpn_type" value="udp_lz4">UDP (2.4.x clients)&nbsp;&nbsp;
+	<input type="radio" name="vpn_type" value="tcp_lz4">TCP (2.4.x clients)
 	</TD>
 	
 </TR>
