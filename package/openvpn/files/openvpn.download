@@ -26,9 +26,29 @@ generate_client_conf_file(){
 	port=$($CONFIG get vpn_serv_port)
 	proto=$($CONFIG get vpn_serv_type)
 	if [ "$proto" = "udp" ]; then
+		cipher="AES-128-CBC"
+		complzo="comp-lzo"
+		complz4=";compress lz4-v2"
+		sndbuf=393216
+		rcvbuf=393216
+	elif [ "$proto" = "tcp" ]; then
+		cipher="AES-128-CBC"
+		complzo="comp-lzo"
+		complz4=";compress lz4-v2"
+		sndbuf=0
+		rcvbuf=0
+	elif [ "$proto" = "udp_lz4" ]; then
+		proto=udp
+		cipher="AES-128-GCM"
+		complzo=";comp-lzo"
+		complz4="compress lz4-v2"
 		sndbuf=393216
 		rcvbuf=393216
 	else
+		proto=tcp
+		cipher="AES-128-GCM"
+		complzo=";comp-lzo"
+		complz4="compress lz4-v2"
 		sndbuf=0
 		rcvbuf=0
 	fi
@@ -45,8 +65,9 @@ persist-tun
 ca ca.crt
 cert client.crt
 key client.key
-cipher AES-128-CBC
-comp-lzo
+cipher $cipher
+$complzo
+$complz4
 verb 0
 sndbuf $sndbuf
 rcvbuf $rcvbuf
@@ -56,6 +77,25 @@ EOF
 	"nonwindows")
 	port=$($CONFIG get vpn_serv_port)
 	proto=$($CONFIG get vpn_serv_type)
+	if [ "$proto" = "udp" ]; then
+		cipher="AES-128-CBC"
+		complzo="comp-lzo"
+		complz4=";compress lz4-v2"
+	elif [ "$proto" = "tcp" ]; then
+		cipher="AES-128-CBC"
+		complzo="comp-lzo"
+		complz4=";compress lz4-v2"
+	elif [ "$proto" = "udp_lz4" ]; then
+		proto=udp
+		cipher="AES-128-GCM"
+		complzo=";comp-lzo"
+		complz4="compress lz4-v2"
+	else
+		proto=tcp
+		cipher="AES-128-GCM"
+		complzo=";comp-lzo"
+		complz4="compress lz4-v2"
+	fi
 	cat << EOF
 client
 dev tap
@@ -68,8 +108,9 @@ persist-tun
 ca ca.crt
 cert client.crt
 key client.key
-cipher AES-128-CBC
-comp-lzo
+cipher $cipher
+$complzo
+$complz4
 verb 5
 script-security 2
 up dhcp-client-request.sh
@@ -79,6 +120,25 @@ EOF
 	"smart_phone")
 	port=$($CONFIG get tun_vpn_serv_port)
 	proto=$($CONFIG get tun_vpn_serv_type)
+	if [ "$proto" = "udp" ]; then
+		cipher="AES-128-CBC"
+		complzo="comp-lzo"
+		complz4=";compress lz4-v2"
+	elif [ "$proto" = "tcp" ]; then
+		cipher="AES-128-CBC"
+		complzo="comp-lzo"
+		complz4=";compress lz4-v2"
+	elif [ "$proto" = "udp_lz4" ]; then
+		proto=udp
+		cipher="AES-128-GCM"
+		complzo=";comp-lzo"
+		complz4="compress lz4-v2"
+	else
+		proto=tcp
+		cipher="AES-128-GCM"
+		complzo=";comp-lzo"
+		complz4="compress lz4-v2"
+	fi
 	cat << EOF
 client
 dev tun
@@ -103,8 +163,9 @@ EOF
 	cat < $OPENVPN_CONF_DIR/client.key
 	cat << EOF
 </key>
-cipher AES-128-CBC
-comp-lzo
+cipher $cipher
+$complzo
+$complz4
 verb 5
 EOF
 	;;
