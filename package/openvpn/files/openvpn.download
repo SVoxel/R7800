@@ -56,12 +56,13 @@ generate_client_conf_file(){
 client
 dev tap
 proto $proto
-dev-node NETGEAR-VPN
+;dev-node NETGEAR-VPN
 remote $host_name $static_ip $port
 resolv-retry infinite
 nobind
 persist-key
 persist-tun
+remote-cert-tls server
 ca ca.crt
 cert client.crt
 key client.key
@@ -105,6 +106,7 @@ resolv-retry infinite
 nobind
 persist-key
 persist-tun
+remote-cert-tls server
 ca ca.crt
 cert client.crt
 key client.key
@@ -148,6 +150,7 @@ resolv-retry infinite
 nobind
 persist-key
 persist-tun
+remote-cert-tls server
 <ca>
 EOF
 	cat < $OPENVPN_CONF_DIR/ca.crt

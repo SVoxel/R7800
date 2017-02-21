@@ -24,29 +24,33 @@ generate_server_conf_file() {
 	fi
 
 	# Search for DH file in the config directory
-	for dh in $OWN_CONF_DIR/dh*.pem; do
-		if [[ -f $dh ]]; then
+	for DH in $OWN_CONF_DIR/dh*.pem; do
+		if [[ -f $DH ]]; then
+			dh=$DH
 			break
 	    	fi
 	done
 
 	# Search for CA file in the config directory
-	for ca in $OWN_CONF_DIR/*ca.crt; do
-		if [[ -f $ca ]]; then
+	for CA in $OWN_CONF_DIR/*ca.crt; do
+		if [[ -f $CA ]]; then
+			ca=$CA
 			break
 		fi
 	done
 
 	# Search for server CRT file in the config directory
-	for cert in $OWN_CONF_DIR/*.crt; do
-		if [[ -f $cert ]] && [[ $cert != $ca ]]; then
+	for CERT in $OWN_CONF_DIR/*.crt; do
+		if [[ -f $CERT ]] && [[ $CERT != $ca ]]; then
+			cert=$CERT
 			break
 	    	fi
 	done
 
 	# Search for server KEY file in the config directory
-	for key in $OWN_CONF_DIR/*.key; do
-		if [[ -f $key ]]; then
+	for KEY in $OWN_CONF_DIR/*.key; do
+		if [[ -f $KEY ]]; then
+			key=$KEY
 			break
 	    	fi
 	done
@@ -216,7 +220,7 @@ extract_cert_file() {
 	mkdir -p $OPENVPN_CONF_DIR
 
 	dd if=$partion of=/tmp/openvpn_keys.tar.gz 
-	tar -xzvf /tmp/openvpn_keys.tar.gz -C $OPENVPN_CONF_DIR
+	/usr/bin/tar xzvf /tmp/openvpn_keys.tar.gz -C $OPENVPN_CONF_DIR
 	TAR_STATUS=$?
 	if [ -s $OPENVPN_CONF_DIR/cert.info  -a -s $OPENVPN_CONF_DIR/ca.crt -a -s $OPENVPN_CONF_DIR/dh1024.pem -a -s $OPENVPN_CONF_DIR/client.crt -a -s $OPENVPN_CONF_DIR/client.key -a -s $OPENVPN_CONF_DIR/server.crt -a -s $OPENVPN_CONF_DIR/server.key ]; then
 		FILES_EXIST=1
@@ -237,7 +241,7 @@ write_back_to_partion(){
 	cd $EASY_RSA_DIR/keys
 	CERT_FILE="cert.info ca.crt dh1024.pem client.crt client.key server.crt server.key" 
 
-	tar -czvf openvpn_keys.tar.gz $CERT_FILE
+	/usr/bin/tar czvf openvpn_keys.tar.gz $CERT_FILE
 	dd if=/dev/zero bs=124k count=1 | tr "\000" "\377" >124kdata
 	dd if=openvpn_keys.tar.gz of=124kdata conv=notrunc
 	flash_erase $partion 0 0
