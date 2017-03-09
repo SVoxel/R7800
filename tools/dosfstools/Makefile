@@ -1,5 +1,6 @@
-# 
-# Copyright (C) 2012 OpenWrt.org
+#
+# Copyright (C) 2012-2015 OpenWrt.org
+# Copyright (C) 2016 LEDE-Project.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -7,24 +8,19 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dosfstools
-PKG_VERSION:=3.0.7
-PKG_SOURCE:=$(PKG_NAME)_$(PKG_VERSION).orig.tar.gz
-PKG_SOURCE_URL:=http://dosfstools.sourcearchive.com/downloads/3.0.7/
-PKG_MD5SUM:=5d4d97c79e8dae60bb08c2fba36c94d6
-PKG_CAT:=zcat
+PKG_VERSION:=4.0
+
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
+PKG_SOURCE_URL:=https://github.com/dosfstools/dosfstools/releases/download/v$(PKG_VERSION)/ \
+		http://fossies.org/linux/misc
+PKG_HASH:=9037738953559d1efe04fc5408b6846216cc0138f7f9d32de80b6ec3c35e7daf
+
+HOST_FIXUP:=autoreconf
 
 include $(INCLUDE_DIR)/host-build.mk
 
-define Host/Compile
-	$(MAKE) -C $(HOST_BUILD_DIR) SHELL="$(BASH)" LDFLAGS="$(HOST_LDFLAGS) $(HOST_STATIC_LINKING)"
-endef
-
-define Host/Install
-	$(INSTALL_BIN) $(HOST_BUILD_DIR)/mkdosfs $(STAGING_DIR_HOST)/bin/
-endef
-
-define Host/Clean
-	rm -f $(STAGING_DIR_HOST)/bin/mkdosfs
-endef
+ifeq ($(HOST_OS),Darwin)
+HOST_CFLAGS += -UHAVE_ENDIAN_H
+endif
 
 $(eval $(call HostBuild))
