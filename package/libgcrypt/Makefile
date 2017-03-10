@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2005-2009 OpenWrt.org
+# Copyright (C) 2005-2011 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,14 +8,16 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libgcrypt
-PKG_VERSION:=1.5.0
+PKG_VERSION:=1.6.6
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
-PKG_SOURCE_URL:=ftp://ftp.gnupg.org/gcrypt/libgcrypt/
-PKG_MD5SUM:=693f9c64d50c908bc4d6e01da3ff76d8
+PKG_SOURCE_URL:=ftp://ftp.gnupg.org/gcrypt/libgcrypt
+PKG_MD5SUM:=944cf6595021d0c33478148a315b335b
 
-#PKG_FIXUP:=libtool
+PKG_FIXUP:=patch-libtool
+PKG_INSTALL:=1
+PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -25,46 +27,36 @@ define Package/libgcrypt
   DEPENDS:=+libgpg-error
   TITLE:=GNU crypto library
   URL:=http://directory.fsf.org/security/libgcrypt.html
+  MAINTAINER:=W. Michael Petullo <mike@flyn.org>
 endef
 
 define Package/libgcrypt/description
- This is a general purpose cryptographic library based on the code from 
- GnuPG. It provides functions for all cryptograhic building blocks: 
- symmetric ciphers (AES, DES, Arcfour), hash algorithms (MD5, SHA-1,
+ This is a general purpose cryptographic library based on the code from
+ GnuPG. It provides functions for all cryptograhic building blocks:
+ symmetric ciphers (AES, DES, Arcfour, CAST5), hash algorithms (MD5, SHA-1,
  RIPE-MD160, SHA-224/256, SHA-384/512), MACs (HMAC for all hash
  algorithms), public key algorithms (RSA, DSA), large integer functions,
  random numbers and a lot of supporting functions. Some algorithms have
- been disabled to reduce size (Blowfish, CAST5, Twofish, Serpent,
+ been disabled to reduce size (Blowfish, Twofish, Serpent,
  RC2, SEED, Camellia, CRC, MD4, TIGER-192, Whirlpool, ElGamal, ECC).
 endef
 
-TARGET_CFLAGS += $(FPIC)
-
-CONFIGURE_ARGS+= \
+CONFIGURE_ARGS += \
 	--enable-shared \
 	--enable-static \
 	--disable-asm \
-	--with-gpg-error-prefix="$(STAGING_DIR)/usr" \
-	--enable-digests="md5 rmd160 sha1 sha256 sha512" \
-	--enable-ciphers="arcfour des aes cast5" \
-	--enable-pubkey-ciphers="rsa dsa" \
+	--with-gpg-error-prefix="$(STAGING_DIR)/usr"
 
-define Build/Compile
-	$(MAKE) -C $(PKG_BUILD_DIR) \
-		DESTDIR="$(PKG_INSTALL_DIR)" \
-		all install
-endef
+TARGET_CFLAGS += $(FPIC)
 
 define Build/InstallDev
-	mkdir -p $(1)/usr/bin $(2)/bin $(1)/usr/include $(1)/usr/lib $(1)/usr/share/aclocal
+	$(INSTALL_DIR) $(1)/usr/bin $(2)/bin $(1)/usr/include $(1)/usr/lib $(1)/usr/share/aclocal
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/libgcrypt-config $(1)/usr/bin/
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/gcrypt*.h $(1)/usr/include/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libgcrypt.{la,a,so*} $(1)/usr/lib/
 	$(CP) $(PKG_INSTALL_DIR)/usr/share/aclocal/libgcrypt.m4 $(1)/usr/share/aclocal/
-	echo "SED=$(SED)"
 	$(SED) 's,^libdir=\"$$$${exec_prefix}/lib,libdir=\"$(STAGING_DIR)/usr/lib,g' $(1)/usr/bin/libgcrypt-config
 	$(SED) 's,^includedir=\"$$$${prefix}/include/,includedir=\"$(STAGING_DIR)/usr/include/,g' $(1)/usr/bin/libgcrypt-config
-	$(SED) 's,^libs=\"-lgcrypt,libs=\"$(STAGING_DIR)/usr/lib/libgcrypt.so,g' $(1)/usr/bin/libgcrypt-config
 	ln -sf $(STAGING_DIR)/usr/bin/libgcrypt-config $(2)/bin/
 endef
 
