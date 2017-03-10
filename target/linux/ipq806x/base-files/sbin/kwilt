@@ -7,6 +7,7 @@
 
 oc () { "$@" >> /dev/console 2>&1 ; } # stdout & stderr to /dev/console
 
+config=/bin/config
 appname=kwilt
 modelname=r7800
 app_pid_file=/var/run/$appname.pid
@@ -160,6 +161,11 @@ update()
 {
 	# Check if kwilt is disabled
 	if [ -f /.nokwilt ]; then
+		exit 0
+	fi
+
+	nokwilt=$($config get nokwilt)
+	if [ "$nokwilt" = "1" ]; then
 		exit 0
 	fi
 

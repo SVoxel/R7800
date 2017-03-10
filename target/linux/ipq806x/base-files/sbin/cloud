@@ -1,7 +1,8 @@
 #!/bin/sh
 
 version=`cat /cloud_version`
-cloud_url=https://goo.gl/GiZhL5
+cloud_url=http://downloads.mynetgear.com/ReadyCLOUD/readygeniecloud-r7800new-20161026-01.tar.gz
+config=/bin/config
 sleep_time_1=60
 sleep_time_2=300
 sleep_time_3=600
@@ -68,6 +69,11 @@ install_local() {
 update() {
 	# Check if cloud is disabled
 	if [ -f /.nocloud ]; then
+		exit 0
+	fi
+
+	nocloud=$($config get nocloud)
+	if [ "$nocloud" = "1" ]; then
 		exit 0
 	fi
 
