@@ -247,9 +247,9 @@ define Build/InstallDev
 endef
 
 define Package/libavahi-dbus-support/install
-	$(INSTALL_DIR) $(1)/etc/dbus-1/system.d
-	$(CP) $(PKG_INSTALL_DIR)/etc/dbus-1/system.d/* $(1)/etc/dbus-1/system.d
-	$(CP) ./files/avahi-dbus.conf $(1)/etc/dbus-1/system.d
+	$(INSTALL_DIR) $(1)/usr/share/dbus-1/system.d
+	$(CP) $(PKG_INSTALL_DIR)/etc/dbus-1/system.d/* $(1)/usr/share/dbus-1/system.d
+	$(CP) ./files/avahi-dbus.conf $(1)/usr/share/dbus-1/system.d
 endef
 
 define Package/libavahi/install

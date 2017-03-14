@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sysstat
-PKG_VERSION:=10.1.7
+PKG_VERSION:=11.0.4
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=http://pagesperso-orange.fr/sebastien.godard
-PKG_MD5SUM:=72e9d84efcbb366a988de09e958636e2
+PKG_MD5SUM:=df1ed75656eb06320088d54247f0e803
 
 PKG_INSTALL:=1
 
