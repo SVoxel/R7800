@@ -78,10 +78,10 @@ update() {
 	fi
 
 	local cloud_binary_install=$(/bin/config get cloud_binary_install)
-	install_local
 	[ -f /tmp/.cloud_updated ] && return 1
 	PID_file=/var/run/cloud.pid
 	[ -f $PID_file ] && return 1
+	install_local
 	echo "$$" > $PID_file
 	echo "start to get info from ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/"
 	retry_count=0
