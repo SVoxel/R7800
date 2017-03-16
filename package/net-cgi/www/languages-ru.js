@@ -1180,7 +1180,7 @@ h_IPv6_pppoe="<body bgcolor=#0099cc><P><font size=4><B>Справка: IPv6</B><
 qos_conn_problem="Problem with Internet connection, unable to detect the bandwidth!"
 basic_title="БАЗОВЫЙ РЕЖИМ"
 advanced_title="ДОП.НАСТРОЙКИ"
-router_firmware_version="Версия микрокода роутера"
+router_firmware_version="Версия микрокода роутера (Voxel)"
 firmware_upgrade_is_available_click_to_get="Доступно обновление версии микрокода. Загрузить"
 internet="Интернет"
 error_mark="ОШИБКА"

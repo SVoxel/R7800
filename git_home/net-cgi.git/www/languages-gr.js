@@ -1180,7 +1180,7 @@ h_IPv6_pppoe="<body bgcolor=#0099cc><P><font size=4><B>IPv6-Hilfe</B></font></P>
 qos_conn_problem="Problem with Internet connection, unable to detect the bandwidth!"
 basic_title="EINFACH"
 advanced_title="ERWEITERT"
-router_firmware_version="Version der Router-Firmware"
+router_firmware_version="Version der Router-Firmware (Voxel)"
 firmware_upgrade_is_available_click_to_get="Ein neues Firmware-Upgrade ist verfügbar. Hier klicken."
 internet="Internet"
 error_mark="FEHLER"
