@@ -1,19 +1,18 @@
 #!/bin/sh /etc/rc.common
 
 START=98
+STOP=22
 
-CONFIG=/bin/config
+DROPBEAR="/usr/bin/dropbear"
+PORT=22
+PIDFILE="/var/run/dropbear.pid"
 
 start() {
-	# Set TimeZone for console
-	tz=$($CONFIG get time_zone)
-	echo "$tz" > /tmp/TZ
-
 	# Start SSH server
-	/usr/bin/dropbear -p 22 -a -s
+	$DROPBEAR -p $PORT -a -s -P $PIDFILE
+}
 
-	# Create dummy fstab if does not exist
-	if [ ! -f /tmp/fstab ]; then
-		cat /tmp/fstab > /tmp/fstab
-	fi
+stop() {
+	# Stop SSH server
+	kill `cat $PIDFILE`
 }

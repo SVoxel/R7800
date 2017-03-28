@@ -2,11 +2,21 @@
 
 START=99
 STOP=20
+CONFIG="/bin/config"
 
 start() {
 	# Socket buffers
 	echo 1048576 > /proc/sys/net/core/rmem_max
 	echo 1048576 > /proc/sys/net/core/wmem_max
+
+	# Set TimeZone for console
+	tz=$($CONFIG get time_zone)
+	echo "$tz" > /tmp/TZ
+
+	# Create dummy fstab if does not exist
+	if [ ! -f /tmp/fstab ]; then
+		cat /tmp/fstab > /tmp/fstab
+	fi
 
 	# Enable swap if swap file exists in /opt or /mnt/sda1 or /mnt/sdb1
 	if [ -e /opt/swap ]; then

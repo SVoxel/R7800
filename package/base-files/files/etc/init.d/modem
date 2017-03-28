@@ -1,10 +1,19 @@
 #!/bin/sh /etc/rc.common
 START=99
 
+CONFIG=/bin/config
+AP_MODE=$($CONFIG get ap_mode)
+BRIDGE_MODE=$($CONFIG get bridge_mode)
+EXTENDER_MODE=$($CONFIG get extender_mode)
 KVER=`uname -r | cut -f 1`
 MODULE_PATH=/lib/modules/$KVER
 
 start() {
+	# Check if not router mode
+	if [ "$AP_MODE" != "0" ] || [ "$BRIDGE_MODE" != "0" ] || [ "$EXTENDER_MODE" != "0" ]; then
+		exit 0;
+	fi
+
 	# Check is cable attached to WAN port, exit if "yes"
 	detcable show | grep "WAN  : Plug in" > /dev/null
 	if [ $? -eq 0 ]; then

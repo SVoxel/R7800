@@ -1,0 +1,31 @@
+--- a/fsck_hfs.tproj/dfalib/SVerify1.c
++++ b/fsck_hfs.tproj/dfalib/SVerify1.c
+@@ -60,6 +60,28 @@
+ static Boolean DoesOverlap(SGlobPtr GPtr, UInt32 fileID, const char *attrname, UInt32 startBlock, UInt32 blockCount, UInt8 forkType); 
+ 
+ static int CompareExtentFileID(const void *first, const void *second);
++#ifndef __UCLIBC__
++static size_t strlcpy(char *dst, const char *src, size_t n)
++{
++    if (!n)
++        return strlen(src);
++
++    const char *s = src;
++
++    while (--n > 0)
++        if (!(*dst++ = *s++))
++            break;
++
++    if (!n)
++    {
++        *dst++ = 0;
++        while (*s++)
++            ;
++    }
++
++    return s - src - 1;
++}
++#endif
+ 
+ /*
+  * Check if a volume is journaled.  
