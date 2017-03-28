@@ -9,6 +9,7 @@ DOWNLOAD_PATH=$($CONFIG get green_download_path)
 AP_MODE=$($CONFIG get ap_mode)
 BRIDGE_MODE=$($CONFIG get bridge_mode)
 EXTENDER_MODE=$($CONFIG get extender_mode)
+TRANSMISSION_DISABLED=$($CONFIG get transmission_disable)
 
 start() {
 	# Create /tmp/www directory
@@ -17,7 +18,7 @@ start() {
 	fi
 
 	# Check if NETGEAR Downloader enabled or not router mode (disable/enable button)
-	if [ "$GREEN_DWNLDR_ENABLED" == "0" ] && [ "$AP_MODE" == "0" ] && [ "$BRIDGE_MODE" == "0" ] && [ "$EXTENDER_MODE" == "0" ]; then
+	if [ "$GREEN_DWNLDR_ENABLED" == "0" ] && [ "$AP_MODE" == "0" ] && [ "$BRIDGE_MODE" == "0" ] && [ "$EXTENDER_MODE" == "0" ] && [ "$TRANSMISSION_DISABLED" != "1" ]; then
 		cp -p -f /www/GREEN_bt_basic_blue.htm /tmp/www/GREEN_bt_basic.htm
 	else
 		cp -p -f /www/GREEN_bt_basic_grey.htm /tmp/www/GREEN_bt_basic.htm
@@ -26,6 +27,12 @@ start() {
 	# Check if NETGEAR Downloader enabled
 	if [ "$GREEN_DWNLDR_ENABLED" == "1" ]; then
 		echo "Error: NETGEAR Downloader is enabled. Disable NETGEAR Downloader."
+		exit 1
+	fi
+
+	# Check if Transmission is disabled
+	if [ "$TRANSMISSION_DISABLED" == "1" ]; then
+		echo "Error: Transmission is disabled. Enable Transmission (nvram set transmission_disable=0)."
 		exit 1
 	fi
 

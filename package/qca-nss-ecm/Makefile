@@ -33,7 +33,7 @@ endef
 
 define KernelPackage/qca-nss-ecm/Default/install
 	$(INSTALL_DIR) $(1)/etc/firewall.d $(1)/etc/init.d $(1)/usr/bin
-	$(INSTALL_DATA) ./files/qca-nss-ecm.firewall $(1)/etc/firewall.d/qca-nss-ecm
+	$(INSTALL_BIN) ./files/qca-nss-ecm.firewall $(1)/etc/firewall.d/qca-nss-ecm
 	$(INSTALL_BIN) ./files/qca-nss-ecm.init $(1)/etc/init.d/qca-nss-ecm
 	$(INSTALL_BIN) ./files/ecm_dump.sh $(1)/usr/bin/
 endef

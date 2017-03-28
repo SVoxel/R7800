@@ -17,8 +17,8 @@ start() {
 		exit
 	fi
 
-	if [ ! -f /tmp/dnsmasq.conf ]; then
-		cp /etc/dnsmasq-resolv.conf /tmp/dnsmasq.conf
+	if [ ! -f /etc/dnscrypt.conf ] && [ ! -f /root/dnscrypt-list ]; then
+		cp -f /etc/dnsmasq-resolv.conf /tmp/dnsmasq.conf
 	fi
 
 	[ ! -f /tmp/resolv.conf ] && touch /tmp/resolv.conf
@@ -69,8 +69,8 @@ start() {
 	fi
 	# end static pptp config
 
-	if [ -f /root/dnscrypt-list ]; then
-		/usr/sbin/dnsmasq -r $resolv_file $opt_argv
+	if [ -f /etc/dnscrypt.conf ] || [ -f /root/dnscrypt-list ]; then
+		/usr/sbin/dnsmasq $opt_argv
 	else
 		/usr/sbin/dnsmasq --except-interface=lo -r $resolv_file $opt_argv
 	fi
