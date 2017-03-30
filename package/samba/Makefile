@@ -19,6 +19,8 @@ PKG_INSTALL_DIR:=$(PKG_BUILD_DIR)/ipkg-install
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS:=-O3 -pipe -mcpu=cortex-a15 -mfpu=neon-vfpv4 -mtune=cortex-a15 -mfloat-abi=softfp -fhonour-copts
+
 define Package/samba
   SECTION:=net
   CATEGORY:=Network
@@ -39,7 +41,7 @@ define Build/Compile
 	$(MAKE) -C $(PKG_BUILD_DIR)/source \
                 $(TARGET_CONFIGURE_OPTS) \
                 CROSS="$(TARGET_CROSS)" \
-                CFLAGS="$(TARGET_CFLAGS) -I$(DEP_BUILD_DIR)/include -I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/include -O3 -fhonour-copts" \
+                CFLAGS="$(TARGET_CFLAGS) -I$(DEP_BUILD_DIR)/include -I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/include" \
                 LDFLAGS="-L$(STAGING_DIR)/usr/lib -L$(STAGING_DIR)/lib" \
                 CODEPAGEDIR="/usr/share/samba" \
                 all
