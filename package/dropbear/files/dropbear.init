@@ -1,11 +1,11 @@
 #!/bin/sh /etc/rc.common
 
 START=98
-STOP=22
+STOP=30
 
-DROPBEAR="/usr/bin/dropbear"
-PORT=22
+DROPBEAR="/usr/sbin/dropbear"
 PIDFILE="/var/run/dropbear.pid"
+PORT=22
 
 start() {
 	# Start SSH server

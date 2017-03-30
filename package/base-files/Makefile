@@ -43,7 +43,6 @@ define Package/base-files/conffiles
 /etc/rc.local
 /etc/sysupgrade.conf
 /etc/config/
-/etc/dropbear/
 /etc/crontabs/
 $(call $(TARGET)/conffiles)
 endef
