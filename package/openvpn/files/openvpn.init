@@ -104,7 +104,7 @@ cert $cert
 key $key
 dev tap0
 server-bridge nogw
-proto $proto 
+proto ${proto}4
 port $port 
 keepalive 10 120
 verb 3
@@ -176,7 +176,7 @@ cert $cert
 key $key
 server $subnet $lan_netmask
 dev tun0
-proto $proto 
+proto ${proto}4
 port $port 
 keepalive 10 120
 verb 3
