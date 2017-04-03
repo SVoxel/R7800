@@ -16,8 +16,9 @@ bridge-utils-1.6.tar.gz
 confuse-3.0.tar.gz
 dbus-1.10.4.tar.gz
 dnscrypt-proxy-1.9.4.tar.gz
+dropbear-2016.74.tar.bz2
 e2fsprogs-1.43.4.tar.gz
-ethtool-4.8.tar.xz
+ethtool-4.10.tar.xz
 expat-2.2.0.tar.bz2
 flac-1.3.1.tar.xz
 flex-2.6.1.tar.xz
@@ -27,6 +28,7 @@ gdbm-1.11.tar.gz
 gettext-0.19.8.1.tar.xz
 gmp-6.1.2.tar.xz
 gperf-3.0.4.tar.gz
+hfsprogs_332.25.orig.tar.gz
 jpegsrc.v9a.tar.gz
 json-c-0.12.1-nodoc.tar.gz
 libcrypto++_5.6.3.orig.tar.xz
@@ -58,7 +60,7 @@ mtd-utils-1.5.2.tar.gz
 mxml-2.9.tar.gz
 ncurses-5.9.tar.gz
 openssl-1.0.2k.tar.gz
-openvpn-2.4.0.tar.xz
+openvpn-2.4.1.tar.xz
 pkg-config-0.29.1.tar.gz
 popt-1.16.tar.gz
 qca-wifi-fw-QCA9984_hw_1-CNSS.BL.3.0.2-00068-S-1.59256.1.tar.bz2
