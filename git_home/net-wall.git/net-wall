@@ -7,18 +7,18 @@ else
 fi
 
 if [ "$1" = "rule" ]; then
-	# Check config file existence
+	# Add own rules and remove "_lz4" occurrences if any
+	sed 's/_lz4//g' /tmp/netwall-rules > /tmp/netwall-rules.tmp
+
+	# Check config file existence, add own rules if exists
 	if [ -f /etc/netwall.conf ]; then
-		config=/etc/netwall.conf
+		cat /etc/netwall.conf > /tmp/netwall-rules
 	elif [ -f /root/netwall-rules ]; then
-		config=/root/netwall-rules
+		cat /root/netwall-rules > /tmp/netwall-rules
 	else
-		exit 0
+		rm -f /tmp/netwall-rules
 	fi
 
-	# Add own rules and remove "_lz4" occurrences if any
-	mv -f /tmp/netwall-rules /tmp/netwall-rules.tmp
-	cat $config > /tmp/netwall-rules
-	sed 's/_lz4//g' /tmp/netwall-rules.tmp >> /tmp/netwall-rules
+	cat /tmp/netwall-rules.tmp >> /tmp/netwall-rules
 	rm -f /tmp/netwall-rules.tmp
 fi
