@@ -18,9 +18,9 @@ PKG_REV_DATE_RES=$(shell TMPDIR=`mktemp -d /tmp/$(PKG_NAME).XXXXX` && \
 			git log --format="%ci" FETCH_HEAD -1 | \
 				sed 's/-\|:\| //g' | cut -b -14 && \
 			rm -rf $${TMPDIR})
-PKG_REV_DATE:=20160607112934
+PKG_REV_DATE:=20161222140925
 
-PKG_VERSION:=20160607112934-cloud-gbaabd85-generic
+PKG_VERSION:=20161222140925-g-generic
 PKG_VERSION_SAVED:=$(PKG_VERSION)
 PKG_RELEASE:=1
 
@@ -32,7 +32,7 @@ PKG_SOURCE_MIRROR:=none
 include $(INCLUDE_DIR)/local-development.mk
 #check if we used a localversion then let's update PKG_VERSION if we did
 ifneq ($(PKG_VERSION),$(PKG_VERSION_SAVED))
-PKG_VERSION:=20160607112934-cloud-gbaabd85-generic
+PKG_VERSION:=p0f-db_20161222140925-g-generic
 endif
 
 include $(INCLUDE_DIR)/package-version-override.mk

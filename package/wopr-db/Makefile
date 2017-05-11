@@ -9,7 +9,7 @@ PKG_NAME:=wopr-db
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=ssh://qca-git01.qualcomm.com:29418/streamboost/wopr-db.git
 PKG_BRANCH:=banana
-PKG_REV:=0e9656a
+PKG_REV:=33cf1a0
 
 PKG_REV_DATE_RES=$(shell TMPDIR=`mktemp -d /tmp/$(PKG_NAME).XXXXX` && \
 			cd $${TMPDIR} && \
@@ -18,9 +18,9 @@ PKG_REV_DATE_RES=$(shell TMPDIR=`mktemp -d /tmp/$(PKG_NAME).XXXXX` && \
 			git log --format="%ci" FETCH_HEAD -1 | \
 				sed 's/-\|:\| //g' | cut -b -14 && \
 			rm -rf $${TMPDIR})
-PKG_REV_DATE:=20160607112951
+PKG_REV_DATE:=20170428104102
 
-PKG_VERSION:=20160607112951-cloud-g0e9656a-generic
+PKG_VERSION:=20170428104102-g33cf1a0-generic
 PKG_VERSION_SAVED:=$(PKG_VERSION)
 PKG_RELEASE:=1
 
@@ -33,7 +33,7 @@ PKG_BUILD_DEPENDS=
 include $(INCLUDE_DIR)/local-development.mk
 #check if we used a localversion then let's update PKG_VERSION if we did
 ifneq ($(PKG_VERSION),$(PKG_VERSION_SAVED))
-PKG_VERSION:=20160607112951-cloud-g0e9656a-generic
+PKG_VERSION:=20170428104102-g33cf1a0-generic
 endif
 
 include $(INCLUDE_DIR)/package-version-override.mk
