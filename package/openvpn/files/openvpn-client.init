@@ -1,0 +1,80 @@
+#!/bin/sh /etc/rc.common
+START=99
+
+CONFIG=/bin/config
+PROG=/usr/sbin/openvpn
+PID_FILE=/var/run/openvpn-client.pid
+LOG_FILE=/var/log/openvpn-client.log
+AP_MODE=$($CONFIG get ap_mode)
+BRIDGE_MODE=$($CONFIG get bridge_mode)
+EXTENDER_MODE=$($CONFIG get extender_mode)
+OPENVPN_CONF_DIR=/etc/openvpn/config/client
+
+start() {
+	# Check if OpenVPN server is enabled
+	if [ "$($CONFIG get vpn_enable)" = "1" ]; then
+		echo "Error: OpenVPN server is enabled. Disable it to start OpenVPN client."
+		exit 1
+	fi
+
+	# Check if not router mode
+	if [ "$AP_MODE" == "1" ] || [ "$BRIDGE_MODE" == "1" ] || [ "$EXTENDER_MODE" == "1" ]; then
+		echo "Error: Not router mode."
+		exit 1
+	fi
+
+	# Check if tun0 interface already exists
+	ifconfig | grep -q tun0
+	if [ $? -eq 0 ]; then
+		echo "Error: tun0 interface exists. OpenVPN client is probably already started."
+		exit 1
+	fi
+
+	# Check existence of /etc/openvpn/config/client/*.ovpn file
+	OVPN_CLIENT_CONF=0
+	for OVPN in $OPENVPN_CONF_DIR/*.ovpn; do
+		if [[ -f $OVPN ]]; then
+			OVPN_CLIENT_CONF=$OVPN
+			break
+		fi
+	done
+
+	# If no *.ovpn file in /etc/openvpn/config/client
+	if [ $OVPN_CLIENT_CONF = "0" ]; then
+		echo "Error: No *.ovpn file in /etc/openvpn/config/client directory."
+		exit 1;
+	fi
+
+	# Start OpenVPN client
+	$PROG --writepid $PID_FILE --log-append $LOG_FILE --config $OVPN_CLIENT_CONF --daemon
+	echo "Please wait..."
+	sleep 20
+	ifconfig | grep -q tun0
+	if [ $? -ne 0 ]; then
+		echo "Error: OpenVPN client start failed."
+		if [ -f $PID_FILE ]; then
+			rm -f $PID_FILE
+		fi
+		exit 1
+	fi
+
+	# Restart firewall	
+	net-wall rule
+	net-wall start
+}
+
+stop() {
+	kill `cat $PID_FILE` 
+	if [ -f $PID_FILE ]; then
+		rm -f $PID_FILE
+	fi
+
+	# Restart firewall	
+	net-wall rule
+	net-wall start
+}
+
+restart() {
+	stop
+	start
+}

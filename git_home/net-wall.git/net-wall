@@ -21,4 +21,11 @@ if [ "$1" = "rule" ]; then
 
 	cat /tmp/netwall-rules.tmp >> /tmp/netwall-rules
 	rm -f /tmp/netwall-rules.tmp
+elif [ "$1" = "start" ] && [ -f /var/run/openvpn-client.pid ]; then
+	iptables -I INPUT -i tun0 -j ACCEPT
+	iptables -I OUTPUT -j ACCEPT
+	iptables -I FORWARD 2 -i tun0 -j ACCEPT
+	iptables -I FORWARD -i br0 -o tun0 -j ACCEPT
+	iptables -I FORWARD -i tun0 -o br0 -j ACCEPT
+	iptables -t nat -A POSTROUTING -o tun0 -j MASQUERADE
 fi

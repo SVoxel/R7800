@@ -124,6 +124,22 @@ if [ -x /mnt/$diskname/autorun/scripts/post-mount.sh ]; then
 	/mnt/$diskname/autorun/scripts/post-mount.sh $diskname &
 fi
 
+# Trick with OpenVPN client config files stored in /openvpn-client folder on the USB
+if [ -d /mnt/$diskname/openvpn-client ]; then
+	/etc/init.d/openvpn-client stop
+	if [ -d /etc/openvpn/config/client ]; then
+		rm -rf /etc/openvpn/config/client
+	fi
+
+	if [ ! -f /mnt/$diskname/openvpn-client/disable ]; then
+		mkdir /etc/openvpn/config
+		mkdir /etc/openvpn/config/client
+		cp -r /mnt/$diskname/openvpn-client/* /etc/openvpn/config/client
+		chmod 0644 /etc/openvpn/client/*
+		/etc/init.d/openvpn-client start
+	fi
+fi		
+
 diskname=$(echo $1 | sed 's/[0-9].*//')
 lastpartition=$(cat /proc/partitions | grep $diskname | awk '{print $4}' | tail -1)
 echo "disk name is $diskname last partition is $lastpartition"

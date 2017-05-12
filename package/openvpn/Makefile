@@ -118,6 +118,12 @@ define Package/openvpn-$(BUILD_VARIANT)/install
 	ln -sv ../init.d/openvpn $(1)/etc/rc.d/S60openvpn
 
 	$(INSTALL_BIN) \
+		files/openvpn-client.init \
+		$(1)/etc/init.d/openvpn-client
+
+	ln -sv ../init.d/openvpn $(1)/etc/rc.d/S99openvpn-client
+
+	$(INSTALL_BIN) \
 		files/check_cert_files.init \
 		$(1)/etc/init.d/zzprefix-check_cert_files
 
