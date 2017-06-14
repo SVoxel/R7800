@@ -2,7 +2,7 @@
 +++ b/Makefile.owrt
 @@ -0,0 +1,32 @@
 +PROG = p0f
-+VERSION = 3.05b
++VERSION = 3.09b
 +
 +EXTRA_CFLAGS=-Wall -Wno-format -fPIE -D_FORTIFY_SOURCE=2 -DVERSION=\"$(VERSION)\"
 +

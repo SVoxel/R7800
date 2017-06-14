@@ -1,6 +1,6 @@
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -0,0 +1,307 @@
+@@ -0,0 +1,315 @@
 +AUTOMAKE_OPTIONS = foreign
 +lib_LTLIBRARIES = libcrypto++.la
 +libcrypto___la_LIBADD = -lpthread
@@ -17,6 +17,7 @@
 +	base64.cpp \
 +	basecode.cpp \
 +	bfinit.cpp \
++	blake2.cpp \
 +	blowfish.cpp \
 +	blumshub.cpp \
 +	camellia.cpp \
@@ -24,6 +25,7 @@
 +	casts.cpp \
 +	cbcmac.cpp \
 +	ccm.cpp \
++	chacha.cpp \
 +	channels.cpp \
 +	cmac.cpp \
 +	cpu.cpp \
@@ -62,6 +64,7 @@
 +	idea.cpp \
 +	integer.cpp \
 +	iterhash.cpp \
++	keccak.cpp \
 +	luc.cpp \
 +	md2.cpp \
 +	md4.cpp \
@@ -144,12 +147,14 @@
 +	base64.h \
 +	basecode.h \
 +	bench.h \
++	blake2.h \
 +	blowfish.h \
 +	blumshub.h \
 +	camellia.h \
 +	cast.h \
 +	cbcmac.h \
 +	ccm.h \
++	chacha.h \
 +	channels.h \
 +	cmac.h \
 +	config.h \
@@ -172,6 +177,7 @@
 +	eprecomp.h \
 +	esign.h \
 +	factory.h \
++	fhmqv.h \
 +	files.h \
 +	filters.h \
 +	fips140.h \
@@ -185,11 +191,13 @@
 +	gzip.h \
 +	hex.h \
 +	hmac.h \
++	hmqv.h \
 +	hrtimer.h \
 +	ida.h \
 +	idea.h \
 +	integer.h \
 +	iterhash.h \
++	keccak.h \
 +	lubyrack.h \
 +	luc.h \
 +	md2.h \
@@ -272,9 +280,9 @@
 +	validate.h
 +
 +bin_PROGRAMS = cryptest cryptestcwd
-+cryptest_CXXFLAGS = $(CXXFLAGS) -DPACKAGE_DATA_DIR='"/opt/share/crypto++/"'
++cryptest_CXXFLAGS = $(CXXFLAGS) -DCRYPTOPP_DATA_DIR='"/opt/share/crypto++/"'
 +cryptest_SOURCES = \
-+	bench.cpp \
++	bench1.cpp \
 +	bench2.cpp \
 +	test.cpp \
 +	validat1.cpp \
@@ -286,9 +294,9 @@
 +	dlltest.cpp
 +nodist_cryptest_SOURCES = adhoc.cpp
 +cryptest_LDADD = $(lib_LTLIBRARIES)
-+cryptestcwd_CXXFLAGS = $(CXXFLAGS) -DPACKAGE_DATA_DIR='""'
++cryptestcwd_CXXFLAGS = $(CXXFLAGS) -DCRYPTOPP_DATA_DIR='""'
 +cryptestcwd_SOURCES = \
-+	bench.cpp \
++	bench1.cpp \
 +	bench2.cpp \
 +	test.cpp \
 +	validat1.cpp \
@@ -326,7 +334,7 @@
 --- a/configure.ac
 +++ b/configure.ac
 @@ -0,0 +1,15 @@
-+AC_INIT([Crypto++], [5.6.3], [cryptopp-users@googlegroups.com])
++AC_INIT([Crypto++], [5.6.4], [cryptopp-users@googlegroups.com])
 +AM_INIT_AUTOMAKE
 +AC_CONFIG_SRCDIR(configure.ac)
 +AC_CONFIG_HEADER([local.h])

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2007-2009 OpenWrt.org
+# Copyright (C) 2017 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,31 +8,39 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=jq
-PKG_VERSION:=1.3
+PKG_VERSION:=1.5
 PKG_RELEASE:=1
+PKG_LICENSE:=BSD
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_MD5SUM:=26081b05d22525eca5cbdd8f9f4db17d
+PKG_SOURCE_URL:=https://github.com/stedolan/jq/releases/download/jq-$(PKG_VERSION)/
+PKG_MD5SUM:=0933532b086bd8b6a41c1b162b1731f9
+
+PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
+ifdef CONFIG_USE_MIPS16
+  TARGET_CFLAGS += -fno-ipa-sra
+endif
+
+TARGET_CFLAGS += -std=c99
+
 define Package/jq
   SECTION:=utils
-  CATEGORY:=Base system
-  TITLE:=JSON parser
+  CATEGORY:=Utilities
+  TITLE:=Lightweight and flexible command-line JSON processor.
+  URL:=https://stedolan.github.io/jq/
+  MAINTAINER:=Marko Ratkaj <marko.ratkaj@sartura.hr>
 endef
 
-define Build/Compile
-	$(MAKE) -C $(PKG_BUILD_DIR) \
-		$(TARGET_CONFIGURE_OPTS) \
-		CFLAGS="$(TARGET_CFLAGS) --std=c99" \
-		LDFLAGS="-L$(STAGING_DIR)/usr/lib -L$(STAGING_DIR)/lib" 
+define Package/jq/description
+	Lightweight and flexible command-line JSON processor.
 endef
-
 
 define Package/jq/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/jq $(1)/usr/sbin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/* $(1)/usr/sbin/
 endef
 
 $(eval $(call BuildPackage,jq))

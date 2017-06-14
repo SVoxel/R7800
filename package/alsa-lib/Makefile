@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=alsa-lib
-PKG_VERSION:=1.1.3
+PKG_VERSION:=1.1.4.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=ftp://ftp.alsa-project.org/pub/lib/ \
 		http://alsa.cybermirror.org/lib/
-PKG_MD5SUM:=eefe5992567ba00d6110a540657aaf5c
+PKG_HASH:=91bb870c14d1c7c269213285eeed874fa3d28112077db061a3af8010d0885b76
 PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>, \
 		Peter Wagner <tripolar@gmx.at>
 
@@ -33,7 +33,7 @@ define Package/alsa-lib
   CATEGORY:=Libraries
   TITLE:=ALSA (Advanced Linux Sound Architecture) library
   URL:=http://www.alsa-project.org/
-  DEPENDS:=+libpthread +librt
+  DEPENDS:=@AUDIO_SUPPORT +kmod-sound-core +libpthread +librt
 endef
 
 define Package/alsa-lib/description
