@@ -2209,7 +2209,7 @@ CONFIG_PACKAGE_jshn=y
 # CONFIG_PACKAGE_ldd is not set
 # CONFIG_PACKAGE_libplist-utils is not set
 CONFIG_PACKAGE_logrotate=y
-CONFIG_PACKAGE_mp707=y
+# CONFIG_PACKAGE_mp707 is not set
 CONFIG_PACKAGE_mtd-utils=y
 # CONFIG_PACKAGE_mtd-utils-doc-loadbios is not set
 # CONFIG_PACKAGE_mtd-utils-docfdisk is not set

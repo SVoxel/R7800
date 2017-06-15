@@ -1,7 +1,7 @@
 #!/bin/sh
 
 version=`cat /cloud_version`
-cloud_url=http://downloads.mynetgear.com/ReadyCLOUD/readygeniecloud-r7800new-20161026-01.tar.gz
+cloud_url=http://ownweb.eu/Downloads/R7800-Voxel-firmware/ReadyCLOUD/readygeniecloud-r7800new-20161026-01.tar.gz
 config=/bin/config
 sleep_time_1=60
 sleep_time_2=300
