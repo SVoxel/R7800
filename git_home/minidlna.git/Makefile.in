@@ -129,21 +129,23 @@ am_minidlnad_OBJECTS = minidlna.$(OBJEXT) upnphttp.$(OBJEXT) \
 	getifaddr.$(OBJEXT) process.$(OBJEXT) upnpglobalvars.$(OBJEXT) \
 	options.$(OBJEXT) minissdp.$(OBJEXT) uuid.$(OBJEXT) \
 	upnpevents.$(OBJEXT) sql.$(OBJEXT) utils.$(OBJEXT) \
-	metadata.$(OBJEXT) scanner.$(OBJEXT) inotify.$(OBJEXT) \
+	metadata.$(OBJEXT) scanner.$(OBJEXT) monitor.$(OBJEXT) \
 	tivo_utils.$(OBJEXT) tivo_beacon.$(OBJEXT) \
 	tivo_commands.$(OBJEXT) playlist.$(OBJEXT) \
 	image_utils.$(OBJEXT) albumart.$(OBJEXT) log.$(OBJEXT) \
-	containers.$(OBJEXT) tagutils/tagutils.$(OBJEXT)
+	containers.$(OBJEXT) avahi.$(OBJEXT) \
+	tagutils/tagutils.$(OBJEXT)
 minidlnad_OBJECTS = $(am_minidlnad_OBJECTS)
 am__DEPENDENCIES_1 =
-minidlnad_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+minidlnad_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 minidlnad_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(minidlnad_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am_testupnpdescgen_OBJECTS = testupnpdescgen.$(OBJEXT) \
 	upnpdescgen.$(OBJEXT)
 testupnpdescgen_OBJECTS = $(am_testupnpdescgen_OBJECTS)
 testupnpdescgen_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -391,19 +393,14 @@ minidlnad_SOURCES = minidlna.c upnphttp.c upnpdescgen.c upnpsoap.c \
 			upnpreplyparse.c minixml.c clients.c \
 			getifaddr.c process.c upnpglobalvars.c \
 			options.c minissdp.c uuid.c upnpevents.c \
-			sql.c utils.c metadata.c scanner.c inotify.c \
+			sql.c utils.c metadata.c scanner.c monitor.c \
 			tivo_utils.c tivo_beacon.c tivo_commands.c \
 			playlist.c image_utils.c albumart.c log.c \
-			containers.c tagutils/tagutils.c
+			containers.c avahi.c tagutils/tagutils.c
 
-
-#if NEED_VORBIS
-vorbisflag = -lvorbis
-#endif
-
-#if NEED_OGG
-flacoggflag = -logg
-#endif
+@HAVE_VORBISFILE_TRUE@vorbislibs = -lvorbis -logg
+@HAVE_VORBISFILE_FALSE@@NEED_OGG_TRUE@flacogglibs = -logg
+@HAVE_AVAHI_TRUE@@TIVO_SUPPORT_TRUE@avahilibs = -lavahi-client -lavahi-common
 minidlnad_LDADD = \
 	@LIBJPEG_LIBS@ \
 	@LIBID3TAG_LIBS@ \
@@ -413,7 +410,7 @@ minidlnad_LDADD = \
 	@LIBEXIF_LIBS@ \
 	@LIBINTL@ \
 	@LIBICONV@ \
-	-lFLAC  $(flacoggflag) $(vorbisflag)
+	-lFLAC $(flacogglibs) $(vorbislibs) $(avahilibs)
 
 minidlnad_LDFLAGS = @STATIC_LDFLAGS@
 testupnpdescgen_SOURCES = testupnpdescgen.c upnpdescgen.c
@@ -424,7 +421,7 @@ testupnpdescgen_LDADD = \
 	@LIBAVFORMAT_LIBS@ \
 	@LIBAVUTIL_LIBS@ \
 	@LIBEXIF_LIBS@ \
-	-lFLAC  $(flacoggflag) $(vorbisflag)
+	-lFLAC $(flacogglibs) $(vorbislibs) $(avahilibs)
 
 SUFFIXES = .tmpl .
 GENERATED_FILES = \
@@ -561,16 +558,17 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/albumart.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/avahi.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/clients.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/containers.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getifaddr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/image_utils.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inotify.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/metadata.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/minidlna.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/minissdp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/minixml.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/monitor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/options.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/playlist.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/process.Po@am__quote@

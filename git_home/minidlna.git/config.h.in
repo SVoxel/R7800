@@ -19,6 +19,12 @@
 /* Define to 1 if you have the <asm/unistd.h> header file. */
 #undef HAVE_ASM_UNISTD_H
 
+/* Have avahi */
+#undef HAVE_AVAHI
+
+/* Define to 1 if you have the <avahi-common/thread-watch.h> header file. */
+#undef HAVE_AVAHI_COMMON_THREAD_WATCH_H
+
 /* Define to 1 if you have the <avcodec.h> header file. */
 #undef HAVE_AVCODEC_H
 
@@ -335,7 +341,7 @@
 /* Define to 1 if you have the <vfork.h> header file. */
 #undef HAVE_VFORK_H
 
-/* lacking vorbisfile */
+/* Have vorbisfile */
 #undef HAVE_VORBISFILE
 
 /* Define to 1 if you have the <vorbis/codec.h> header file. */
@@ -395,9 +401,6 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
-
-/* Define to 5 if you want to enable NETGEAR ReadyNAS PnP-X support */
-#undef PNPX
 
 /* Define to 1 if you want to enable NETGEAR ReadyNAS support */
 #undef READYNAS

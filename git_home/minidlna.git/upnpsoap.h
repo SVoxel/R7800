@@ -27,7 +27,8 @@
 #define CONTENT_DIRECTORY_SCHEMAS \
 	" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"" \
 	" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\"" \
-	" xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\""
+	" xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\"" \
+	" xmlns:pxn=\"urn:schemas-panasonic-com:pxn\""
 #define DLNA_NAMESPACE \
 	" xmlns:dlna=\"urn:schemas-dlna-org:metadata-1-0/\""
 #define PV_NAMESPACE \
@@ -39,6 +40,8 @@ struct Response
 	int start;
 	int returned;
 	int requested;
+	int childCount;
+	char *parentTitle;
 	int iface;
 	uint32_t filter;
 	uint32_t flags;

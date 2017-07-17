@@ -1,5 +1,5 @@
 /* MiniDLNA media server
- * Copyright (C) 2013  NETGEAR
+ * Copyright (C) 2013-2017  NETGEAR
  *
  * This file is part of MiniDLNA.
  *
@@ -53,6 +53,23 @@ struct client_type_s client_types[] =
 	  EXAVClientInfo
 	},
 
+	/* User-Agent: DLNADOC/1.50 SEC_HHP_[PC]LPC001/1.0  MS-DeviceCaps/1024 */
+	/* This is AllShare running on a PC.  We don't want to respond with Samsung
+	 * capabilities, or Windows (and AllShare) might get grumpy. */
+	{ 0,
+	  FLAG_DLNA,
+	  "AllShare",
+	  "SEC_HHP_[PC]",
+	  EUserAgent
+	},
+
+	{ ESamsungBDJ5500,
+	  FLAG_SAMSUNG | FLAG_DLNA | FLAG_NO_RESIZE | FLAG_CAPTION_RES | FLAG_SKIP_DLNA_PN,
+	  "Samsung BD J5500",
+	  "[BD]J5500",
+	  EUserAgent
+	},
+
 	/* Samsung Series [CDE] BDPs and TVs must be separated, or some of our
 	 * advertised extra features trigger a folder browsing bug on BDPs. */
 	/* User-Agent: DLNADOC/1.50 SEC_HHP_BD-D5100/1.0 */
@@ -65,9 +82,10 @@ struct client_type_s client_types[] =
 
 	/* User-Agent: DLNADOC/1.50 SEC_HHP_[TV]UE40D7000/1.0 */
 	/* User-Agent: DLNADOC/1.50 SEC_HHP_ Family TV/1.0 */
+	/* USER-AGENT: DLNADOC/1.50 SEC_HHP_[TV] UE65JU7000/1.0 UPnP/1.0 */
 	{ ESamsungSeriesCDE,
-	  FLAG_SAMSUNG | FLAG_DLNA | FLAG_NO_RESIZE | FLAG_SAMSUNG_DCM10,
-	  "Samsung Series [CDEF]",
+	  FLAG_SAMSUNG | FLAG_DLNA | FLAG_NO_RESIZE | FLAG_SAMSUNG_DCM10 | FLAG_CAPTION_RES,
+	  "Samsung Series [CDEFJ]",
 	  "SEC_HHP_",
 	  EUserAgent
 	},
@@ -134,6 +152,14 @@ struct client_type_s client_types[] =
 	  EXAVClientInfo
 	},
 
+	/* USER-AGENT: Linux/2.6.35 UPnP/1.0 DLNADOC/1.50 INTEL_NMPR/2.0 LGE_DLNA_SDK/1.6.0 */
+	{ ELGNetCastDevice,
+	  FLAG_DLNA | FLAG_CAPTION_RES,
+	  "LG",
+	  "LGE_DLNA_SDK/1.6.0",
+	  EUserAgent
+	},
+
 	/* User-Agent: Linux/2.6.31-1.0 UPnP/1.0 DLNADOC/1.50 INTEL_NMPR/2.0 LGE_DLNA_SDK/1.5.0 */
 	{ ELGDevice,
 	  FLAG_DLNA | FLAG_CAPTION_RES,
@@ -179,6 +205,13 @@ struct client_type_s client_types[] =
 	  EUserAgent
 	},
 
+	{ EHyundaiTV,
+	  FLAG_DLNA,
+	  "Hyundai TV",
+	  "HYUNDAITV",
+	  EFriendlyName
+	},
+
 	{ ERokuSoundBridge,
 	  FLAG_MS_PFS | FLAG_AUDIO_ONLY | FLAG_MIME_WAV_WAV | FLAG_FORCE_SORT,
 	  "Roku SoundBridge",
@@ -218,6 +251,20 @@ struct client_type_s client_types[] =
 	  FLAG_CAPTION_RES,
 	  "BubbleUPnP",
 	  "BubbleUPnP",
+	  EUserAgent
+	},
+
+	{ EKodi,
+	  FLAG_DLNA | FLAG_MIME_AVI_AVI | FLAG_CAPTION_RES,
+	  "Kodi",
+	  "Kodi",
+	  EUserAgent
+	},
+
+	{ 0,
+	  FLAG_DLNA | FLAG_MIME_AVI_AVI,
+	  "Windows",
+	  "FDSSDP",
 	  EUserAgent
 	},
 
@@ -298,4 +345,3 @@ AddClientCache(struct in_addr addr, int type)
 
 	return NULL;
 }
-
