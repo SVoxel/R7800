@@ -33,7 +33,7 @@ MAINTAINER:=Espen Jürgensen <espenjurgensen+openwrt@gmail.com>
 URL:=https://github.com/jasonmc/forked-daapd
 DEPENDS:=+libgpg-error +libgcrypt +libgdbm +zlib +libexpat +libunistring \
 	+libevent2 +libdaemon +libantlr3c +confuse +glib2 +alsa-lib +libffmpeg-full \
-	+mxml +libavl +avahi-daemon +libavahi-client +sqlite3-cli +libplist
+	+mxml +avahi-daemon +libavahi-client +sqlite3-cli +libplist
 endef
 
 define Package/forked-daapd/conffiles

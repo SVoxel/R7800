@@ -8,6 +8,10 @@ PIDFILE="/var/run/dropbear.pid"
 PORT=22
 
 start() {
+	# Set TimeZone for console
+	tz=$($CONFIG get time_zone)
+	echo "$tz" > /tmp/TZ
+
 	# Start SSH server
 	$DROPBEAR -p $PORT -a -s -P $PIDFILE
 }

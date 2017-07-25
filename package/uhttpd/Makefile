@@ -116,11 +116,11 @@ define Package/uhttpd/conffiles
 /etc/config/uhttpd
 endef
 
-define Build/Configure
-	(cd $(PKG_BUILD_DIR)/files && \
-	./generate_crt.sh \
-	)
-endef
+#define Build/Configure
+#	(cd $(PKG_BUILD_DIR)/files && \
+#	./generate_crt.sh \
+#	)
+#endef
 
 define Package/uhttpd/install
 	$(INSTALL_DIR) $(1)/etc/init.d

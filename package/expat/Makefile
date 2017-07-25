@@ -8,11 +8,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=expat
-PKG_VERSION:=2.2.0
-PKG_RELEASE:=3
+PKG_VERSION:=2.2.2
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
-PKG_MD5SUM:=2f47841c829facb346eb6e3fab5212e2
+PKG_MD5SUM:=1ede9a41223c78528b8c5d23e69a2667
 PKG_SOURCE_URL:=@SF/expat
 PKG_MAINTAINER:=Steven Barth <cyrus@openwrt.org>
 
@@ -39,7 +39,7 @@ define Package/libexpat/description
  A fast, non-validating, stream-oriented XML parsing library.
 endef
 
-TARGET_CFLAGS += $(FPIC)
+TARGET_CFLAGS += $(FPIC) -DXML_POOR_ENTROPY
 
 CONFIGURE_ARGS += \
 	--enable-shared \

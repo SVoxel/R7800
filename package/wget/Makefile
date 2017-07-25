@@ -85,9 +85,11 @@ ifeq ($(BUILD_VARIANT),nossl)
 endif
 
 define Package/wget/install
+	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/wget $(1)/usr/sbin/wget-ssl
-	$(LN) wget-ssl $(1)/usr/sbin/wget
+	(cd $(1)/usr/bin;  $(LN) /usr/sbin/wget-ssl wget)
+	(cd $(1)/usr/sbin; $(LN) /usr/sbin/wget-ssl wget)
 endef
 
 define Package/wget-nossl/install

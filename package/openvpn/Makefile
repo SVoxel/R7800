@@ -139,6 +139,12 @@ define Package/openvpn-$(BUILD_VARIANT)/install
 	$(INSTALL_BIN) \
 		files/vpn-firewall.sh \
 		$(1)/etc/openvpn/vpn-firewall.sh
+	$(INSTALL_BIN) \
+		files/ovpnclient-up.sh \
+		$(1)/etc/openvpn/ovpnclient-up.sh
+	$(INSTALL_BIN) \
+		files/ovpnclient-down.sh \
+		$(1)/etc/openvpn/ovpnclient-down.sh
 endef
 
 $(eval $(call BuildPackage,openvpn-openssl))
