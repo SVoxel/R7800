@@ -1,0 +1,27 @@
+<% http_header("style/form.css", "/funcs.js", "/backup.js") %>
+<% noload_header("", "reboot_waiting.htm", "reboot") %>
+<div class="page_title">$reboot</div>
+<div id="main" class="main">
+<% table_header() %>
+
+<tr>
+	<td nowrap colspan=2><B>$reboot_warning</B></td>
+</tr>
+$bluebar
+<tr>
+	<td nowrap colspan=2 align=center>
+	<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if( master == "admin" )
+		document.write('<input class="short_common_bt" type="submit" name="yes" value="$yes_mark"><input class="short_common_bt" type="button" name="no" value="$no_mark" onclick="location.href=\'RST_status.htm\'">');
+	else
+		document.write('<input class="short_common1_bt" type="button" name="yes1" value="$yes_mark" disabled><input class="short_common_bt" type="button" name="no" value="$no_mark" onclick="location.href=\'RST_status.htm\'">');
+	</script>
+	</td>
+</tr>
+</table>
+</div>
+
+</form>
+</body>
+</html>

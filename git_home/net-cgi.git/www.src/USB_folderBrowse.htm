@@ -1,0 +1,40 @@
+<% usb_browser_header("/dtree.js", "/USB_NETStorage.js") %>
+<% nobody_header("USB_folderBrowse.htm","browser_open") %>
+
+<% save_timestamp("browser_open", "browser_close") %>
+
+<input type=hidden name=nodenumber >
+<input type=hidden name=currentpath >
+<input type=hidden name=nodevalue>
+<script>
+<!--
+<% show_tree() %>
+
+ var n=0;
+ var selectednode=<% cfg_get("usb_selectedNode") %>;
+
+	//new tree
+ 	d = new dTree('d',selectednode);
+	//add node
+	for( n=0; n<nodeNumber; n++){
+		var str = eval( 'node' + n);
+		//Bug 38591
+		//str = str.replace(/&/g,"&#38;").replace(/'/g,"&#39;").replace(/"/g,"&#34;").replace(/\(/g,"&#40;").replace(/\)/g,"&#41;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace( / /g,"&nbsp;");
+		echo_info = str.split('*');
+		if(echo_info[0]=='0')
+		{
+			var vol_name = eval( 'nodevol' + n );
+			d.add(n,echo_info[0],vol_name, echo_info[1],echo_info[3],'sda.gif','sda.gif');
+		}
+		else
+			d.add(n,echo_info[0],echo_info[1],echo_info[2],echo_info[4]);
+	}
+	//show all tree
+	document.write(d);
+
+-->
+</script>
+
+</form>
+</body>
+</html>

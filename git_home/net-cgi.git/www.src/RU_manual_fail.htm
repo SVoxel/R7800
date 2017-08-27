@@ -1,0 +1,87 @@
+<% ca_http_header("style/hijack_style.css","style/hijack_ru_welcome.css","/funcs.js") %>
+<% nohelp_header("welcomeok.htm", "hijack_toBasic") %>
+
+<BODY bgcolor=#ffffff>
+<FORM>
+
+<script>
+function loadvalue()
+{
+        //buttons left
+        var btns_div1 = document.getElementById("btnsContainer_div1");
+				if( master == "admin" )
+		{
+			btns_div1.onclick = function()
+			{
+                location.href="RU_finish_manual.htm";
+			}
+		}
+
+        //buttons right
+        var btns_div2 = document.getElementById("btnsContainer_div2");
+		if( master == "admin" )
+		{
+			btns_div2.onclick = function()
+			{
+                conf_later();
+			}
+		}
+
+}
+function conf_later()
+{
+	cf=document.forms[0];
+	var do_hijack="<% cfg_get("dns_hijack") %>";
+	if(do_hijack == "0")
+	{
+		if(top.dsl_enable_flag == 0)
+		   location.href='BAS_basic.htm';
+		else
+		   location.href='BAS_basic_dsl.htm';
+	}
+	else
+		location.href = "BRS_security.html";
+}
+</script>
+
+<div class="wizard_content_div">
+<div class="wizard_words_div">
+	<H1><script>document.write(RU_CA_head)</script></H1>
+<TABLE>
+<tr>
+	<td colspan=2><script>document.write(RU_manual_fail_head)</script></td>
+</tr>
+
+<tr><td><br></td></tr>
+</TABLE>
+</div><!--wizard_words_div -->
+<div id="center_buttons">
+  <div id="allBtns_div" class="wizard_buttons_div" align="center">
+                <div id="btnsContainer_div1" class="buttons_img_div" align="center">
+                        <script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							document.write('<img src="image/ca-little-grey-button.png" />');
+                        </script>
+                        <div class="buttons_words_div"><script>document.write(RU_back)</script></div>
+                </div>
+                <div class="buttons_split"></div>
+                <div id="btnsContainer_div2" class="buttons_img_div" align="center">
+						<script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							
+							document.write('<img src="image/ca-little-grey-button.png" />');
+						</script>
+                        <div class="buttons_words_div"><script>document.write(quit_mark)</script></div>
+                </div>
+  </div><!--allBtns_div -->
+</div>
+</div><!--wizard_content_div -->
+</FORM>
+</BODY>
+</HTML>

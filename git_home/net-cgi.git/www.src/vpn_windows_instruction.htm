@@ -1,0 +1,59 @@
+<% http_header("style/form.css", "/funcs.js", "/vpn.js") %>
+<body>
+<form method="post" action="/apply.cgi?/vpn_frame.htm" target="formframe">
+<input type="hidden" name="submit_flag" value="vpn_compress_conf" />
+<input type="hidden" name="download_button_type">
+<script>
+	<% save_timestamp("vpn", "vpn_compress_conf") %>
+	var ts='<% cfg_get("vpn") %>';
+	var vpn_enable="<% cfg_get("vpn_enable")%>";
+	var old_endis_ddns="<% cfg_get("endis_ddns") %>";
+</script>
+<TABLE><TR><TD >$vpn_win_instruct</TD></TR></TABLE>
+<table>
+<TR>
+        <TD nowrap style="vertical-align:top">$step1</TD>
+        <TD  >$vpn_step1</TD>
+</TR>
+<TR>
+        <TD style="vertical-align:top">$step2</TD>
+        <TD  >$vpn_step2</TD>
+</TR>
+<TR>
+        <TD style="vertical-align:top">$step3</TD>
+        <TD><TABLE><TR>
+        <TD>$vpn_step3</TD></TR>
+        <TR><TD>
+        <input class='window_bt' type='submit' name="window" value='$window_mark' onClick='return checkdownload(document.forms[0], 1)'>&nbsp;&nbsp;
+        </TD>
+        </TR></TABLE></TD>
+</TR>
+<TR><TD></TD></TR>
+<TR>
+        <TD style="vertical-align:top">$step4</TD>
+        <TD  >$vpn_step4</TD>
+</TR>
+<TR>
+        <TD style="vertical-align:top">$step5</TD>
+        <TD  >$vpn_step5</TD>
+</TR>
+<TR>
+        <TD style="vertical-align:top">$step6</TD>
+        <TD  >$vpn_step6</TD>
+</TR>
+<TR><TD nowrap colspan=2><img src="../image/pvpn.jpg"></TD></TR>
+<TR>
+        <TD style="vertical-align:top">$step7</TD>
+        <TD  >$vpn_step7</TD>
+</TR>
+<TR><TD><p></p></TD></TR>
+<TR><TD><p></p></TD></TR>
+<TR>
+        <TD nowrap colspan=2>
+        $vpn_note1
+        </TD>
+</TR>
+</table>
+</form>
+</body>	
+</html>

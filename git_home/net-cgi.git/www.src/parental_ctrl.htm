@@ -1,0 +1,22 @@
+<html>
+<head>
+</head>
+<body>
+<script>
+<% web_flag() %>
+var ParentalControl = "<% cfg_get("ParentalControl") %>";
+var hijack_status="<% check_hijack_status() %>";
+var sn="<% get_sn() %>";
+
+if(hijack_status == "1")
+	setTimeout('location.href = "$success_href"+"?sn="+sn;', 2000);
+else
+{
+	if(parental_ctrl_flag != 0 && ParentalControl == "1")
+		top.location.href = "http://netgear.opendns.com";
+	else
+		top.location.href = "http://www.netgear.com/lpc";
+}
+</script>
+</body>
+</html>

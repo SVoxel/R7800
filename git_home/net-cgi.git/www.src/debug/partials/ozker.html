@@ -1,0 +1,124 @@
+<!--
+  Copyright (c) 2013 Qualcomm Atheros, Inc..
+
+  All Rights Reserved.
+  Qualcomm Atheros Confidential and Proprietary.
+-->
+
+<form class="form">
+  <label>{{'Language' | translate}}</label>
+  <select id="languageChooser" ng-click="changeLanguage()" ng-model="language">
+    <option value='EN-US'>{{'English' | translate}}</option>
+    <option value='ERMAHGERD'>{{'ERMAHGERD' | translate}}</option>
+  </select>
+</form>
+
+<form class="form-inline">
+  <label class="button">
+    {{ 'Polling' | translate }}
+    <button ng-click="togglePolling()" class="btn btn-primary" type="button">{{pollState | translate}}</button>
+  </label>
+  <button ng-show="pollState == 'Stopped'" ng-click="step()" class="btn" type="button">{{'Step' | translate}}</button>
+</form>
+
+<h2>{{'Router' | translate}}</h2>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>{{'up limit (Mbps)' | translate}}</th>
+      <th>{{'down limit (Mbps)' | translate}}</th>
+      <th>{{'up (bytes)' | translate}}</th>
+      <th>{{'down (bytes)' | translate}}</th>
+      <th>{{'up rate (Mbps)' | translate}}</th>
+      <th>{{'down rate (Mbps)' | translate}}</th>
+      <th>{{'up subscribed (Mbps)' | translate}}</th>
+      <th>{{'down subscribed (Mbps)' | translate}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{{router.model.traffic.up_limit | Mbps}}</td>
+      <td>{{router.model.traffic.down_limit | Mbps}}</td>
+      <td>{{router.model.traffic.up}}</td>
+      <td>{{router.model.traffic.down}}</td>
+      <td>{{router.model.traffic.up_rate | Mbps}}</td>
+      <td>{{router.model.traffic.down_rate | Mbps}}</td>
+      <td>{{router.model.traffic.up_subscribed | Mbps}}</td>
+      <td>{{router.model.traffic.down_subscribed | Mbps}}</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>{{'Nodes' | translate}}</h2>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>{{'MAC' | translate}}</th>
+      <th>{{'OS' | translate}}</th>
+      <th>{{'up (bytes)' | translate}}</th>
+      <th>{{'down (bytes)' | translate}}</th>
+      <th>{{'up rate (Mbps)' | translate}}</th>
+      <th>{{'down rate (Mbps)' | translate}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="node in nodes.model">
+      <td>{{node.mac}}</td>
+      <td><img class="os-icon" ng-src="{{deviceIconLoader.load(node.os.type)}}"/>{{node.os.type | translate}}</td>
+      <td>{{node.up}}</td>
+      <td>{{node.down}}</td>
+      <td>{{node.up_rate | Mbps}}</td>
+      <td>{{node.down_rate | Mbps}}</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>{{'Flows' | translate}}</h2>
+<div>
+<form class="form-horizontal">
+  <div class="control-group">
+    <label class="control-label" for="macFilter">{{'MAC' | translate}}</label>
+    <div class="controls">
+      <select id="macFilter" ng-model="flowsMACFilter">
+        <option value=''>{{'All Devices' | translate}}</option>
+        <option ng-repeat="node in nodes.model" value="{{node.mac}}">{{node.mac}}</option>
+      </select>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="nameFilter">{{'Tag' | translate}}</label>
+    <div class="controls">
+      <input id="nameFilter" type="text" ng-model="flowsNameFilter">
+    </div>
+  </div>
+</form>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th style="width:250px;">{{'Name' | translate}}</th>
+      <th>{{'MAC' | translate}}</th>
+      <th>{{'up (bytes)' | translate}}</th>
+      <th>{{'down (bytes)' | translate}}</th>
+      <th>{{'up rate (Mbps)' | translate}}</th>
+      <th>{{'down rate (Mbps)' | translate}}</th>
+      <th>{{'policy up rate (Mbps)' | translate}}</th>
+      <th>{{'policy down rate (Mbps)' | translate}}</th>
+      <th>{{'priority' | translate}}</th>
+      <th>{{'uid' | translate}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="flow in flows.model | filter:{name: flowsNameFilter, mac: flowsMACFilter}">
+      <td><img ng-src="{{flowIconLoader.load(flow.name)}}"/>  {{flow.name | translate}}</td>
+      <td>{{flow.mac}}</td>
+      <td>{{flow.up}}</td>
+      <td>{{flow.down}}</td>
+      <td>{{flow.up_rate | Mbps}}</td>
+      <td>{{flow.down_rate | Mbps}}</td>
+      <td>{{activePolicyRateUp(flow) | Mbps}}</td>
+      <td>{{activePolicyRateDown(flow) | Mbps}}</td>
+      <td>{{flow.node.priority}}</td>
+      <td>{{flow.uid | hex}}</td>
+    </tr>
+  </tbody>
+</table>

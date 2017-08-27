@@ -1,0 +1,106 @@
+#top-banner { position: relative; float: left;}
+.page_title { position: relative; margin-top: 40px; margin-left: 20px; top:0; left: 0; float: left;}
+.top-settings { float: left; width: 100%; }
+.rates { width: 320px; height: 60px; }
+#tooltip{border:1px solid #000; position:absolute; height:58px; _width:100px; _white-space:nowrap; padding-left:8px; z-index:10; background-color:#fff; background-repeat:no-repeat; background-position:right top;}
+#tooltip div{color:#000; font-weight:bold; height:58px; padding-right:8px; line-height:19px; background-color:#fff; background-repeat:no-repeat; background-position:right top;}
+
+.fl{float:right; margin-right: 25px;}
+.outbar{border:0px;background:#fff;height:18px;width:80%;float:left;}
+.inbar{height:18px;display:block;}
+.total_bandwith{font-style: italic; font-weight:bold; padding-left: 50px; float: left;}
+.down_rate, .up_rate {width: 160px; height:60px; position: relative; float: left; }
+.down_rate {background: url(../image/downrate.gif);}
+.up_rate{ background:url(../image/uprate.gif);}
+.access{ width:auto; height: 50px; position: relative; float:right; margin-top: 25px; margin-right: 20px; }
+.access a { background-color: #702b84; color: white;}
+.access b { color: #702b84 }
+.ratefont{ width:80px; height: 20px; position: absolute; top: 20px; left: 60px; font-style:italic; color: #646466; font-size: 13px; font-weight:600;}
+
+.application_num { position: relative; float: left; margin-left: 50px; line-height: 35px; height: 35px; }
+.bt_contain{position: relative; float: right;}
+.btc1{ width: auto; height:auto; background-color: #5db5e5; float:right; margin: 5px; padding:10px; color: white;}
+.btc1 .btopen{ width: auto;  background-color: white; color: #5db5e5; border: 1px solid; border-color: white;  display:inline; padding-left: 10px; padding-right: 10px;}
+.btc1 .btclose{ width: auto; border: 1px solid; border-color: white;  display:inline; padding-left: 10px; padding-right: 10px; cursor: pointer; }
+.page-line{position: relative; top:0; float: left;}
+
+.priority_zone{width: 100%;   position: relative; float:left;}
+.priority_zone .lineleft{ left:90px;}
+.zone_bracket{width:10px; border:2px solid #702b84; border-right:none; position:absolute; top:50px; left:70px;  }
+.zone_name{color:#702b84; font-weight:bold; font-size:13px; height:auto; position:absolute;  margin:0 auto;word-wrap:break-word;word-break:nomal; left:67px; z-index:999; background-color:white; width:15px;}
+.zone_edit_bt{height: 19px;  font-family: Arial; font-weight: Bold; font-size: 12px; cursor: pointer; padding-bottom: 1px; background-color: #702b86; color: #f2f2f2; border: none; width: 50px; }
+.zone_edit{position:absolute; left:15px;top:55px; z-index:999}
+.zone_bandwidth{height:35px; width:70px; background-color:#F7941E; color:#ffffff; position:absolute; left:90px; z-index:999; line-height:35px; text-align:center;  }
+.zone a { background-color: #702b84; color: white;}
+.zone b { color: #702b84 }
+.zone{width:auto; height: 30px; position: absolute; top: 80px; right: 45px;}
+.zone_bandwidth .cusp01 {
+ right:70px;
+ top:9px;
+ border-top:9px solid #fff;
+ border-bottom:9px solid #fff;
+ border-left:0px;
+ border-right:9px solid #F7941E;
+}
+.zone_bandwidth .cusp02 {
+ right:6px;
+ top:-6px;
+ border-top:6px none #F7941E;
+ border-bottom:6px none #F7941E;
+ border-left:0px;
+ border-right:6px solid #fff;
+}
+.cusp01, .cusp02 {
+ position:absolute;
+ display:block;
+ height:0px;
+}
+
+
+.oneline{width: 100%; height: auto;  position: relative; float:left;}
+.lineleft {width:40%; height:200px;  position: relative; float:left;}
+.lineleft .devIcon{width: 80px; height: 80px; position: relative; top:10px; left: 20px; background-color: #702b86; cursor: pointer;}
+.lineleft .devIcon img{position: relative; top: 3px; left: 3px; width:74px; height:74px}
+.lineleft .devType{width:200px; height: 40px; position: relative; top:-50px; left: 120px;}
+.lineleft .devType .short {position: relative; top:-25px; right: 90px;}
+.lineleft .devType .long {position: relative; top:-25px; right: 110px;}
+.lineleft .devName{position: relative; top:0px; left: 20px; }
+.lineleft .devName b {font: bold 14px arial; color:black}
+.lineleft .appName{position: relative; top:20px; left: 20px;}
+.lineleft .appName b {font: bold 18px arial; color:black; position: relative; left: 5px; }
+.lineleft .appName .appdot{width: 13px; height:13px; background-color: #702b86; float:left; position: relative; top: 5px; left: 0px; }
+
+.lineright{width: 60%; height: auto; position: relative; top:0px; left:0px; float:left; padding-top:20px;}
+.basicFlow{width:100%; height: 30px; position:relative; top:0px; right:0px;}
+.flowline{width:100%; height: 30px; position: relative;}
+.basicFlow .title{float:left; height: 22px; line-height: 22px;  position:relative;}
+.basicFlow .showsub, .basicFlow .down_showsub { float: left; position:relative;}
+.basicFlow .title .showsub { position: relative; left:30%; float:left; cursor: pointer;  }
+.basicFlow .title .down_showsub { position: relative; left:30%; float:left; cursor: pointer;  }
+.basicFlow .flowshow{ width: 65%; position:absolute; top:0px; right:0px;}
+.basicFlow .outbar { width: 76%; }
+.subFlow{width:100%; height:auto; position:relative; top:0px;}
+.subFlow .title {width:38%; text-align: right;position:absolute; left:0px; color: black; font: bold 14px arial;}
+.subFlow .flowshow {width:60%; position:absolute; right:0px;}
+.subFlow .outbar { width: 72%; }
+.spliteline{width:100%; height:2px; background: url(../image/middleline.gif) 0 0 repeat-x; float:left;}
+
+/* QoS list page*/
+.byCon {width:40%; height:220px;  position: relative; left: 20px; top: 40px; float:left;}
+.byCon .devIcon{width: 80px; height: 80px; position: relative; top:20px; left: 20px; background-color: #702b86; cursor: pointer;}
+.byCon .devIcon img{position: relative; top: 3px; left: 3px; width:74px; height:74px}
+.byCon .devName{position: relative; top:30px; left: 20px; }
+.byCon .devName b {font: bold 14px arial; color:black}
+
+
+
+.byAlp {width:40%; height:200px;  position: relative; left: 20px; float:left;}
+.byAlp .devIcon{width: 80px; height: 80px; position: relative; top:10px; left: 20px; background-color: #702b86; cursor: pointer;}
+.byAlp .devIcon img{position: relative; top: 3px; left: 3px; width:74px; height:74px}
+.byAlp .devType{width:200px; height: 40px; position: relative; top:0px; left: 100px;}
+.byAlp .devType .short {position: relative; top:-25px; right: 90px;}
+.byAlp .devType .long {position: relative; top:-25px; right: 110px;}
+.byAlp .devIp{position: relative; top:0px; left: 20px; font: bold 13px arial; }
+.byAlp .devAccess{position: relative; top:0px; left: 20px; font: bold 13px arial; }
+.byAlp .devName{height: 30px; position: relative; top:10px; left: 20px;}
+.byAlp .devName b {font: bold 15px arial; color:black}

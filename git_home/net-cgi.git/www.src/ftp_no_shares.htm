@@ -1,0 +1,20 @@
+<% http_header() %>
+<BODY>
+<style type="text/css">
+H1 { font-size:32px; color:#000000;}
+h4 { font-size:16px; color:#000000;}
+</style>
+<script>
+<% show_usb_fileder_items() %>
+var show_enableFTP="<% cfg_get("usb_enableFTP") %>";
+if( show_enableFTP == "1" )
+        document.write('<H1>$not_found</H1>');
+else
+	if(list_disk_num == 0 || not_shared_number == folder_number )
+        	document.write('<H1>readyshare.routerlogin.net - /</H1>');
+	else
+		window.location.href="ftp://readyshare.routerlogin.net/shares";
+</script>
+<HR><PRE><h4><b>$no_shares_available</b></h4><BR></PRE><HR>
+</BODY>
+</HTML>

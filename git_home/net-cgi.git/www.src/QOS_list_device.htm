@@ -1,0 +1,212 @@
+<% http_header("style/form2.css", "style/attach_device.css","/funcs.js", "/jquery-1.7.2.min.js", "/streamboost.js") %>
+<% body_header("_new_attach_device", "QOS_edit_devices.htm", "select_qos_edit") %>
+<style type="text/css">
+.eth, .wifi, .contype{ position: relative; top:20px; left: 20px;}
+</style>
+<script language="javascript" type="text/javascript">
+var ts='<% cfg_get("select_qos_edit") %>';
+var enable_block_device="<% cfg_get("enable_block_device") %>";
+
+var wl_ssid="<% cfg_get_ssid_html("wl_ssid") %>";
+var wlg1_ssid="<% cfg_get_ssid_html("wlg1_ssid") %>";
+var wla_ssid="<% cfg_get_ssid_html("wla_ssid") %>";
+var wla1_ssid="<% cfg_get_ssid_html("wla1_ssid") %>";
+
+var mac_addr=new Array();
+var ip_addr=new Array();
+var name_addr=new Array();
+var prio_addr=new Array();
+var enable_bridge_flag="<% cfg_get("bridge_mode") %>";
+var enable_ap_mode_flag="<% cfg_get("ap_mode") %>";
+
+var devList=[];
+var listBySort=1;
+var mouseon=false;
+
+
+function goto_url()
+{
+	location.href="access_control.htm";
+}
+
+function show_wlan_ssid(name)
+{
+	var wlan_ssid="";
+	if(name=="wired")
+		wlan_ssid="";
+	else if(name=="primary")
+		wlan_ssid=" $wlan_guest_ssid: "+wl_ssid;
+	else if(name=="guest")
+		wlan_ssid=" $wlan_guest_ssid: "+wlg1_ssid;
+	else if(name=="primary_an")
+		wlan_ssid=" $wlan_guest_ssid: "+wla_ssid;
+	else if(name=="guest_an")
+		wlan_ssid=" $wlan_guest_ssid: "+wla1_ssid;
+	else
+		wlan_ssid="";
+	return wlan_ssid;
+}
+
+function updateDevice(jobj)
+{
+	if(jobj.device.length < 2)
+		return;
+
+	devList = jobj.device;
+	devList.pop(); //delete the last blank item
+	show_all();
+}
+
+function show_all()
+{
+	$$('#main').empty();
+
+	if( listBySort == 2)
+		var sort_function = sort_con;
+	else
+		var sort_function =sort_alp;
+	
+	
+	devList.sort(sort_function);
+
+	var lineitem=0;
+	for( var i in devList )
+	{
+		var dev = devList[i];
+		var linehtml = "";
+
+		dev.name = dev.name.replace(/[ ]/g, "&nbsp;");
+		if( listBySort == 2)
+		{
+			if( i == 0 || dev.contype != devList[i-1].contype || lineitem == 2 )
+			{
+				if( i> 0)
+					linehtml=linehtml+'<div class="spliteline"></div>';
+				linehtml=linehtml+'<div class="devType">'+show_type(dev.contype)+'</div>';
+				lineitem=0;
+			}
+
+			linehtml=linehtml+'<div class="byCon"  >';
+			linehtml=linehtml+'<div class="devIcon big-corner-all" title="$qos_mac: '+dev.mac+'&#13$device_type: '+show_icon_name(dev.devtype)+show_wlan_ssid(dev.contype)+'"    onclick="edit_select_device(\''+dev.mac+'\',\''+dev.ip+'\',\''+dev.name.replace(/\\/g,"\\\\").replace(/&#39;/g,"\\&#39;")+'\', \''+dev.priority+'\', \''+dev.devtype+'\',\''+dev.contype+'\' );">';
+			linehtml=linehtml+device_icon(dev.devtype);
+			linehtml=linehtml+'</div>';
+			if(enable_block_device == "1")			
+				linehtml=linehtml+'<div class="devName"><b>'+dev.name+'</b><br/><br/>'+dev.ip+'<br/>'+show_bora(dev.access_control)+'</div>';
+			else
+				linehtml=linehtml+'<div class="devName"><b>'+dev.name+'</b><br/><br/>'+dev.ip+'</div>';
+			linehtml=linehtml+'</div>';	
+			lineitem++;
+
+		}
+		else
+		{
+			if( i> 0 && i%2 == 0 )
+				linehtml=linehtml+'<div class="spliteline"></div>';
+				
+			linehtml=linehtml+'<div class="byAlp"  >';
+			linehtml=linehtml+'<div class="devName"><b>'+dev.name+'</b></div>';
+			linehtml=linehtml+'<div class="devIcon big-corner-all" title="$qos_mac: '+dev.mac+'&#13$device_type: '+show_icon_name(dev.devtype)+show_wlan_ssid(dev.contype)+'"    onclick="edit_select_device(\''+dev.mac+'\',\''+dev.ip+'\',\''+dev.name.replace(/\\/g,"\\\\").replace(/&#39;/g,"\\&#39;")+'\', \''+dev.priority+'\', \''+dev.devtype+'\',\''+dev.contype+'\' );">';
+			linehtml=linehtml+device_icon(dev.devtype);
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'<div class="devType">';
+			linehtml=linehtml+show_type(dev.contype);
+			linehtml=linehtml+'</div>';
+			linehtml=linehtml+'<div class="devIp">'+dev.ip+'</div>';
+			if(enable_block_device == "1")
+				linehtml=linehtml+'<div class="devAccess">'+show_bora(dev.access_control)+'</div>';
+			linehtml=linehtml+'</div>';		  
+		}
+
+		$$('#main').append(linehtml);
+	}
+
+}
+function getDevices()
+{
+	xmlHttp = createXMLHttpRequest();
+	
+	xmlHttp.onreadystatechange = function()
+	{
+		if(xmlHttp.readyState == 4 && xmlHttp.status == 200)
+		{
+			var jobj = eval('('+xmlHttp.responseText+')');
+			updateDevice(jobj);
+		}
+	}
+
+	var url = "QOS_device_info.htm?ts=" + new Date().getTime();
+	xmlHttp.open("GET",url,true);
+	xmlHttp.send(null);
+	setTimeout("getDevices()", 6000);
+}
+
+function change_sort_type(type)
+{
+	if( listBySort != type)
+	{
+		listBySort = type;
+
+		if( type == 1 )
+		{
+			$$("#sortAp").closest(".btc1").children(".btopen").removeClass("btopen").addClass("btclose");
+			$$("#sortAp").removeClass("btclose").addClass("btopen");
+		}
+		else
+		{
+			$$("#sortCon").closest(".btc1").children(".btopen").removeClass("btopen").addClass("btclose");
+			$$("#sortCon").removeClass("btclose").addClass("btopen");
+		}
+		show_all();
+	}
+}
+
+function loadvalue()
+{
+	getDevices(); //debug hidden
+}
+</script>
+<input type="hidden" name="hid_edit_mac">
+<div class="page_title">$attach_device</div>
+
+<div class="access">$access_control_url1
+<script>
+	if(enable_bridge_flag == "1" || enable_ap_mode_flag == "1")
+		document.write("<a href=# class=\"ui-corner-all\" style=\"background-color:grey;\">&nbsp; $access_control_url2 &nbsp;</a>&nbsp;");
+	else
+		document.write("<a href=# onclick=\"goto_url(); return false;\" class=\"ui-corner-all\">&nbsp; $access_control_url2 &nbsp;</a>&nbsp;");
+
+	document.write('$access_control_url3<br/>');
+
+	var new_device_statue_by_default="<% cfg_get("new_device_statue_by_default") %>";
+
+	if( enable_block_device == "0" )
+	{
+		document.write("$acc_control: <b>$acc_turned_off</b>");
+	}
+	else
+	{
+		document.write("$acc_control: <b>$acc_turned_on</b>");
+		document.write("<br/>");
+		if( new_device_statue_by_default == "Block" )
+			document.write("$acc_general_rule: $block_connect");
+		else
+			document.write("$acc_general_rule: $allow_connect");
+	}
+</script>
+</div>
+<div class="bt_contain" >
+<div class="btc1 ui-corner-all">
+$sort_by <div id="sortAp" class="btopen ui-corner-all" onclick="change_sort_type(1);">$alp_ord</div>&nbsp;&nbsp;<div id="sortCon" class="btclose ui-corner-all" onclick="change_sort_type(2);">$con_tp</div>
+</div>
+</div>
+</div>
+<div class="page-line"><img src=image/topline.gif width=100%></div>
+
+<div id="main" class="main">
+
+</div>
+<% help_box("1","_new_attach_device") %>
+</form>
+</body>
+</html>
+

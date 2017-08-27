@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_download_apps.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_hijack_download_apps.js"></script>
+<% hijack_language() %>
+</head>
+<body>
+<script>
+var download_genie = 1;
+var download_vault = 1;
+<% cd_less_flag() %>
+</script>
+<div class="wizard_content_div">
+	<div id="choices_div" class="wizard_words_div">
+		<table id="choices_table" align="center" width="80%" border=0 cellpadding=3 cellspacing=1>
+		<tr>
+			<td colspan="2"><h1><script>document.write(bh_download_apps);</script></h1></td>
+		</tr>
+		<tr>
+			<td><div id="genie_choose" class="checked" onclick="app_choose(this.id);"></div></td>
+			<td><script>document.write(bh_genie_app);</script></td>
+		</tr>
+		<tr id="for_win" style="display: none">
+			<td><div id="RS_choose" class="checked" onclick="app_choose(this.id);"></div></td>
+			<td><script>document.write(bh_rs_vault_app);</script></td>
+		</tr>
+		</table>
+	</div>
+
+	<div id="allBtns_div" class="wizard_buttons_div">
+		<div id="btnsContainer_div1" class="buttons_img_div"  align="center">
+			<img src="image/ca-little-purple-button.gif" />
+			<div id="btn_div" class="buttons_words_div"><script>document.write(bh_exit_mark);</script></div>
+		</div>
+
+		<div id="btnsContainer_div3" class="buttons_img_div"  align="center">
+			<img src="image/ca-little-purple-button.gif" />
+			<div id="btn_div" class="buttons_words_div"><script>document.write(bh_next_mark + " >");</script></div>
+		</div>
+
+		<div id="btnsContainer_div2" class="buttons_img_div"  align="center">
+			<img src="image/ca-little-purple-button.gif" />
+			<div id="btn_div" class="buttons_words_div"><script>document.write("< " + bh_previous);</script></div>
+		</div>
+	</div>
+
+	<div id="processing" class="wizard_words_div"  style="display:none;">
+		<div class="waiting_connect_div" align="center">
+			<h1><script>document.write(bh_processing);</script></h1>
+		</div>
+			<div id="applySettings_wait" class="waiting_img_div" align="center">
+			<img src="image/wait30.gif" />
+			</div>
+		</div>
+
+		<div id="downloading_div" class="wizard_words_div" style="display:none;">
+			<table align="center" width="80%" border=0 cellpadding=3 cellspacing=1>
+			<tr><td><h1><script>document.write(bh_downloading);</script></h1></td></tr>
+			<tr><td><p><!--install app--></p></td></tr>
+			<tr><td><p><!--finish install--></p></td></tr>
+			<tr><td>
+				<div id="applySettings_wait" class="waiting_img_div" align="center">
+				<img src="image/wait30.gif" />
+				</div>
+			</td></tr>
+			</table>
+			</div>
+
+		<div id="finishBtn_div" class="wizard_buttons_div" align="center" style="display:none;">
+			<% form_submit("func", "AUTO_search.htm", "download_confile") %>
+				<div id="btnsContainer_div4" class="buttons_img_div"  align="center">
+					<img src="image/ca-little-purple-button.gif" />
+					<div id="btn_div" class="buttons_words_div"><script>document.write(bh_next_mark + " >");</script></div>
+				</div>
+			</form>
+		</div>
+
+</div>
+</body>
+</html>
+
+

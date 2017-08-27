@@ -1,0 +1,141 @@
+<% http_header("style/form.css", "/funcs.js", "/ipv6.js", "/str_router.js") %>
+<div class="page_title">$static_router_head</div>
+<div id="main" class="main"> 
+<% noload_header("_STR_routes","STR_routes.htm","st_router_del") %>
+<% table_header() %>
+$bluebar
+
+<% refresh_timestamp("st_router_add", "st_router_edit","st_router_add2", "st_router_edit2") %>
+<script>
+<% routes_items_xss() %>
+<% save_timestamp("st_router_del","st_router_editnum","st_router_editnum2","st_router_del2") %>
+var master="<% cfg_get("http_loginname") %>";
+var ts='<% cfg_get("st_router_del") %>';
+</script>
+
+<input type="hidden" name="select_edit">
+<input type="hidden" name="select_del">
+<TR>
+	<TD><b>$ipv4_head</b></TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<TABLE id="static_route" class=tables border=0 cellpadding=2 cellspacing=0 width=100%>
+	<TR class=table_header>
+	<TD nowrap align=center>&nbsp; </TD>
+	<TD nowrap align=center><span class="subhead"> # </span></TD>
+	<TD nowrap align=center><span class="subhead">$sta_routes_act</span></TD>
+	<TD nowrap align=center><span class="subhead">$sta_routes_name</span></TD>
+	<TD nowrap align=center><span class="subhead">$sta_routes_dest</span></TD>
+	<TD nowrap align=center><span class="subhead">$sta_routes_gateway</span></TD>			
+	</TR>
+<script>
+if (array_num != 0)
+{
+
+			 for(i=0,j=1;i<array_num;i++,j++)
+	{
+		var str = eval ( 'routerArray' + j ); // routes_items_xss() have replace "<" and ">", so remove no use ".replace(/</g, '&lt;').replace(/>/g, '&gt;')"
+		var each_info=str.split(' ');
+		//31091, if input "&nbsp;" as router name, page can't show "&nbsp;", it show " ". 
+		each_info[0] = each_info[0].replace(/&#35;/g, "#").replace(/&#38;/g, "&");
+		if(j%2== 0)
+		document.write('<TR class=\"even_line\"><TD nowrap><input type="radio" name="select" id="route_select'+(i+1)+'" value="'+i+'"></TD><TD nowrap align=center><span class="subhead">'+eval(i+1)+'</span></TD>');
+		else
+		document.write('<TR class=\"odd_line\"><TD nowrap><input type="radio" name="select" id="route_select'+(i+1)+'" value="'+i+'"></TD><TD nowrap align=center><span class="subhead">'+eval(i+1)+'</span></TD>');
+		if(each_info[2]=="1")
+			document.write('<TD nowrap align=center> Yes</TD>');
+		else
+			document.write('<TD nowrap align=center> No</TD>');
+		document.write('<TD nowrap align=center>'+each_info[0]+'</TD><TD nowrap align=center>'+each_info[3]+'</TD><TD nowrap align=center>'+each_info[5]+'</TD></TR>');
+	}
+}
+</script>
+	</TABLE>
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap align=center>
+	<input class="add_bt" type="button" name="Add" id="add" value="$add_mark" onClick="check_routers_add(document.forms[0]);">
+	<input class="edit_bt" type="button" name="Edit" id="edit" value="$edit_mark" onClick="check_router_editnum();">
+	<script>
+	if( master =="admin" )
+		document.write('<input class="delete_bt" type="button" name="Delete" id="delete" value="$delete_mark" onClick="check_router_del();">');
+	else
+		document.write('<input class="delete1_bt" type="button" name="Delete" id="delete" value="$delete_mark" disabled>');
+	</script>
+	</TD>
+</TR>
+</TABLE>
+</FORM>
+
+<FORM method="post" style="display:none"> 
+<TABLE width=100% border=0 cellspacing=0 cellpadding=0>
+$bluebar
+<input type="hidden" name="submit_flag" value="st_router_del2">
+<input type="hidden" name="select_edit">
+<input type="hidden" name="select_del">
+<TR>
+	<TD><b>$ipv6_head</b></TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<TABLE class=tables border=0 cellpadding=2 cellspacing=0 width=100%>
+	<TR class=table_header>
+	<TD nowrap align=center>&nbsp; </TD>
+	<TD nowrap align=center><span class="subhead"> # </span></TD>
+	<TD nowrap align=center><span class="subhead">$sta_routes_act</span></TD>
+	<TD nowrap align=center><span class="subhead">$sta_routes_name</span></TD>
+	<TD nowrap align=center><span class="subhead">$sta_routes_dest</span></TD>
+	<TD nowrap align=center><span class="subhead">$sta_routes_gateway</span></TD>			
+	</TR>
+<script>
+if (top.ipv6_static_route && ipv6_array_num != 0)
+{
+
+	for(i=0,j=1;i<ipv6_array_num;i++,j++)
+	{
+		var str = eval ( 'ipv6_routerArray' + j ); 
+		var each_info=str.split(' ');
+		each_info[0] = each_info[0].replace(/&#35;/g, "#").replace(/&#38;/g, "&");
+		if(j%2== 0)
+		document.write('<TR class=\"even_line\"><TD nowrap><input type="radio" name="select" value="'+i+'"></TD><TD nowrap align=center><span class="subhead">'+eval(i+1)+'</span></TD>');
+		else
+		document.write('<TR class=\"odd_line\"><TD nowrap><input type="radio" name="select" value="'+i+'"></TD><TD nowrap align=center><span class="subhead">'+eval(i+1)+'</span></TD>');
+		if(each_info[1]=="1")
+			document.write('<TD nowrap align=center> Yes</TD>');
+		else
+			document.write('<TD nowrap align=center> No</TD>');
+		document.write('<TD nowrap align=center>'+each_info[0]+'</TD><TD nowrap align=center>'+abbr_ipv6(each_info[2])+'/'+each_info[3]+'</TD><TD nowrap align=center>'+abbr_ipv6(each_info[4])+'</TD></TR>');
+	}
+}
+</script>
+	</TABLE>
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap align=center>
+	<input class="add_bt" type="button" name="Add" value="$add_mark" onClick="check_routers_add2(document.forms[0]);">
+	<input class="edit_bt" type="submit" name="Edit" value="$edit_mark" onClick="return check_router_editnum2();">
+	<script>
+	if( master =="admin" )
+		document.write('<input class="delete_bt" type="submit" name="Delete" value="$delete_mark" onClick="return check_router_del2();">');
+	else
+		document.write('<input class="delete1_bt" type="button" name="Delete" value="$delete_mark" disabled>');
+	</script>
+	</TD>
+</TR>
+</TABLE>
+</FORM>
+<script>
+if (top.ipv6_static_route)
+	document.forms[1].style.display="";
+else
+	document.forms[1].style.display="none";
+</script>
+</div>
+<% help_box("1","_STR_routes") %>
+</BODY>
+</HTML>

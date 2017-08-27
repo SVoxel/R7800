@@ -1,0 +1,346 @@
+<% start_netscan() %>
+<% http_header("style/form.css", "/funcs.js", "/qos.js") %>
+<% body_header("_qos", "QOS_main.htm", "apply_qos") %>
+<div class="page_title">$qos_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="qosMain();"> &nbsp;&nbsp;<input class="apply_bt" type="submit" name="apply" id="apply" value="$apply_mark" onClick="return check_qos_apply(document.forms[0]);"></TD></TR>');
+else
+	document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled> &nbsp;&nbsp;<input class="apply1_bt" type="submit" name="apply" id="apply" value="$apply_mark" disabled></TD></TR>');
+</script>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+<script>
+<% save_timestamp("apply_qos", "ookla_speedtest") %>
+var ts='<% cfg_get("apply_qos") %>';
+
+var endis_wl_wmm="<% cfg_get("endis_wl_wmm") %>";
+var endis_wla_wmm="<% cfg_get("endis_wla_wmm") %>";
+var qos_endis_on="<% cfg_get("qos_endis_on") %>";
+var qos_endis_bandwidth="<% cfg_get("qos_threshold") %>";
+var tcbw_unit="<% cfg_get("qos_width") %>";
+var tcbw_value="<% cfg_get("qos_uprate") %>";
+
+var ac_router_flag=top.ac_router_flag;
+
+var max_bandwidth = parent.max_bandwidth;
+var an_router_flag = parent.an_router_flag;
+var enable_ap_flag="<% cfg_get("ap_mode") %>";//bug 24666 according to the page 128 of spec 2.0,add AP mode
+
+var endis_wl_radio="<% enable_ap_orNot("bgn") %>";
+var wds_endis_fun="<% cfg_get("wds_endis_fun") %>";
+var wds_repeater_basic="<% cfg_get("wds_repeater_basic") %>";
+var endis_wla_radio="<% enable_ap_orNot("an") %>";
+var wla_wds_endis_fun="<% cfg_get("wla_wds_endis_fun") %>";
+var wds_repeater_basic_a="<% cfg_get("wds_repeater_basic_a") %>";
+
+// qos trusted ip
+var enable_trusted_ip = '<% cfg_get("qos_trustIP") %>';        //bug 31449
+var qos_trust_ip_address='<% cfg_get("qos_trust_ip_address") %>';
+var lan_ip="<% cfg_get("lan_ipaddr") %>";
+var lan_subnet="<% cfg_get("lan_netmask") %>";
+var quick_qos = "<% cfg_get("quick_qos_endis") %>";
+var fast_lane="<% cfg_get("quick_qos_type") %>";
+var trustedip_array=new Array();
+var lanip_array=new Array();
+var lan_subnet_array=new Array();
+
+var pchar = "|";
+var internet_status="<% detwan_valid() %>";//check internet status for speedtest
+var delay_time=1000;
+var charcount=0;
+var maxchars = 50;
+var ookla_result="<% cfg_get("ookla_test_result") %>";
+var show_speedtest_result="<% cfg_get("show_speedtest_result") %>";
+
+trustedip_array=qos_trust_ip_address.split('.');
+lanip_array=lan_ip.split('.');
+lan_subnet_array=lan_subnet.split('.');
+
+var wps_alert="<% cfg_get("wps_alert") %>";
+<% cfg_set("wps_alert", "0") %>
+
+function change_web_format()
+{
+	if( an_router_flag == 1 )
+		document.getElementById("wmm_an").style.display="";
+	else
+		document.getElementById("wmm_an").style.display="none";
+
+	if( parent.support_qos_trusted_ip == 1 )
+	{
+		document.getElementById("trusted_ip").style.display="";
+		document.getElementById("enable_trust").style.display="";
+	}
+	else
+	{
+		document.getElementById("trusted_ip").style.display="none";
+		document.getElementById("enable_trust").style.display="none";
+	}
+
+}
+
+function updateProgress()
+{
+	var cf = document.forms[0];
+	if (charcount < maxchars)
+	{
+		charcount ++;
+		cf.progress.value = makeStr(charcount,pchar);
+		setTimeout("updateProgress()",delay_time);
+	}
+	else
+	{
+		parent.ookla_speedtest_flag=2;
+		location.href="QOS_main.htm";
+	}
+}
+
+function loadvalue()
+{
+	cf=document.forms[0];
+
+	change_web_format();
+
+	if(enable_ap_flag == "1")
+		setDisabled(true,cf.qosEnable,cf.bwEnable);
+	else
+		setDisabled(false,cf.qosEnable,cf.bwEnable);
+
+	if( endis_wl_wmm == "1" )
+		cf.wmm_enable.checked = true;
+	else
+		cf.wmm_enable.checked = false;
+        if( endis_wla_wmm == "1" )
+                cf.wmm_enable_an.checked = true;
+        else
+                cf.wmm_enable_an.checked = false;
+	if( qos_endis_on == "1" )
+		cf.qosEnable.checked =true;
+	else
+		cf.qosEnable.checked = false;
+
+	if( qos_endis_bandwidth == "1")
+		cf.bwEnable.checked = true;
+	else
+		cf.bwEnable.checked = false;
+
+	if(tcbw_unit == "Mbps")
+	{
+		cf.tcbw_value.value = parseInt(tcbw_value/1024);
+		cf.tcbw_unit.selectedIndex=1;
+	}
+	else
+	{
+		cf.tcbw_value.value = tcbw_value;
+		cf.tcbw_unit.selectedIndex=0;
+	}
+
+	trun_bandwidth();
+
+	cf.wan_ip.value="<% wan_ip() %>";
+	cf.dns_ip.value="<% wan_primary_dns() %>";
+
+	/* to fix bug 28339*/
+	if ((endis_wl_radio == '1' && wds_endis_fun == '1' && wds_repeater_basic == '0') || (endis_wla_radio == '1' && wla_wds_endis_fun == '1' && wds_repeater_basic_a == '0')){
+		cf.list_qos.className="common_big_gray_bt";
+		setDisabled(true,cf.list_qos,cf.qosEnable,cf.checkbandwidth);
+		setDisabled(true,cf.tcbw_value, cf.tcbw_unit);
+	}
+
+	if(enable_trusted_ip=='0')
+	{
+		cf.enable_trustip.checked=false;
+		cf.qosTrusted_IPAddress1.value=lanip_array[0];
+		cf.qosTrusted_IPAddress2.value=lanip_array[1];
+		cf.qosTrusted_IPAddress3.value=lanip_array[2];
+		cf.qosTrusted_IPAddress4.value="";
+	}
+	else
+	{
+		cf.enable_trustip.checked=true;
+		if( qos_trust_ip_address != "" )
+		{
+			cf.qosTrusted_IPAddress1.value=trustedip_array[0];
+			cf.qosTrusted_IPAddress2.value=trustedip_array[1];
+			cf.qosTrusted_IPAddress3.value=trustedip_array[2];
+			cf.qosTrusted_IPAddress4.value=trustedip_array[3];
+		}
+		if(parseInt(lan_subnet_array[0])!=255)
+			cf.qosTrusted_IPAddress1.disabled=false;
+		else
+			cf.qosTrusted_IPAddress1.value=lanip_array[0];
+		if(parseInt(lan_subnet_array[1])!=255)
+			cf.qosTrusted_IPAddress2.disabled=false;
+		else
+			cf.qosTrusted_IPAddress2.value=lanip_array[1];
+		if(parseInt(lan_subnet_array[2])!=255)
+			cf.qosTrusted_IPAddress3.disabled=false;
+		else
+			cf.qosTrusted_IPAddress3.value=lanip_array[2];
+		if(parseInt(lan_subnet_array[3])!=255)
+			cf.qosTrusted_IPAddress4.disabled=false;
+		else
+			cf.qosTrusted_IPAddress4.value=lanip_array[3];
+	}
+
+	showWps_alert();
+       
+	<% speedtest_method() %>
+	if(parent.ookla_speedtest_flag == 1)
+	{
+		document.getElementById("check_speed_progress").style.display = "";
+		updateProgress();
+	}else if(parent.ookla_speedtest_flag == 2){
+		if(ookla_result == "")
+			alert("The Speedtest fails to detect the bandwidth, please check your Internet connection or try again later.");
+		else{
+			document.getElementById("check_speed_progress").style.display = "none";
+			document.getElementById("check_speed_result").style.display = "";
+		}
+		parent.ookla_speedtest_flag = 0;
+	}
+
+	if(show_speedtest_result == "1"){
+		if(ookla_result != "")
+		{
+			if(ookla_result.indexOf("Mbps") >= 0)
+				cf.tcbw_unit.selectedIndex=1;
+			else if(ookla_result.indexOf("Kbps") >= 0)
+				cf.tcbw_unit.selectedIndex=0;
+			cf.tcbw_value.value=ookla_result.replace(/[a-zA-Z]/g, '');
+		}
+	}
+}
+
+function checkTrustIP()
+{
+        var cf=document.forms[0];
+        if(cf.enable_trustip.checked)
+        {
+                if(parseInt(lan_subnet_array[0])!=255)
+                        cf.qosTrusted_IPAddress1.disabled=false;
+                if(parseInt(lan_subnet_array[1])!=255)
+                        cf.qosTrusted_IPAddress2.disabled=false;
+                if(parseInt(lan_subnet_array[2])!=255)
+                        cf.qosTrusted_IPAddress3.disabled=false;
+                if(parseInt(lan_subnet_array[3])!=255)
+                        cf.qosTrusted_IPAddress4.disabled=false;
+        }
+        else
+        {
+                cf.qosTrusted_IPAddress1.disabled=true;
+                cf.qosTrusted_IPAddress2.disabled=true;
+                cf.qosTrusted_IPAddress3.disabled=true;
+                cf.qosTrusted_IPAddress4.disabled=true;
+        }
+}
+
+function trun_bandwidth()
+{
+	var cf = document.forms[0];
+
+	if(cf.bwEnable.checked == false)
+		setDisabled(true, cf.tcbw_value, cf.tcbw_unit);
+	else
+		setDisabled(false, cf.tcbw_value, cf.tcbw_unit);
+}
+
+</script>
+<input type="hidden" name="qos_endis_wmm">
+<input type="hidden" name="qos_endis_wmm_a">
+<input type="hidden" name="qos_endis_on">
+<input type="hidden" name="qos_endis_bandwidth"> 
+<input type="hidden" name="qos_hidden_uprate"> 
+<input type="hidden" name="wan_ip"> 
+<input type="hidden" name="dns_ip"> 
+<input type="hidden" name="qosTrusted_IPAddress">
+<input type="hidden" name="qosTrusted_IP_Enable">
+<TR>
+	<TD><input type="checkbox" name="wmm_enable" id="wmm_enable" value="1"><a tabindex=-1 href="javascript:loadhelp('_qos','wifi')"><b>$qos_enable_wmm <script>if(an_router_flag) document.write("(2.4GHz b/g/n)");</script></b></a></TD>
+</TR>
+<TR id=wmm_an>
+	<TD><input type="checkbox" name="wmm_enable_an" id="wmm_enable_an" value="1"><a tabindex=-1 href="javascript:loadhelp('_qos','wifi')"><b>
+	<script>
+		if( ac_router_flag == 1 )
+			document.write("$qos_enable_wmm (5GHz 802.11a/n/ac)")
+		else
+			document.write("$qos_enable_wmm (5GHz a/n)")
+	</script>
+	</b></a></TD>
+</TR>
+$bluebar
+<TR>
+	<TD><input type="checkbox" name="qosEnable" id="qos_enable" value="1"><a tabindex=-1 href="javascript:loadhelp('_qos','qos_on')"><b>$qos_turn_qos_on</b></a></TD>
+</TR>
+$bluebar
+<TR>
+	<TD><input type="checkbox" name="bwEnable" id="bw_enable" onClick="trun_bandwidth();" value="0"><a tabindex=-1 href="javascript:loadhelp('_qos','Bandwidth')"><b>$qos_upstream_enable</b></a></TD>
+</TR>
+<TR>
+    	<TD>$spacebar
+	<b>$qos_uplink_width :</b>&nbsp;&nbsp;&nbsp;&nbsp;<b>$qos_width_maximum</b>&nbsp;&nbsp;
+	<input type="text" name="tcbw_value" id="tcbw_value" size="6" onKeyPress="return getkey('num',event)" >
+	<select name="tcbw_unit" id="tcbw_unit" size="1">
+        <option value="Kbps">$qos_Kbps</option>
+        <option value="Mbps">$qos_Mbps</option>
+	</select>&nbsp;
+	<font id="speedtest_link">$qos_speed_link </font>
+	<input type="submit" name="speedtest_bt" class="speedtest_bt" id="speedtest_bt" value="Speedtest" style="display:none" onclick="return check_ookla_speedtest(document.forms[0])">&nbsp;
+	<img src=/image/poweredbyookla.png id="ookla_img" style="display:none">
+	</TD>
+</TR>
+<TR id="check_speed_progress" style="display:none">
+<TD>$spacebar
+$check_internet
+<input type="text" name="progress" class="checkbar" size="50"  value="">
+</TD>
+</TR>
+<TR id="check_speed_result" style="display:none">
+<TD>$spacebar
+<script>
+	document.write("<b><font color='#9D98FF'>"+"$get_speed"+" "+ookla_result+"</font></b>");
+</script></TD>
+</TR>
+<TR>
+	<TD colspan=2><img src=/liteblue.gif width=100% height=12></TD>
+</TR>
+<TR>
+	<TD><b>$qos_rule_list</b>
+    <img src="/spacer.gif" width="60" height="18" border="0" alt="" />
+	<script>
+	if(enable_ap_flag == "1" )  //for bug 30286 here is to grey comething
+		document.write('<input class="common_big_gray_bt" type="button" name="list_qos" id="list_qos" value="$qos_rule_mark" disabled>');
+	else
+		document.write('<input class="common_big_bt" type="button" name="list_qos" value="$qos_rule_mark" onclick="qosRule();">');
+	</script>
+    </td>
+</TR>
+$bluebar
+<TR id="enable_trust" style="display: none">
+        <TD nowrap colspan=2>
+        <input type="checkbox" name="enable_trustip" value="1" onclick= "checkTrustIP();">
+        <A tabindex=-1 href="javascript:loadhelp('_BKS_keyword','trusted')"><B>$content_block_allow_trustedip</B></A>
+        </TD>
+</TR>
+<TR id="trusted_ip" style="display: none">
+        <TD nowrap><B>$trust_ip</B></TD>
+        <TD nowrap align=right>
+        <input type="text" name="qosTrusted_IPAddress1" size="4" maxlength="3" disabled onKeyPress="return getkey('num',event)">.
+        <input type="text" name="qosTrusted_IPAddress2" size="4" maxlength="3" disabled onKeyPress="return getkey('num',event)">.
+        <input type="text" name="qosTrusted_IPAddress3" size="4" maxlength="3" disabled onKeyPress="return getkey('num',event)">.
+        <input type="text" name="qosTrusted_IPAddress4" size="4" maxlength="3" disabled onKeyPress="return getkey('num',event)">
+        </TD>
+</TR>
+
+</TABLE>
+</div>
+<% help_box("0","_qos") %>
+</FORM>
+</BODY>
+</HTML>

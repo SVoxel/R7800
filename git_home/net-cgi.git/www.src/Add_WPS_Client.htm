@@ -1,0 +1,52 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% body_header("_wps") %>
+<div class="page_title">$add_wps_client_header</div>
+<div id="main" class="main">
+<% table_header() %> 
+$bluebar
+<input type="hidden" name="select_edit">
+<input type="hidden" name="select_del">
+<script>
+var wps_choice=0;
+var wps_pin_num="";
+var security_mode="<% cfg_get("wl_sectype") %>";
+parent.wps_endis_configured="<% cfg_get("wps_status") %>";
+parent.wps_an_endis_configured="<% cfg_get("wla_wps_status") %>";
+	
+function loadvalue()
+{
+
+}
+function go2url()
+{
+	location.href="WPS.htm";
+}
+</script>
+<TR>
+	<TD nowrap colspan=2><B>$add_wps_client_p</B></TD>
+</TR>
+<TR>
+	<TD><BR>$add_wps_client_text1</TD>
+</TR>
+<TR>
+	<TD>$add_wps_client_text2</TD>
+</TR>
+<TR>
+	<TD>$add_wps_client_text3</TD>
+</TR>
+$bluebar
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TR><TD nowrap align=center><input class="short_common_bt" type="button" id="next" name="Next" value="$wps_next_mark" onClick="go2url();">&nbsp;&nbsp;</TD></TR>');
+else
+	document.write('<TR><TD nowrap align=center><input class="short_common1_bt" type="button" id="next" name="Next" value="$wps_next_mark" disabled>&nbsp;&nbsp;</TD></TR>');
+
+</script>
+</TABLE>
+
+</div>
+<% help_box("1","_wps") %>
+</FORM>
+</BODY>
+</HTML>

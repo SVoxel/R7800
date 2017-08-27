@@ -1,0 +1,46 @@
+<% http_header("style/form.css", "/funcs.js", "/USB_NETStorage.js") %>
+<% body_header("_USB_setting", "USB_settings.htm", "usb_setting") %>
+<div class="page_title">$usb_settings</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+    document.write('<TR><TD colspan=2 align=center><input class="apply_bt" type="button" name="apply" id="apply" value=" $apply_mark " onClick=\'document.forms[0].submit();\'></TD></TR>');
+else
+	document.write('<TR><TD colspan=2 align=center><input class="apply1_bt" type="button" name="apply" id="apply" value=" $apply_mark " disabled></TD></TR>');
+</script>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<script language="javascript" type="text/javascript">
+<!--
+var show_enableUSB="<% cfg_get("usb_enableUSB") %>";
+function loadvalue()
+{
+	form=document.forms[0];
+	if( show_enableUSB == '0' )
+		form.enableUSB[0].checked = true;
+	else
+		form.enableUSB[1].checked = true;	
+}
+
+-->
+</script>
+<TR><TD colspan=2>&nbsp;</TD></TR>	
+<TR>
+	<TD nowrap><b>$enable_usb</b>
+	<input type="radio" name="enableUSB" id="enable_usb" value="0" >$yes_mark
+	<input type="radio" name="enableUSB" id="disable_usb" value="1" >$no_mark</TD>
+	<TD nowrap><input class="common_key_bt" type="button" name="approve" id="approve" value=" $approved_devices " onClick='location.href="USB_approved.htm";'></TD>
+</TR>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD colspan=2><img src=/liteblue.gif width=100%% height=12></TD></TR>
+</TABLE>
+</div>
+<% help_box("0","_USB_setting") %>
+</FORM>
+</BODY>
+</HTML>

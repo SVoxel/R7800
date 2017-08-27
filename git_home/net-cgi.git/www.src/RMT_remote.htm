@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<link rel="stylesheet" type="text/css" href="style/form.css" />
+<script language="javascript" type="text/javascript" src="/funcs.js" ></script>
+<% hijack_language() %>
+</head>
+
+<body onLoad="loadvalue();">
+<script>
+var leafp2p_remote_login="<% cfg_get("leafp2p_remote_login") %>";
+var leafp2p_remote_password="<% cfg_get("leafp2p_remote_password") %>";
+var remote_result="<% cfg_get("remote_result") %>";
+<% cfg_set("remote_result", "") %>
+var exec_result="";
+
+switch(remote_result)
+{
+	case "register_ok": 
+				exec_result=result_register_ok;
+				break;
+	case "register_fail":
+				exec_result=result_register_fail;
+				break;
+	case "unreg_ok":
+				exec_result=result_unreg_ok;
+				break;
+	case "unreg_fail":
+				exec_result=result_unreg_fail;
+				break;
+	default:
+				exec_result="";
+}
+
+function loadvalue()
+{
+	cf=document.forms[0];
+
+	if( leafp2p_remote_login == "" )
+	{
+		cf.submit_flag.value="register_user";
+
+		document.getElementById("reg1").style.display="";
+		document.getElementById("reg2").style.display="";
+		document.getElementById("reg3").style.display="";
+		document.getElementById("reg4").style.display="";
+		document.getElementById("reg5").style.display="";
+		document.getElementById("unreg1").style.display="none";
+		document.getElementById("unreg2").style.display="none";
+		document.getElementById("unreg3").style.display="none";
+		document.getElementById("unreg4").style.display="none";
+	}else{
+		cf.submit_flag.value="unregister_user";
+		cf.TXT_remote_login.value=leafp2p_remote_login;
+		cf.TXT_remote_password.value=leafp2p_remote_password;
+
+		document.getElementById("reg1").style.display="none";
+		document.getElementById("reg2").style.display="none";
+		document.getElementById("reg3").style.display="none";
+		document.getElementById("reg4").style.display="none";
+		document.getElementById("reg5").style.display="none";
+		document.getElementById("unreg1").style.display="";
+		document.getElementById("unreg2").style.display="";
+		document.getElementById("unreg3").style.display="";
+		document.getElementById("unreg4").style.display="";
+	}
+}
+
+</script>
+<% form_submit("cgi-bin/RMT_invite", "RMT_remote.htm", "register_user")  %>
+<% save_timestamp("register_user", "unregister_user") %>
+
+<div class="page_title"><script>document.write(remote_share_head)</script></div>
+        <div id="main" class="main">
+        <table width="100%" border="0" cellpadding="0" cellspacing="3">
+        <tr>
+            <td colspan="2">
+               <script>document.write(exec_result)</script>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <img src="/liteblue.gif" width="100%" height="12">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+            <p><script>document.write(ready_share_info1)</script></p>
+                <p><A tabindex=-1 href="javascript:loadhelp('_remote_share','readyshare_cloud')"><b><script>document.write(how_setup_ready_share)</script></b></A><br/>
+                <script>
+                document.write(ready_share_step1+'<br/>');
+                document.write(ready_share_step2+'<br/>');
+                document.write(ready_share_step3+'<br/>');
+                document.write(ready_share_step4+'<br/>');
+                document.write(ready_share_set_note);
+
+                </script>
+                </p>
+            </td>
+        </tr>
+        <tr>
+           <td colspan="2">
+           <img src="/liteblue.gif" width="100%" height="12">
+           </td>
+        </tr>
+
+        <tr name="reg" id="reg1" style="display:none">
+            <td colspan="2">
+            <b><A tabindex=-1 href="javascript:loadhelp('_remote_share','readyshare_enable')"><script>document.write(ready_share_start)</script></A></b><br/>
+            <script>document.write(ready_share_get_account)</script></b><br/>
+            </td>
+        </tr>
+        <tr name="reg" id="reg2" style="display:none">
+            <td>
+                <b><script>document.write(username)</script>:</b>
+            </td>
+            <td>
+                <input type="text" value="" name="TXT_remote_login" maxlength="25" size="28">
+            </td>
+        </tr>
+        <tr name="reg" id="reg3" style="display:none">
+            <td>
+                <b><script>document.write(key_passphrase)</script>:</b>
+            </td>
+            <td>
+                <input type="password" value="" name="TXT_remote_password" maxlength="25" size="28">
+            </td>
+        </tr>
+        <tr name="reg" id="reg4" style="display:none">
+            <td colspan="2">
+            </td>
+        </tr>
+        <tr name="reg" id="reg5" style="display:none">
+            <td>
+            </td>
+            <td>
+                <script>document.write('<input class="common_bt" type="submit" name="BTN_reg" value="'+register+'"> ('+register_note+')');</script>
+            </td>
+        </tr>
+
+        <tr name="unreg" id="unreg1" style="display:none">
+            <td colspan="2">
+            <p><b><script>document.write(resister_user+': '+leafp2p_remote_login)</script></b></p>
+            <p><script>document.write(access_storage_method)</script></p>
+            <p><script>document.write(unregister_info)</script></p>
+            </td>
+        </tr>
+        <tr name="unreg" id="unreg2" style="display:none">
+            <td colspan="2">
+            </td>
+        </tr>
+        <tr name="unreg" id="unreg3" style="display:none">
+            <td colspan="2">
+            </td>
+        </tr>
+        <tr name="unreg" id="unreg4" style="display:none">
+            <td colspan="2" align="center">
+            <script>document.write('<input class="common_big_bt" type="submit" name="BTN_unreg" value="'+unregister+'">');</script>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="2">
+                <img src="/liteblue.gif" width="100%" height="12">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+            </td>
+        </tr>
+    </table>
+    </div>
+<% help_box("0","_remote_share") %>
+	</form>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<% http_header("style/form.css", "/funcs.js", "add_download_item.js") %>
+<script>
+<% list_download_item("B") %>
+<% list_downloaded_file("B")%>
+var lan_ip="<% cfg_sed_xss("lan_ipaddr") %>";
+var samba_path="<% get_samba_path() %>";
+var mlnet_error="<% get_dlclient_result() %>";;
+var fileTP_max_concurrent_tasks="<% cfg_get("green_download_fileTP_max_tasks") %>";
+<% cfg_set("mlnet_error", "0") %>
+<% config_commit() %>
+	
+if(mlnet_error != "0")
+{
+	alert(mlnet_error);
+}
+
+function loadvalue()
+{
+
+}
+</script>
+<% body_header("_green_download_bt", "GREEN_bt_basic.htm", "pause_download") %>
+<% save_timestamp("pause_download", "start_download", "resume_download", "remove_download", "change_priority", "remove_history") %>
+<div class="download_show">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=3>
+<TR><TD colSpan=2><A tabindex=-1 href="javascript:loadhelp('_green_download_bt','bt_table')"><B>$greendl_common_InfoShowTable</B></A></TD></TR>
+<TR><TD colSpan=2></TD></TR>
+<TR><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+<TR><TD colSpan=2>
+    <TABLE border=1 cellpadding=2 cellspacing=0 width=100%>
+    <TR>
+		<TD nowrap align=center><span class="subhead">$greendl_common_showNo</span></TD>
+        <TD nowrap align=center><span class="subhead">$greendl_common_showFileName</span></TD>
+        <TD nowrap align=center><span class="subhead">$greendl_common_showFileSize</span></TD>
+        <TD nowrap align=center><span class="subhead">$qos_priority</span></TD>
+        <TD nowrap align=center><span class="subhead">$greendl_common_showSpeed</span></TD>
+		<TD nowrap align=center><span class="subhead">$greendl_common_showDownload</span></TD>
+		<TD nowrap align=center><span class="subhead">$stalist_Status</span></TD>
+		<TD nowrap align=center><span class="subhead">$greendl_common_showSelect</span></TD>
+    </TR>
+    <script>
+		var i;
+		var speed_str;
+		var status_str;
+        for( i=1; i<= top.green_download_item_num; i++)
+        {
+            var info = eval( 'item' + i );
+            var each_info = info.split('*');
+
+			if( each_info[6] == "Paused" )
+			{
+				speed_str = "-";
+				status_str = "$greendl_common_showStatusPaused";
+			}
+			else if( each_info[6] == "-" )
+			{
+				speed_str = each_info[4];
+				status_str = "$greendl_common_showStatusConnecting";
+			}
+			else if( each_info[6] == "Queued" )
+			{
+				speed_str = "-";
+				status_str = "$greendl_common_showStatusUSBfull";
+			}
+			else
+			{
+				speed_str = each_info[4];
+				status_str = "$greendl_common_showStatusDownloading";
+			}
+
+            var item_id = each_info[0];
+            //alert(item_id);
+            document.write('<TR>');
+            document.write('<TD nowrap align=center>'+i+'</TD>');
+            document.write('<TD nowrap>'+each_info[1]+'</TD>');
+            document.write('<TD nowrap align=center>'+each_info[2]+'</TD>');
+            document.write('<TD nowrap align=center>');
+            document.write('    <select name="priority_sel" onchange="change_priority(\''+item_id+'\', document.forms[0], this, \''+each_info[3]+'\');">');
+            document.write('        <option value="6"'); select_item("6", each_info[3]);document.write('>$qos_high</option>');
+            document.write('        <option value="4"'); select_item("4", each_info[3]);document.write('>$qos_normal</option>');
+            document.write('        <option value="2"'); select_item("2", each_info[3]);document.write('>$qos_low</option>');
+            document.write('    </select>');
+            document.write('</TD>');
+			document.write('<TD nowrap align=center>'+speed_str+'</TD>');
+			document.write('<TD nowrap align=center>'+each_info[5]+'%</TD>');
+            document.write('<TD nowrap align=center>'+status_str+'</TD>');
+	    document.write('<TD nowrap align=center><input type=checkbox name="chbx_item" value="'+item_id+'*'+status_str+'"></TD>');
+            document.write('</TR>');
+        }
+    </script>
+
+	</TABLE>
+</TD></TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2 align=center>
+	<script>
+		var master="<% cfg_get("http_loginname") %>";
+		if( master == "admin" )
+			document.write('<input type="button" class="common_bt" name="start" value="$greendl_common_button_start" onClick="start_download(document.forms[0]);">&nbsp;&nbsp;<input type="button" class="common_bt" name="resume" value="$greendl_common_button_resume" onClick="resume_download(document.forms[0]);">&nbsp;&nbsp;<input type="button" class="common_bt" name="pause" value="$greendl_common_button_pause" onClick="pause_download(document.forms[0]);">&nbsp;&nbsp;<input type="button" class="common_bt" name="remove" value="$delete_mark" onClick="remove_item(document.forms[0]);">');
+		else
+			document.write('<input type="button" class="common1_bt" name="start" value="$greendl_common_button_start" disabled>&nbsp;&nbsp;<input type="button" class="common1_bt" name="resume" value="$greendl_common_button_resume" disabled>&nbsp;&nbsp;<input type="button" class="common1_bt" name="pause" value="$greendl_common_button_pause" disabled>&nbsp;&nbsp;<input type="button" class="common1_bt" name="remove" value="$delete_mark" disabled>');
+	</script>
+	</TD>
+</TR>
+
+</TABLE>
+
+<TABLE width=100% border=0 cellpadding=0 cellspacing=3>
+<TR><TD colSpan=2><A tabindex=-1 href="javascript:loadhelp('_green_download_http','http_table')"><B>$greendl_common_showDownloaded</B></A></TD></TR>
+<TR><TD colSpan=2></TD></TR>
+<TR><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+<TR><TD colSpan=2>
+    <TABLE border=1 cellpadding=2 cellspacing=0 width=100%>
+    <TR>
+		<TD nowrap align=center><span class="subhead">$greendl_common_showNo</span> </TD>
+        <TD nowrap align=center><span class="subhead">$greendl_common_showFileName</span></TD>
+		<TD nowrap align=center><span class="subhead">$greendl_common_showFileSize</span></TD>
+		<TD nowrap align=center><span class="subhead">$greendl_common_showSavedPath</span></TD>
+    </TR>
+	<script>
+		var i;
+		for( i=1; i<= file_num; i++)
+		{
+			var info = eval( 'file' + i );
+			var each_info = info.split('*');
+			var save_path = each_info[2];
+			var path = save_path.split(':');
+			var samba_href = "\\\\" + lan_ip + "\\" + samba_path + path[1];
+			document.write('<TR>');
+			document.write('<TD nowrap align=center>'+i+'</TD>');
+			document.write('<TD nowrap>'+each_info[0]+'</TD>');
+			document.write('<TD nowrap align=center>'+each_info[1]+'</TD>');
+
+			if(isIE())
+				 document.write('<TD nowrap align=center><a class="linktype" href="\\\\'+samba_href+'" target="_blank">'+save_path+'</a></TD>');
+			else if( get_browser() == "Safari" )
+				document.write('<TD nowrap align=center><a class="linktype" href="smb:'+samba_href+'" >'+save_path+'</a></TD>');
+			else
+				document.write('<TD nowrap align=center>'+save_path+'</TD>');  //this if sentence if for bug 29993,make it display as USB link.
+			document.write('</TR>'); //href='+samba_href+' target="_blank"
+		}
+
+	</script>
+	</TABLE>
+</TD></TR>
+$bluebar
+<TR>
+    <TD nowrap colspan=2 align=center>
+	<script>
+		if( master == "admin" )
+			document.write('<input type="button" class="common_big_bt"  name="rm_history" value="$greendl_common_button_removeHistory" onClick="remove_history(document.forms[0]);">&nbsp;&nbsp;');	
+		else
+			document.write('<input type="button" class="common_big_gray_bt"  name="rm_history" value="$greendl_common_button_removeHistory" disabled>&nbsp;&nbsp;');	
+ 	</script>
+    </TD>
+</TR>
+</TABLE>
+</div>
+<input type="hidden" name="select_ids" value="">
+<input type="hidden" name="select_ids_queuen" value="">
+<input type="hidden" name="priority_val">
+<input type="hidden" name="file_type" value="2">
+</FORM>
+</BODY>
+</HTML>

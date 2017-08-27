@@ -1,0 +1,212 @@
+<% http_header("style/form.css", "/funcs.js", "add_download_item.js") %>
+<% body_header("_green_download_http", "GREEN_http_basic.htm", "add_download_item") %>
+<div class="page_title">$greendl_common_manager</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+        <TD nowrap colspan=2 align=center>
+	<input class="cancel_bt" type='button' name="Cancel" value='$cancel_mark' onClick='location.href="add_HTTP_item.htm";'>&nbsp;&nbsp;
+	<input class="apply_bt" type='submit' name="Apply" value='$apply_mark' onclick='return enable_greendownload(document.forms[0],"http");'>
+        </TD>
+</TR>
+</TABLE>
+</div>
+<div class="download_http">
+<% table_header() %>
+<script>
+<% show_devices() %>
+<% save_timestamp("add_download_item", "enable_green_download") %>
+var ts="<% cfg_get("add_download_item") %>";
+var green_disk_lable = "<% cfg_get("green_disk_lable") %>";
+var green_download_enable="<% cfg_get("green_download_enable") %>";
+
+if( "<% cfg_get("green_download_max_tasks_all") %>" == "" )
+	var max_tasks_all = 0;
+else
+	var max_tasks_all = parseInt("<% cfg_get("green_download_max_tasks_all") %>", 10);	
+
+function add_item()
+{
+	form = document.forms[0];
+
+	var str_down_url = form.download_url.value;
+	var str_low_1 = str_down_url.substr(0,4);
+	var str_low_2 = str_down_url.substr(0,5);
+
+	if(str_down_url.substr(0,5).toUpperCase() == "HTTPS")
+	{
+		alert("$greendl_not_support_https");
+		return false;
+	}
+	if(form.download_url.value == "" || (str_low_1 != "ftp:" && str_low_2 != "http:"))
+	{
+		alert("$greendl_filetp_alert_link");
+		return false;
+	}
+	var task_num_all = top.green_download_item_num;
+	if( task_num_all >= max_tasks_all )
+	{
+		alert("$greendl_common_alert_maxtask");
+		return false;
+	}
+
+	form.decodeurl.value=decodeURIComponent(form.download_url.value);
+
+	return true;
+}
+function loadvalue()
+{
+	var cf=document.forms[0];
+
+	if( green_download_enable == "1")
+		cf.enable_green_download.checked = true;
+	else
+		cf.enable_green_download.checked = false;
+
+	if(disk_num==0)
+	{
+		cf.Cancel.disabled = true;
+		cf.Apply.disabled = true;
+		cf.Cancel.className = "common_gray_bt";
+		cf.Apply.className = "common_gray_bt";
+		document.getElementById("download_endis").style.color="gray";
+		cf.enable_green_download.disabled=true;
+		document.getElementById("download_save_path").style.color="gray";
+		cf.green_link_basic.disabled=true;
+		cf.green_link_basic.className="long_edit_gray_bt";
+		document.getElementById("type").style.color="gray";
+		cf.download_type_1.disabled=true;
+		cf.download_url.disabled=true;
+		cf.user_name.disabled=true;
+		cf.password.disabled=true;
+		cf.Add.disabled=true;
+		cf.reset.disabled=true;
+		cf.Add.className = "add_gray_bt";
+		cf.reset.className = "long_delete_gray_bt";
+	}
+	else if(disk_num !=0 && green_download_enable == "0")
+	{
+		cf.Cancel.disabled = false;
+		cf.Apply.disabled = false;
+		cf.Cancel.className = "cancel_bt";
+		cf.Apply.className = "apply_bt";
+		document.getElementById("download_endis").style.color="black";
+		cf.enable_green_download.disabled=false;
+		document.getElementById("download_save_path").style.color="black";
+		cf.green_link_basic.disabled=false;
+		cf.green_link_basic.className="long_edit_bt";
+		document.getElementById("type").style.color="gray";
+		cf.download_type_1.disabled=true;
+		cf.download_url.disabled=true;
+		cf.user_name.disabled=true;
+		cf.password.disabled=true;
+		cf.Add.disabled=true;
+		cf.reset.disabled=true;
+		cf.Add.className = "add_gray_bt";
+		cf.reset.className = "long_delete_gray_bt";
+	}
+	else
+	{
+		cf.Cancel.disabled = false;
+		cf.Apply.disabled = false;
+		cf.Cancel.className = "cancel_bt";
+		cf.Apply.className = "apply_bt";
+		document.getElementById("download_endis").style.color="black";
+		cf.enable_green_download.disabled=false;
+		document.getElementById("download_save_path").style.color="black";
+		cf.green_link_basic.disabled=false;
+		cf.green_link_basic.className="long_edit_bt";
+		document.getElementById("type").style.color="black";
+		cf.download_type_1.disabled=false;
+		cf.download_url.disabled=false;
+		cf.user_name.disabled=false;
+		cf.password.disabled=false;
+		cf.Add.disabled=false;
+		cf.reset.disabled=false;
+		cf.Add.className = "add_bt";
+		cf.reset.className = "long_delete_bt";
+	}
+}
+var this_download_type = "http";
+function change_downlaod_type(obj)
+{
+	var type = obj.value;
+        if( type != this_download_type )
+	{
+                if(type == "bt")
+                        parent.location.href="GREEN_bt_basic.htm";
+                else if( type == "emule")
+                        parent.location.href="GREEN_emule_basic.htm";
+                else if( type == "http")
+                        parent.location.href="GREEN_http_basic.htm";
+        }
+}
+
+</script>
+<input type=hidden name=download_type value="http">
+<input type=hidden name=green_download_open_flag>
+<TR id="download_endis">
+	<TD nowrap colspan=2>
+		<input type="checkbox" name="enable_green_download"><b>$greendl_manager_enable</b>
+	</TD>
+</TR>
+<TR id="download_save_path">
+	<TD nowrap><b>$greendl_common_showSavedPath:&nbsp;</b>
+		<script>
+			if(disk_num != 0)
+				document.write(green_disk_lable);
+		</script>
+	</TD>
+	<TD nowrap align="center">
+		<input class="long_edit_bt" type="button" name="green_link_basic" value="$greendl_manager_config_set_mark" onClick="redirect_config_download();">
+	</TD>
+</TR>
+$bluebar
+<TR id="type">
+        <TD nowrap colspan=2><A tabindex=-1 href="javascript:loadhelp('_green_download','')"><b>$greendl_manager_downloadtype</b></A>
+        <select name="download_type_1" size="1" onchange="change_downlaod_type(this);">
+                <option value="bt">$greendl_bt</option>
+                <option value="emule">Emule</option>
+                <option value="http" selected>$greendl_filetp</option>
+        </select>
+</TD></TR>
+
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_green_download_http','http_url')"><B>$greendl_filetp_link</B></A>
+	</TD>
+	<TD nowrap align=right>
+	<input type="text" name="download_url"  size="64" value="">
+	</TD>
+</TR>
+<TR>
+    <TD>
+		<A tabindex=-1 href="javascript:loadhelp('_green_download_http','http_name')"><b>$greendl_filetp_username</b></A>
+    </TD>
+    <TD nowrap align=right>
+		<input type="text" name="user_name" maxLength="50" size="16" style="width: 130px" onKeyPress="return getkey('ssid', event)" value="">
+    </TD>
+</TR>
+<TR>
+    <TD>
+		<A tabindex=-1 href="javascript:loadhelp('_green_download_http','http_password')"><b>$greendl_filetp_password</b></A>
+    </TD>
+    <TD nowrap align=right>
+		<input type="password" name="password" maxLength="50" size="16" style="width: 130px" onKeyPress="return getkey('ssid', event)" value="">
+    </TD>
+</TR>
+<input type=hidden name=user_name_hid value="">
+<input type=hidden name=password_hid value="">
+<input type=hidden name=decodeurl value="">
+$bluebar
+<TR>
+	<TD nowrap colspan=2 align=center>
+	<input type="submit" class="add_bt" name="Add" value="$add_mark" onClick="return add_item();">&nbsp;&nbsp;
+	<input type='button' class="long_delete_bt" name='reset' value='$green_qos_reset' onClick='location.href="add_HTTP_item.htm";'>
+	</TD>
+</TR>
+</TABLE>
+</div>
+</FORM>
+</BODY>
+</HTML>

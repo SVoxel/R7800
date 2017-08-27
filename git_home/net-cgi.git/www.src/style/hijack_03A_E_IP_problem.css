@@ -1,0 +1,13 @@
+/*bug 22544*/
+#text_div { margin:30px auto }
+
+.desc_text { margin: -10px auto 10px auto; }
+
+#choices_div { width:100%; margin:0 auto; }
+
+/*bug 22145 change button type*/
+#allBtns_div { width:60%; margin:20px auto;}
+
+#btnsContainer_div1 { width:60%; float:left; }
+#btnsContainer_div2 { width:25%; float:right; }
+

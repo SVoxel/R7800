@@ -1,0 +1,21 @@
+<html>
+<head>
+<script language=javascript type=text/javascript>
+ parent.internet_type = "<% cfg_get("internet_type") %>";
+ parent.internet_ppp_type = "<% cfg_get("internet_ppp_type") %>";
+ parent.wan_pppoe_demand = "<% cfg_get("wan_pppoe_demand") %>";
+ parent.wan_pptp_demand = "<% cfg_get("wan_pptp_demand") %>";
+ parent.wan_mulpppoe_demand = "<% cfg_get("wan_mulpppoe_demand") %>";
+ parent.wan_l2tp_demand = "<% cfg_get("wan_l2tp_demand") %>";
+ parent.get_wanip = "<% wan_ip() %>";
+ var master = "<% cfg_get("http_loginname") %>";
+ if (master != "admin")
+ {
+ 	parent.document.getElementById("register").setAttribute("class", "common1_bt");
+	parent.document.getElementById("register").disabled = true;
+ }
+</script>
+</head>
+<body>
+</body>
+</html>

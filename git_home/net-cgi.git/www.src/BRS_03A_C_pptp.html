@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_03A_C_pptp.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_hijack_03A_C_pptp.js"></script>
+<script language="javascript" type="text/javascript" src="script/funcs.js"></script>
+<% hijack_language() %>
+<% deleteFiles("/tmp/ping_result_error", "/tmp/ping_ip_result_error", "/tmp/ping_gateway_result_error")%>
+<% deleteFiles("/tmp/ping_result", "/tmp/wget_file_result") %>
+</head>
+
+<body>
+<% form_submit("apply", "BRS_04_applySettings.html", "hijack_pptp") %>
+
+<input type="hidden" name="WANAssign" value="0" />
+<input type="hidden" name="pptp_subnet" value="" />
+<input type="hidden" name="ip_address" value="" />
+<input type="hidden" name="gateway" value="" />
+
+<script>
+var master="<% cfg_get("http_loginname") %>";
+</script>
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+			<h2 id="message"><!--pptp_connection--></h2>
+			<p><!--enter_info_below--></p>
+			
+			<div id="mainContent_div">
+				
+				<div id="loginName" class="input_left_div" align="right">
+					<!--pptp_login_name-->
+				</div>
+				<div class="input_ip_div">
+					<!--img src="image/ca_text_pic.gif" /-->
+					<input type="text" id="pptp_username" align="right" maxlength="60" name="pptp_username" class="input_text" />
+				</div>
+				
+				<div id="passwd" class="input_left_div" align="right">
+					<!--ddns_passwd-->
+				</div>
+				<div class="input_ip_div">
+					<!--img src="image/ca_text_pic.gif" /-->
+					<input type="password" id="pptp_passwd" align="right" maxlength="16" name="pptp_passwd" class="input_text" />
+				</div>
+
+				<div id="idleTimeout" class="input_left_div" align="right">
+					<!--basic_pppoe_idle-->
+				</div>
+				<div class="input_ip_div">
+					<!--img src="image/ca_text_pic.gif" /-->
+					<input type="text" align="right" id="pptp_idletime" maxlength="5" name="pptp_idletime" class="input_text" value="5"/>
+				</div>
+				
+				<div id="IP_addr" class="input_left_div" align="right">
+					<!--info_mark_ip-->
+				</div>
+				<div class="input_ip_div">
+					<!--img src="image/ca_text_pic.gif" /-->
+					<input type="text" name="myip_1" id="myip1" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="myip_2" id="myip2" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="myip_3" id="myip3" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="myip_4" id="myip4" size="3" maxlength="3" onKeyPress="return getkey('num',event)">
+				</div>
+				
+				<div id="serverIP" class="input_left_div" align="right">
+					<!--basic_pptp_servip-->
+				</div>
+				<div class="input_ip_div">
+					<!--img src="image/ca_text_pic.gif" /-->
+					<input type="text" align="right" id="pptp_serv_ip" name="pptp_serv_ip" class="input_text" />
+				</div>
+				
+				<div id="GatewayAddr" class="input_left_div" align="right">
+					<!--constatus_defgtw-->
+				</div>
+				<div class="input_ip_div">
+					<!--img src="image/ca_text_pic.gif" /-->
+					<input type="text" name="mygw_1" id="mygw1" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="mygw_2" id="mygw2" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="mygw_3" id="mygw3" size="3" maxlength="3" onKeyPress="return getkey('num',event)">.
+					<input type="text" name="mygw_4" id="mygw4" size="3" maxlength="3" onKeyPress="return getkey('num',event)">
+				</div>
+
+				<div id="connectionID" class="input_left_div" align="right">
+					<!--basic_pptp_connection_id-->
+				</div>
+				<div class="input_ip_div">
+					<!--img src="image/ca_text_pic.gif" /-->
+					<input type="text" align="right" id="inputConID" maxlength="63" name="connection_ID" class="input_text" />
+				</div>
+				
+				<div style="clear:both"></div>
+			</div>
+		
+	</div>
+	
+	<div id="allBtns_div" class="wizard_buttons_div" align="right">
+		<div id="btnsContainer_div" class="buttons_img_div" >
+			<input type="button" name="Next" id="next" class="purple_short_btn"><!--next_mark-->
+		</div>	
+	</div>
+	
+
+</div>
+
+</form>
+</body>
+
+</html>

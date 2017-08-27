@@ -1,0 +1,90 @@
+<% http_header("style/form.css", "/funcs.js" "/advanced.js") %>
+<% body_header("_ipmac", "ipmac.htm", "ipmac") %>
+<div class="page_title">$ipmac_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if( master == "admin" )
+		document.write('<TD align=center colSpan=2><input class="cancel_bt" type="button" name="Cancel" value="$cancel_mark" onClick="location.href=\'ipmac.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="submit" name="Apply" value="$apply_mark" onClick="return checkipmac(document.forms[0])"></TD>');
+	else
+		document.write('<TD align=center colSpan=2><input class="cancel1_bt" type="button" name="Cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit" name="Apply" value="$apply_mark" disabled></TD>')
+</script>
+	
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button">
+<% table_header()%>
+<script>
+var ipmac_binding_flag="<% cfg_get("ipmac_binding_on")%>";
+var lan_ip="<% cfg_get("lan_ipaddr") %>";
+var lan_subnet="<% cfg_get("lan_netmask") %>";
+var remote_ip="<% remote_ip() %>";
+
+<% reservation_items_xss() %>
+
+function loadvalue()
+{
+	var cf=document.forms[0];
+	if( master == "admin" )
+	{
+		if(ipmac_binding_flag == 1)
+		{
+			cf.enable_ipmac.checked=true;
+			cf.Edit.disabled = false;
+			cf.Edit.className = "edit_bt"
+		}
+		else
+		{
+			cf.enable_ipmac.checked=false;
+			cf.Edit.disabled = true;
+			cf.Edit.className = "edit_gray_bt"
+		}
+	} else{
+		cf.Edit.disabled = true;
+		cf.Edit.className = "edit_gray_bt"
+	}
+}
+
+function checkipmac()
+{
+	var cf=document.forms[0];
+
+	if(isSameSubNet(remote_ip,lan_subnet,lan_ip,lan_subnet) == false)
+	{
+		this.location.href = "ipmac.htm";
+		return false;
+	}
+	if( cf.enable_ipmac.checked )
+		cf.enable_ipmac_hid.value=1;
+	else
+		cf.enable_ipmac_hid.value=0;
+}
+
+</script>
+<input type="hidden" name="enable_ipmac_hid">
+<TR>
+	<TD nowrap>
+	<input type="checkbox" name="enable_ipmac" value='0'><B>$enable_ipmac</B>
+	</TD>
+</TR>
+<TR><TD colspan="2"></TD></TR>
+<TR><TD>$ipmac_fun</TD></TR>
+<TR><TD colspan="2"></TD></TR>
+<TR><TD>$ipmac_edit_enable</TD></TR>
+<TR><TD colspan="2"></TD></TR>
+$bluebar
+<TR>
+	<TD nowrap align="center">
+		<input class="edit_bt" type="submit" name="Edit" value="$edit_mark" onClick='location.href="LAN_lan.htm";top.open_or_close_sub("setup");top.menu_color_change("lan");return false;'>
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_ipmac") %>
+</FORM>
+</BODY>
+</HTML>

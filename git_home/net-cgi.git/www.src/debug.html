@@ -1,0 +1,390 @@
+<!--
+ * Copyright (c) 2014 Qualcomm Atheros, Inc.
+ *
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary
+-->
+<html lang="en-US">
+  <head>
+    <title>Streamboost Through Google Charts</title>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+    <!--<link type="text/css" href="css/ben.css" rel="stylesheet" /> -->
+    <!--Load the AJAX API-->
+    <style type="text/css">
+      .google-visualization-controls-label {
+        float: left;
+      }
+      #table_div {
+        clear: left;
+      }
+    </style>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript">
+
+      //change this to ajdust update rate
+      var nIntervalTime = 1000;
+      var bRun = false;
+
+      // Load the Visualization API and the controls package.
+      google.load('visualization', '1.0', {'packages':['controls']});
+
+      // Set callback to run when the Google Visualization API is loaded.
+      google.setOnLoadCallback(onLoad);
+
+      function onLoad() {
+        //set the run state to start
+        setRun(true);
+
+        //initialize the controls in the gui
+        initGUI();
+      }
+
+      function initGUI()
+      {
+        //handle enable/disable combo
+        $$("#enableTimer").click(function() { setRun(true); });
+        $$("#disableTimer").click(function() { setRun(false); });
+
+        //handle the step button
+        $$("#stepTimer").click(function() { runTimer(); });
+      }
+
+      // Convert bytes to megabits
+      function B2Mb(bytes)
+      {
+        return (bytes * 8) / Math.pow(1000, 2);
+      }
+
+      //google data table
+      var data = null;
+      var oversubData = null;
+      var flows_last_polled = {};
+
+      function getData() {
+
+        //if table hasn't been created
+        if(data == null)
+        {
+          //make our table
+          data = new google.visualization.DataTable();
+
+          //add the columns
+          data.addColumn('string', 'mac', 0);
+          data.addColumn('string', 'ip', 1);
+          data.addColumn('string', 'tag', 2);
+          data.addColumn('number', 'up (bytes)', 3);
+          data.addColumn('number', 'down (bytes)', 4);
+          data.addColumn('number', 'policy_up_rate (Mbps)', 5);
+          data.addColumn('number', 'policy_down_rate (Mbps)', 6);
+          data.addColumn('number', 'up_rate (Mbps)', 7);
+          data.addColumn('number', 'down_rate (Mbps)', 8);
+          data.addColumn('number', 'priority', 9);
+          data.addColumn('string', 'uid', 10);
+        }
+
+        //get the data about flows from the router
+        $$.getJSON("/cgi-bin/ozker/api/flows", "",
+          function(flows) {
+            var rate = 0;     //reusable rate variable for calcs
+            var colors = [];  //colors for the active profiles
+
+            //set colors for profiles
+            colors[0] = "background-color: white;";
+            colors[1] = "background-color: yellow;";
+            colors[2] = "background-color: orange;";
+
+            data.removeRows(0, data.getNumberOfRows());
+
+            $$.each(flows.flows, function(i,flow) {
+              var last_polled;
+              var flow_up_rate = 0;
+              var flow_down_rate = 0;
+
+              data.addRows(1)
+              //setCell(row_id, column_id, sortable_value, display_value, style)
+              data.setCell(i, 0, flow.mac);
+              data.setCell(i, 1, flow.src_ip);
+              data.setCell(i, 2, flow.name);
+              data.setCell(i, 3, flow.up_bytes);
+              data.setCell(i, 4, flow.down_bytes);
+
+
+              rate = 0;
+              if (0 == flow.policies.up_profile_active) {
+                rate = flow.policies.up_profile_optimal.rate;
+              } else if (1 == flow.policies.up_profile_active) {
+                rate = flow.policies.up_profile_nominal.rate;
+              }
+              rate = B2Mb(rate);
+
+              data.setCell(i, 5, rate, rate,
+                           {style: colors[flow.policies.up_profile_active]});
+
+              rate = 0;
+              if (0 == flow.policies.down_profile_active) {
+                rate = flow.policies.down_profile_optimal.rate;
+              } else if (1 == flow.policies.down_profile_active) {
+                rate = flow.policies.down_profile_nominal.rate;
+              }
+              rate = B2Mb(rate);
+
+              data.setCell(i, 6, rate, rate,
+                           {style: colors[flow.policies.down_profile_active]});
+
+              // calculate instantaneous rate
+              last_polled = flows_last_polled[flow.uid];
+              if (last_polled != null) {
+                var time_delta = flow.epoch - last_polled['timestamp'];
+                if (time_delta != 0) {
+                  flow_up_rate = (flow.up_bytes -
+                    last_polled['up_bytes']) / time_delta;
+                  flow_down_rate = (flow.down_bytes -
+                    last_polled['down_bytes']) / time_delta;
+                  last_polled['up_rate'] = flow_up_rate;
+                  last_polled['down_rate'] = flow_down_rate;
+                } else{
+                  flow_up_rate = last_polled['up_rate'];
+                  flow_down_rate = last_polled['down_rate'];
+                }
+              } else {
+                last_polled = {};
+                flows_last_polled[flow.uid] = last_polled;
+              }
+              last_polled['up_bytes'] = flow.up_bytes;
+              last_polled['down_bytes'] = flow.down_bytes;
+              last_polled['timestamp'] = flow.epoch;
+
+              flow_up_rate = B2Mb(flow_up_rate);
+              flow_down_rate = B2Mb(flow_down_rate);
+
+              data.setCell(i, 7, flow_up_rate);
+              data.setCell(i, 8, flow_down_rate);
+
+              data.setCell(i, 9, flow.node_priority);
+
+              var uid = parseInt(flow.uid, 10);
+              data.setCell(i, 10, flow.uid, uid.toString(16));
+            });
+            drawDashboard(data);
+            getNodesData(flows);
+          });
+      }
+
+      function getNodesData(flows) {
+
+        var up_subscribed = 0;
+        var down_subscribed = 0;
+
+        //if table hasn't been created
+        if(oversubData == null)
+        {
+          //make our table
+          oversubData = new google.visualization.DataTable();
+
+          //add the columns
+          oversubData.addColumn('number', 'up_limit (Mbps)', 0);
+          oversubData.addColumn('number', 'down_limit (Mbps)', 0);
+          oversubData.addColumn('number', 'up_subscribed (Mbps)', 0);
+          oversubData.addColumn('number', 'down_subscribed (Mbps)', 0);
+          oversubData.addRows(1)
+        }
+
+        $$.each(flows.flows, function(i,flow) {
+          up_subscribed += flow.policies.up_profile_optimal.rate;
+          down_subscribed += flow.policies.down_profile_optimal.rate;
+        });
+        up_subscribed = B2Mb(up_subscribed);
+        down_subscribed = B2Mb(down_subscribed);
+
+        //get the data about nodes from the router
+        $$.getJSON("/cgi-bin/ozker/api/nodes",
+          function(nodes) {
+            var up_limit;
+            var down_limit;
+            var up_style;
+            var down_style;
+            var undersubscribed_style = "background-color: white;";
+            var oversubscribed_style = "background-color: red;";
+
+            $$.each(nodes.nodes, function(i, node) {
+              if (i == 0) {
+                up_limit = B2Mb(node.Pipeline.up_limit);
+                down_limit = B2Mb(node.Pipeline.down_limit);
+              }
+            });
+
+            oversubData.setCell(0, 0, up_limit);
+            oversubData.setCell(0, 1, down_limit);
+            if (up_subscribed > up_limit) {
+              up_style = oversubscribed_style;
+            } else {
+              up_style = undersubscribed_style;
+            }
+            oversubData.setCell(0, 2, up_subscribed, up_subscribed,
+              {style: up_style});
+
+            if (down_subscribed > down_limit) {
+              down_style = oversubscribed_style;
+            } else {
+              down_style = undersubscribed_style;
+            }
+            oversubData.setCell(0, 3, down_subscribed, down_subscribed,
+              {style: down_style});
+
+            drawOversub(oversubData);
+          });
+
+      }
+
+      function getRunState()
+      {
+        return bRun;
+      }
+
+      function setRun(bRunState)
+      {
+        if(bRun != bRunState)
+        {
+            bRun = bRunState;
+
+            if(bRunState == true)
+            {
+               window.setTimeout(runTimer,0);
+
+              $$('#enableTimer').attr('checked',true);
+              $$('#disableTimer').attr('checked',false);
+
+              $$("#stepTimer").hide();
+              $$("#stepTitle").hide();
+            }
+            else
+            {
+              $$('#enableTimer').attr('checked',false);
+              $$('#disableTimer').attr('checked',true);
+              $$("#stepTimer").show();
+              $$("#stepTitle").show();
+            }
+        }
+      }
+
+      function runTimer()
+      {
+        getData();
+
+        if(bRun == true)
+        {
+            window.setTimeout(runTimer,nIntervalTime);
+        }
+      }
+
+      var dashboard = null;
+      var devicePicker = null;
+      var flowPicker = null;
+      var table = null;
+      var oversub_table = null;
+
+      function drawDashboard(data) {
+
+        if(dashboard == null)
+        {
+          // Create a dashboard
+          dashboard = new google.visualization.Dashboard(
+              document.getElementById('dashboard_div'));
+        }
+
+
+        if(devicePicker == null)
+        {
+          // Define a category picker control for the Device column
+          devicePicker = new google.visualization.ControlWrapper({
+            'controlType': 'CategoryFilter',
+            'containerId': 'dev_filter_div',
+            'options': {
+              'filterColumnLabel': 'mac',
+              'ui': {
+                'allowNone': 'true',
+                'caption': 'All Devices...',
+                'labelStacking': 'vertical',
+                'allowTyping': false,
+                'allowMultiple': false,
+              },
+            },
+          });
+        }
+
+        if(flowPicker == null)
+        {
+          flowPicker = new google.visualization.ControlWrapper({
+            'controlType': 'StringFilter',
+            'containerId': 'flow_filter_div',
+            'options': {
+              'filterColumnLabel': 'tag',
+            },
+          });
+        }
+
+        if(table == null)
+        {
+          table = new google.visualization.ChartWrapper({
+            'chartType': 'Table',
+            'containerId': 'table_div',
+            'options': {
+              'width': 1050,
+              'allowHtml': true
+            }
+          });
+
+          // Establish bindings, declaring device chooser will drive both charts
+          dashboard.bind([devicePicker, flowPicker], [table]);
+        }
+
+          dashboard.draw(data);
+      }
+
+      function drawOversub(data) {
+        if(oversub_table == null)
+        {
+          oversub_table = new google.visualization.ChartWrapper({
+            'chartType': 'Table',
+            'containerId': 'oversub_div',
+            'options': {
+              'width': 850,
+              'allowHtml': true
+            },
+            'dataTable': data,
+          });
+
+        }
+        oversub_table.draw();
+      }
+    </script>
+  </head>
+
+    <div id="refreshbox" style="margin-bottom: 10px;">
+      <div id=refreshboxtitle" style="display: inline-table;position: relative;">Refresh:</div>
+      <div id="buttoncontrols" style="display: inline-table;width:500px;">
+        <div id="onoffButtons" style="width: 185px;display: inline-table;">
+          <input type="radio" id="enableTimer" name="onoffButtons" style="position:relative;display:inline-table;font-size: 11px;"/><label for="enableTimer">Enabled</label>
+          <input type="radio" id="disableTimer" name="onoffButtons" checked="checked" style="position:relative;display:inline-table;font-size: 11px;"/><label for="disableTimer">Disabled</label>
+        </div>
+        <input type="button" id="stepTimer" style="display: inline-table;" value="Step" />
+      </div>
+    </div>
+
+  <body>
+    <!--Div that will hold the dashboard-->
+    <div id="dashboard_div">
+      <h2>Flows</h2>
+      <!--Divs that will board each control and chart-->
+      <div id="dev_filter_div"></div>
+      <div id="flow_filter_div"></div>
+      <div id="table_div"></div>
+      <h2>Subscription</h2>
+      <div id="oversub_div"></div>
+    </div>
+
+  </body>
+</html>
+
+

@@ -1,0 +1,37 @@
+<% http_header("style/form.css", "/funcs.js", "/backup.js") %>
+<% noload_header("_backup", "pls_wait_factory_reboot.html", "factory") %>
+<div class="page_title">$backup_head</div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+
+<script>
+var wds_endis_fun='<% cfg_get("wds_endis_fun") %>';
+var wds_repeater_basic='<% cfg_get("wds_repeater_basic") %>';
+var endis_wl_radio='<% enable_ap_orNot("bgn") %>';
+var ts='<% cfg_get("factory") %>';
+</script>
+
+<TR>
+	<TD nowrap colspan=2><B id="erase_message">$restore_def_load</B></TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2><BR><B>$restore_def_sure</B></TD>
+</TR>
+$bluebar
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TD nowrap colspan=2 align=center><input class="short_common_bt" type="button" name="save" id="save" value="$yes_mark" onclick="click_yesfactory();"><input class="short_common_bt" type="button" name="no" id="no" value="$no_mark" onclick="location.href=\'BAK_backup.htm\'"></TD>');
+else
+	document.write('<TD nowrap colspan=2 align=center><input class="short_common1_bt" type="button" name="save" id="save" value="$yes_mark" disabled><input class="short_common1_bt" type="button" id="no" name="no" value="$no_mark" disabled></TD>');
+	
+</script>
+</TR>
+</TABLE>
+</div>
+
+</FORM>
+</BODY>
+</HTML>

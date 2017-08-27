@@ -1,0 +1,42 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<body>
+<script>
+var result="<% cat_rm_file("/tmp/umount_result") %>";
+
+try {
+	var dec_href = decodeURI(location.href);
+}
+catch(e) {
+	var dec_href = location.href;
+}
+getDevName=dec_href.indexOf("dev_name=",0);
+getOpenerUrl=dec_href.indexOf("opener=",0);
+len=dec_href.length-getDevName-9;
+opener_len=getDevName-getOpenerUrl-8;
+dev_name=dec_href.substr(getDevName+9,len);
+opener_url=dec_href.substr(getOpenerUrl+7,opener_len);
+//dev_name=dev_name.replace(/%20/g,"&nbsp;").replace(/%A0/g,"&nbsp;");
+
+if (result == "") {
+	setTimeout('refresh_page()', 3000);
+	document.write('<div  align="center"><BR><BR><B>$wait_serv</B><BR><BR></div>');
+	document.write('<div class="waiting_img_div" align="center"><img src="image/wait30.gif" /></div>');
+} else if (result == "0") {
+		if(opener.parent.have_green_download == 1 && (opener.parent.is_ru_version==1 || opener.parent.is_pr_version==1))
+		alert("$greendl_common_alert_halted");
+		document.write("$samba_remove_disk_ok");
+		opener.parent.formframe.location.href=opener_url;
+} else if (result == "1"){
+	document.write("$samba_remove_disk_failed");
+	opener.parent.formframe.location.href=opener_url;
+}
+
+function refresh_page()
+{
+	refresh_url = "USB_disk_rm.htm?opener=" + opener_url + "&dev_name=" + dev_name;
+	encodeURI(refresh_url);
+	location.href = refresh_url;
+}
+</script>
+</BODY>
+</HTML>

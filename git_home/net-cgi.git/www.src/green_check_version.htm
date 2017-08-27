@@ -1,0 +1,83 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% nohelp_header("AUTO_download_green.htm", "download_green") %>
+<div class="page_title">$wait_upg_head</div>
+<div id="main" class="main">
+<script>
+<% check_version()  %>
+var ts='<% cfg_get("download_green") %>';
+
+function clickYes()
+{
+        var cf=document.forms[0];
+	if ( updateGreen == 1 ){
+		top.enable_action=0;
+		if(top.topframe && !top.hidden_upgrade) //if top.topframe exists and top.hidden_upgrade does not exit
+			top.topframe.location.href="top_nochange.html";
+		else if(top.topframe && top.hidden_upgrade)     //if top.hidden_upgrade exits, top is the hidden page CheckNewFirmware.htm
+			top.topframe.location.href="CheckNewFW_top.htm";
+	}
+
+	cf.submit_flag.value="download_green";
+	cf.action="/func.cgi?/AUTO_download_green.htm timestamp="+ts;
+	cf.submit();
+
+}
+
+function clickNo()
+{
+	if(top.topframe)
+		top.topframe.location.href="top.html";
+
+	if(top.hidden_upgrade)  //if top.hidden_upgrade exits, top is CheckNewFirmware.htm
+		close_top_window();
+	else
+		this.location.href = "green_download_upgrade.htm";
+}
+
+function loadvalue()
+{
+
+	if( updateGreen == 1 ){
+		document.getElementById("cur_green").style.display="";
+		document.getElementById("new_green").style.display="";
+	}
+	else{
+		document.getElementById("cur_green").style.display="none";
+		document.getElementById("new_green").style.display="none";
+	}
+	
+}
+</script>
+<% table_header() %>
+$bluebar
+
+<TR>
+	<TD nowrap colspan=2><B>$wait_new_version</B><BR><BR></TD>
+</TR>
+<TR><TD>&nbsp;</TD><TD></TD></TR>
+<TR id=cur_green><TD nowrap><b>$greendl_upgrade_version_cur:</b></TD><TD><% cat_file("/tmp/jffs2_green_download/version") %></TD></TR>
+<TR id=new_green><TD nowrap><b>$greendl_upgrade_version_new:</b></TD><TD><% cat_file("/tmp/green_version") %></TD></TR>
+
+$bluebar
+<TR><TD colspan=2>
+</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2 align=center>
+		<script>
+			var master="<% cfg_get("http_loginname") %>";
+			if( master == "admin" )
+				document.write('<input class="short_common_bt" type="button" name="Yes" value="$yes_mark" onclick="clickYes();">&nbsp;');
+			else
+				document.write('<input class="short_common1_bt" type="button" name="Yes" value="$yes_mark" disabled>&nbsp;');
+		</script>
+	<input class="short_common_bt" type="button" name="No" value="$no_mark" onclick="clickNo();">
+	</TD>
+</TR>
+</TABLE>
+
+</div>
+
+</FORM>
+</BODY>
+</HTML>

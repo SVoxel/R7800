@@ -1,0 +1,65 @@
+<% http_header("style/form2.css", "/funcs.js","/jquery-1.7.2.min.js") %>
+<% body_header("_rae", "rae_waiting.htm", "rae_router") %>
+<style type="text/css">
+.link_a{background-color: #702b86; margin-left: 0px; color: #f2f2f2;  font: -webkit-small-control; padding-left:20px; padding-right:20px; border-top-width: 0px; border-left-width: 0px; border-bottom-width: 0px; border-right-width: 0px;}
+.blue_a{COLOR: blue; TEXT-DECORATION: underline}
+
+<% rae_css() %>
+</style>
+<div class="page_title"><% rae_page_title() %></div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+	<TD nowrap align=center>
+	<script>
+		var master="<% cfg_get("http_loginname") %>";
+		if( master=="admin" )
+			document.write('<input class="new_cancel_bt ui-corner-all" type="reset" name="Cancel" value="$cancel_mark" onClick="location.href=\'rae_main.htm\';"><input class="new_apply_bt ui-corner-all" type="submit" name="Apply" value="$apply_mark" onClick="return click_apply();">');
+		else
+			document.write('<input class="new_greycancel_bt ui-corner-all" type="reset" name="Cancel" value="$cancel_mark" disabled><input class="new_greyapply_bt ui-corner-all" type="submit" name="Apply" value="$apply_mark" disabled>');
+	</script>
+	</TD>
+</TR>
+</TABLE>
+</div>
+<script language="javascript" type="text/javascript">
+function loadvalue()
+{
+
+}
+function click_apply()
+{
+	var cf = document.forms[0];
+	if(cf.pre_mode.value == "router")
+		return false;
+	else
+		return true;
+}
+
+</script>
+<div id="main" class="main_top_button">
+
+<% rae_radios("1") %>
+		<div id="content1" style="font-size:14px;">
+			<table>
+				<tr><td  align="left">$rae_rou_set</td></tr>
+				<tr><td height="10px"></td></tr>
+				<tr><td>
+				<input class="new_apply_bt2 ui-corner-all" type="button" name="learn_router" value="$learn_more" onclick="window.open('rae_learn.htm','newwindow','resizable=no,scrollbars=yes,toolbar=no,menubar=no,status=no,location=no,alwaysRaised=yes,z-look=yes,width=800,height=600,left=200,top=100').focus();" >
+				</td></tr>
+			</table>
+		</div>
+		<div id="content3" style="font-size:14px;">
+			<table>
+				<tr><td>$rae_to_set:</td></tr>
+				<tr><td><input type="button"  name="internet" value="$int_setup" class="wireless_bt2 ui-corner-all" onclick="gotto_link('setup', 'internet');"></td></tr>
+				<tr><td height="5px"></td></tr>
+				<tr><td><input type="button"  name="wireless" value="$wls_setup" class="wireless_bt2 ui-corner-all" onclick="gotto_link('setup', 'wireless');"></td></tr>
+			</table>
+		</div>
+	<div class="foot"><img src="image/router_map.gif" style="padding-left:30px; padding-top:40px"></div>
+</div>
+<% help_box("0","_rae_router") %>
+</form>
+</body>
+</html>

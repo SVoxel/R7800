@@ -1,0 +1,184 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<META http-equiv="refresh" content="10; url=RST_multipppoe_conn_status.htm">
+<% nobody_header("RST_multipppoe_conn_status.htm", "connect_status") %>
+<div class="page_title">$constatus_head</div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+
+<input type="hidden" name="endis_connect">
+<input type="hidden" name="session">
+<script>
+var info_get_wanproto="<% cfg_get("wan_proto") %>";
+
+function AddDays(newdate,DaysToAdd,sec_time)
+{
+	var newdate=new Date(newdate);
+	DaysToAdd=DaysToAdd/24;
+	var newtimems=newdate.getTime()+(sec_time*1000);
+	newdate.setTime(newtimems);
+	newday=newdate.toString();
+	day_array=newday.split(' ');
+	if(isIE())
+		newday=day_array[0]+' '+day_array[1]+' '+day_array[2]+' '+day_array[3]+' '+day_array[5];
+	else
+		newday=day_array[0]+' '+day_array[1]+' '+day_array[2]+' '+day_array[4]+' '+day_array[3];
+	return newday;
+}
+
+function connect_stop(check,session)
+{
+	cf=document.forms[0];
+	if (info_get_wanproto != "dhcp")
+	{
+		if(confirm("$establish_connection"))
+		{
+			cf.endis_connect.value=check;
+			cf.session.value = session;
+		}
+		else
+			return false;
+	}
+	else
+		cf.endis_connect.value=check;
+	cf.submit();
+}
+
+function connect_start(check,session)
+{
+	cf=document.forms[0];
+	cf.endis_connect.value=check;
+	cf.session.value = session;
+	cf.submit();
+}
+
+function change_time_type(time)
+{
+        var sec = time;
+        var sec = parseInt(sec);
+
+	var minute_sec = sec%3600;
+	if(minute_sec != sec)
+		var day_hour = (sec - minute_sec)/3600;
+	else
+		var day_hour = 0;
+
+	var hour = day_hour%24;
+	if(hour != day_hour)
+		var day = (day_hour - hour)/24;
+	else
+		var day = 0;
+
+	var sec_sec = minute_sec%60;
+	if(sec_sec != minute_sec)
+		var minute = (minute_sec - sec_sec)/60;
+	else
+		var minute = 0;
+
+
+	day = day.toString();
+	hour = hour.toString();
+	minute = minute.toString();
+
+        var new_time=day+" $days_mark, "+hour+" $hours_mark, "+minute+" $minute_mark ";
+        return new_time;
+
+}
+</script>
+</TABLE>
+<TABLE border=1 cellpadding=2 cellspacing=0 width=100%>
+<script>
+var info_get_wanip1="<% bas_multipppoe_ip("wan_mulpppoe1_wan_assign", "wan_mulpppoe1_ip") %>";
+var info_get_wanip2="<% bas_multipppoe_ip("wan_mulpppoe2_wan_assign", "wan_mulpppoe2_ip") %>";
+var info_get_wanmask1="<% bas_multipppoe_netmask("pppoe1") %>";
+var info_get_wanmask2="<% bas_multipppoe_netmask("pppoe2") %>";
+var ppp1_uptime="<% multippp_uptime("pppoe1") %>";
+var ppp2_uptime="<% multippp_uptime("pppoe2") %>";
+var monthly_limit_reached="<% cfg_get("trafficmeter_monthly_limit_reached") %>";
+
+var internet_type="<% cfg_get("internet_type") %>";
+var netgear_region="<% get_firmware_region() %>";
+var gui_region="<% cfg_get("GUI_Region") %>";
+<% web_flag() %>//fix bug 25223
+var info_get_dns3="<% wan_third_dns() %>";
+var wan_dhcp_server="<% cfg_get("wan_dhcp_server") %>";  //bug 31815,when it is ap mode, can use it. so move it here.
+var master="<% cfg_get("http_loginname") %>";
+if (info_get_wanip1 !="0.0.0.0")
+{
+	var new_time=change_sec_to_time(ppp1_uptime);
+	document.write("<TR><TD nowrap><B>$traffic_connect_time</B></TD><TD nowrap>  "+new_time+"</TD></TR>");
+	document.write("<TR><TD nowrap><B>$constatus_head</B></TD><TD nowrap>  $connected_mark </TD></TR>");
+	document.write("<TR><TD nowrap><B>$constatus_neg</B></TD><TD nowrap>  $wps_add_success</TD></TR><TR><TD nowrap><B>$constatus_auth</B></TD><TD nowrap>  $wps_add_success</TD></TR>");
+	document.write("<TR><TD nowrap><B>$info_mark_ip</B></TD><TD nowrap>  "+info_get_wanip1+"</TD></TR>");
+	document.write("<TR><TD nowrap><B>$info_mark_mask</B></TD><TD nowrap>  "+info_get_wanmask1+"</TD></TR>");
+}
+else
+	document.write("<TR><TD nowrap><B>$traffic_connect_time</B></TD><TD nowrap>  00:00:00</TD></TR><TR><TD nowrap><B>$constatus_head</B></TD><TD nowrap> $disconnected_mark </TD></TR><TR><TD nowrap><B>$constatus_neg</B></TD><TD nowrap>  ----</TD></TR><TR><TD nowrap><B>$constatus_auth</B></TD><TD nowrap>  ----</TD></TR><TR><TD nowrap><B>$info_mark_ip</B></TD><TD nowrap>  0.0.0.0</TD></TR><TR><TD nowrap><B>$info_mark_mask</B></TD><TD nowrap>  0.0.0.0</TD></TR>");
+</script> 
+</TABLE>
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR>
+	<TD nowrap align=center>
+	<BR>
+<script>
+if( master=="admin" ){
+	if (monthly_limit_reached == "1")
+		document.write('<input class="common_gray_bt" type="button" name="connect" disabled value=$connect_mark onclick="connect_start(3,1);" >&nbsp;&nbsp;<input class="common_bt"  type="button" name="connect" value=$disconnect_mark onclick="connect_stop(0,1);" >');
+	else
+		document.write('<input class="common_bt" type="button" name="connect" value=$connect_mark onclick="connect_start(3,1);" >&nbsp;&nbsp;<input class="common_bt"  type="button" name="connect" value=$disconnect_mark onclick="connect_stop(0,1);" >');
+}
+else{
+	document.write('<input class="common_gray_bt" type="button" name="connect" disabled value=$connect_mark >&nbsp;&nbsp;<input class="common1_bt"  type="button" name="connect" value=$disconnect_mark disabled>');
+}
+</script>
+	</TD>
+</TR>
+$bluebar
+</table>
+<TABLE border=1 cellpadding=2 cellspacing=0 width=100%>
+<script>
+if (info_get_wanip2 !="0.0.0.0")
+{
+	var new_time=change_sec_to_time(ppp2_uptime);
+	document.write("<TR><TD nowrap><B>$traffic_connect_time</B></TD><TD nowrap>  "+new_time+"</TD></TR>");
+	document.write("<TR><TD nowrap><B>$constatus_head</B></TD><TD nowrap>  $connected_mark </TD></TR>");
+	document.write("<TR><TD nowrap><B>$constatus_neg</B></TD><TD nowrap>  $wps_add_success</TD></TR><TR><TD nowrap><B>$constatus_auth</B></TD><TD nowrap>  $wps_add_success</TD></TR>");
+	document.write("<TR><TD nowrap><B>$info_mark_ip</B></TD><TD nowrap>  "+info_get_wanip2+"</TD></TR>");
+	document.write("<TR><TD nowrap><B>$info_mark_mask</B></TD><TD nowrap>  "+info_get_wanmask2+"</TD></TR>");
+}
+else
+	document.write("<TR><TD nowrap><B>$traffic_connect_time</B></TD><TD nowrap>  00:00:00</TD></TR><TR><TD nowrap><B>$constatus_head</B></TD><TD nowrap> $disconnected_mark </TD></TR><TR><TD nowrap><B>$constatus_neg</B></TD><TD nowrap>  ----</TD></TR><TR><TD nowrap><B>$constatus_auth</B></TD><TD nowrap>  ----</TD></TR><TR><TD nowrap><B>$info_mark_ip</B></TD><TD nowrap>  0.0.0.0</TD></TR><TR><TD nowrap><B>$info_mark_mask</B></TD><TD nowrap>  0.0.0.0</TD></TR>");
+</script>
+</TABLE>
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR>
+	<TD nowrap align=center>
+	<BR>
+<script>
+if( master=="admin" ){
+	if (monthly_limit_reached == "1")
+		document.write('<input class="common_gray_bt" type="button" name="connect" disabled value=$connect_mark onclick="connect_start(3,2);" >&nbsp;&nbsp;<input class="common_bt"  type="button" name="connect" value=$disconnect_mark onclick="connect_stop(0,2);" >');
+	else
+		document.write('<input class="common_bt" type="button" name="connect" value=$connect_mark onclick="connect_start(3,2);" >&nbsp;&nbsp;<input class="common_bt"  type="button" name="connect" value=$disconnect_mark onclick="connect_stop(0,2);" >');
+}
+else{
+	 document.write('<input class="common_gray_bt" type="button" name="connect" value=$connect_mark disabled>&nbsp;&nbsp;<input class="common1_bt"  type="button" name="connect" value=$disconnect_mark disabled>');
+}
+</script>
+	</TD>
+</TR>
+$bluebar
+</table>
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR>
+	<TD nowrap align=center>
+	<input  class="delete_bt" type=button name="close" value="$close_win_mark" onclick="self.close();">
+	</TD>
+</TR>
+</TABLE>
+
+</div>
+
+</FORM>
+</BODY>
+</HTML>

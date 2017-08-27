@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_03B_haveBackupFile.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_hijack_03B_haveBackupFile.js"></script>
+<script language="javascript" type="text/javascript" src="script/funcs.js"></script>
+<% hijack_language() %>
+</head>
+<script>
+<% refresh_timestamp("backup_restore") %>
+var ts = "<% cfg_get("backup_restore") %>";
+var master="<% cfg_get("http_loginname") %>";
+</script>
+
+<body>
+<form action="NETGEAR_WNDR3700.cfg" method="post" enctype="multipart/form-data">
+
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+	
+		<h1><!--settings_restoration--></h1>
+		<p><script>document.write(bh_browser_file);</script></p>
+		
+		<div class="file_input_div">
+			 <input name="mtenRestore" type="file" size="32" id="file_upg" maxlength="1024" class="type-file-file" onchange="this.form.restore_file_select.value=this.value.substr(this.value.lastIndexOf('\\')+1);" contentEditable=false  onkeydown="return false;" onbeforeeditfocus="return false;" onpaste="return false;" onmouseover="this.style.cursor='pointer';" style="width:201px;"/>
+			 <input type="text" name="restore_file_select" id="file_upgrade" size="24" maxlength="1024" readonly />
+			&nbsp;&nbsp;&nbsp;<input type="button" name="Browse" id="browse" class="purple_short_btn" onclick="if(IE_version()!=6){this.form.file_upg.click();}" onmouseover="this.style.cursor='pointer';" />
+		</div>
+	
+	</div>
+
+	<div id="allBtns_div" class="wizard_buttons_div" align="center">
+	
+		<div id="btnsContainer_div1" class="buttons_img_div" align="center">
+			<input type="button" name="Back" id="back" class="purple_short_btn"><!--back_mark-->
+		</div>
+		<div class="buttons_split"></div>
+		<div id="btnsContainer_div2" class="buttons_img_div" align="center">
+			<input type="button" name="Next" id="next" class="purple_short_btn"><!--next_mark-->
+		</div>
+
+	</div>
+	
+</div>
+
+</form>
+</body>
+
+</html>

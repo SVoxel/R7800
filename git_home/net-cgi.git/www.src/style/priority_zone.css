@@ -1,0 +1,32 @@
+.total_bandwith{width: 200px; height:60px; line-height:60px; font-style: italic; font-weight:bold; float: left; vertical-align: center;}
+.down_rate, .up_rate {width: 160px; height:60px}
+.down_rate {background: url(../image/downrate.gif); float: left;}
+.up_rate{ background:url(../image/uprate.gif); float: left}
+.ratefont{ width:75px; height: 20px; position: relative; top: 20px; left: 60px; font-style:italic; color: #646466; font-size: 13px; font-weight:600;}
+.streamboost_bandwidth {width: 580px; height:60px; float:left; position:relative; left:13%}
+
+.switch_clicked_bt, .switch_unclicked_bt, .remove_bt{height: 19px;  font-family: Arial; font-weight: Bold; font-size: 12px; cursor: pointer; padding-bottom: 1px;}
+.switch_clicked_bt{background-color: #702b86; color: #f2f2f2; border: none; width: 50px;}
+.switch_unclicked_bt{background-color: #ffffff; color: #702b86; border:1px solid #702b86 ; width: 50px;}
+.remove_bt{background-color: #702b86; color: #f2f2f2; border: none; width: 80px; margin-top:30px; float:right;display:block}
+.priority_zone_list{position:absolute; top:0px; width:100%; overflow:auto; bottom:130px; }
+.priority_zone_switch {float:left; height: 60px; line-height:60px; position:relative; left:5%}
+.priority_zone_left{float:left; width:205px; height:170px; position:relative; }
+.priority_zone_right {width: 669px; float:left; height:170px; position:relative; left:90px}
+.priority_zone_middle {height:100px; width:8px; background: url("../image/v_middleline.gif") no-repeat; position:relative; left:45px; float:left;}
+.priority_head {width:100%; position:relative; top:120px; display:block; height:60px }
+.priority_zone_item{width:964px;  height:170px; color: #000000;position:relative; left:5%; margin-top:30px; border-bottom: 2px dotted #C5C4C4}
+.zone_name {width:205px ; height:20px ; border:1px solid #5BB6E5; color:#5BB6E5; font-size:15px; font-weight:bold; display:block; float:left}
+.device_list {width:170px; height:100px; border:1px solid #C5C5C5; overflow:auto}
+.device_add {background: url("../image/left_arrow.png") no-repeat; width:80px; height:22px; color:#F2F2F2; line-height:22px; text-align:center; cursor:pointer}
+.device_remove {background: url("../image/right_arrow.png") no-repeat; width:80px; height:22px; color:#F2F2F2; line-height:22px; text-align:center; cursor:pointer}
+.percent_select{height:25px; width:60px;}
+input, img {vertical-align:middle;}
+.priority_zone_foot{position:absolute; bottom:70px; left:50px;}
+.add_zone{width:120px; background-color:#5BB6E5; height:40px; position:relative;cursor:pointer;}
+.inner_add_zone{margin:auto; border:1px solid #ffffff; color:#ffffff; height:20px; width:90px; position:relative; top:10px; line-height:20px;}
+.dev_item, .sel_dev_item{height:20px; width:145px; color:#000000; font-weight:bold; line-height:20px;margin-left:8px; margin-top:5px;}
+.sel_dev_item{ background-image: url(../image/ssid_back.gif); background-repeat: repeat-y;}
+.bandwidth{ display:inline; color: #C5C5C5; font-weight: Bold;}
+
+

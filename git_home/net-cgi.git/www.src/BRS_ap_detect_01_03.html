@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_02_genieHelp.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_ap_detect_01_03.js"></script>
+<% hijack_language() %>
+</head>
+
+<body>
+<form>
+<div class="ap_content_div">
+	<div class="ap_words_div">  
+		<p><script>document.write(bh_help_choose_page3_str1);</script></p>
+		<p><script>document.write(bh_help_choose_page3_str2);</script></p>	
+		<div id="choices_div" class="ap_radio_div">
+			<input type="radio" name="use_router" value="1" /><script>document.write(bh_yes_mark);</script>
+			&nbsp;&nbsp;
+			<input type="radio" name="use_router" value="0" /><script>document.write(bh_no_mark);</script>
+		</div>
+		<div style="text-align:center; margin:-20px;">
+			<img src="image/G4.gif" style="height:260px; width:598px;"/>
+		</div>
+	</div>
+	
+	<div id="allBtns_div" class="wizard_buttons_div" align="center">
+		<div id="btnsContainer_div1" class="buttons_img_div" align="center">
+		<script>
+			var master="<% cfg_get("http_loginname") %>";
+			if( master == "admin" )
+				document.write('<img src="image/ca-little-purple-button.gif" />');
+			else
+				document.write('<img src="image/ca-little-grey-button.png" />');
+		</script>
+		<div class="buttons_words_div"><!--back_mark--></div>
+		</div>
+		
+		<div class="buttons_split"></div>
+		<div id="btnsContainer_div2" class="buttons_img_div" align="center">
+		<script>
+			var master="<% cfg_get("http_loginname") %>";
+			if( master == "admin" )
+				document.write('<img src="image/ca-little-purple-button.gif" />');
+			else
+				document.write('<img src="image/ca-little-grey-button.png" />');
+		</script>
+			<div class="buttons_words_div"><!--next_mark--></div>
+		</div>
+	</div>
+</div>
+</form>
+</body>
+</html>

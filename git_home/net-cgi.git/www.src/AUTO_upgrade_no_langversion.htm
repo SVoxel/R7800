@@ -1,0 +1,45 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<script language="javascript" type="text/javascript">
+function loadvalue()
+{
+	if(top.hidden_upgrade)
+	{
+		document.getElementById("few_seconds").style.display = "none";
+		document.getElementById("cancel_btn").style.display = "";
+	}
+	else
+	{
+		document.getElementById("few_seconds").style.display = "";
+		document.getElementById("cancel_btn").style.display = "none";
+		setTimeout("goback()", 4000);
+	}
+}
+
+function goback()
+{
+	if(top.hidden_upgrade)  //if top.hidden_upgrade exits, top is CheckNewFirmware.htm
+		this.location.href = "CheckNewFW_upgrade.htm";
+	else
+		this.location.href = "UPG_upgrade.htm";
+}
+</script>
+
+<body bgcolor="#ffffff" onload="loadvalue();">
+<div class="page_title">$firmware_check</div>
+
+<div id="main" class="main">
+	<img src="/liteblue.gif" width="100%" height="12" />
+	<div align="center">
+		<br />
+		<b>$no_new_version_lang</b>
+	</div>
+	<img src="/liteblue.gif" width="100%" height="12" />
+	<div id="few_seconds" align="center">
+		$few_second
+	</div>
+	<div id="cancel_btn" align="center">
+		<input type="button" class="cancel_bt" name="Cancel" value="$quit_mark" onclick="close_top_window();" />
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,11 @@
+<% help_head() %>
+</HEAD>
+<script language="javascript" type="text/javascript">
+var access_control_flag=top.access_control_flag;
+</script>
+$h_attach_device
+<script>
+if( access_control_flag == 1 )
+	document.write("$h_attach_device_added");
+</script>
+</HTML>

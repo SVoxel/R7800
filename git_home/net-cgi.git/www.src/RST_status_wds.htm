@@ -1,0 +1,305 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<BODY onLoad="loadhelp('_info');loadvalue();please_wait(false);" bgcolor=#ffffff>
+<% table_header("$info_mark_head") %>
+$bluebar
+
+<script>
+var on_mark="$on_mark"
+var off_mark="$off_mark"
+
+var wanproto="<% wan_proto() %>";
+var endis_wl_radio="<% enable_ap_orNot("bgn") %>";
+var endis_wla_radio="<% enable_ap_orNot("an") %>";
+var wds_repeater_basic="<% cfg_get("wds_repeater_basic") %>";
+var wds_repeater_basic_a="<% cfg_get("wds_repeater_basic_a") %>";
+var wds_endis_fun="<% cfg_get("wds_endis_fun") %>";
+var wla_wds_endis_fun="<% cfg_get("wla_wds_endis_fun") %>";
+var wds_endis_ip_client="<% cfg_get("wds_endis_ip_client") %>";
+var wla_wds_endis_ip_client="<% cfg_get("wds_endis_ip_client_a") %>";
+var an_router_flag = parent.an_router_flag;
+var guest_router_flag=parent.guest_router_flag;
+var ac_router_flag = parent.ac_router_flag;
+var netgear_region="<% get_firmware_region() %>";
+
+function loadvalue()
+{
+	if( guest_router_flag == 1 ){
+		document.getElementById("wlanguest").style.display="";
+		document.getElementById("wlanssid").style.display="";
+		document.getElementById("wlanap").style.display="";
+		document.getElementById("wlanbro").style.display="";
+		document.getElementById("wlanallow").style.display="";
+		}
+	}
+	else{
+		document.getElementById("wlanguest").style.display="none";
+		document.getElementById("wlanssid").style.display="none";
+		document.getElementById("wlanap").style.display="none";
+		document.getElementById("wlanbro").style.display="none";
+		document.getElementById("wlanallow").style.display="none";
+	}
+	if( guest_router_flag == 1 && an_router_flag == 1){
+		document.getElementById("wlanssid_an").style.display="";
+		document.getElementById("wlanap_an").style.display="";
+		document.getElementById("wlanbro_an").style.display="";
+		document.getElementById("wlanallow_an").style.display="";
+		}
+	}
+	else{
+		document.getElementById("wlanssid_an").style.display="none";
+		document.getElementById("wlanap_an").style.display="none";
+		document.getElementById("wlanbro_an").style.display="none";
+		document.getElementById("wlanallow_an").style.display="none";
+	}
+	if( an_router_flag == 1 ){
+		document.getElementById("wlan_an").style.display="";
+		document.getElementById("head_an").style.display="";
+		document.getElementById("ssid_an").style.display="";
+		document.getElementById("region_an").style.display="";
+		document.getElementById("channel_an").style.display="";
+		document.getElementById("mode_an").style.display="";
+		document.getElementById("radio_an").style.display="";
+		document.getElementById("broad_an").style.display="";	
+		document.getElementById("title_bgn").style.display="";
+		document.getElementById("wl_title_bgn").style.display="";
+
+	}
+	else{
+		document.getElementById("wlan_an").style.display="none";
+		document.getElementById("head_an").style.display="none";
+		document.getElementById("ssid_an").style.display="none";
+		document.getElementById("region_an").style.display="none";
+		document.getElementById("channel_an").style.display="none";
+		document.getElementById("mode_an").style.display="none";
+		document.getElementById("radio_an").style.display="none";
+		document.getElementById("broad_an").style.display="none";
+		document.getElementById("title_bgn").style.display="none";
+		document.getElementById("wl_title_bgn").style.display="none";
+		
+	}
+
+}
+</script>
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','hard_ver')"><B>$router_status_hwversion</B></A></TD>
+	<TD nowrap><% cat_file("/hardware_version") %></TD>
+</TR>
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','firv')"><B>$info_mark_ver</B></A></TD>
+	<TD nowrap><% cat_file("/firmware_version") %><% get_firmware_region("single_blank", "ww_blank") %></TD>
+</TR>
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','lang_ver')"><B>$info_language_ver</B></A></TD>
+	<TD nowrap><% get_language_version() %></TD>
+</TR>
+  
+$bluebar
+<TR>
+	<TD nowrap colspan=2><A tabindex=-1 href="javascript:loadhelp('_info','lan_port')"><span class="subhead">$info_mark_cur</span></A></TD>
+</TR>
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','lanmac')"><B>$info_mark_mac</B></A></TD>
+	<TD nowrap><% lan_mac() %></TD>
+</TR>
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','lanip')"><B>$info_mark_ip</B></A></TD>
+	<TD nowrap><% cfg_get("lan_ipaddr") %></TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2><A tabindex=-1 href="javascript:loadhelp('_info','wireless_port')"><span class="subhead">$router_status_wireless_port</span></A></TD>
+</TR>
+
+<TR id=title_bgn>
+	<TD nowrap colspan=2><B>$wlan_mark b/g/n</B></TD>
+</TR>
+
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wlssid')"><script>if(an_router_flag == 1) document.write("&nbsp;&nbsp;&nbsp;&nbsp;");</script><B>$info_mark_ssid</B></A></TD>
+	<TD nowrap><% cfg_get_ssid_html("wl_ssid") %></TD>
+</TR>
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wlregion')"><script>if(an_router_flag == 1) document.write("&nbsp;&nbsp;&nbsp;&nbsp;");</script><B>$info_mark_reg</B></A></TD>
+	<script>
+		if(netgear_region.toUpperCase() == "NA")
+			document.write('<TD nowrap><% wl_country_na() %></TD>');
+		else
+			document.write('<TD nowrap><% wl_country() %></TD>');
+	</script>
+</TR>
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wlchannel')"><script>if(an_router_flag == 1) document.write("&nbsp;&nbsp;&nbsp;&nbsp;");</script><B>$info_mark_chan</B></A></TD>
+	<TD nowrap><% wl_channel() %></TD>
+</TR>
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wlmode')"><script>if(an_router_flag == 1) document.write("&nbsp;&nbsp;&nbsp;&nbsp;");</script><B>$wlan_mark_mode</B></A></TD>
+	<TD nowrap><% wl_mode() %></TD>
+</TR>
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wlradio')"><script>if(an_router_flag == 1) document.write("&nbsp;&nbsp;&nbsp;&nbsp;");</script><B>$wlan_ap</B></A></TD>
+	<TD nowrap><script>
+		if( endis_wl_radio == "1" )
+			document.write(on_mark);
+		else
+			document.write(off_mark);
+
+	</script></TD>
+</TR>
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wlbroad')"><script>if(an_router_flag == 1) document.write("&nbsp;&nbsp;&nbsp;&nbsp;");</script><B>$router_status_broadcast</B></A></TD>
+	<TD nowrap><% on_status("endis_ssid_broadcast") %></TD>
+</TR>
+<TR id=wliso>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wliso')"><script>if(an_router_flag == 1) document.write("&nbsp;&nbsp;&nbsp;&nbsp;");</script><B>$help_wire_iso</B></A></TD>
+	<TD nowrap><% on_status("endis_wlg_wireless_isolation") %></TD>
+</TR>
+<!-- wireless a/n -->
+<TR id=wlan_an>
+        <TD nowrap colspan=2><B>
+	<script>
+	if( ac_router_flag == 1)
+		document.write("$wlan_mark a/n/ac")
+	else
+		document.write("$wlan_mark a/n")
+	</script>
+	</B></TD>
+</TR>
+<TR id=ssid_an>
+        <TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wlssid')">&nbsp;&nbsp;&nbsp;&nbsp;<B>$info_mark_ssid</B></A></TD>
+        <TD nowrap><% cfg_get_ssid_html("wla_ssid") %></TD>
+</TR>
+<TR id=region_an>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wlregion')">&nbsp;&nbsp;&nbsp;&nbsp;<B>$info_mark_reg</B></A></TD>
+	<script>
+		if(netgear_region.toUpperCase() == "NA")
+			document.write('<TD nowrap><% wl_country_na() %></TD>');
+		else
+			document.write('<TD nowrap><% wl_country() %></TD>');
+	</script>
+</TR>
+<TR id=channel_an>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wlchannel')">&nbsp;&nbsp;&nbsp;&nbsp;<B>$info_mark_chan</B></A></TD>
+	<script>
+	document.write("<TD nowrap><% wla_channel() %></TD>");
+	</script>
+</TR>
+<TR id=mode_an>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wlmode')">&nbsp;&nbsp;&nbsp;&nbsp;<B>$wlan_mark_mode</B></A></TD>
+	<script>
+		document.write('<TD nowrap><% wl_mode("wla_") %></TD>');
+	</script>
+</TR>
+<TR id=radio_an>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wlradio')">&nbsp;&nbsp;&nbsp;&nbsp;<B>$wlan_ap</B></A></TD>
+	<TD nowrap><script>
+		if( endis_wla_radio == "1" )
+			document.write(on_mark);
+		else
+			document.write(off_mark);
+	</script></TD>
+</TR>
+<TR id=broad_an>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wlbroad')">&nbsp;&nbsp;&nbsp;&nbsp;<B>$router_status_broadcast</B></A></TD>
+	<TD nowrap><% on_status("wla_endis_ssid_broadcast") %></TD>
+</TR>
+<TR id=wliso_an>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wliso')">&nbsp;&nbsp;&nbsp;&nbsp;<B>$help_wire_iso</B></A></TD>
+	<TD nowrap><% on_status("endis_wla_wireless_isolation") %></TD>
+</TR>
+<!-- end wireless a/n -->
+<script>
+	if( guest_router_flag == 1 ){
+		document.write('<TR><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>');
+	}
+</script>
+<TR id=wlanguest>
+	<TD nowrap colspan=2><A tabindex=-1 href="javascript:loadhelp('_info','wl_guest')"><span class="subhead">$wlan_mark_guest</span></A></TD>
+</TR>
+<TR id=wl_title_bgn>
+	<TD nowrap colspan=2><B>$wlan_mark b/g/n</B></TD>
+</TR>
+<TR id=wlanssid>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wl_ssid')"><script>if(an_router_flag == 1) document.write("&nbsp;&nbsp;&nbsp;&nbsp;");</script><B>$info_mark_ssid</B></A></TD>
+	<TD nowrap><% cfg_get_ssid_html("wlg1_ssid") %></TD>
+</TR>
+<TR id=wlanap>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wl_ap')"><script>if(an_router_flag == 1) document.write("&nbsp;&nbsp;&nbsp;&nbsp;");</script><B>$wlan_ap</B></A></TD>
+	<script>
+	if ( endis_wl_radio  == "1" )
+		document.write('<TD nowrap><% on_status("wlg1_endis_guestNet") %></TD>');
+	else
+		document.write('<TD nowrap>'+off_mark+'</TD>');
+	</script>
+</TR>
+<TR id=wlanbro>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wl_bro')"><script>if(an_router_flag == 1) document.write("&nbsp;&nbsp;&nbsp;&nbsp;");</script><B>$router_status_broadcast</B></A></TD>
+	<TD nowrap><% on_status("wlg1_endis_guestSSIDbro") %></TD>
+</TR>
+<TR id=wlaniso>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wl_guest_iso')"><script>if(an_router_flag == 1) document.write("&nbsp;&nbsp;&nbsp;&nbsp;");</script><B>$help_wire_iso</B></A></TD>
+	<TD nowrap><% on_status("endis_wlg_guest_wireless_isolation") %></TD>
+</TR>
+<TR id=wlanallow>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wl_allow')"><script>if(an_router_flag == 1) document.write("&nbsp;&nbsp;&nbsp;&nbsp;");</script><B>$wlan_guest_allow</B></A></TD>
+	<TD nowrap><% on_status("wlg1_endis_allow_guest") %></TD>
+</TR>
+
+<TR id=head_an>
+	<TD nowrap colspan=2><B>
+	<script>
+	if( ac_router_flag == 1)
+		document.write("$wlan_mark a/n/ac")
+	else
+		document.write("$wlan_mark a/n")
+	</script>
+	</B></TD>
+</TR>
+<TR id=wlanssid_an>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wl_ssid')">&nbsp;&nbsp;&nbsp;&nbsp;<B>$info_mark_ssid</B></A></TD>
+	<TD nowrap><% cfg_get_ssid_html("wlg1_ssid") %></TD>
+</TR>
+<TR id=wlanap_an>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wl_ap')">&nbsp;&nbsp;&nbsp;&nbsp;<B>$wlan_ap</B></A></TD>
+	<script>
+		if ( endis_wla_radio  == "1" )
+			document.write('<TD nowrap><% on_status("wlg1_endis_guestNet") %></TD>');
+		else
+			document.write('<TD nowrap>'+off_mark+'</TD>');
+	</script>
+</TR>
+<TR id=wlanbro_an>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wl_bro')">&nbsp;&nbsp;&nbsp;&nbsp;<B>$router_status_broadcast</B></A></TD>
+	<TD nowrap><% on_status("wlg1_endis_guestSSIDbro") %></TD>
+</TR>
+<TR id=wlaniso_an>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wl_guest_iso')">&nbsp;&nbsp;&nbsp;&nbsp;<B>$help_wire_iso</B></A></TD>
+	<TD nowrap><% on_status("endis_wla_guest_wireless_isolation") %></TD>
+</TR>
+<TR id=wlanallow_an>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_info','wl_allow')">&nbsp;&nbsp;&nbsp;&nbsp;<B>$wlan_guest_allow</B></A></TD>
+	<TD nowrap><% on_status("wlg1_endis_allow_guest") %></TD>
+</TR>
+$bluebar
+<TR>
+    <TD nowrap colspan=2><span class="subhead">$wds_info_head</span></TD>
+</TR>
+<TR>
+        <TD nowrap><b>$wds_base_mac</b></TD>
+        <TD nowrap>
+        <script>
+        var basic_mac="";
+
+        if(wds_repeater_basic == 0 && wds_endis_fun == 1)
+                basic_mac = "<% cfg_sed_xss("basic_station_mac") %>";
+        else if(wds_repeater_basic_a == 0 && wla_wds_endis_fun == 1)
+                basic_mac = "<% cfg_sed_xss("basic_station_mac_a") %>";
+
+        document.write(basic_mac);
+        </script>
+        </TD>
+</TR>
+$bluebar
+</TABLE>
+</BODY>
+</HTML>
+

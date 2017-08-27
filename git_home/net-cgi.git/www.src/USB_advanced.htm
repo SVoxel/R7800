@@ -1,0 +1,551 @@
+<% http_header("style/form.css", "/funcs.js", "/USB_NETStorage.js") %>
+<% body_header("_USB_advance", "USB_advanced.htm", "USB_advanced") %>
+<div class="page_title">$usb_adv_header</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master =="admin" )
+	document.write('<TR><TD colspan=2 align=center><input class="common_bt" type="button" name="Refresh" id="refresh" value="  $refresh_mark  " onClick="location.href=\'/USB_advanced.htm\';">&nbsp;&nbsp;<input class="apply_bt"type="button" name="Apply" id="apply" value="  $apply_mark  " onClick="return clickadvanced();"></TD></TR>');
+else
+	document.write('<TR><TD colspan=2 align=center><input class="common1_bt" type="button" name="Refresh" id="refresh" value="  $refresh_mark  " disabled>&nbsp;&nbsp;<input class="apply1_bt"type="submit" name="Apply" id="apply" value="  $apply_mark  " disabled></TD></TR>');
+
+</script>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<% save_timestamp("USB_advanced", "open_creat_window", "sharefolder_delete", "disk_remove","edit_devname") %>
+<script>
+<!--
+<% forward_items_xss() %>
+<% trigger_items_xss() %>
+<% upnp_items() %>
+var endis_remote="<% cfg_get("remote_endis") %>";
+var remote_port="<% cfg_get("remote_port") %>";
+var show_lanip="<% cfg_sed_xss("lan_ipaddr") %>";
+
+<% show_usb_fileder_items() %>
+<% check_ftp() %>
+<% show_devices() %>
+parent.folder_path="";
+var consolidate_device_name = parent.consolidate_device_name;
+var show_deviceName="<% cfg_sed_xss("usb_deviceName") %>";
+if(consolidate_device_name == 1)
+	show_deviceName="<% cfg_sed_xss("Readyshare_name") %>";
+var show_enableNet="<% cfg_get("usb_enableNet") %>";
+var show_enableHTTP="<% cfg_get("usb_enableHTTP") %>";
+var show_enableHvia="<% cfg_get("usb_enableHvia") %>";
+var show_HTTP_via_port="<% cfg_sed_xss("usb_HTTP_via_port") %>";
+
+var show_enableFTP="<% cfg_get("usb_enableFTP") %>";
+var show_enableFvia="<% cfg_get("usb_enableFvia") %>";
+var show_FTP_via_port="<% cfg_sed_xss("usb_FTP_via_port") %>";
+var share_folder_maximum = 256;
+
+var old_endis_ddns="<% cfg_get("endis_ddns") %>";
+var cur_wan_ip="<% wan_ip() %>";
+var old_sysDNSHost=cur_wan_ip;
+
+var password_samba = "<% cfg_get("usb_passwdNet") %>";
+var password_http = "<% cfg_get("usb_passwdHttp") %>";
+var password_http_via = "<% cfg_get("usb_passwdHvia") %>";
+var password_ftp = "<% cfg_get("usb_passwdFtp") %>";
+var password_ftp_via = "<% cfg_get("usb_passwdFvia") %>";
+
+if( old_endis_ddns == "1" )
+{
+	var dnsstatus="<% cat_file("/tmp/ez-ipupd.status") %>";
+	var dns_list="<% cfg_get("sysDNSProviderlist") %>";
+	if( dnsstatus == "1" )
+	{
+		if( dns_list == "NETGEAR" )
+			old_sysDNSHost="<% cfg_sed_xss("sysDNSHost_5") %>";
+		else
+			old_sysDNSHost="<% cfg_sed_xss("sysDNSHost") %>";
+	}
+}
+
+function creat_folder()
+{
+	if(folder_number <= share_folder_maximum){
+		var form = document.forms[0];
+		form.submit_flag.value = "open_creat_window";
+		form.submit();	
+		window.open('USB_Folder_creat.htm','net_folder','resizable=0,scrollbars=yes,width=635,height=400,left=400,top=300').focus();
+	}
+	else{
+		alert("The number of shared folder has reached the maximum.");
+                return false;
+	}
+}
+
+function edit_folder()
+{
+
+	form=document.forms[0];
+	var num = -1;
+	if(folder_number == 1){
+	
+		if(form.Available_USB_sel.checked == true){
+			num = 0;
+		}
+	}
+	else{
+		for(i=0;i < folder_number ;i++){
+			if(form.Available_USB_sel[i].checked == true){
+				num = i;
+			}
+		}
+	}
+	if(num == -1 ){
+		alert("$choose_folder");
+		return false;
+	}
+	str="USB_Folder_edit.htm?editFolderID="+num+"";
+	window.open(str,'net_folder','resizable=0,scrollbars=yes,width=400,height=400,left=400,top=300').focus();
+}
+function delete_folder()
+{
+	form=document.forms[0];
+	var num = -1;
+	
+	if(folder_number == 1){
+		if(form.Available_USB_sel.checked == true){
+			num = 0;
+		}
+	}
+	else{
+		for(i=0;i < folder_number;i++){
+			if(form.Available_USB_sel[i].checked == true){
+				num = i;
+			}
+		}
+	}
+	if(num == -1 ){
+		alert("$choose_folder");
+		return false;
+	}
+	var str = eval('usb_sharefolder' + num).replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+	var volname_str = eval('usb_sharefolder_volname' + num).replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+	each_info=str.split("*");
+
+	if( each_info[9] == "Not Shared" ){
+		alert("$delete_notShare");
+		return false;
+	}
+
+        if(((nopassword_num == 1) && (each_info[5] == "$usb_access_no_pass")) || (nopassword_num == 0)) //bug 30285.only 2 situation need pop message. 1 and 0.
+        {
+               alert("$usb_nopassward_msg");
+        }
+
+	form.volumeName.value=volname_str;
+	form.usb_device_name.value=each_info[10];	
+	form.delete_sharefolder_name.value=each_info[9];
+	form.delete_folder_path.value=each_info[1];
+	form.submit_flag.value="sharefolder_delete";
+	form.submit();
+}
+
+function remove_disk(cf)
+{
+	var wleft=(screen.width-400)/2;
+	var wtop=(screen.height-400)/2;
+if(device_num == 1)
+{
+	cf.hidden_name.value="***";
+	cf.submit_flag.value = "disk_remove";
+	cf.submit();
+	str="USB_disk_rm.htm?opener=USB_advanced.htm&dev_name=***";
+	removeDisk=window.open(str,'removeDisk','width=400,height=400,left=440,top=312,status=yes');
+	removeDisk.moveTo(wleft,wtop);
+}
+else
+{
+	removeDisk=window.open('USB_disk_rm_part.htm?opener=USB_advanced.htm','removeDisk','width=400,height=400,left=440,top=312,status=yes');
+	removeDisk.moveTo(wleft,wtop);
+}
+}	
+
+function is_remote_login()
+{
+	var login_ip = "<% cat_file("/tmp/AUTH_login_ip") %>";	
+	var login_ip_info = login_ip.split(".");
+	var cur_wan_ip_info = cur_wan_ip.split(".");
+ 	
+	for(i=0; i<3; i++)
+	{
+		if(login_ip_info[i] != cur_wan_ip_info[i])
+			return false;
+		
+	}
+	return true;
+}
+
+function loadvalue()
+{
+	form=document.forms[0];
+	if( show_enableNet == '0' )
+		form.enable_samba.checked = true;
+	else
+		form.enable_samba.checked = false;
+	if( show_enableHTTP == '0' )
+		form.enable_http.checked = true;
+	else
+		form.enable_http.checked = false;
+	if( show_enableHvia == '0' )
+		form.enable_wan_http.checked = true;
+	else
+		form.enable_wan_http.checked = false;
+	
+	if(is_ftp == 1)
+	{
+		if( show_enableFTP == '0' )
+			form.enable_ftp.checked = true;
+		else
+			form.enable_ftp.checked = false;
+		if( show_enableFvia == '0' )
+			form.enable_wan_ftp.checked = true;
+		else
+			form.enable_wan_ftp.checked = false;
+		form.hidden_is_ftp.value="1";
+	
+	}
+	if(top.enable_bridge_flag == 1)
+	{
+		//form.enableHvia.checked = false;
+		form.enable_wan_http.disabled = true;
+		//form.enableFvia.checked = false;
+		form.enable_wan_ftp.disabled = true;
+	}
+	
+	main_div_show_scroll();	
+}
+-->
+</script>
+<input type="hidden" name="hidden_name">
+<input type="hidden" name="hidden_is_ftp" value="0">
+<input type="hidden" name="hidden_select_number" >
+<input type="hidden" name="delete_sharefolder_name" >
+<input type="hidden" name="delete_folder_path" >
+<input type="hidden" name="enableNet_value">
+<input type="hidden" name="enableHTTP_value">
+<input type="hidden" name="enableHvia_value">
+<input type="hidden" name="enableFTP_value">
+<input type="hidden" name="enableFvia_value">
+<input type="hidden" name="passwdNet">
+<input type="hidden" name="passwdHttp">
+<input type="hidden" name="passwdHvia">
+<input type="hidden" name="passwdFtp">
+<input type="hidden" name="passwdFvia">
+<input type=hidden name=volumeName>
+<input type=hidden name=usb_device_name>
+<input type="hidden" name="device_name_change_flag">
+
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD><a tabindex=-1 href="javascript:loadhelp('_USB_advance','device')"><b>$device_name:</b></a></TD><TD>
+<script>
+if(consolidate_device_name == "1")
+{
+	document.write(show_deviceName);
+	document.write('&nbsp;&nbsp;&nbsp; <input class="short_edit_bt" type="button" name="edit" value="$edit_mark" onClick="edit_devicename(show_deviceName)">');
+}
+else
+	document.write('<input type="text" name="deviceName" id="device_name" value="<% cfg_sed_xss("usb_deviceName") %>" size="20" maxlength="15" onKeyPress="return getkey(\'deviceName\', event)">');	
+</script>
+</TD></TR>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD ><a tabindex=-1 href="javascript:loadhelp('_USB_advance','workgroup')"><b>$workgroup:</b></a></TD><TD><input type="text" name="workGroup" id="work_group" value="<% cfg_sed_xss("usb_workGroup") %>" size="20" maxlength="15"></TD></TR>
+<TR><TD colspan=2><a tabindex=-1 href="javascript:loadhelp('_USB_advance','access')">&nbsp;</a></TD></TR>
+<TR><TD colspan=2>
+<TABLE id="access_method" class=tables border ="0" cellpadding ="2" cellspacing ="0" width="100%">
+	<TR class=table_header>
+		<TD nowrap ><span class="thead">$r_enable</span></TD>
+		<TD nowrap ><span class="thead">$access_method</span></TD>
+		<TD nowrap ><span class="thead">$link_mark</span></TD>
+		<TD nowrap ><span class="thead">$port_mark</span></TD>
+		<TD nowrap align="center"><span class="thead">$passwd_protect</span></TD>
+	</TR>
+	<TR class="odd_line">
+		<TD><input type="checkbox" name="enable_samba" id="enable_net" ></TD>
+		<TD nowrap >$network_connection_1</TD>
+<script>
+	/*Bug 24943: follow spec 2.0 12.8.2, all displayed as \\readyshare\.. */
+	if(isIE())	
+		document.write('<TD><a class="linktype" href="\\\\'+show_deviceName+'" onclick="window.open(this.href); return false;">\\\\'+show_deviceName+'</a></TD>');
+	else if( get_browser() == "Safari" )
+		document.write('<TD><a class="linktype" href="smb://'+show_lanip+'" >\\\\'+show_deviceName+'</a></TD>');
+	else
+		document.write('<TD>\\\\'+show_deviceName+'</TD>');
+	document.write('<TD nowrap>-</TD>');
+	if(password_samba == "1")
+		document.write('<TD nowrap align="center"><input type="checkbox" name="passwd_samba" id="passwd_samba" checked></TD>');
+	else
+		document.write('<TD nowrap align="center"><input type="checkbox" name="passwd_samba" id="passwd_samba"></TD>');
+</script>
+	</TR>
+	<TR class="even_line">
+		<TD><input type="checkbox" name="enable_http" id="enable_http"></TD>
+		<TD nowrap >$http_mark</TD>
+		<script>
+			if( is_remote_login() == true && top.enable_ap_flag == 0 )
+				document.write("<TD>http://readyshare.routerlogin.net/shares</TD>");
+			else
+				document.write('<TD><a class="linktype" href="http://readyshare.routerlogin.net/shares" target="_blank">http://readyshare.routerlogin.net/shares</a></TD>'); 
+		</script>
+		<TD nowrap>80</TD>
+		<script>
+		if(password_http == "1")
+			document.write('<TD nowrap align="center"><input type="checkbox" name="passwd_http" id="passwd_http" checked></TD>');
+		else
+			document.write('<TD nowrap align="center"><input type="checkbox" name="passwd_http" id="passwd_http"></TD>');
+		</script>
+	</TR>
+	<TR class="odd_line">
+		<TD><input type="checkbox" name="enable_wan_http" id="enable_http_via"></TD>
+		<TD nowrap >$http_mark($via_internet)</TD>
+<script>
+	if( show_HTTP_via_port == "443" )
+	{	//bug 22003:if the links are shown like http://0.0.0.0/...or ftp://0.0.0.0/...(black and no underline)and no hyperlink
+		if(old_sysDNSHost == "0.0.0.0")
+			document.write('<TD>https://'+old_sysDNSHost+'/shares</TD>');
+		else
+			document.write('<TD><a class="linktype" href="https://'+old_sysDNSHost+'/shares" target="_blank">https://'+old_sysDNSHost+'/shares</a></TD>');
+	}
+	else
+	{
+		if(old_sysDNSHost == "0.0.0.0")
+			document.write('<TD>https://'+old_sysDNSHost+':'+show_HTTP_via_port+'/shares</TD>');
+		else
+			document.write('<TD><a class="linktype" href="https://'+old_sysDNSHost+':'+show_HTTP_via_port+'/shares" target="_blank">https://'+old_sysDNSHost+':'+show_HTTP_via_port+'/shares</a></TD>');
+	}
+</script>
+		<TD nowrap><input type="text" name="http_via_port" id="http_via_port" size="5" maxlength="5" value="<% cfg_sed_xss("usb_HTTP_via_port") %>" onKeyPress="return getkey('num', event)"></TD>
+		<script>
+		if(password_http_via == "1")
+			document.write('<TD nowrap align="center"><input type="checkbox" name="passwd_http_via" id="passwd_http_via" checked></TD>');
+		else
+			document.write('<TD nowrap align="center"><input type="checkbox" name="passwd_http_via" id="passwd_http_via"></TD>');
+		</script>
+	</TR>
+<script>
+if( is_ftp == 1 )
+{
+	document.write("<TR class=even_line>");
+	document.write("<TD><input type='checkbox' name='enable_ftp' id='enable_ftp'></TD>");
+	document.write("<TD nowrap >$ftp_mark</TD>");
+	if( is_remote_login() == true && top.enable_ap_flag == 0 )
+		document.write("<TD>ftp://readyshare.routerlogin.net/shares</TD>");
+	/* to fix bug 23277 */
+	else if(list_disk_num == 0 || not_shared_number == folder_number )
+		document.write('<TD><a class=\'linktype\' href=\'ftp_no_shares.htm\' target=\'_blank\'>ftp://readyshare.routerlogin.net/shares</a></TD>');
+	else
+		document.write('<TD><a class=\'linktype\' href=\'ftp://readyshare.routerlogin.net/shares\' target=\'_blank\'>ftp://readyshare.routerlogin.net/shares</a></TD>');
+
+	document.write("<TD nowrap >21</TD>");
+	if(password_ftp == "1")
+		document.write('<TD nowrap align="center"><input type="checkbox" name="passwd_ftp" id="passwd_ftp" checked></TD>');
+	else
+		document.write('<TD nowrap align="center"><input type="checkbox" name="passwd_ftp" id="passwd_ftp"></TD>');
+	document.write("</TR>");
+	document.write("<TR class=odd_line>");
+	document.write("<TD><input type='checkbox' name='enable_wan_ftp' id='enable_ftp_via'></TD>");
+	document.write("<TD nowrap >$ftp_mark($via_internet)</TD>");
+	if( show_FTP_via_port == "21" )
+	{
+		if(old_sysDNSHost == "0.0.0.0")
+			document.write("<TD>ftp://"+old_sysDNSHost+"/shares</TD>");
+		else
+			/* to fix bug 23277 */
+			if(list_disk_num == 0 || not_shared_number == folder_number )
+				document.write("<TD><a class='linktype' href='ftp_via_no_shares.htm' target='_blank'>ftp://"+old_sysDNSHost+"/shares</a></TD>");
+			else
+				document.write("<TD><a class='linktype' href='ftp://"+old_sysDNSHost+"/shares' target='_blank'>ftp://"+old_sysDNSHost+"/shares</a></TD>");
+	}
+	else
+	{
+		if(old_sysDNSHost == "0.0.0.0")
+			document.write("<TD>ftp://"+old_sysDNSHost+":"+show_FTP_via_port+"/shares</TD>");
+		else
+			/* to fix bug 23277 */
+			if(list_disk_num == 0 || not_shared_number == folder_number )
+				document.write("<TD><a class='linktype' href='ftp_via_no_shares.htm' target='_blank'>ftp://"+old_sysDNSHost+":"+show_FTP_via_port+"/shares</a></TD>");
+			else
+				document.write("<TD><a class='linktype' href='ftp://"+old_sysDNSHost+":"+show_FTP_via_port+"/shares' target='_blank'>ftp://"+old_sysDNSHost+":"+show_FTP_via_port+"/shares</a></TD>");
+	}
+	document.write("<TD nowrap><input type='text' name='ftp_via_port' id='ftp_via_port' size='5' maxlength='5' value='<% cfg_sed_xss("usb_FTP_via_port") %>' onKeyPress=\"return getkey('num', event)\"></TD>");
+	if(password_ftp_via == "1")
+		document.write('<TD nowrap align="center"><input type="checkbox" name="passwd_ftp_via" id="passwd_ftp_via" checked></TD>');
+	else
+		document.write('<TD nowrap align="center"><input type="checkbox" name="passwd_ftp_via" id="passwd_ftp_via"></TD>');
+	document.write("</TR>");
+}
+</script>		
+
+	</TABLE>
+</TD></TR>
+<TR><TD><span style="font-size:14px;">$passwd_recommend</span></TD></TR>
+<TR><TD colspan=2><img src=/liteblue.gif width=100%% height=12></TD></TR>
+<TR><TD colspan=2><a tabindex=-1 href="javascript:loadhelp('_USB_advance','available')"><b>$available_folder</b></a></TD></TR>
+<TR><TD colspan=2>
+<TABLE id="available_folder" class=tables border ="0" cellpadding ="2" cellspacing ="0" width="100%">
+	<TR class=table_header>
+		<TD nowrap><span class="thead">&nbsp;</span></TD>
+		<TD nowrap><span class="thead">$share_name</span></TD>
+		<TD nowrap><span class="thead">$read_access</span></TD>
+		<TD nowrap><span class="thead">$write_access</span></TD>
+		<TD nowrap><span class="thead">$folder_name</span></TD>
+		<TD nowrap><span class="thead">$volume_name</span></TD>
+		<TD nowrap><span class="thead">$total_sapce</span></TD>
+		<TD nowrap><span class="thead">$free_space</span></TD>
+	</TR>
+<!--show folder -->
+<script>
+
+var shared_folder_num=0;
+var nopassword_num=0;
+i=0;	
+for( j=0; j<list_disk_num; j++){		
+	var fd_num_in_disk = eval('fd_num_in_disk' + j );		
+	for( t=0; t<fd_num_in_disk; t++){		
+		var allaccess = eval('readycloud_access'+i);
+		var cloudarray=allaccess.split(':');
+		var cloudread="";
+		var cloudwrite="";
+		if( cloudarray.length ==2 )
+		{
+			rarr=cloudarray[0].split(',');
+			for(cr=0; cr<rarr.length; cr++)
+				if(rarr[cr] != "")
+					cloudread = cloudread +",<br/> "+ rarr[cr]+ "(ReadyCloud)"
+						carr=cloudarray[1].split(',');
+			for(cc=0; cc<carr.length; cc++)
+				if(carr[cc] != "")
+					cloudwrite = cloudwrite +",<br/> "+carr[cc] + "(ReadyCloud)"
+		}
+
+                var str = eval('usb_sharefolder' + i);
+		var volname_str = eval('usb_sharefolder_volname' + i);
+		volname_str = volname_str.replace( / /g,"&nbsp;");
+//              str = str.replace( / /g,"&nbsp;");
+                each_info = str.split('*');
+		if(each_info[4] != "$usb_not_share")
+		{//bug 24686:No read access with "All - no password" in any shared folder, it must pop up dialog
+			shared_folder_num++;
+			if(each_info[5] == "$usb_access_no_pass")
+				nopassword_num++;
+		}
+
+                show_folderName = each_info[4].replace( / /g,"&nbsp;");
+		if( i%2== 0 )
+			document.write("<TR class=\"odd_line\">");
+		else
+			document.write("<TR class=\"even_line\">");
+               // document.write('<TR>');
+		var foldername = each_info[0].replace(/\//g,"\\").replace( / /g,"&nbsp;");
+		document.write('<TD nowrap><input type="radio" name="Available_USB_sel" id="share_folder_select'+(i+1)+'" value="'+i+'"></TD>');
+                //displayName=each_info[0].replace(/\//g,"\\\\");
+				
+		if( each_info[9] == "Not Shared" )
+			document.write('<TD nowrap>'+show_folderName+'</TD>');
+		else{
+			/*Bug 24943: follow spec 2.0 12.8.2, all displayed as \\readyshare\.. */
+			if(isIE())//bug 25057:USB share name string not in one line with others,so delete <pre>
+                                document.write('<TD nowrap><a class="linktype" href="\\\\'+show_deviceName+'\\'+each_info[4]+'" target="_blank">\\\\'+show_deviceName+'\\'+show_folderName+'</a></TD>');
+                        else if( get_browser() == "Safari" )
+				document.write('<TD nowrap><a class="linktype" href="smb://'+show_lanip+'\\'+each_info[4]+'">\\\\'+show_deviceName+'\\'+show_folderName+'</a></TD>');
+			else
+                                document.write('<TD nowrap>\\\\'+show_deviceName+'\\'+show_folderName+'</TD>');
+		}
+		if (each_info[5] == "$usb_access_admin")
+			each_info[5] = each_info[5] + cloudread;
+		if (each_info[6] == "$usb_access_admin")
+			each_info[6] = each_info[6] + cloudwrite;
+
+		if( t%2== 0 )
+		{
+			document.write('<TD nowrap >'+each_info[5]+'</TD>');
+			document.write('<TD nowrap >'+each_info[6]+'</TD>');
+			//document.write('<TD nowrap >'+'<pre>'+each_info[8]+':'+foldername+'</TD>'+'</pre>');
+			document.write('<TD nowrap >'+each_info[8]+':'+foldername+'</TD>');
+		}
+                else
+		{
+			document.write('<TD nowrap >'+each_info[5]+'</TD>');
+			document.write('<TD nowrap >'+each_info[6]+'</TD>');
+			// document.write('<TD nowrap >'+'<pre>'+each_info[8]+':'+foldername+'</TD>'+'</pre>');
+			document.write('<TD nowrap >'+each_info[8]+':'+foldername+'</TD>');
+		}
+		//if( t == 0 ){
+			document.write('<TD nowrap >'+volname_str+'</TD>');  //rowspan='+fd_num_in_disk+'
+			document.write('<TD nowrap >'+each_info[2]+'</TD>');  //rowspan='+fd_num_in_disk+'
+			document.write('<TD nowrap >'+each_info[3]+'</TD>');  //rowspan='+fd_num_in_disk+'
+  	        //        }
+                document.write('</TR>');
+		i++;		
+	}
+}		
+</script>
+	
+	
+	</TABLE>
+</TD></TR>
+<TR><TD colspan=2>
+<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if(disk_num == 0 || master=="guest")
+		document.write('<input class="long_add_gray_bt" type="button" name="Creat" id="creat" value=" $create_network_folder " disabled >&nbsp;');
+	else
+		document.write('<input class="long_add_bt" type="button" name="Creat" id="creat" value=" $create_network_folder " onClick=\'creat_folder();\'>&nbsp;');
+
+	if(folder_number == 0 || master=="guest")
+		document.write('<input class="edit_gray_bt" type="button" name="Edit" id="edit" value="  $edit_mark  " disabled >&nbsp;');
+	else
+		document.write('<input class="edit_bt" type="button" name="Edit" id="edit" value="  $edit_mark  " onClick=\'edit_folder();\'>&nbsp;');
+		
+	if(folder_number == not_shared_number || master=="guest")
+		document.write('<input class="delete_gray_bt" type="button" name="Delete" id="delete"  value=" $delete_mark " disabled >');
+	else
+		document.write('<input class="delete_bt" type="button" name="Delete" id="delete" value=" $delete_mark " onClick=\'delete_folder();\'>');
+</script>		
+	
+	<!--input class="delete_bt" type="button" name="btDelete" value=" $delete_mark " onClick='delete_folder();'-->
+</TD></TR>
+<TR><TD colspan=2><img src=/liteblue.gif width=100%% height=12></TD></TR>
+<script>
+	if(top.readycloud_flag)
+		document.write("<TR><TD colspan=2>$readycloud_note</TD></TR>");
+</script>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD colspan=2>
+<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if(device_num == 0 || master=="guest")
+		document.write('<input class="long_common_gray_bt" type="button" name="safely_remove" id="safely_remove" value=" $safely_remove_device " disabled >');
+	else
+		document.write('<input class="long_common_bt" type="button" name="safely_remove" id="safely_remove" value=" $safely_remove_device " onClick=\'remove_disk(document.forms[0]);\'>');
+</script>	
+<!--input class="long_common_bt" type="button" name="safeRemove" value=" $safely_remove_device " onClick='remove_disk(document.forms[0]);'-->
+</TD></TR>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD colspan=2><img src=/liteblue.gif width=100%% height=12></TD></TR>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+</TABLE>
+</div>
+<% help_box("0","_USB_advance") %>
+</FORM>
+</BODY>
+</HTML>
+
+
+
+
+
+
+
+
+
+
+

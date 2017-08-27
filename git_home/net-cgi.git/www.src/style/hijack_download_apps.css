@@ -1,0 +1,10 @@
+.downloadChoice_divs { height:150px; width:100%; margin:30px auto 0px auto; }
+
+#allBtns_div { width:500px;  margin:10px auto;}
+
+#btnsContainer_div1 { width:30%; float:left;right:20% }
+#btnsContainer_div2 { width:30%; float:right; left:20%}
+#btnsContainer_div3 { width:30%; float:right; left:30%}
+#btnsContainer_div4 { float:right; margin-right: 10%; }
+.wizard_words_div .waiting_img_div { height:40px; width:100%; margin:40px auto }
+

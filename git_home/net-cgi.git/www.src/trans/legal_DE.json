@@ -1,0 +1,18 @@
+{
+    "legal":
+    {
+        "Update_License" :  [
+                                "Bitte helfen Sie uns bei der Leistungsverbesserung von Streamboost und unserer Zusatzprodukten und Dienstleistungen. ",
+                                "Wenn Sie ein Kästchen abhaken, sendet uns Streamboost anonym zusammengefasst Stream-Informationen und dazugehörige",
+                                "Analysen über Ihren Router. Wir schätzen Ihre Hilfe.<br><br>Wenn Sie sich bereiterklären, uns bei der Verbesserung",
+                                " von Streamboost und unseren Zusatzprodukten und Diensten zu helfen, bietet der StreamBoost-aktivierte Router ",
+                                "Qualcomm Atheros Inc. mit anonymen, zusammengefassten Stream-Informationen von Ihrem Router. Anonyme ",
+                                "Stream-Informationen können folgendes umfassen:  Datenpakete, die durch den Router gestreamt wurden, verfügbare Bandbreite",
+                                "Messungen und Überzeichnungsbedingungen (d.h. wie viel der angeforderten Bandbreite ",
+                                "die verfügbare Bandbreite überschreitet), verbundene Geräte und der mit diesen Geräten verbundene Stream sowie",
+                                "Statistiken der Anwendungsnutzung.  Im Gegenzug sagt Qualcomm Atheros zu, dass Ihr StreamBoost-aktivierter ",
+                                "Router immer über die neuesten Stream-Definitionen verfügt."
+                            ]
+    }
+}
+

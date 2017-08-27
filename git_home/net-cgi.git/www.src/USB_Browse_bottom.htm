@@ -1,0 +1,60 @@
+<% http_header("style/form.css", "/funcs.js", "/USB_NETStorage.js") %>
+<% nobody_header("USB_Browse_bottom.htm", "browser_apply") %>
+<script>
+<!--
+<% change_folder_path() %>
+
+function click_ok()
+{
+	
+	var str=document.forms[0].folder_path.value;
+	var info=str.split("/");
+	var root_path="/"+info[1]+"/"+info[2]+"";
+	for(i=0;i<sda_num;i++){
+		var sda_str = eval('sda_U' + i);
+		each_info = sda_str.split('*');
+		
+		if( root_path == each_info[0]){
+			root_path=""+each_info[1]+":";
+		}
+	}
+	str=root_path;
+	for(j=3;j<info.length;j++){
+		str=""+str+"/"+info[j]+"";
+	}
+	var path=str.replace(/\//g,"\\");
+
+	top.window.opener.document.forms[0].folder.value=path;
+	closeBrowserwindow();/* to fix bug 24964 */
+
+//16168
+//16168
+}
+-->
+
+</script>
+<input type=hidden name=folder_path value="">
+<table width=100%% boder=0 cellpadding=0 sellspacing=3>
+<!--16168 -->
+<TR><TD colspan=2  align=center>
+	<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if( master=="admin" )
+		document.write('<input class="apply_bt" type="button" name="ok" value="$ok_mark" onclick="click_ok();">&nbsp;');
+	else
+		 document.write('<input class="apply1_bt" type="button" name="ok" value="$ok_mark" disabled>&nbsp;');
+	</script>
+</TD></TR>
+<TR><TD colspan=2><img src=/liteblue.gif width=100%% height=12></TD></TR>
+<TR><TD colspan=2 align=center>
+<input class="delete_bt" type="button" name="close" value="  $close_win_mark" onClick='closeBrowserwindow();'>
+</TD></TR>  
+</table>
+</form>
+<script>
+<% show_tree() %>
+var info=node1.split("*");
+document.forms[0].folder_path.value=info[2].replace(/&nbsp;/g," ").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+</script>
+</body>
+</html>

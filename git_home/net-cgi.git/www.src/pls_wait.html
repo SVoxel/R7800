@@ -1,0 +1,46 @@
+<html>
+<head>
+<meta http-equiv="Pragma" Content="no-cache" />
+<meta HTTP-equiv="Cache-Control" content="no-cache" />
+<meta http-equiv="content-type" content="text/html; charset=<% lang_charset() %>" />
+<meta http-equiv="Expires" Content="0" />
+<title></title>
+<link rel="stylesheet" href="style/form.css" />
+<script language="javascript" type="text/javascript" src="funcs.js"></script>
+<script type="text/javascript">
+var pchar = "||"; // progress char
+var maxchars = 45; 
+var delay_time = 2000; // msecs
+var charcount = 0; 
+var is_in_cd_less = isCDLESS();
+function updateProgress()
+{
+	var cf = document.forms[0];
+	if (charcount < maxchars)
+	{
+		charcount ++;
+		cf.progress.value = makeStr(charcount,pchar);
+		setTimeout("updateProgress()",delay_time);
+	}
+	else
+	{//fix bug 28926
+		if ( is_in_cd_less || isWIZARD() )
+			toInternet();
+		else
+			top.location.href="adv_index.htm";
+	}
+}
+</script>
+</head>
+<body bgcolor="#ffffff" onLoad="updateProgress()">
+<form>
+<table border="0" cellpadding="0" cellspacing="3" width="100%">
+<tr>
+	<td align="left"><h1><script>printText(parent.bh_update_head, "$update_head");</script></h1></td>
+	<td nowrap><input type="text" name="progress" class="reboot1bar" size="60"  value=""></td>
+</tr>
+<tr><td colspan="2"><img src="/liteblue.gif" width=100% height="12"></td></tr>
+</table>
+</form>
+</body>
+</html>

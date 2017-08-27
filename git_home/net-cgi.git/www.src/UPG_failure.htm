@@ -1,0 +1,33 @@
+<% http_header("style/form.css", "/funcs.js") %>
+
+<META http-equiv="refresh" content="5; url=UPG_upgrade.htm">
+<body>
+<div class="page_title">$failure_head</div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+
+<TR align=center><TD><B>
+<script>
+var status = "<% upgrade_status() %>";
+if (status == "10006")
+	document.write("$download_confile_fail");
+else if (status == "10000")
+	document.write("$download_confile_fail");	
+else if (status == "10007")
+	document.write("$incorrect_firmware");
+else
+	document.write("$incorrect_firmware");
+//	document.write("$upg_error_img");	
+</script>
+</B></TD></TR>
+
+$bluebar
+
+<TR align=center><TD nowrap>$few_second</TD></TR> 
+</TABLE>
+</div>
+
+
+</BODY>
+</HTML>

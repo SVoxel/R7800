@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/hijack_02_genieHelp.css" />
+<script language="javascript" type="text/javascript" src="funcs.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_ap_detect_01_ap_02.js"></script>
+<% hijack_language() %>
+</head>
+
+<body onLoad="loadvalue();">
+<script>
+var	ts = "<% hijack_get_timestamp("wl_ssid_password") %>";
+<% list_access_control_device() %>
+var login_mac ="<% cfg_get("wan_remote_mac") %>";	
+var ap_pre_link = "<% cfg_get("ap_pre_link") %>";
+
+function loadvalue()
+{	
+	var form = document.forms[0];
+	var wl_login = is_wireless_login();
+	
+	var btns_div1 = document.getElementById("btnsContainer_div1");
+	if( master == "admin" )
+	btns_div1.onclick = function()
+	{
+		return goback();
+	}
+	
+	var btns_div2 = document.getElementById("btnsContainer_div2");
+	if( master == "admin" )
+	btns_div2.onclick = function()
+	{
+		return goto_next(form, wl_login);
+	}
+}
+
+function is_wireless_login()
+{
+	var wl_login_flag = 1;
+
+	if (login_mac == "")
+	{
+		var str_dev_1 = access_control_device0;
+		var str_dev_info_1 = str_dev_1.split("*");
+		
+		if(str_dev_info_1[3] == "wired")
+			wl_login_flag = 0;
+	}
+	else
+	{
+		for(i=0; i<access_control_device_num; i++)
+		{
+			var str_dev = eval ( 'access_control_device' + i );
+			var str_dev_info = str_dev.split("*");
+			
+			if((str_dev_info[2] == login_mac.toUpperCase()) && str_dev_info[3] == "wired")
+				wl_login_flag = 0;
+		}
+	}
+	return wl_login_flag;
+}
+	
+function show_yes_or_no_div(cf)
+{	
+	if(cf.use_ap[0].checked)
+	{	
+		document.getElementById("ap_yes_content").style.display="";
+		document.getElementById("ap_yes_content").style.height="400px"
+		document.getElementById("ap_no_content").style.display="none";
+	}
+	if (cf.use_ap[1].checked)
+	{
+		document.getElementById("ap_yes_content").style.display="none";		
+		document.getElementById("ap_no_content").style.display="";
+		document.getElementById("ap_no_content").style.height="140px";
+	}
+
+}
+</script>
+<form method="" action="" target="_self">
+<input type="hidden" name="submit_flag" value="">
+<input type="hidden" name="wl_sec_wpaphrase_len">
+<input type="hidden" name="wl_hidden_wpa_psk">
+<input type="hidden" name="wpas_press_flag" value=0>
+<input type="hidden" name="wla_sec_wpaphrase_len">
+<input type="hidden" name="wla_hidden_wpa_psk">
+<input type="hidden" name="wla_wpas_press_flag" value=0>
+<input type="hidden" name="router_ap_flag" value=1>
+<input type="hidden" name="ap_pre_link" value="0">
+	<div class="wizard_content_div">
+		<div class="ap_words_div">
+			<h1><script>document.write(bh_ap_mode_short);</script></h1>
+			<p><script>document.write(bh_ap_mode_tips);</script></p>
+			<p><b><script>document.write(bh_mode_query);</script></p></b>			
+			<div id="choices_div" class="radio_div">
+				<input type="radio" name="use_ap" onclick="show_yes_or_no_div(document.forms[0]);" /><script>document.write(bh_yes_mark);</script>
+				&nbsp;&nbsp;
+				<input type="radio" name="use_ap" onclick="show_yes_or_no_div(document.forms[0]);" /> <script>document.write(bh_no_mark);</script>
+			</div>
+		</div>
+		
+		<div id="ap_yes_content" class="ap_doc_div" style="display:none">
+			<p><b><script>document.write(bh_mode_yes_tips);</script></b></p>	
+			<div class="img_left"><img src="image/G5.gif"/></div>
+			<div class="img_right"><img src="image/G6.gif"/></div>
+				
+			<div class="left_div"><script>document.write(bh_wl_ssid_name);</script></div>
+			<div class="right_div"><input id="ESSID" type="text" maxlength="32" size="20" value="" name="wl_ssid"></div>
+			<div class="left_div">
+				<script>document.write(bh_wl_password_2);</script>
+			</div>
+			<div class="right_div">
+				<input id="textWpaPwdPhrase" type="text" onkeypress="document.forms[0].wpas_press_flag.value=1" onfocus="document.forms[0].wpas_press_flag.value=1" value="" name="passphrase" maxlength="64" autocomplete="off" size="20">
+			</div>
+			<div class="left_div"><script>document.write(bh_wla_ssid_name);</script>
+			</div>
+			<div class="right_div"><input id="ESSID_an" type="text" maxlength="32" size="20" value="" name="wla_ssid">
+			</div>
+			<div class="left_div"><script>document.write(bh_wla_password_2);</script>
+			</div>
+			<div class="right_div">
+				<input type="text" id="textWpaPwdPhrase" size="20" autocomplete="off" maxlength="64" name="passphrase_an" value="" onFocus="document.forms[0].wla_wpas_press_flag.value=1" onKeyPress="document.forms[0].wla_wpas_press_flag.value=1">
+			</div>
+			
+		</div>
+		
+		<div id="ap_no_content" class="ap_doc_div" style="display:none">
+			<p><b><script>document.write(bh_mode_no_tips);</script></b></p>	
+			<div class="left_div">
+				<script>document.write("2.4GHz " + bh_wirless_name);</script>
+			</div>
+			<div class="right_div"><% cfg_get_ssid_html("wl_ssid") %></div>
+			<div class="left_div">
+				<script>document.write("5GHz " + bh_wirless_name);</script>
+			</div>
+			<div class="right_div"><% cfg_get_ssid_html("wla_ssid") %></div>	
+			<div class="left_div">
+				<script>document.write(bh_wl_password);</script>
+			</div>
+			<div class="right_div"><% passphrase_bg_msg("wl_wpas_spk")%></div>	
+		</div>
+
+		<div id="allBtns_div" class="wizard_buttons_div" align="center">
+			<div id="btnsContainer_div1" class="buttons_img_div" align="center">
+			<script>
+				var master="<% cfg_get("http_loginname") %>";
+				if( master == "admin" )
+					document.write('<img src="image/ca-little-purple-button.gif" />');
+				else
+					document.write('<img src="image/ca-little-grey-button.png" />');
+			</script>
+			<div class="buttons_words_div"><script>document.write(bh_back_mark);</script></div>
+			</div>
+		
+			<div class="buttons_split"></div>
+			<div id="btnsContainer_div2" class="buttons_img_div" align="center">
+			<script>
+				var master="<% cfg_get("http_loginname") %>";
+				if( master == "admin" )
+					document.write('<img src="image/ca-little-purple-button.gif" />');
+				else
+					document.write('<img src="image/ca-little-grey-button.png" />');
+			</script>
+				<div class="buttons_words_div"><script>document.write(bh_next_mark);</script></div>
+			</div>
+		</div>
+
+	</div>
+</form>
+</body>
+</html>

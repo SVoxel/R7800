@@ -1,0 +1,951 @@
+<% echo_set("WLG_adv.htm", "/tmp/p_ft") %>
+<% http_header("style/form.css", "/funcs.js", "/wlan_adv.js", "/wadv_sechdule.js", "/advanced.js", "/basic.js") %>
+<% body_header("_wladv", "WLG_adv.htm", "wlan_adv") %>
+<div class="page_title">$wlan_adv_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+var netgear_region="<% get_firmware_region() %>";
+var valid_region = "<% valid_firmware_region() %>";
+valid_region = parseInt(valid_region, 10);
+if(master=="admin" && valid_region == 1)
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'WLG_adv.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onClick="return checkadv(document.forms[0]);"></TD>');
+else
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="button" name="Apply" id="apply" value="$apply_mark" disabled></TD>');
+        
+</script>
+</TR>
+</TABLE>
+
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<script>
+<% save_timestamp("wlan_adv", "wireless_schedule_select_to_edit", "wireless_schedule_delete", "wireless_schedule_delete_an") %>
+var ts="<% cfg_get("wlan_adv") %>";
+
+var gui_region="<% cfg_get("GUI_Region") %>";
+if(netgear_region == "")
+	netgear_region = "WW";
+
+//var netgear_region=top.netgear_region;
+var country="<% cfg_get("wl_country") %>";
+var wla_channel="<% cfg_get("wla_channel") %>";
+var wps_progress_status="<% wps_process_status() %>";
+
+//wireless schedule
+var ntp_updated = "<% access_file("/tmp/ntp_updated") %>";
+<% wireless_schedule_items() %>
+<% wireless_schedule_items_a() %>
+var enable_schedule = "<% cfg_get("wladv_schedule_enable") %>";// b/g/n
+var enalbe_shcedule_an = "<% cfg_get("wladv_schedule_enable_a") %>";// a/n
+
+//For BUG 33420 to show transmit power control 63% and 33%
+var txctl_63_33_flag = parent.txctl_63_33_flag;
+var super_wifi_flag = parent.super_wifi_flag;
+
+var wl_tpscale= '<% cfg_get("wl_tpscale") %>';
+var wla_tpscale= '<% cfg_get("wla_tpscale") %>';
+
+// b/g/n
+var old_wds_endis_fun="<% cfg_get("wds_endis_fun") %>";
+var old_wla_wds_endis_fun="<% cfg_get("wla_wds_endis_fun") %>";
+var old_wds_repeater_basic="<% cfg_get("wds_repeater_basic") %>";
+var old_endis_wl_radio='<% enable_ap_orNot("bgn") %>';
+var con_endis_wl_radio='<% cfg_get("endis_wl_radio") %>';
+var security_mode='<% cfg_get("wl_sectype") %>';
+var wlan_adv_wpspin="<% pin_num() %>";
+var wlendis_pin='<% cfg_get("endis_pin") %>';
+var wlendis_pin_tmp='<% cfg_get("wps_lock_down") %>';
+var wps_status='<% cfg_get("wps_status") %>';
+var wla_wps_status='<% cfg_get("wla_wps_status") %>';
+var endis_wl_wmm="<% cfg_get("endis_wl_wmm") %>";
+var wl_mode="<% cfg_get("wl_simple_mode") %>";
+var wla_mode="<% cfg_get("wla_simple_mode") %>";
+
+var wps_alert="<% cfg_get("wps_alert") %>";
+<% cfg_set("wps_alert", "0") %>
+
+var hw_btn_state='<% cfg_get("wl_hw_btn_state") %>';
+
+// a/n
+var old_endis_wla_radio='<% enable_ap_orNot("an") %>';
+var con_endis_wla_radio='<% cfg_get("endis_wla_radio") %>';
+var endis_wla_wmm="<% cfg_get("endis_wla_wmm") %>";
+var an_router_flag = parent.an_router_flag;
+var ac_router_flag = parent.ac_router_flag;
+var qos_router_flag = parent.qos_router_flag;
+var transmit_router_flag = parent.transmit_router_flag;
+var guest_router_flag=parent.guest_router_flag;
+var apmode_flag=parent.apmode_flag;
+var adv_coexistence_flag=top.adv_coexistence_flag;
+var qtn_api_statistics_flag = parent.qtn_api_statistics_flag;
+
+var wds_support_wpa = top.wds_support_wpa;
+var pr_flag = ( netgear_region.toUpperCase() == "PR") ? 1 : 0;
+var pr_wds_support_wpa=( wds_support_wpa == 1  && pr_flag == 1) ? 1 : 0;
+
+var wps_protect='<% cfg_get("wps_pin_attack_check") %>';
+var enable_ap_flag="<% cfg_get("ap_mode") %>";//bug 22880 according to the page 128 of spec 2.0,add AP mode
+var dyn_get_ip_flag="<% cfg_get("ap_ether_ip_assign") %>";
+var dyn_get_dns_flag="<% cfg_get("ap_ether_dns_assign") %>";
+
+//Enable 20/40 MHz Coexistence: 0: enable, 1: disabled
+var wl_disablecoext="<% cfg_get("wl_disablecoext") %>";
+var endis_beamforming = "<% cfg_get("wla_implicit_bf") %>";
+var enable_ht160 = "<% cfg_get("wla_ht160") %>";
+var enable_mu="<% cfg_get("wla_mu_mimo") %>";
+
+var super_wifi_value="<% cfg_get("wl_super_wifi") %>";
+var super_wifi_value_an="<% cfg_get("wla_super_wifi") %>";
+var enable_atf = "<% cfg_get("atf_enable") %>";
+
+function power_display()
+{
+	var form = document.forms[0];
+	if( qtn_api_statistics_flag == 1 )
+	{
+		if(form.enable_implicit_beamforming.checked == false && country != "11")
+			document.getElementById("power_ctrl_an").style.display="";
+		if(form.enable_implicit_beamforming.checked == true)
+			document.getElementById("power_ctrl_an").style.display="none";
+	}		
+}
+function wps_protection_display()
+{
+	var cf=document.forms[0];
+	if ( cf.pin_disable.checked == false || cf.pin_disable.disabled == true)
+		document.getElementById("wladv_appin_cfg").style.display="none";
+	else
+		document.getElementById("wladv_appin_cfg").style.display="";
+	if (cf.prevent_pin_compromise.checked == false)
+		cf.pin_attack_count.disabled = true;
+	else
+		cf.pin_attack_count.disabled = false;
+}
+
+function change_web_format()
+{
+
+	if( adv_coexistence_flag == 1 )
+		document.getElementById("coexistence_line").style.display="";
+        else
+                document.getElementById("coexistence_line").style.display="none";
+
+		if( qos_router_flag == 0 )
+                document.getElementById("wmm_qos").style.display="";
+        else
+                document.getElementById("wmm_qos").style.display="none";
+
+	if( transmit_router_flag == 1 )
+		document.getElementById("power_ctrl_bgn").style.display="";
+	else
+		document.getElementById("power_ctrl_bgn").style.display="none";
+		
+		document.getElementById("schedule_bgn_enable").style.display="";
+		document.getElementById("schedule_bgn_head").style.display="";
+		document.getElementById("schedule_bgn_table").style.display="";
+		document.getElementById("schedule_bgn_button").style.display="";
+	if( wl_mode == "1" )//54167
+		document.getElementById("frag_bgn").style.display = "";
+	else
+		document.getElementById("frag_bgn").style.display = "none";
+
+	/* a/n */
+	if( an_router_flag == 1 ){
+		document.getElementById("adv_wlan_an").style.display="";
+		document.getElementById("ap_an").style.display="";
+		document.getElementById("cts_rts_an").style.display="";
+		document.getElementById("pream_an").style.display="";
+		document.getElementById("blue_an").style.display="";
+		if(top.fragment_an_flag == 1)
+			document.getElementById("fragment_an").style.display="";
+		else
+			document.getElementById("fragment_an").style.display="none";
+	        if( qos_router_flag == 0 )
+	                document.getElementById("wmm_qos_an").style.display="";
+	        else
+        	        document.getElementById("wmm_qos_an").style.display="none";
+		if( transmit_router_flag == 1 )
+			document.getElementById("power_ctrl_an").style.display="";
+		else
+			document.getElementById("power_ctrl_an").style.display="none";
+
+		if( qtn_api_statistics_flag == 1 )
+		{
+			if(endis_beamforming == "1" || country == "11")
+				document.getElementById("power_ctrl_an").style.display="none";
+		}
+		else
+			document.getElementById("power_ctrl_an").style.display="";		
+		/*wireless schedule*/
+			document.getElementById("schedule_an_enable").style.display="";
+			document.getElementById("schedule_an_head").style.display="";
+			document.getElementById("schedule_an_table").style.display="";
+			document.getElementById("schedule_an_button").style.display="";
+	}
+	else{
+		document.getElementById("adv_wlan_an").style.display="none";
+		document.getElementById("ap_an").style.display="none";
+		document.getElementById("fragment_an").style.display="none";
+		document.getElementById("cts_rts_an").style.display="none";
+		document.getElementById("pream_an").style.display="none";
+		document.getElementById("blue_an").style.display="none";
+		document.getElementById("wmm_qos_an").style.display="none";
+		document.getElementById("power_ctrl_an").style.display="none";
+
+		/*wireless schedule*/
+		document.getElementById("schedule_an_enable").style.display="none";
+		document.getElementById("schedule_an_head").style.display="none";
+		document.getElementById("schedule_an_table").style.display="none";
+		document.getElementById("schedule_an_button").style.display="none";
+
+	}
+
+	if(top.access_control_flag == 0 )
+	{
+		document.getElementById("wlan_access").style.display="";
+		document.getElementById("ap_bluebar").style.display="";
+	}
+	else
+	{
+		document.getElementById("wlan_access").style.display="none";
+		document.getElementById("ap_bluebar").style.display="none";
+	}
+	if(top.airtime_fairness_flag == 1)
+		document.getElementById("wladv_atf").style.display="";	
+	else
+		document.getElementById("wladv_atf").style.display="none";
+	if(top.support_ht160_flag == 1)
+		document.getElementById("wladv_ht160").style.display="";
+	else
+		document.getElementById("wladv_ht160").style.display="none";
+	if(top.mu_mimo_flag == 1)
+		document.getElementById("wladv_mu").style.display="";
+	else
+		document.getElementById("wladv_mu").style.display="none";
+}
+
+function enable_schedule_button()
+{
+	var cf = document.forms[0];
+	
+    if(cf.enable_ap.checked && ntp_updated=="1")
+	{
+	cf.wifi_onoff.disabled = false;
+	document.getElementById("add_sche").disabled = false;
+	document.getElementById("edit_sche").disabled = false;
+	if(master=="guest")
+		document.getElementById("del_sche").disabled = true;
+	else
+		document.getElementById("del_sche").disabled = false;
+	}	
+	else
+	{	
+	cf.wifi_onoff.disabled = true;
+	document.getElementById("add_sche").disabled = true;
+	document.getElementById("edit_sche").disabled = true;
+		
+	document.getElementById("del_sche").disabled = true;
+	}
+
+    if(cf.enable_ap_an.checked && ntp_updated=="1")
+	{
+		cf.wifi_onoff_an.disabled = false;
+		document.getElementById("add_sche_an").disabled = false;
+		document.getElementById("edit_sche_an").disabled = false;
+		if(master=="guest")
+			document.getElementById("del_sche_an").disabled = true;
+		else
+			document.getElementById("del_sche_an").disabled = false;
+	}
+	else
+	{
+	cf.wifi_onoff_an.disabled = true;
+	document.getElementById("add_sche_an").disabled = true;
+	document.getElementById("edit_sche_an").disabled = true;
+	document.getElementById("del_sche_an").disabled = true;
+	}
+}
+
+
+function check_schedule_onoff()
+{	
+	
+	var cf = document.forms[0];
+	var i = 0;
+	var disable_flag, checked_flag;
+	
+	//bgn
+	if(cf.enable_ap.checked==false || ntp_updated=="0" || hw_btn_state == 'off')
+	{
+		disable_flag = true;
+	   getObj('schedule_bgn_enable').color = 'gray'; 
+	   
+	}
+	else
+	{
+		disable_flag = false;
+		getObj('schedule_bgn_enable').color = 'black';
+		
+		
+    }
+	cf.wifi_onoff.disabled = disable_flag;
+	document.getElementById("add_sche").disabled = disable_flag;
+	document.getElementById("edit_sche").disabled = disable_flag;
+	if(master=="guest")
+		document.getElementById("del_sche").disabled = true;
+	else
+		document.getElementById("del_sche").disabled = disable_flag;
+	
+
+	if(wireless_schedule_num > 1)
+	{
+		for(i=0; i<wireless_schedule_num; i++)
+		{
+			cf.ruleSelect_2g[i].disabled = disable_flag;			
+		}
+	}
+	else if(wireless_schedule_num >0)
+	{
+		cf.ruleSelect_2g.disabled = disable_flag;
+	}
+
+
+	//an
+	if(cf.enable_ap_an.checked==false || ntp_updated=="0" || hw_btn_state == 'off')
+	{
+                disable_flag = true;
+				getObj('schedule_an_enable').color = 'gray';
+	}
+	else
+	{
+                disable_flag = false;
+				getObj('schedule_an_enable').color = 'black';
+	}
+	cf.wifi_onoff_an.disabled = disable_flag;
+	document.getElementById("add_sche_an").disabled = disable_flag;
+	document.getElementById("edit_sche_an").disabled = disable_flag;
+	if(master=="guest")
+		document.getElementById("del_sche_an").disabled = true;
+	else
+		document.getElementById("del_sche_an").disabled = disable_flag;
+
+	if(wireless_schedule_num_a > 1)
+	{
+		for(i=0; i<wireless_schedule_num_a; i++)
+		{
+			cf.ruleSelect_5g[i].disabled = disable_flag;				
+		}
+	}
+	else if(wireless_schedule_num_a > 0)
+		cf.ruleSelect_5g.disabled = disable_flag;
+}
+
+function loadvalue()
+{
+	var form=document.forms[0];
+
+	top.enable_ap_flag="<% cfg_get("ap_mode") %>";	
+	//bug 29873 [Wireless]The GUI should show wireless radio as checked when user enable wireless router radio
+	//menu_color_change('wladv');
+	change_web_format();
+	//apmode_display();
+	
+	//form.device_name.value="<!--% cfg_sed("ap_netbiosname") %-->";
+
+	top.enabled_wps="<% wps_menu() %>";
+	top.enabled_wds="<% wds_enable() %>";
+        if( top.location.href.indexOf("adv_index.htm") != -1 )
+                menu_color_change('wladv');
+        else //bug23925 in basic page: if the radio is Off, the wireless button will link to wladv page.
+	{
+		top.endis_wl_radio=old_endis_wl_radio;
+		top.endis_wla_radio=old_endis_wla_radio;
+		basic_menu_color_change('wireless');
+	}
+
+
+	var wlan_get_pream='<% cfg_get("wl_plcphdr") %>';
+	var wlan_get_pream_a='<% cfg_get("wla_plcphdr") %>';
+
+	if(wlan_get_pream == '2')
+		form.enable_shortpreamble[2].selected = true;
+	else if (wlan_get_pream == '1')
+		form.enable_shortpreamble[1].selected = true;
+	else
+		form.enable_shortpreamble[0].selected = true;
+	if(wlan_get_pream_a == '2')
+		form.enable_shortpreamble_an[2].selected = true;
+	else if(wlan_get_pream_a == '1')
+		form.enable_shortpreamble_an[1].selected = true;
+	else
+		form.enable_shortpreamble_an[0].selected = true;	
+
+	form.tx_power_ctrl.value='<% cfg_get("wl_tpscale") %>';
+	form.tx_power_ctrl_an.value='<% cfg_get("wla_tpscale") %>';
+	if(pr_flag ==1 && super_wifi_flag == 1)
+	{
+		if( super_wifi_value == "1" )
+			form.tx_power_ctrl.options[0].selected = true;
+		if(super_wifi_value_an == "1" )
+			form.tx_power_ctrl_an.options[0].selected = true;
+	}
+	form.rts.value = '<% cfg_get("wl_rts") %>';
+	form.rts_an.value = '<% cfg_get("wla_rts") %>';
+
+	form.frag.value = '<% cfg_get("wl_frag") %>';
+	form.frag_an.value = '<% cfg_get("wla_frag") %>';
+
+	if(con_endis_wl_radio=='1')
+		form.enable_ap.checked = true;
+	else
+		form.enable_ap.checked = false;
+	if(con_endis_wla_radio=='1')
+		form.enable_ap_an.checked = true;
+	else
+		form.enable_ap_an.checked = false;	
+
+	if( hw_btn_state == 'off' )
+	{
+		document.getElementById("ap_bgn").style.color='gray';
+		document.getElementById("ap_an").style.color='gray';
+		document.getElementById("hw_bgn").style.display="";
+		document.getElementById("hw_an").style.display="";
+		form.enable_ap.disabled=true;
+		form.enable_ap_an.disabled=true;
+	}
+
+		if( wl_disablecoext == "0" )
+			form.enable_coexistence.checked = true;
+		else
+			form.enable_coexistence.checked = false;
+//	}
+	//wireless schedule
+	if(enable_schedule == "1")
+		form.wifi_onoff.checked = true;
+	else
+		form.wifi_onoff.checked = false;
+
+	if(enalbe_shcedule_an == "1")
+		form.wifi_onoff_an.checked = true;
+	else
+		form.wifi_onoff_an.checked = false;
+
+	check_schedule_onoff();
+
+	if(endis_wl_wmm == "1")
+		form.wmm_enable.checked = true;
+	else
+		form.wmm_enable.checked = false;
+	if(endis_wla_wmm == "1")
+		form.wmm_enable_a.checked = true;
+	else
+		form.wmm_enable_a.checked = false;
+
+	if(endis_beamforming == "1")
+		form.enable_implicit_beamforming.checked = true;
+	else
+		form.enable_implicit_beamforming.checked = false;	
+	power_display();
+	
+	if(enable_atf == "1")
+		form.enable_atf.checked = true;
+	else
+		form.enable_atf.checked = false;
+
+	if((wlendis_pin == '1') || (wlendis_pin_tmp == '1'))
+	{
+		form.pin_disable.checked = false;
+	}
+	else
+	{
+		form.pin_disable.checked = true;
+	}
+	if(enable_mu == "1")
+		form.enable_mu.checked = true;
+	else
+		form.enable_mu.checked = false;
+	if(enable_ht160 == "1")
+		form.enable_ht160.checked = true;
+	else
+		form.enable_ht160.checked = false;
+
+	/*bug28582 There should be only one "Keep Existing Wireless Settings" option.*/
+	if (wps_status == '5' || (an_router_flag ==1 && wla_wps_status == '5'))
+		form.wsc_config.checked = true;
+	else if (wps_status == '1' || (an_router_flag ==1 && wla_wps_status == '1'))
+		form.wsc_config.checked = false;
+	/*if (wla_wps_status == '5')
+                form.wsc_config_a.checked = true;
+        else if (wla_wps_status == 1)
+                form.wsc_config_a.checked = false;*/
+	if ((wlendis_pin == '1') || (wlendis_pin_tmp == '1'))
+	{
+		getObj('wladv_pin').color = 'gray';
+	}
+
+	if (wps_protect == '0')
+		form.prevent_pin_compromise.checked = false;
+	else
+		form.prevent_pin_compromise.checked = true;
+					
+	wps_protection_display();
+	if(top.enabled_wps == 0)   //33156
+	{
+		getObj('wladv_pin').color = 'gray';	
+		getObj('wladv_enable_wps').color = 'gray';
+		getObj('wladv_keep_exist').color = 'gray';	
+		//getObj('wlaadv_keep_exist').color = 'gray';
+		form.pin_disable.disabled=true;
+		form.wsc_config.disabled=true;		
+		//form.wsc_config_a.disabled=true;
+		getObj('wladv_appin_cfg').color = 'gray';
+		form.pin_attack_count.disabled = true;
+		form.prevent_pin_compromise.disabled = true;
+	}
+	if(!((country == 10 || country == 4) && (wla_mode != 1 && wla_mode != 2 && wla_mode != 7 && wla_mode != 8)))   
+        {
+                getObj('wladv_ht160').color = 'gray';
+                form.enable_ht160.disabled = true;
+        }
+
+	showWps_alert();
+	if(valid_region != 1)
+	{
+		grayoutElements("body", "A", "input", "select");
+		disableElements("input", "select");
+	}
+}
+
+function transmit_select(form)
+{
+       if( pr_flag ==1 && super_wifi_flag == 1)
+               if(form.tx_power_ctrl.options[0].selected == true && super_wifi_value != "1")
+                       if(!confirm("$super_wifi_warn"))
+				form.tx_power_ctrl.value='<% cfg_get("wl_tpscale") %>';
+
+}
+
+function transmit_select_an(form)
+{
+       if( pr_flag ==1 && super_wifi_flag == 1)
+               if(form.tx_power_ctrl_an.options[0].selected == true && super_wifi_value_an != "1")
+                       if(!confirm("$super_wifi_warn"))
+                                form.tx_power_ctrl_an.value='<% cfg_get("wla_tpscale") %>';
+
+}
+</script>
+<input type="hidden" name="wl_rts">
+<input type="hidden" name="wl_frag">
+<input type="hidden" name="wl_enable_shortpreamble">
+<input type="hidden" name="wl_tx_ctrl">
+<input type="hidden" name="wl_enable_router" value="ignore">
+<input type="hidden" name="endis_pin" value=1>
+<input type="hidden" name="hid_protect_enable">
+
+<input type="hidden" name="hid_super_wifi" value="0">
+<input type="hidden" name="hid_super_wifi_an" value="0">
+<input type="hidden" name="wla_rts">
+<input type="hidden" name="wla_frag">
+<input type="hidden" name="wla_enable_shortpreamble">
+<input type="hidden" name="wla_tx_ctrl">
+<input type="hidden" name="wla_enable_router" value="ignore">
+
+<input type="hidden" name="wds_change_ip">
+<input type="hidden" name="enable_router" value="ignore">
+<input type="hidden" name="enable_ssid_broadcast" value="ignore">
+<input type="hidden" name="endis_wsc_config" value=5>
+<input type="hidden" name="endis_wsc_config_a" value=5>
+
+<input type="hidden" name="wladv_endis_wmm">
+<input type="hidden" name="wladv_endis_wmm_a">
+<!--input type="hidden" name="hid_enable_apmode"-->
+<input type="hidden" name="hid_dyn_get_ip">
+<!--input type="hidden" name="hid_dyn_get_dns"-->
+<input type="hidden" name="hid_ap_ipaddr">
+<input type="hidden" name="hid_ap_subnet">
+<input type="hidden" name="hid_ap_gateway">
+<input type="hidden" name="ap_dnsaddr1">
+<input type="hidden" name="ap_dnsaddr2">
+
+<input type="hidden" name="wladv_enable_schedule" value="">
+<input type="hidden" name="wladv_enable_schedule_a" value="">
+<input type="hidden" name="wladv_schedule_type" value="">
+<input type="hidden" name="wladv_schedule_edit_num" value="">
+<input type="hidden" name="wladv_schedule_delete_num" value="">
+<input type="hidden" name="hid_enable_coexist">
+<input type="hidden" name="hid_wla_beamforming">
+<input type="hidden" name="hid_wla_mu_mimo" value="0">
+<input type="hidden" name="hid_enable_atf" value="0">
+<input type="hidden" name="hid_wla_ht160">
+
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_wladv','settings')"><B>$adva_wlan_setting <script>if(an_router_flag == 1) document.write("(2.4GHz b/g/n)");</script> </B></A>
+	</TD>
+</TR>	
+<TR id="ap_bgn">
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="enable_ap" id="enable_ap" value="1" onClick="check_schedule_onoff();">$adva_wlan_router
+	</TD>
+</TR>
+<TR id="hw_bgn" style="color: gray; display:none">
+        <TD nowrap colspan=2>
+        $adva_wlan_hw_disabled
+        </TD>
+</TR>
+<TR id="coexistence_line">
+        <TD nowrap colspan=2>
+        <input type="checkbox" name="enable_coexistence" id="enable_coexistence">$adva_enable_coexistence
+        </TD>
+</TR>
+<TR id=wmm_qos style="display:none;">
+	<TD nowrap><input type="checkbox" name="wmm_enable" value="1">$qos_enable_wmm <script>if(an_router_flag == 1) document.write("(2.4GHz b/g/n)");</script></TD>
+</TR>
+<TR id="frag_bgn">
+	<TD nowrap>$wlan_adv_szFrag_11g</TD>
+	<TD nowrap>
+	<input type="text" maxLength=4 size=5 name="frag" id="frag" value="2346" onFocus="this.select();" onKeyPress="return getkey('num', event)" style="ime-mode:disabled;" ondrop="return false;" ondragenter="return false;" onpaste="return false;" onkeyup="this.value=this.value.replace(/\D/g, '');" />
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$wlan_adv_szRts_11g</TD>
+	<TD nowrap>
+	<input type="text" maxLength=4 size=5 name="rts" id="rts" value="2347" onFocus="this.select();" onKeyPress="return getkey('num', event)" style="ime-mode:disabled;" ondrop="return false;" ondragenter="return false;" onpaste="return false;" onkeyup="this.value=this.value.replace(/\D/g, '');" />
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$adva_wlan_pream</TD>
+	<TD nowrap>
+	<select name="enable_shortpreamble" id="enable_short_preamble">
+		<option value="automatic">$sec_auto</option>
+		<option value="Long Preamble">$adva_wlan_pream_long</option>
+		<option value="Short Preamble">$adva_wlan_pream_short</option>
+	</select>
+	</TD>
+</TR>
+<TR id=power_ctrl_bgn>
+	<TD nowrap>$adva_wlan_txctrl</TD>
+	<TD nowrap>
+	<select name="tx_power_ctrl" onChange='transmit_select(document.forms[0]);'>
+<script>
+        if( super_wifi_flag == 1 && pr_flag == 1)
+                document.write('<option value="super_wifi">Super WiFi</option>');
+</script>
+		<option value="100">100%</option>
+		<option value="75">75%</option>
+<!-- For BUG 33420 to show transmit power control 63% and 33% -->
+<script>
+	if( txctl_63_33_flag == 1)
+		document.write('<option value="63">63%</option>');
+</script>
+		<option value="50">50%</option>
+<script>
+	if( txctl_63_33_flag == 1)
+		document.write('<option value="33">33%</option>');
+</script>
+		<option value="25">25%</option>
+	</select>
+	</TD>
+</TR>
+<TR id="schedule_bgn_enable" ><TD colspan="2" nowrap ><input type="checkbox" name="wifi_onoff" id="wifi_sche_div1" value="1" onClick="enable_schedule_button();"><A tabindex=-1 href="javascript:loadhelp('_wladv','schedule')"><b>$adva_signal_schedule</b></A></TD></TR>
+<TR id="schedule_bgn_head"><TD colspan="2" nowrap><b>$adva_schedule_table_head</b></TD></TR>
+<TR id="schedule_bgn_table">
+	<TD colspan="2" nowrap>
+	<TABLE border="1" cellpadding="2" cellspacing="1" width="80%" align="left">
+	<TR>
+		<TD nowrap width="15%" align="left"><span class="subhead">$adva_period</span></TD>
+		<TD nowrap width="20%" align="left"><span class="subhead">$adva_start</span></TD>
+		<TD nowrap width="20%" align='left'><span class="subhead">$adva_end</span></TD>
+		<TD nowrap align="left"><span class="subhead">$adva_recur_pattern</span></TD>
+	</TR>
+	<script>
+	if(wireless_schedule_num > 0)
+	{
+		var i = 0, j = 0, n = 0;
+
+		for(i=1; i<=wireless_schedule_num; i++)
+		{
+			var str = eval("wireless_schedule_array" + i);
+			str = remove_space(str);
+			var each_info = str.split("-");
+
+			document.write('<TR>');
+			document.write('<TD nowrap align="center"><input type="radio" name="ruleSelect_2g" id="sche_select'+i+'" value="'+(i-1)+'"></TD>');
+			if((gui_region=="German" && netgear_region=="WW") || netgear_region=="GR")
+			{
+				n = parseInt(each_info[0], 10);
+				document.write('<TD nowrap align="left">'+hour_schedule_24[n]+'</TD>');
+
+				n = parseInt(each_info[1], 10);
+				document.write('<TD nowrap align="left">'+hour_schedule_24[n]+'</TD>');
+			}
+			else
+			{
+				n = parseInt(each_info[0], 10);
+				document.write('<TD nowrap align="left">'+hour_schedule_12[n]+'</TD>');
+
+				n = parseInt(each_info[1], 10);
+				document.write('<TD nowrap align="left">'+hour_schedule_12[n]+'</TD>');
+			}
+
+			document.write('<TD nowrap align="left">');
+			if(each_info[2] == "Daily")
+				document.write("$email_daily");
+			else if(each_info[2] == "")
+				document.write("&nbsp;");
+			else
+			{
+				var day_num = each_info[2].split(",");
+				for(j=0; j<day_num.length; j++)
+				{
+					n = parseInt(day_num[j], 10);
+					document.write(week_days[n] + " ");
+				}
+				
+			}
+			document.write('</TD>');
+			document.write('</TR>');
+		}
+	}
+	</script>
+	</TABLE>
+	</TD>
+</TR>
+<TR id="schedule_bgn_button"><TD colspan=2 align="center" nowrap>
+	<input type="submit" name="Add a new period" id="add_sche" value="$adva_period_add" onClick='check_wireless_schedule("bgn", "add"); return false;'>&nbsp;&nbsp;&nbsp;&nbsp;
+	<input type="submit" name="Edit" id="edit_sche" value="$edit_mark" onClick='check_wireless_schedule("bgn", "edit"); return false;'>&nbsp;&nbsp;&nbsp;&nbsp;
+	<script>
+		if( master == "admin" )
+			document.write('<input type="submit" name="Delete" id="del_sche" value="$delete_mark" onClick="check_wireless_schedule(\'bgn\', \'delete\'); return false;">');
+		else
+			document.write('<input type="submit" name="Delete" id="del_sche" value="$delete_mark" disabled>');
+	
+	</script>
+	</TD>
+</TR>
+$bluebar
+<TR id=adv_wlan_an>
+        <TD nowrap colspan=2>
+        <A tabindex=-1 href="javascript:loadhelp('_wladv','settings')"><B>
+	<script>
+		if( ac_router_flag == 1)
+			document.write("$adva_wlan_setting (5GHz 802.11a/n/ac)");
+		else
+			document.write("$adva_wlan_setting (5GHz a/n)");
+	</script>
+	</B></A>
+        </TD>
+</TR>
+<TR id=ap_an>
+        <TD nowrap>
+        <input type="checkbox" name="enable_ap_an" id="enable_ap_an" value="1" onClick="check_schedule_onoff();">$adva_wlan_router
+        </TD>
+</TR>
+<TR id="hw_an" style="color: gray; display:none">
+        <TD nowrap colspan=2>
+	$adva_wlan_hw_disabled
+        </TD>
+</TR>
+<TR id=wmm_qos_an style="display:none;">
+	<TD nowrap>
+	<input type="checkbox" name="wmm_enable_a" value="1"><a tabindex=-1 href="javascript:loadhelp('_wladv','wifi')"><b>
+	<script>
+	if(top.ac_router_flag == 1)
+		document.write("$qos_enable_wmm (5GHz 802.11a/n/ac)")
+	else
+		document.write("$qos_enable_wmm (5GHz a/n)")
+	</script>
+	</b></a>
+	</TD>
+</TR>
+<TR id=fragment_an>
+        <TD nowrap>$wlan_adv_szFrag_11g</TD>
+        <TD nowrap>
+        <input type="text" maxLength=4 size=5 name="frag_an" id="frag_an"  value="2346" onFocus="this.select();" onKeyPress="return getkey('num', event)" style="ime-mode:disabled;" ondrop="return false;" ondragenter="return false;" onpaste="return false;" onkeyup="this.value=this.value.replace(/\D/g, '');" />
+        </TD>
+</TR>
+<TR id=cts_rts_an>
+        <TD nowrap>$wlan_adv_szRts_11g</TD>
+        <TD nowrap>
+        <input type="text" maxLength=4 size=5 name="rts_an" id="rts_an" value="2347" onFocus="this.select();" onKeyPress="return getkey('num', event)" style="ime-mode:disabled;" ondrop="return false;" ondragenter="return false;" onpaste="return false;" onkeyup="this.value=this.value.replace(/\D/g, '');" />
+        </TD>
+</TR>
+<TR id=pream_an>
+        <TD nowrap>$adva_wlan_pream</TD>
+        <TD nowrap>
+        <select name="enable_shortpreamble_an" id="enable_shortpreamble_an">
+                <option value="automatic">$sec_auto</option>
+		<option value="Long Preamble">$adva_wlan_pream_long</option>
+                <option value="Short Preamble">$adva_wlan_pream_short</option>
+        </select>
+        </TD>
+</TR>
+<TR id=power_ctrl_an>
+	<TD nowrap>$adva_wlan_txctrl</TD>
+	<TD nowrap>
+	<select name="tx_power_ctrl_an" onChange='transmit_select_an(document.forms[0]);'>
+<script>
+        if( super_wifi_flag == 1 && pr_flag == 1)
+                document.write('<option value="super_wifi">Super WiFi</option>');
+</script>
+		<option value="100">100%</option>
+		<option value="75">75%</option>
+<!-- For BUG 33420 to show transmit power control 63% and 33% -->
+<script>
+	if( txctl_63_33_flag == 1)
+		document.write('<option value="63">63%</option>');
+</script>
+		<option value="50">50%</option>
+<script>
+	if( txctl_63_33_flag == 1)
+		document.write('<option value="33">33%</option>');
+</script>
+		<option value="25">25%</option>
+	</select>
+	</TD>
+</TR>
+<TR id=schedule_an_enable><TD colspan="2" nowrap><input type="checkbox" name="wifi_onoff_an" id="wifi_5g_sche_div1" value="1" onClick="enable_schedule_button();"><A tabindex=-1 href="javascript:loadhelp('_wladv','schedule')"><b>$adva_signal_schedule</b></A></TD></TR>
+<TR id=schedule_an_head><TD colspan="2" nowrap><b>$adva_schedule_table_head</b></TD></TR>
+<TR id=schedule_an_table>
+	<TD colspan="2" nowrap>
+	<TABLE border="1" cellpadding="2" cellspacing="1" width="80%" align="left">
+	<TR>
+		<TD nowrap width="15%" align="left"><span class="subhead">$adva_period</span></TD>
+		<TD nowrap width="20%" align="left"><span class="subhead">$adva_start</span></TD>
+		<TD nowrap width="20%" align='left'><span class="subhead">$adva_end</span></TD>
+		<TD nowrap align="left"><span class="subhead">$adva_recur_pattern</span></TD>
+	</TR>
+	<script>
+	if(wireless_schedule_num_a > 0)
+	{
+		var i = 0, j = 0, n = 0;
+
+		for(i=1; i<=wireless_schedule_num_a; i++)
+		{
+			var str = eval("wireless_schedule_array_a" + i);
+			str = remove_space(str);
+			var each_info = str.split("-");
+
+			document.write('<TR>');
+			document.write('<TD nowrap align="center"><input type="radio" name="ruleSelect_5g" id="sche_select_an'+i+'" value="'+(i-1)+'"></TD>');
+
+			if((gui_region=="German" && netgear_region=="WW") || netgear_region=="GR")
+			{
+				n = parseInt(each_info[0], 10);
+				document.write('<TD nowrap align="left">'+hour_schedule_24[n]+'</TD>');
+
+				n = parseInt(each_info[1], 10);
+				document.write('<TD nowrap align="left">'+hour_schedule_24[n]+'</TD>');
+			}
+			else
+			{
+				n = parseInt(each_info[0], 10);
+				document.write('<TD nowrap align="left">'+hour_schedule_12[n]+'</TD>');
+
+				n = parseInt(each_info[1], 10);
+				document.write('<TD nowrap align="left">'+hour_schedule_12[n]+'</TD>');
+			}
+
+			document.write('<TD nowrap align="left">');
+			if(each_info[2] == "Daily")
+				document.write("$email_daily");
+			else if(each_info[2] == "")
+				document.write("&nbsp;");
+			else
+			{
+				var day_num = each_info[2].split(",");
+				for(j=0; j<day_num.length; j++)
+				{
+					n = parseInt(day_num[j], 10);
+					document.write(week_days[n] + " ")
+				}
+				document.write('</TD>');
+				document.write('</TR>');
+			}
+		}
+	}
+	</script>
+	</TABLE>
+	</TD>
+</TR>
+<TR id=schedule_an_button><TD colspan=2 align="center" nowrap>
+	<input type="submit" name="Add a new period" id="add_sche_an" value="$adva_period_add" onClick='check_wireless_schedule("an", "add"); return false;'>&nbsp;&nbsp;&nbsp;&nbsp;
+	<input type="submit" name="Edit" id="edit_sche_an" value="$edit_mark" onClick='check_wireless_schedule("an", "edit"); return false;'>&nbsp;&nbsp;&nbsp;&nbsp;
+	<input type="submit" name="Delete" id="del_sche_an" value="$delete_mark" onClick='check_wireless_schedule("an", "delete"); return false;'>
+	</TD>
+</TR>
+<TR id=blue_an><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+<TR>
+	<TD nowrap>
+	<B><A tabindex=-1 href="javascript:loadhelp('_wladv','wps')">$wlan_adv_wps</A></B>
+	</TD> 
+</TR>
+<TR id='wladv_pin'>
+	<TD nowrap>$wlan_adv_routerpin:</TD>
+	<TD nowrap><B>$<script>document.write(wlan_adv_wpspin);</script></B></TD>
+</TR>
+<TR id='wladv_enable_wps'>
+	<TD nowrap colspan=2 >
+	<input type="checkbox" name="pin_disable" id="pin_disable" value=1 onClick="wps_protection_display()">$wlan_adv_enable_pin<script>if( "<% cfg_get("wps_lock_down") %>" == "1" ) document.write("$temporarily_mark_v11");</script>
+	</TD>
+</TR>
+<TR id='wladv_appin_cfg'>
+	<TD nowrap colspan=2 ><img src=/spacer.gif width=20 height=12 border=0>
+	<input type="checkbox" name="prevent_pin_compromise" id="prevent_pin_compromise" onClick="wps_protection_display()">$wlan_adv_wps_pin1
+	<input type="text" name="pin_attack_count" id="pin_attack_count" size="3" maxlength="3" value="<% cfg_get("wps_pin_attack_num") %>" onKeyPress="return getkey('num', event)">$wlan_adv_wps_pin2
+	<BR><img src=/spacer.gif width=20 height=12 border=0><img src=/spacer.gif width=20 height=12 border=0>$wlan_adv_wps_pin3
+	</TD>
+</TR>
+<!--bug28582 There should be only one "Keep Existing Wireless Settings" option.-->
+<TR id='wladv_keep_exist'>
+	<TD nowrap colspan=2 >
+	<input type="checkbox" name="wsc_config" id="wsc_config" value="on">$wlan_adv_keep <!--<script> if( an_router_flag == 1) document.write("(2.4GHz b/g/n)");</script>-->
+	</TD>
+</TR>
+<TR><TD>&nbsp;</TD></TR>
+$bluebar
+<TR id='wladv_beamforming'>
+	<TD nowrap colspan=2 >
+		<input type="checkbox" name="enable_implicit_beamforming" id="enable_implicit_beamforming" onclick="power_display();" value=0>
+		<A tabindex=-1 href="javascript:loadhelp('_wladv','beamforming')">$enable_beamform1</A>
+	</TD>
+</TR>
+<TR id='wladv_mu'>
+	<TD nowrap colspan=2 >
+		<input type="checkbox" name="enable_mu" value="">
+		<A tabindex=-1 href="javascript:loadhelp('_wladv','mu_mimo')">$enable_mu</A>
+	</TD>
+</TR>
+<TR id="wladv_atf">
+	<TD nowrap colspan=2 >
+		<input type="checkbox" name="enable_atf">$wlan_adv_atf
+	</TD>
+</TR>
+<TR id='wladv_ht160'>
+        <TD nowrap colspan=2 >
+        	<input type="checkbox" name="enable_ht160" value="">
+		<A tabindex=-1 href="javascript:loadhelp('_wladv','ht160')">$enable_ht160</A>
+        </TD>
+</TR>
+<TR id=ap_bluebar><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+<TR id="wlan_access">
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_wladv','access')"><B>$wlan_wlacl</B></A>
+	</TD>
+	<TD nowrap>
+	<input class="common_big_bt" type="button" name="access" value="$setup_acl" onClick="location.href='WLG_acl.htm'">
+	</TD>
+</TR>
+<TR><TD>&nbsp;</TD></TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_wladv") %>
+</FORM>
+</BODY>
+</HTML>

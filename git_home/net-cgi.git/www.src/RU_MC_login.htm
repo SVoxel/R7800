@@ -1,0 +1,166 @@
+<% ca_http_header("style/hijack_style.css","style/hijack_ru_welcome.css","/funcs.js") %>
+<BODY onLoad="loadvalue();" bgcolor=#ffffff>
+<FORM>
+	
+<script>
+//load_default(1); 
+/* reset parent value */
+parent.static_ip="";
+parent.static_subnet="";
+parent.static_gateway="";
+parent.static_dns1="";
+parent.static_dns2="";
+
+parent.domain_name="";
+parent.wan_assign="0";
+
+parent.pppoe_username="";
+parent.pppoe_password="";
+parent.pppoe_server="";
+parent.pppoe_idle=5;
+parent.pppoe_wan_assign="0";
+parent.pppoe_static_ip="";
+parent.pppoe_dns_assign="0";
+parent.pppoe_dns1="";
+parent.pppoe_dns2="";
+parent.pppoe_eth_ip="";
+parent.pppoe_eth_netmask="";
+parent.pppoe_eth_gateway="";
+parent.pppoe_dual_assign="0";
+parent.dual_access="";
+
+parent.pptp_username="";
+parent.pptp_password="";
+parent.pptp_idle_time=5;
+parent.pptp_local_ipaddr="";
+parent.pptp_local_netmask="";
+parent.pptp_local_gateway="";
+parent.pptp_dns_assign="0";
+parent.pptp_dns1="";
+parent.pptp_dns2="";
+parent.pptp_server_ipaddr="";
+parent.pptp_connect_id="";
+parent.pptp_wan_assign=0;
+parent.pptp_server_FQDN=0;
+
+parent.l2tp_username="";
+parent.l2tp_password="";
+parent.l2tp_idle_time=5;
+parent.l2tp_local_ipaddr="";
+parent.l2tp_local_netmask="";
+parent.l2tp_local_gateway="";
+parent.l2tp_dns_assign="0";
+parent.l2tp_dns1="";
+parent.l2tp_dns2="";
+parent.l2tp_server_ipaddr="";
+parent.l2tp_connect_id="";
+parent.l2tp_wan_assign=0;
+parent.l2tp_server_FQDN=0;
+
+parent.conflict_wanlan="0";
+parent.isp_type="0";
+parent.mac_spoof="0";
+parent.Spoofmac="";
+parent.STATIC_DNS="0";
+parent.manual_ppp_type="0";
+parent.need_auth="1";
+parent.vpn_server="";
+
+function loadvalue()
+{
+        //buttons left
+        var btns_div1 = document.getElementById("btnsContainer_div1");
+		if( master == "admin" )
+		{
+			btns_div1.onclick = function()
+			{
+                location.href="RU_welcome.htm";
+			}
+		}
+
+        //buttons right
+        var btns_div2 = document.getElementById("btnsContainer_div2");
+		if( master == "admin" )
+		{
+			btns_div2.onclick = function()
+			{
+                check_login();
+			}
+		}
+	var form=document.forms[0];
+	var auth=parent.need_auth;
+	if (auth == '1')
+		form.login[0].checked = true;
+	else
+		form.login[1].checked = true;
+}
+
+function check_login()
+{	
+	var form=document.forms[0];
+	if(form.login[0].checked == true){
+		parent.need_auth="1";
+		location.href="RU_login_yes.htm";
+	}
+	else if(form.login[1].checked == true){
+		parent.need_auth="0";
+		location.href="RU_login_no.htm";
+	}
+	else{
+		alert(RU_login_error);
+		return false;
+	}
+	return true;
+}
+</script>
+<div class="wizard_content_div">
+<div class="wizard_words_div">
+	<H1><script>document.write(RU_CA_head)</script></H1>
+<TABLE width=100%>
+<TR><TD colspan=2><script>document.write(RU_login_string)</script></TD></TR>
+<TR><TD colspan=2><br></TD></TR>
+<TR> 
+	<TD class="RU_radio" colspan=2>
+	<input type="radio" name="login" value="yes"><script>document.write(bh_yes_mark)</script></TD>
+	</TD>
+</TR>
+<TR> 
+	<TD class="RU_radio" colspan=2>
+	<input type="radio" name="login" value="no"><script>document.write(no_mark)</script></TD>
+	</TD>
+</TR>
+<TR><TD colspan=2><br></TD></TR>
+
+</TABLE>
+</div><!--wizard_words_div -->
+<div id="center_buttons">
+  <div id="allBtns_div" class="wizard_buttons_div" align="center">
+                <div id="btnsContainer_div1" class="buttons_img_div" align="center">
+				<script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							document.write('<img src="image/ca-little-grey-button.png" />');
+                        </script>
+                        <div class="buttons_words_div"><script>document.write(RU_back)</script></div>
+                </div>
+                <div class="buttons_split"></div>
+                <div id="btnsContainer_div2" class="buttons_img_div" align="center">
+						<script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							
+							document.write('<img src="image/ca-little-grey-button.png" />');
+						</script>
+                       
+                        <div class="buttons_words_div"><script>document.write(RU_next)</script></div>
+                </div>
+  </div><!--allBtns_div -->
+</div>
+</div><!--wizard_content_div -->
+</FORM>
+</BODY>
+</HTML>

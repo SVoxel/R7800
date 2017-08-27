@@ -1,0 +1,120 @@
+<% http_header("/funcs.js") %>
+<% nobody_header("green_download_hidden_server_wait.htm", "eMule_service_ip_add") %>
+<% table_header("Emule Server List") %>
+
+<script>
+	<% save_timestamp( "eMule_service_ip_add", "change_conn_status", "remove_server") %>
+	<% list_emule_server_item() %>
+parent.green_refresh_time = 0;
+var ts = "<% cfg_get("eMule_service_ip_add") %>";
+var emule_sconn="<% cfg_get("emule_sconn") %>";
+var emule_snum="<% cfg_get("emule_snum") %>";
+function change_conn_status(url, cf, sel)
+{
+	var each_info = url.split(':')
+	var ip = each_info[0];
+	var port = each_info[1];
+	var cf = document.forms[0];
+	if(sel.value == "$connect_mark")
+		cf.hid_conn_status.value = 1;
+	else
+		cf.hid_conn_status.value = 0;		
+	cf.eMule_service_ip.value = ip;
+	cf.eMule_port_num.value = port;
+	cf.submit_flag.value = "change_conn_status";
+	cf.submit();
+	//location.href="hidden_server.htm";
+}
+function rm_server(url, cf)
+{
+	var each_info = url.split(':')
+	var ip = each_info[0];
+	var port = each_info[1];
+	var cf = document.forms[0];
+	cf.eMule_service_ip.value = ip;
+	cf.eMule_port_num.value = port;
+	cf.submit_flag.value = "remove_server";
+	cf.submit();
+	//location.href="hidden_server.htm";
+}
+function Check_eMule_add(cf)
+{
+	cf.eMule_service_ip.value=cf.eMule_SV_IP1.value+'.'+cf.eMule_SV_IP2.value+'.'+cf.eMule_SV_IP3.value+'.'+cf.eMule_SV_IP4.value;
+	if(checkipaddr(cf.eMule_service_ip.value)==false)
+	{
+		alert("$invalid_ip");
+		return false;
+	}	
+	cf.eMule_port_num.value=cf.eMule_port.value;
+    //cf.action="/apply.cgi?/green_download_hidden_server_wait.htm timestamp="+ts;
+	cf.submit_flag.value = "eMule_service_ip_add";
+	//location.href="hidden_server.htm";
+	return true;
+}
+</script>
+<input type=hidden name=hid_conn_status>
+<input type=hidden name=eMule_service_ip>
+<input type=hidden name=eMule_port_num>
+<TR>
+	<TD nowrap colspan=2><A tabindex=-1 href="javascript:loadhelp('_green_download','green_server')"><b>$greendl_basic_edonkey_server_list</b></A></TD>
+</TR>
+<TR><TD colspan=2>
+	<TABLE border=1 cellpadding=2 cellspacing=0 width=100%>
+	<TR>
+		<TD nowrap align=center><span class="subhead">$greendl_common_showNo</span></TD>
+		<TD nowrap align=center><span class="subhead">$info_mark_ip</span></TD>
+		<TD nowrap align=center><span class="subhead">$sta_routes_name</span></TD>
+		<TD nowrap align=center><span class="subhead">$stalist_Status</span></TD>
+		<TD nowrap align=center><span class="subhead">$greendl_common_showControl</span></TD>
+		<TD nowrap align=center><span class="subhead"></span></TD>
+	</TR>
+	<script>
+		var i;
+		for( i=1; i<=item_num; i++)
+		{
+			var info = eval( 'item' + i );
+			var each_info = info.split('|');
+			var url = each_info[0];			
+			var name = each_info[1];
+			var conn_info = each_info[2];
+			if(conn_info == "no connecting")
+				conn_info = "$greendl_common_button_disconnected";
+			else if(conn_info == "Connecting")
+				conn_info = "$greendl_common_button_connecting";			else if(conn_info == "Connected")
+				conn_info = "$greendl_common_button_connected";
+
+
+			document.write('<TR>');
+			document.write('<TD nowrap align=center>'+i+'</TD>');
+			document.write('<TD nowrap align=center>'+url+'</TD>');
+			document.write('<TD nowrap align=center>'+name+'</TD>');
+			document.write('<TD nowrap align=center>'+conn_info+'</TD>');
+			document.write('<TD nowrap align=center>'+conn_info[1]+'</TD>');
+			document.write('<TD nowrap align=center>');
+			if( conn_info == "$greendl_common_button_disconnected" )
+				document.write('<input type=button value="$connect_mark" name="conn_status" onclick="change_conn_status(\''+url+'\', document.forms[0], this);"');		
+			else
+				document.write('<input type=button value="$disconnect_mark" name="conn_status" onclick="change_conn_status(\''+url+'\', document.forms[0], this);"');	
+			document.write('</TD>');
+			document.write('<TD nowrap align=center>');
+			document.write('<input type=button value="$delete_mark" name="del_server" onclick="rm_server(\''+url+'\', document.forms[0]);"');
+			document.write('</TD></TR>');
+		}
+	</script>
+	</TABLE>
+</TD></TR>
+<TR>
+	<TD nowrap>
+	$greendl_basic_edonkey_server_add
+	</TD>
+	<TD nowrap>
+		<input type="text" name="eMule_SV_IP1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+		<input type="text" name="eMule_SV_IP2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+		<input type="text" name="eMule_SV_IP3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.	
+		<input type="text" name="eMule_SV_IP4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">:
+		<input type="text" name="eMule_port" size="5" autocomplete="off" maxlength="5"  onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+		<input class="add_bt"  type="submit" name="svAdd" value="$add_mark" onClick="return Check_eMule_add(document.forms[0]);">		
+</TR>
+$bluebar
+</TABLE>
+</FORM>

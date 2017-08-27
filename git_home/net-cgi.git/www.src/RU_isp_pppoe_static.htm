@@ -1,0 +1,152 @@
+<% ca_http_header("style/hijack_style.css","style/hijack_ru_welcome.css","/funcs.js", "/bas_ether.js") %>
+<% nohelp_header("RU_isp_fail.htm", "RU_welcome") %>
+
+<script>
+var isp_type=parent.isp_type;
+var lan_ip="<% cfg_get("lan_ipaddr") %>";
+var lan_subnet="<% cfg_get("lan_netmask") %>";
+function loadvalue()
+{
+	cf=document.forms[0];
+	cf.pppoe_username.value=parent.pppoe_username;
+	cf.pppoe_passwd.value=parent.pppoe_password;
+	cf.pppoe_servername.value=parent.pppoe_server;
+	cf.DNSAssign.value="0";
+	cf.pppoe_dual_assign.value="1";
+
+	var ether_get_ip=parent.static_ip.replace(/x/g,"");
+	if (ether_get_ip!="")
+	{
+		var ip_array=ether_get_ip.split('.');
+		cf.WPethr1.value=ip_array[0];
+		cf.WPethr2.value=ip_array[1];
+		cf.WPethr3.value=ip_array[2];
+		cf.WPethr4.value=ip_array[3];
+	}
+	var ether_get_subnet=parent.static_subnet.replace(/x/g,"");
+	if (ether_get_subnet!="")
+	{
+		var mask_array=ether_get_subnet.split('.');
+		cf.WMask1.value=mask_array[0];
+		cf.WMask2.value=mask_array[1];	
+		cf.WMask3.value=mask_array[2];
+		cf.WMask4.value=mask_array[3]; 
+	}
+
+	if(isp_type=="5" || isp_type=="6") /*pppoe+static*/
+	{	      
+		cf.pppoe_ipaddr.value="";    
+		cf.WANAssign.value="Dynamic";  
+	}
+	else if(isp_type=="88")  /*pppoe(static) + static*/
+	{
+		cf.pppoe_ipaddr.value=parent.pppoe_static_ip;
+		cf.WANAssign.value="Fixed";
+	}
+
+        //buttons left
+        var btns_div1 = document.getElementById("btnsContainer_div1");
+		if( master == "admin" )
+		{
+			btns_div1.onclick = function()
+			{
+                location.href="RU_isp_pppoe.htm";
+			}
+		}
+        //buttons right
+        var btns_div2 = document.getElementById("btnsContainer_div2");
+		if( master == "admin" )
+		{
+			btns_div2.onclick = function()
+			{
+                RU_welcome_pppoe_static();
+			}
+		}
+}
+
+</script>
+
+<input type="hidden" name="pppoe_username" >
+<input type="hidden" name="pppoe_passwd" >
+<input type="hidden" name="pppoe_servername" >
+<input type="hidden" name="conflict_wanlan">
+<input type="hidden" name="change_wan_type" value="0">
+<input type="hidden" name="run_test" value="">
+<input type="hidden" name="WANAssign">
+<input type="hidden" name="DNSAssign">
+<input type="hidden" name="pppoe_dod" value="0">
+<input type="hidden" name="pppoe_ipaddr">
+<input type="hidden" name="pppoe_dual_ipaddr">
+<input type="hidden" name="pppoe_dual_subnet">
+<input type="hidden" name="pppoe_dual_gateway">
+<input type="hidden" name="pppoe_dnsaddr1">
+<input type="hidden" name="pppoe_dnsaddr2">
+<input type="hidden" name="hidden_pppoe_idle_time" value="0">
+<input type="hidden" name="dual_access" value="1">
+<input type="hidden" name="pppoe_dual_assign">
+
+<input type="hidden" name="ether_ipaddr">
+<input type="hidden" name="ether_subnet">
+<input type="hidden" name="basic_type" value="0">
+<input type="hidden" name="ppp_login_type" value="2">
+<input type="hidden" name="welcome_wan_type">
+<input type="hidden" name="STATIC_DNS">
+
+<div class="wizard_content_div">
+<div class="wizard_words_div">
+	<H1><script>document.write(RU_CA_head)</script></H1>
+<TABLE width=100%>
+<TR><TD colspan=2 ><script>document.write(RU_isp_pppoe_static)</script></TD></TR>
+<TR><TD colspan=2><br></TD></TR>
+<TR>
+	<TD><script>document.write(bh_info_mark_ip)</script></TD>
+	<TD align=right>
+	<input type="text" name="WPethr1"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="WPethr2"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="WPethr3"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="WPethr4"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR>
+	<TD><script>document.write(lan_mark_subnet)</script></TD>
+	<TD align=right>
+	<input type="text" name="WMask1"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="WMask2"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="WMask3"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="WMask4"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD> 
+</TR>
+
+</TABLE>
+</div><!--wizard_words_div -->
+<div id="center_buttons">
+  <div id="allBtns_div" class="wizard_buttons_div" align="center">
+                <div id="btnsContainer_div1" class="buttons_img_div" align="center">
+				<script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							document.write('<img src="image/ca-little-grey-button.png" />');
+                        </script>
+                        <div class="buttons_words_div"><script>document.write(RU_back)</script></div>
+                </div>
+                <div class="buttons_split"></div>
+                <div id="btnsContainer_div2" class="buttons_img_div" align="center">
+						<script>
+						var master="<% cfg_get("http_loginname") %>";
+						if( master == "admin" )
+							document.write('<img src="image/ca-little-purple-button.gif" />');
+						else
+							
+							document.write('<img src="image/ca-little-grey-button.png" />');
+						</script>
+                        
+                        <div class="buttons_words_div"><script>document.write(RU_next)</script></div>
+                </div>
+  </div><!--allBtns_div -->
+</div>
+</div><!--wizard_content_div -->
+</form>
+</BODY>
+</HTML>

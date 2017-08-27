@@ -1,0 +1,868 @@
+{
+    "trans":
+    {
+        "Minutes" : "Minutes",
+        "Time" : "Time",
+        "Applications" : "Applications",
+        "Optimal" : "Optimal",
+        "Good" : "Good",
+        "Best Effort" : "Best Effort",
+        "IP:" : "IP:",
+        "MAC:" : "MAC:",
+        "Static Lease:" : "Static Lease:",
+        "DMZ:" : "DMZ:",
+        "Type:" : "Type:",
+        "Bandwidth from Devices" : "Bandwidth from Devices",
+        "Bandwidth to Devices" : "Bandwidth to Devices",
+        "Save/Cancel Node Priorities:" : "Save/Cancel Node Priorities:",
+        "Save" : "Save",
+        "Cancel" : "Cancel",
+        "Top Flow By Download" : "Top Flow By Download",
+        "Megabits" : "Megabits",
+        "Top 5 Flows In The " : "Top 5 Flows In The ",
+        "For" : "For",
+        "Name:" : "Name:",
+        "All Devices" : "All Devices",
+        "Last Day" : "Last Day",
+        "Last Week" : "Last Week",
+        "Last Month" : "Last Month",
+
+        "Windows" : "Windows",
+        "Mac OS X" : "Mac OS X",
+        "iOS" : "iOS",
+        "Apple TV" : "Apple TV",
+        "Nintendo Wii" : "Nintendo Wii",
+        "Android Phone" : "Android Phone",
+        "Android 4.x" : "Android 4.x",
+        "Wireless" : "Wireless",
+        "X-Box 360" : "X-Box 360",
+        "Xbox" : "Xbox",
+        "Tivo" : "Tivo",
+        "Linux" : "Linux",
+        "Playstation" : "Playstation",
+        "iPhone" : "iPhone",
+        "Nintendo" : "Nintendo",
+        "iPad" : "iPad",
+        "Playstation 3" : "Playstation 3",
+        "Xbox 360" : "Xbox 360",
+        "Android" : "Android",
+        "iPod Touch" : "iPod Touch",
+        "Blackberry" : "Blackberry",
+        "Visio Smart Device" : "Visio Smart Device",
+        "Google TV" : "Google TV",
+        "Roku" : "Roku",
+        "Boxee" : "Boxee",
+        "Playstation Vita" : "Playstation Vita",
+        "Nintendo 3DS" : "Nintendo 3DS",
+        "Alienware PC" : "Alienware PC",
+        "Router" : "Router",
+
+        "This page is used for StreamBoost. Click <here> to set up StreamBoost." : "This page is used for StreamBoost. Click <here> to set up StreamBoost.",
+        "Bandwidth test failed. Please check your network connection and try again.": "Bandwidth test failed. Please check your network connection and try again.",
+        "querying aperture failed.": "querying aperture failed.",
+        "The Killer 9100 Intelligent networking for the home.": "The Killer 9100 Intelligent networking for the home.",
+        "writing priority: ": "writing priority: ",
+        "Flow Name": "Flow Name",
+        "Bytes Downloaded": "Bytes Downloaded",
+
+        "You are using a browser that isn't capable of rendering HTML5 webpages. To fix this download the latest version of one of the following browsers: Chrome, Firefox, Internet Explorer, or Safari. If you choose to continue with your current browser there is no guarantee anything on the webpage will work.":         "You are using a browser that isn't capable of rendering HTML5 webpages. To fix this download the latest version of one of the following browsers: Chrome, Firefox, Internet Explorer, or Safari. If you choose to continue with your current browser there is no guarantee anything on the webpage will work.",
+        "Update_License" :  [
+                                "Check below to enable your router to receive automatic StreamBoost updates during your initial ",
+                                "3-year manufacturer service term. The 3-year service term will start on the day the router is ",
+                                "purchased but in no event will be valid beyond April 1st, 2017. (After the 3-year period, further ",
+                                "updates may be made available from the manufacturer via firmware updates.)  StreamBoost updates ",
+                                "may help improve your router’s Internet traffic management capabilities through better traffic ",
+                                "identification and bandwidth management techniques. In exchange, your StreamBoost enabled router ",
+                                "will send Qualcomm Atheros, Inc. anonymous information from your router. If you decline, you can ",
+                                "find updates through software or firmware postings from your router’s manufacturer. ",
+                                "<br><br>",
+                                "<a href=\"#\" onclick=\"$('#learnmore').toggle()\">Learn More</a>.",
+                                "<br/><br/>",
+                                "<div id=\"learnmore\" style=\"display:none\">",
+                                "Your StreamBoost enabled router will provide Qualcomm Atheros, Inc. (QCA) with anonymous data ",
+                                "transmitted through the router.  Such anonymous data may include small amounts of information ",
+                                "when you launch a streaming service (such as video, audio, or gaming) for the purpose of ",
+                                "identifying the data structures of service providers (such as NetFlix, Inc., Pandora Media, Inc., ",
+                                "or other providers of cloud-based services). QCA uses this information to help us optimize ",
+                                "StreamBoost for you and other StreamBoost users.  QCA does not use this information to learn the ",
+                                "content of what you watch, listen to, download, or play. Anonymous data also may include ",
+                                "information about your router such as available bandwidth, oversubscription conditions (e.g., ",
+                                "amount of bandwidth that is being requested exceeds the available bandwidth), and types of devices ",
+                                "connected to the router, as well as information about your streaming service usage, such as ",
+                                "duration of use and volume of data.  As with any Internet communication, the IP address of your ",
+                                "router is used to send information, but it is not retained. ",
+                                "</div>"
+                            ],
+        "network_interfaces" :      [
+                                        "Network: Interfaces",
+                                        "<br><br>",
+
+                                        "Interface Overview - List of network interfaces on this router.",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Click 'Connect' to start a network interface</li>",
+                                        "<li style=\"color:black;\">Click 'Stop' to stop a network interface from running</li>",
+                                        "<li style=\"color:black;\">Click 'Edit' to change the settings for a network interface</li>",
+                                        "<li style=\"color:black;\">Click 'Delete' to delete a network interface from this list</li>",
+                                        "</ul>"
+                                    ],
+        "network_wifi" :            [
+                                        "Network: Wifi",
+                                        "<br><br>",
+
+                                        "Wireless Overview - List of network interfaces on this router.",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Click 'Enable' to start a network interface</li>",
+                                        "<li style=\"color:black;\">Click 'Disable' to stop a network interface from running</li>",
+                                        "<li style=\"color:black;\">Click 'Edit' to change the settings for a network interface</li>",
+                                        "<li style=\"color:black;\">Click 'Delete' to delete a network interface from this list</li>",
+                                        "</ul>"
+                                    ],
+        "network_switch" :          [
+                                        "Network: Switch",
+                                        "<br><br>",
+
+                                        "The network ports on this device can be combined to several VLANs in which computers can ",
+                                        "communicate directly with each other. VLANs are often used to separate different network segments. ",
+                                        "Often there is by default one Uplink port for a connection to the next greater network like the ",
+                                        "internet and other ports for a local network.",
+
+                                        "The switch section is responsible for partitioning the switch into several VLANs which appear as ",
+                                        "independent interfaces in the system although they share the same hardware. Not every OpenWrt ",
+                                        "supported device has a programmable switch, therefore this section might not be present on some ",
+                                        "platforms. Please also note, that some switches only support 4Bit-VLANs.",
+                                        "<br><br>",
+
+                                        "Switch List - list of the switches to enable/disable",
+                                        "<br><br>",
+                                        "Enable VLAN functionality - select to enable this switch to pass traffic",
+                                        "<br><br>",
+
+                                        "VLAN List - list of the switch ports and their tagged states",
+                                        "<br><br>",
+                                        "This tells the switch which port to send packets to if they do not have a destination VLAN, ",
+                                        "for example if you send packets directly to eth0 instead of eth0.0 ","So if you send an untagged packet, or a packet ",
+                                        "tagged with 0, and it is coming from the CPU, then only ports 3 and 0 will receive it. <br><br>Ports 4 2 or 1 will only receive ",
+                                        "a packet if you tag it with 1, 2 or 3 respectively but will not receive an untagged message. <br><br>Generally this distinction ",
+                                        "is not useful because most hosts will usually either support 802.1q, or they will not support it at all. <br><br>But it may ",
+                                        "matter if you chain another switch, or connect a bridged host to a port that is a member of more than one VLAN. ",
+                                        "For non-CPU ports, \"untagged\" is the default. <br><br>For CPU ports, \"tagged\" is the default. That is why you often see it omitted, but it ",
+                                        "never hurts to be more explicit."
+                                    ],
+        "network_dhcp_and_dns" :    [
+                                        "Network: DHCP and DNS",
+                                        "<br><br>",
+
+                                        "Server Settings - General",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Domain required - check to stop forwarding DNS-Requests without DNS-Name</li>",
+                                        "<li style=\"color:black;\">Authoritative - This is the only DHCP in the local network</li>",
+                                        "<li style=\"color:black;\">Local server - Local domain specification. Names matching this domain are never forwared and resolved from DHCP or hosts files only</li>",
+                                         "<li style=\"color:black;\">Local domain - Local domain suffix appended to DHCP names and hosts file entries</li>",
+                                         "<li style=\"color:black;\">Log queries - Write received DNS requests to syslog</li>",
+                                         "<li style=\"color:black;\">DNS forwardings - List of DNS servers to forward requests to</li>",
+                                         "<li style=\"color:black;\">Rebind protection - Discard upstream RFC1918 responses</li>",
+                                         "<li style=\"color:black;\">Allow localhost - Allow upstream responses in the 127.0.0.0/8 range, e.g. for RBL services</li>",
+                                         "<li style=\"color:black;\">Domain whitelist - List of domains to allow RFC1918 responses for</li>",
+                                        "</ul>",
+
+                                        "<br><br>",
+                                        "Server Settings - Resolv and Hosts Files",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Use /etc/ethers - check to enable read /etc/ethers to configure the DHCP-Server</li>",
+                                        "<li style=\"color:black;\">Leasefile - name of file where given DHCP-leases will be stored</li>",
+                                        "<li style=\"color:black;\">Ignore resolve file - check to enable a resolve configuration file</li>",
+                                        "<li style=\"color:black;\">Resolve file - local DNS resolve file</li>",
+                                        "<li style=\"color:black;\">Ignore Hosts files - check to enable a ignore file</li>",
+                                        "<li style=\"color:black;\">Additional Hosts files - the file path of the ignore file</li>",
+                                        "</ul>",
+
+                                        "<br><br>",
+                                        "Server Settings - TFTP settings",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Enable TFTP Server - check to enable TFTP server</li>",
+                                        "<li style=\"color:black;\">TFTP server root - Root directory for files served via TFTP</li>",
+                                        "<li style=\"color:black;\">Network boot image - Filename of the boot image advertised to clients</li>",
+                                        "</ul>",
+
+                                        "<br><br>",
+                                        "Server Settings - Advanced settings",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Filter private - Do not forward reverse lookups for local networks</li>",
+                                        "<li style=\"color:black;\">Filter useless - Do not forward requests that cannot be answered by public name servers</li>",
+                                        "<li style=\"color:black;\">Localise queries - Localise hostname depending on the requesting subnet if multiple IPs are available</li>",
+                                        "<li style=\"color:black;\">Expand hosts - Add local domain suffix to names served from hosts files</li>",
+                                        "<li style=\"color:black;\">No negative cache - Do not cache negative replies, e.g. for not existing domains</li>",
+                                        "<li style=\"color:black;\">Strict order - DNS servers will be queried in the order of the resolvfile</li>",
+                                        "<li style=\"color:black;\">Bogus NX Domain Override - List of hosts that supply bogus NX domain results</li>",
+                                        "<li style=\"color:black;\">DNS server port - Listening port for inbound DNS queries</li>",
+                                        "<li style=\"color:black;\">DNS query port - Fixed source port for outbound DNS queries</li>",
+                                        "<li style=\"color:black;\">Max. DHCP leases - Maximum allowed number of active DHCP leases</li>",
+                                        "<li style=\"color:black;\">Max. EDNS0 packet size - Maximum allowed size of EDNS.0 UDP packets</li>",
+                                        "<li style=\"color:black;\">Max. concurrent queries - Maximum allowed number of concurrent DNS queries</li>",
+                                        "</ul>",
+
+                                        "<br><br>",
+                                        "Server Settings - Advanced settings",
+                                        "<br><br>",
+                                        "Static leases are used to assign fixed IP addresses and symbolic hostnames to DHCP clients. They are also ",
+                                        "required for non-dynamic interface configurations where only hosts with a corresponding lease are served. ",
+                                        "Use the Add Button to add a new lease entry. The MAC-Address indentifies the host, the IPv4-Address specifies ",
+                                        "to the fixed address to use and the Hostname is assigned as symbolic name to the requesting host.",
+                                        "<br><br>Click \"Add\" to add static lease ip for a specific device"
+                                    ],
+        "network_hostnames" :       [
+                                        "Network: Hostnames",
+                                        "<br><br>",
+
+                                        "Hostnames are human-readable nicknames that correspond to the address of a device connected to a network. ",
+                                        "They are used by various naming systems, e.g., Network Information Service (NIS), Domain Name System (DNS), ",
+                                        "Server Message Block (SMB), and the meaning of hostname will vary according to the naming system used. A hostname ",
+                                        "meaningful to a Microsoft NetBIOS workgroup may be an invalid Internet hostname. When presented with a hostname ",
+                                        "without any context, it is usually safe to assume that the network is the Internet and the hostname's naming system ",
+                                        "is the DNS.<br>Host names are typically used in an administrative capacity and may appear in computer browser lists, ",
+                                        "active directory lists, IP address to hostname resolutions, email headers, etc.",
+                                        "<br><br>",
+                                        "Click 'Add' to assign a hostname to a given IP address"
+                                    ],
+        "network_static_routes" :   [
+                                        "Network: Static Routes",
+                                        "<br><br>",
+                                        "The routing table consists of at least three information fields:<br><br>",
+                                        "1. the network id: i.e. the destination subnet <br>",
+                                        "2. cost/metric: i.e. the cost or metric of the path through which the packet is to be sent <br>",
+                                        "3. next hop: The next hop, or gateway, is the address of the next station to which the packet is to ",
+                                        "be sent on the way to its final destination <br><br>",
+                                        "Depending on the application and implementation, it can also contain additional values that refine path selection:<br><br>",
+                                        "1. quality of service associated with the route. For example, the U flag indicates that an IP route is up. <br>",
+                                        "2. links to filtering criteria/access lists associated with the route <br>",
+                                        "3. interface: such as eth0 for the first Ethernet card, eth1 for the second Ethernet card, etc. <br><br>",
+                                        "Routing tables are also a key aspect of certain security operations, such as unicast reverse path ",
+                                        "forwarding (uRPF).[2] In this technique, which has several variants, the router also looks up, in the routing table, ",
+                                        "the source address of the packet. If there exists no route back to the source address, the packet is assumed to be ",
+                                        "malformed or involved in a network attack, and is dropped.",
+                                        "<br><br>",
+                                        "Click 'Add' to assign a route to specify over which interface and gateway a certain host or network can be reached"
+                                    ],
+        "network_diagnostics" :     [
+                                        "Network: Diagnostics",
+                                        "<br><br>",
+                                        "Ping:",
+                                        "<br><br>",
+                                        "Ping is a computer network administration utility used to test the reachability of a host on an Internet Protocol ",
+                                        "(IP) network and to measure the round-trip time for messages sent from the originating host to a destination computer. ",
+                                        "The name comes from active sonar terminology which sends a pulse of sound and listens for the echo to detect objects ",
+                                        "underwater.<br><br>",
+                                        "Ping operates by sending Internet Control Message Protocol (ICMP) echo request packets to the target host and waiting ",
+                                        "for an ICMP response. In the process it measures the time from transmission to reception (round-trip time) and records ",
+                                        "any packet loss. The results of the test are printed in the form of a statistical summary of the response packets ",
+                                        "received, including the minimum, maximum, and the mean round-trip times, and sometimes the standard deviation of the ",
+                                        "mean. Ping does not evaluate or compute the time to establish the connection; it only gives the mean round-trip times ",
+                                        "of an established connection with an open session.<br><br>",
+                                        "Depending on the implementation, the ping command can be run with various command line switches to enable special ",
+                                        "operational modes. Example options include: specifying the packet size used as the probe, automatic repeated operation ",
+                                        "for sending a specified count of probes, and time stamping.<br><br>",
+                                        "Ping may be abused as a simple form of denial-of-service attack in the form of a ping flood, in which the attacker ",
+                                        "overwhelms the victim with ICMP echo request packets.",
+
+                                        "<br><br>",
+                                        "Traceroute:",
+                                        "<br><br>",
+                                        "In computing, traceroute is a computer network diagnostic tool for displaying the route (path) and measuring ",
+                                        "transit delays of packets across an Internet Protocol (IP) network. The history of the route is recorded as the ",
+                                        "round-trip times of the packets received from each successive host (remote node) in the route (path); the sum of ",
+                                        "the mean times in each hop indicates the total time spent to establish the connection. Traceroute proceeds unless ",
+                                        "all (three) sent packets are lost more than twice, then the connection is lost and the route cannot be evaluated. ",
+                                        "Ping, on the other hand, only computes the final round-trip times from the destination point.",
+                                        "<br><br>",
+                                        "Nslookup:",
+                                        "<br><br>",
+                                        "nslookup is a network administration command-line tool available for many computer operating systems for querying ",
+                                        "the Domain Name System (DNS) to obtain domain name or IP address mapping or for any other specific DNS record. <br><br>",
+                                        "The name \"nslookup\" means \"name server lookup\". nslookup does not use the operating system's local Domain Name ",
+                                        "System resolver library to perform its queries."
+                                    ],
+        "network_firewall" :        [
+                                        "Network: Firewall",
+                                        "<br><br>",
+                                        "In computing, a firewall is a software or hardware-based network security system that controls the incoming and ",
+                                        "outgoing network traffic by analyzing the data packets and determining whether they should be allowed through or not, ",
+                                        "based on applied rule set. Firewalls can be defined in many ways according to your level of understanding. A firewall ",
+                                        "establishes a barrier between a trusted, secure internal network and another network (e.g., the Internet) that is not ",
+                                        "assumed to be secure and trusted.",
+                                        "<br><br>",
+
+                                        "General Settings:",
+                                        "<br><br>",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Enable SYN-flood protection - check to enable</li>",
+                                        "<li style=\"color:black;\">Drop invalid packets - check to drop packets the router doesn't understand.</li>",
+                                        "<li style=\"color:black;\">Input - Set the default rule for all incoming packets to: Accept/Drop/Reject</li>",
+                                        "<li style=\"color:black;\">Output - Set the default rule for all outcoming packets to: Accept/Drop/Reject</li>",
+                                        "<li style=\"color:black;\">Forward - Set the default rule for all forwarded packets to: Accept/Drop/Reject</li>",
+                                        "</ul>",
+                                        "<br><br>",
+                                        "A default route of a computer that is participating in computer networking is the packet ",
+                                        "forwarding rule (route) taking effect when no other route can be determined for a given Internet Protocol ",
+                                        "(IP) destination address. All packets for destinations not established in the routing table are sent via the ",
+                                        "default route. This route generally points to another router, which treats the packet the same way: If a route ",
+                                        "matches, the packet is forwarded accordingly, otherwise the packet is forwarded to the default route of that router. ",
+                                        "The process repeats until a packet is delivered to the destination. Each router traversal counts as one hop in the ",
+                                        "distance calculation for the transmission path.<br><br>",
+
+                                        "A SYN flood is a form of denial-of-service attack in which an attacker sends a succession of SYN ",
+                                        "requests to a target's system in an attempt to consume enough server resources to make the system unresponsive to ",
+                                        "legitimate traffic.<br><br>",
+
+                                        "Port Forwards:",
+                                        "<br><br>",
+                                        "Port forwarding or port mapping[1] is a name given to the combined technique of:<br>",
+                                        "1. translating the address or port number of a packet to a new destination<br>",
+                                        "2. possibly accepting such packet(s) in a packet filter (firewall)<br>",
+                                        "3. forwarding the packet according to the routing table.<br><br>",
+                                        "The destination may be a predetermined network port (assuming protocols like TCP and UDP, though the ",
+                                        "process is not limited to these) on a host within a NAT-masqueraded, typically private network, based ",
+                                        "on the port number on which it was received at the gateway from the originating host.<br><br>",
+                                        "The technique is used to permit communications by external hosts with services provided within a private ",
+                                        "local area network",
+                                        "<br><br>",
+
+                                        "Traffic/Custom Rules:",
+                                        "<br><br>",
+                                        "A Traffic Rules routing table uses the same idea that one does when using a map in package delivery. Whenever a node ",
+                                        "needs to send data to another node on a network, it must first know where to send it. If the node cannot ",
+                                        "directly connect to the destination node, it has to send it via other nodes along a proper route to the ",
+                                        "destination node. Most nodes do not try to figure out which route(s) might work; instead, a node will send an ",
+                                        "IP packet to a gateway in the LAN, which then decides how to route the \"package\" of data to the correct destination. ",
+                                        "Each gateway will need to keep track of which way to deliver various packages of data, and for this it uses a Routing ",
+                                        "Table. A routing table is a database which keeps track of paths, like a map, and allows the gateway to provide this ",
+                                        "information to the node requesting the information."
+                                    ],
+        "status_overview" :         [
+                                        "Status: Overview",
+                                        "<br><br>",
+
+                                        "General router information at a glance",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">System - General information about hardware and software of the router</li>",
+                                        "<li style=\"color:black;\">Memory - Used/Free memory on the router</li>",
+                                        "<li style=\"color:black;\">Network - General status of the network and its configuration</li>",
+                                        "<li style=\"color:black;\">DHCP - Which devices have what IP addresses assigned</li>",
+                                        "<li style=\"color:black;\">Wireless - Current Wireless connections</li>",
+                                        "<li style=\"color:black;\">Associated Stations - Other routers connected to your router</li>",
+                                        "<li style=\"color:black;\">Active UPnP Redirects - Which devices are tunneling ports</li>",
+                                        "</ul>"
+                                    ],
+        "status_firewall" :         [
+                                        "Status: Firewall",
+                                        "<br><br>",
+
+                                        "Actions",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Reset byte counters</li>",
+                                        "<li style=\"color:black;\">Restart with new settings</li>",
+                                        "</ul>",
+
+                                        "Table: Filter/Mangle/Raw",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Rules inserted into the firewall to allow/deny traffic.</li>",
+                                        "</ul>"
+                                    ],
+        "status_routes" :           [
+                                        "Status: Routes",
+                                        "<br><br>",
+
+                                        "ARP",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">RP resolves IP addresses used by TCP/IP-based software to media access control addresses used by LAN hardware</li>",
+                                        "</ul>",
+
+                                        "Active Routes",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">This routing table is used by TCP/IP network routers to calculate the destinations of messages ",
+                                        "it is responsible for forwarding. The table is a small in-memory database managed by the router's built-in hardware and software.</li>",
+                                        "</ul>"
+                                    ],
+        "status_system_log" :        [
+                                        "Status: System Log",
+                                        "<br><br>",
+
+                                        "System Log",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Log of various network and system events that have occured on the router</li>",
+                                        "</ul>"
+                                    ],
+        "status_kernel_log" :        [
+                                        "Status: Kernel Log",
+                                        "<br><br>",
+
+                                        "Kernel Log",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Log of various Linux Kernel events that have occured on the router</li>",
+                                        "</ul>"
+                                    ],
+        "status_processes" :        [
+                                         "Status: Processes",
+                                        "<br><br>",
+
+                                        "Processes",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">List of limited information about computer performance and running applications, processes and CPU usage, commit charge and memory information, network activity and statistics, logged-in users, and system services.</li>",
+                                        "</ul>"
+                                    ],
+        "status_realtime_graphs" :  [
+                                         "Status: Realtime Graphs",
+                                        "<br><br>",
+
+                                        "Load",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Total percentage of the max network throughput usage over time.</li>",
+                                        "</ul>",
+
+                                        "Traffic",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Total upload/download bytes transfered over time.</li>",
+                                        "</ul>",
+
+                                        "Wireless",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Signal quality over time.</li>",
+                                        "</ul>",
+
+                                        "Connections",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Total number of network connections by protocol over time.</li>",
+                                        "</ul>"
+                                    ],
+        "system_system" :           [
+                                         "System: System",
+                                        "<br><br>",
+
+                                        "General Settings",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Local Time - Time in your timezone</li>",
+                                        "<li style=\"color:black;\">Hostname - network name of this router</li>",
+                                        "<li style=\"color:black;\">Timezone - timezone of this router</li>",
+                                        "<li style=\"color:black;\">Enable NTP client - use ntp to automaticly set the router time</li>",
+                                        "<li style=\"color:black;\">Provide NTP server - NTP server to use</li>",
+                                        "<li style=\"color:black;\">NTP server candidates - alternate NTP servers to use</li>",
+                                        "</ul>",
+                                        "Logging",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">System log buffer size - max size of the system log in kilobytes</li>",
+                                        "<li style=\"color:black;\">External system log server - IP address of external log server to use (if any)</li>",
+                                        "<li style=\"color:black;\">External system log server port - port number of external log server</li>",
+                                        "<li style=\"color:black;\">Log output level - Information types to include in the log</li>",
+                                        "<li style=\"color:black;\">Cron Log Level - Information types to include in the Cron log</li>",
+                                        "<li style=\"color:black;\">Enable NTP client - use ntp to automaticly set the router time</li>",
+                                        "<li style=\"color:black;\">Provide NTP server - NTP server to use</li>",
+                                        "<li style=\"color:black;\">NTP server candidates - alternate NTP servers to use</li>",
+                                        "</ul>",
+                                        "Language and Style",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Language - Language of the user interface</li>",
+                                        "<li style=\"color:black;\">Design - theme to use for the router interface</li>",
+                                        "<li style=\"color:black;\">Enable NTP client - use ntp to automaticly set the router time</li>",
+                                        "<li style=\"color:black;\">Provide NTP server - NTP server to use</li>",
+                                        "<li style=\"color:black;\">NTP server candidates - alternate NTP servers to use</li>",
+                                        "</ul>"
+                                    ],
+        "system_administration" :   [
+                                         "Status: Administration",
+                                        "<br><br>",
+
+                                        "Router Password",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Password - Changes the administrator password for accessing the device</li>",
+                                        "</ul>",
+
+                                        "SSH Access - Dropbear offers SSH network shell access and an integrated SCP server",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Interface - Listen only on the given interface Local LAN or External WAN</li>",
+                                        "<li style=\"color:black;\">Port - Specifies the listening port of this Dropbear instance</li>",
+                                        "<li style=\"color:black;\">Password authentication - use password for SSH (Check for yes/Uncheck for No)</li>",
+                                        "<li style=\"color:black;\">Allow root logins with password - use password for Root (Check for yes/Uncheck for No)</li>",
+                                        "<li style=\"color:black;\">Gateway ports - Allow remote hosts to connect to local SSH forwarded ports</li>",
+                                        "</ul>",
+                                        "SSH-Keys",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Here you can paste public SSH-Keys (one per line) for SSH public-key authentication.</li>",
+                                        "</ul>"
+                                    ],
+        "system_software" :         [
+                                         "Status: system_software",
+                                        "<br><br>",
+
+                                        "Actions",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Update Lists - Click to get the latest list of available OpenWRT packages</li>",
+                                        "<li style=\"color:black;\">Free Space - Percentage of megabytes available for OpenWRT packages</li>",
+                                        "<li style=\"color:black;\">Download and install package - Paste URL here for external package install (click OK to install)</li>",
+                                        "<li style=\"color:black;\">Filter - add string filter to find specific installed/available packages (click 'Find package' to filter)</li>",
+                                        "<li style=\"color:black;\">Installed Packages - List of installed OpenWRT Packages (Click Remove link to delete a package)</li>",
+                                        "<li style=\"color:black;\">Available Packages - List of OpenWRT Packages available to install (Click Install link to add the package)</li>",
+                                        "</ul>",
+
+                                        "Configuration",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Configuration - OPKG Package Manager configuration paramaters see <a href=\"http://wiki.openwrt.org/doc/techref/opkg\">OpenWRT Documentation</a></li>",
+                                        "</ul>"
+                                    ],
+        "system_startup" :          [
+                                         "Status: Startup",
+                                        "<br><br>",
+
+                                        "Initial Scripts",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">You can enable or disable installed init scripts here. Changes will applied after a device reboot.</li>",
+                                        "<li style=\"color:black;\">Warning: If you disable essential init scripts like \"network\", your device might become inaccesable!</li>",
+                                        "<li style=\"color:black;\">Click Enabled to always use script</li>",
+                                        "<li style=\"color:black;\">Click Start to run the selected script now</li>",
+                                        "<li style=\"color:black;\">Click Restart to to rerun an already executed script</li>",
+                                        "<li style=\"color:black;\">Click Stop to stop a currently running script</li>",
+                                        "</ul>"
+                                    ],
+        "system_scheduled_tasks" :
+                                    [
+                                        "Status: Scheduled Tasks",
+                                        "<br><br>",
+
+                                        "Cron is a unix, solaris utility that allows tasks to be automatically run in the background at regular ",
+                                        "intervals by the cron daemon. These tasks are often termed as cron jobs in unix , solaris. ",
+                                        "Crontab (CRON TABle) is a file which contains the schedule of cron entries to be run and at specified times.",
+                                        "This document covers following aspects of Unix cron jobs",
+
+                                        "<br><br>",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Crontab Restrictions</li>",
+                                        "<li style=\"color:black;\">Crontab Commands</li>",
+                                        "<li style=\"color:black;\">Crontab file syntax</li>",
+                                        "<li style=\"color:black;\">Crontab Example</li>",
+                                        "<li style=\"color:black;\">Crontab Environment</li>",
+                                        "<li style=\"color:black;\">Disable Email</li>",
+                                        "<li style=\"color:black;\">Generate log file for crontab activity</li>",
+                                        "</ul>"
+                                    ],
+        "system_mount_points" :
+                                    [
+                                        "Status: Scheduled Tasks",
+                                        "<br><br>",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Mounted File Systems - List of the currently mounted file systems on this router</li>",
+                                        "<li style=\"color:black;\">Mounted Points - Mount Points define at which point a memory device will be attached to the filesystem</li>",
+                                        "<li style=\"color:black;\">SWAP - If your physical memory is insufficient unused data can be temporarily swapped to a swap-device resulting in a higher amount of usable RAM. Be aware that swapping data is a very slow process as the swap-device cannot be accessed with the high datarates of the RAM.</li>",
+                                        "</ul>"
+                                    ],
+        "system_led_configuration" :
+                                    [
+                                        "Status: LED Configuration",
+                                        "<br><br>",
+                                        "Customizes the behaviour of the device LEDs if possible. Currently not available."
+                                    ],
+        "system_backup___flash_firmware" :
+                                    [
+                                        "Status: Backup / Flash Firmware",
+                                        "<br><br>",
+
+                                        "Backup / Restore",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Click \"Generate archive\" to download a tar archive of the current configuration files.</li>",
+                                        "<li style=\"color:black;\">Click \"Perform reset\" to reset the firmware to its initial state. (only possible with squashfs images).</li>",
+                                        "<li style=\"color:black;\">Restore Backup - To restore configuration files, you can upload a previously generated backup archive here.</li>",
+                                        "</ul>",
+
+                                        "Flash new firmware image",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Upload a sysupgrade-compatible image here to replace the running firmware. Check \"Keep settings\" to retain the current configuration (requires an OpenWrt compatible firmware image)</li>",
+                                        "<li style=\"color:black;\">Keep Settings - check to keep previous setting after flashing new firmware</li>",
+                                        "<li style=\"color:black;\">Image - click choose to use file browser to find the firmware image</li>",
+                                        "<li style=\"color:black;\">Flash Image - click button to flash the new firmware image</li>",
+                                        "</ul>"
+                                    ],
+        "system_reboot" :           [
+                                        "Status: Reboot",
+                                        "<br><br>",
+                                        "Click 'Perform Reboot' link to reboot the operating system of this router."
+                                    ],
+        "services_dynamic_dns" :
+                                    [
+                                        "Services: Dynamic DNS",
+                                        "<br><br>",
+
+                                        "Dynamic DNS allows that your router can be reached with a fixed hostname while having a dynamically changing IP address.",
+
+                                        "<br><br>",
+                                        "MYDDNS",
+                                        "<br>",
+
+                                        "<ul>",
+
+                                        "<li style=\"color:black;\">Enable - Check to enable Dynamic DNS</li>",
+
+                                        "<li style=\"color:black;\">Event interface - On which interface up should start the ddns script process.</li>",
+                                        "<li style=\"color:black;\">Service - The server that handles this routers Dynamic DNS</li>",
+
+                                        "<li style=\"color:black;\">Hostname - The Dynamic DNS Service URL or IP</li>",
+
+                                        "<li style=\"color:black;\">Username - login name to the Dynamic DNS service</li>",
+
+                                        "<li style=\"color:black;\">Password - password to the Dynamic DNS service</li>",
+
+                                        "<li style=\"color:black;\">Source of IP address - where to get the IP to post to the Dynamic DNS Service</li>",
+
+                                        "<li style=\"color:black;\">URL - The full URL/Domain that will redirect to this router</li>",
+
+                                        "<li style=\"color:black;\">Check for changed IP every - how often to check for DNS updates</li>",
+
+                                        "<li style=\"color:black;\">Check-time unit - time unit in check for IP update (minutes/hours)</li>",
+
+                                        "<li style=\"color:black;\">Force update every - how often to force an IP update</li>",
+
+                                        "<li style=\"color:black;\">Force-time unit -  time unit in for forced IP update (minutes/hours)</li>",
+
+                                        "</ul>"
+
+                                    ],
+        "services_upnp" :
+                                    [
+                                        "Services: UPnP",
+                                        "<br><br>",
+
+                                        "UPnP (Universal Plug'n'Play) is a protocol that enables programs running on a host to automatically configure port ",
+                                        "forwardings on their NAT-Router. UpnP basically allows a program to make the router to open necessary ports, without ",
+                                        "any intervention from the user, without making any check. For this reason, there is a security risk associated with ",
+                                        "enabling UPnP on your router: technically a worm or malware program could use this function to compromise security for ",
+                                        "the entire LAN.",
+
+                                        "<br><br>",
+
+                                        "Active UPnP Redirects",
+                                        "<br>",
+
+                                        "<ul>",
+
+                                        "<li style=\"color:black;\">A list of redirects from the devices in your network.</li>",
+
+                                        "</ul>",
+
+                                        "MiniUPnP settings: General",
+                                        "<br>",
+
+                                        "<ul>",
+
+                                        "<li style=\"color:black;\">Start UPnP and NAT-PMP service - check to start this service</li>",
+
+                                        "<li style=\"color:black;\">Enable UPnP functionality - check to enable UPnP</li>",
+
+                                        "<li style=\"color:black;\">Enable NAT-PMP functionality - check to enable Network Address Translation for UPnP</li>",
+
+                                        "<li style=\"color:black;\">Enable secure mode - Allow adding forwards only to requesting ip addresses</li>",
+                                        "<li style=\"color:black;\">Enable additional logging - Puts extra debugging information into the system log</li>",
+                                        "<li style=\"color:black;\">Downlink - Value in KByte/s, informational only</li>",
+                                        "<li style=\"color:black;\">Uplink - Value in KByte/s, informational only</li>",
+                                        "<li style=\"color:black;\">Port - UPnP communication port</li>",
+
+                                        "</ul>",
+
+                                        "<br><br>",
+
+                                        "MiniUPnP settings: Advanced Settings",
+                                        "<br>",
+
+                                        "<ul>",
+
+                                        "<li style=\"color:black;\">Report system instead of daemon uptime - Use System time or Daemon time in logs?</li>",
+
+                                        "<li style=\"color:black;\">Device UUID - unique identification for this router</li>",
+
+                                        "<li style=\"color:black;\">Announced serial number - serial number if any for this router</li>",
+
+                                        "<li style=\"color:black;\">Announced model number - model ID if any for this router</li>",
+
+                                        "<li style=\"color:black;\">Notify interval - how ofter should UPnP Notify Advanced settings in seconds</li>",
+
+                                        "<li style=\"color:black;\">Clean rules threshold - how many rules before old rules are deleted?</li>",
+
+                                        "<li style=\"color:black;\">Clean rules interval - how many seconds between clean rules calls?</li>",
+
+                                        "<li style=\"color:black;\">Presentation URL - what url can UPnP present its options to devices?</li>",
+
+                                        "<li style=\"color:black;\">UPnP lease file - lease file on the router to store these settings</li>",
+
+
+                                        "</ul>",
+
+                                        "MiniUPnP ACLs",
+                                        "<br>",
+
+                                        "<ul>",
+
+                                        "<li style=\"color:black;\">ACLs specify which external ports may be redirected to which internal addresses and ports.</li>",
+
+                                        "</ul>"
+
+
+                                    ],
+        "streamboost_my_network" :
+                                    [
+                                        "StreamBoost: My Network",
+                                        "<br><br>",
+                                        "Arrow Indicators to/from Internet",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Towards  Router– Bandwidth being used by all devices connected to the router (download bandwidth)</li>",
+                                        "<li style=\"color:black;\">Towards  Internet– Bandwidth being sent by all devices connected to the router (upload bandwidth)</li>",
+                                        "</ul>",
+
+                                        "Arrow indicators  to/from Router",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Towards devices – Bandwidth being used by indicated device (download bandwidth)</li>",
+                                        "<li style=\"color:black;\">Towards  router – Bandwidth being sent by indicated device up (upload bandwidth)</li>",
+                                        "</ul>",
+
+                                        "Click on Router Image",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">To see more details about  applications running on all active devices</li>",
+                                        "</ul>",
+
+                                        "Click on Device Image",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">To see more details about applications running on the selected device</li>",
+                                        "</ul>",
+
+                                        "Active / All Devices Selection",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Active devices are devices that are actively passing Internet traffic within past 15 minutes</li>",
+                                        "<li style=\"color:black;\">All devices are devices that have been active on the router since the last reboot</li>",
+                                        "</ul>"
+                                    ],
+        "my_network_select_node" :
+                                    [
+                                        "StreamBoost: Select Device",
+                                        "<br><br>",
+                                        "Device Selection (if router is selected)",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">All Active devices are listed</li>",
+                                        "<li style=\"color:black;\">Devices can be selected to show its active applications</li>",
+                                        "</ul>",
+
+                                        "Application Icons",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Identified Apps - Icons indicate complete detection and traffic shaping policies are in force</li>",
+                                        "<li style=\"color:black;\">Generic App Classes - Indicate apps that are detected to a class of applications and an appropriate policy is set for that class of apps.</li>",
+                                        "<li style=\"color:black;\">Web - General Traffic</li>",
+                                        "<li style=\"color:black;\">Web Video - Streaming</li>",
+                                        "<li style=\"color:black;\">Web Audio - Streaming</li>",
+                                        "<li style=\"color:black;\">Games - On line</li>",
+                                        "<li style=\"color:black;\">General Traffic - Indicates detected traffic that has no specific policies applied</li>",
+                                        "</ul>",
+
+                                        "Bandwidth Indication",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Top gray indicator is bandwidth being sent from the associated application</li>",
+                                        "<li style=\"color:black;\">Bottom blue indicator is bandwidth being used by the associated application</li>",
+                                        "</ul>",
+
+                                        "Experience Indicator",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Green Circle - Application running with fully allocated optimal policy. Applications should perform as expected.</li>",
+                                        "<li style=\"color:black;\">Yellow Square - Application performance protected, but constrained due to limited total bandwidth. Application performance will perform well, may see lower than expected resolutions.</li>",
+                                        "<li style=\"color:black;\">Orange Triangle - Application operating unprotected due to insufficient bandwidth may experience interruptions or slow service.</li>",
+                                        "</ul>",
+
+                                        "Up/Down Bandwidth Graphs",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Graphs show bandwidth usage to and from devices over the last minute.</li>",
+                                        "<li style=\"color:black;\">When an application is highlighted above, the associated bandwidth is highlighted in white.</li>",
+                                        "</ul>"
+
+                                    ],
+        "streamboost_bandwidth" :
+                                    [
+                                        "StreamBoost: Bandwidth Configuration",
+                                        "<br><br>",
+
+                                        "Enable StreamBoost Bandwidth Control",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Checking this box enables the StreamBoost  traffic shaping capabilities.</li>",
+                                        "<li style=\"color:black;\">If not selected, the router will operate  as a standard router without network quality of service</li>",
+                                        "</ul>",
+
+                                        "Enable Auto Bandwidth Estimation",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Checking this box allows StreamBoost to accurately measure available bandwidth on your network. Auto bandwidth measurements drives internet usage, so this may not be the best solution if under bandwidth usage restrictions.</li>",
+                                        "<li style=\"color:black;\">If not selected, you can manually enter bandwidth  (speed) values.   See instructions below.</li>",
+                                        "</ul>",
+
+                                        "Entering Download/Upload Speed using the Test button",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Uncheck Enable Auto Bandwidth Estimation</li>",
+                                        "<li style=\"color:black;\">You can use the Test button to measure the bandwidth. Be sure that all devices are not active on the network for an accurate measurement.</li>",
+                                        "<li style=\"color:black;\">If the value returns an acceptable value, save the entry.</li>",
+                                        "</ul>",
+
+                                        "Manually entering Download/Upload Speed",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Uncheck Enable Auto Bandwidth Estimation</li>",
+                                        "<li style=\"color:black;\">Manually enter the values in the dialog boxes. Any setting entered here must not exceed the actual BW allocated to your home or StreamBoost will not operate optimally.</li>",
+                                        "</ul>"
+
+                                    ],
+        "streamboost_priorities" :
+                                    [
+                                        "StreamBoost: Device Priority",
+                                        "<br><br>",
+
+                                        "Changing Device Priority",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Select the box to the left of the device icon and drag to the desired priority</li>",
+                                        "<li style=\"color:black;\">Or, use the arrows to shift one position up or down in priority</li>",
+                                        "<li style=\"color:black;\">1 is the highest priority</li>",
+                                        "</ul>",
+
+                                        "What is device priority used for?",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Device priorities are used when active applications require more bandwidth than is currently available.  In this  condition, lower priority devices may have bandwidth taken from them in order to ensure the appropriate amount of bandwidth is going to the higher priority devices</li>",
+                                        "</ul>",
+
+                                        "Device Priority FAQ’s",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Will a download from a higher priority device affect a movie , game or VoIP call on a lower priority device – No, experience-based applications are traffic shaped so that data transfer and general browsing applications do not disturb their experience.</li>",
+                                        "<li style=\"color:black;\">When should I change the priority of a device? – Changing the priority of a device should only be necessary if  the device is experiencing streaming or real-time application performance issues when other devices are running the same application types. Changing device priority will then favor the higher priority device when running similar applications.</li>",
+                                        "</ul>"
+
+                                    ],
+        "streamboost_stat__up_time" :
+                                    [
+                                        "StreamBoost: Statistics Uptime",
+                                        "<br><br>",
+
+                                        "Graph",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">The top five applications by how much time they are using the network.</li>",
+                                        "</ul>",
+
+                                        "Time Range - What time period do want to examine?",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">Last Day - Traffic from the last day</li>",
+                                        "<li style=\"color:black;\">Last Week - Traffic from the last week</li>",
+                                        "<li style=\"color:black;\">Last Month - Traffic from the last month</li>",
+                                        "</ul>",
+
+                                        "Devices - What device/devices network traffic do you want to examine?",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">All LAN Hosts - Every device that is on your network</li>",
+                                        "<li style=\"color:black;\">Specific device - Dispay just applicitions from the selected device</li>",
+                                        "</ul>"
+                                    ],
+        "streamboost_stat__downloads" :
+                                    [
+                                        "StreamBoost: Statistics Downloads",
+                                        "<br><br>",
+
+                                        "Graph",
+                                        "<ul>",
+                                        "<li style=\"color:black;\">The top applications by how many bytes they have downloaded.</li>",
+                                        "</ul>"
+                                    ]
+    }
+}
+

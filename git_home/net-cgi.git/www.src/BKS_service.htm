@@ -1,0 +1,146 @@
+<% echo_set("BKS_service.htm", "/tmp/p_ft") %>
+
+<% http_header("style/form.css", "/funcs.js", "/block_services.js") %>
+<% body_header("_BKS_service", "BKS_service.htm", "block_services") %>
+<div class="page_title">$block_serv_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" id="cancel" name="Cancel" type="button" value="$cancel_mark" onClick="location.href=\'/BKS_service.htm\';">&nbsp;&nbsp;<input class="apply_bt" name="Apply" id="apply" type="button" value="$apply_mark" onClick="return check_block_services_apply(document.forms[0])"></TD>');
+else
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel1_bt" name="Cancel" id="cancel" type="button" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" id="apply" name="Apply" type="button" value="$apply_mark" disabled></TD>');
+      
+</script>
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+<% refresh_timestamp("block_services_add", "block_services_edit") %>
+<script>
+<% blksvc_items_xss() %>
+<% save_timestamp("block_services","block_services_editnum","block_services_del","block_services_apply") %>
+var get_blockserv_ctrl='<% cfg_get("blockserv_ctrl") %>';
+var ts='<% cfg_get("block_services") %>';
+var gui_region="<% cfg_get("GUI_Region") %>";
+var netgear_region=top.netgear_region;
+var is_jp_version=((gui_region == "Japanese" && (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "JP")? 1 : 0;
+function loadvalue()
+{
+	form=document.forms[0];
+	if(get_blockserv_ctrl == '0')
+		form.skeyword[0].checked = true;
+	else if(get_blockserv_ctrl == '1')
+		form.skeyword[1].checked = true;
+	else
+		form.skeyword[2].checked = true;
+
+	if(is_jp_version == 1)
+	{
+		document.getElementById("multipppoe").style.display = "";
+		var enable_multipppoe_serv="<% cfg_get("enable_multipppoe_serv") %>";
+		if(enable_multipppoe_serv == "0")
+			form.session[0].checked = true;
+		else
+			form.session[1].checked = true;
+	}
+	else
+		document.getElementById("multipppoe").style.display = "none";
+
+}
+</script>
+
+<input type="hidden" name="select_edit">
+<input type="hidden" name="select_del">
+<TR id="multipppoe" style="display:none;">
+	<TD nowrap colspan=2>
+	<input type="radio" name="session" value="session1">$mul_session1
+	<input type="radio" name="session" value="session2">$mul_session2
+	</TD>
+</TR>
+<script>
+	if(is_jp_version == 1)
+		document.write("$bluebar");
+</script>
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_BKS_service','block')"><B>$block_ser_services_block</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type='radio' name='skeyword' id="skeyword_never" value='never'>$never_mark
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="skeyword" id="skeyword_sched" value="perschedule">$per_schedule_mark
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type=radio name=skeyword id="skeyword_always" value="always">$always_mark
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_BKS_service','table')"><B>$block_ser_service_table</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD  nowrap colspan=2>
+	<TABLE class=tables id="services_table" border=0 cellpadding=2 cellspacing=0 width=100%>
+	<TR class=table_header>
+	<TD nowrap align=center width=20%>&nbsp; </TD>
+	<TD nowrap align=center><span class="subhead">#</span></TD>
+	<TD nowrap align=center><span class="subhead">$block_ser_service_type</span></TD>
+	<TD nowrap align=center><span class="subhead">$block_ser_service_port</span></TD>
+	<TD nowrap align=center><span class="subhead">$block_ser_service_ip</span></TD>
+	</TR>
+<script>
+if (array_num > 0)
+{
+	for(i=1,j=0;i<=array_num;i++,j++)
+	{
+		var str = eval ( 'block_servicesArray' + i );
+		var each_info=str.split(' ');
+		if( i%2== 0 )
+		{
+			document.write("<TR class=\"even_line\">");
+			document.write('<TD nowrap align=center><input type="radio" name="ruleSelect" id="service_select'+i+'" value="'+j+'"></TD><TD nowrap align=center><span class="subhead">'+i+'</span></TD><TD nowrap align=center>'+each_info[4].replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/&#38;/g,"&")+'</TD><TD nowrap align=center>'+each_info[2]+'-'+each_info[3]+'</TD><TD nowrap align=center>'+each_info[6]+'</TD></TR>');
+		}
+		else
+		{
+			document.write("<TR class=\"odd_line\">");
+			document.write('<TD nowrap align=center><input type="radio" name="ruleSelect" id="service_select'+i+'" value="'+j+'"></TD><TD nowrap align=center><span class="subhead">'+i+'</span></TD><TD nowrap align=center>'+each_info[4].replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/&#38;/g,"&")+'</TD><TD nowrap align=center>'+each_info[2]+'-'+each_info[3]+'</TD><TD nowrap align=center>'+each_info[6]+'</TD></TR>');
+		}
+	}
+}		
+</script>
+	</TABLE>
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2 align=center>
+	<input class="add_bt" name="Add" id="add" type="button" value="$add_mark" onClick="if(array_num == 20){alert('$blockser_length_20'); return false;}location.href='BKS_service_add.htm';return false;">&nbsp;&nbsp;
+	<input class="edit_bt" name="Edit" id="edit" type="button" value="$edit_mark" onClick="return check_block_services_edit(document.forms[0]);">&nbsp;&nbsp;
+	<script>
+	if( master == "admin" )
+		document.write('<input class="delete_bt" name="Delete" id="delete" type="button" value="$delete_mark" onClick="return check_block_services_del(document.forms[0]);">');
+	else
+		document.write('<input class="delete1_bt" id="delete" name="Delete" type="button" value="$delete_mark" disabled');
+	</script>
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_BKS_service") %>
+</FORM>
+</BODY>
+</HTML>

@@ -1,0 +1,101 @@
+<% http_header("style/form.css", "/funcs.js", "style/advanced_home.css") %>
+
+<BODY onLoad="loadvalue();" bgcolor=#ffffff>
+<div id="content_icons">
+<% adv_icons() %>
+
+<script>
+var internet_type="<% cfg_get("internet_type") %>";
+var internet_ppp_type="<% cfg_get("internet_ppp_type") %>";
+var wan_status="<% detwan_valid() %>";
+var gui_region='<% cfg_get("GUI_Region") %>';
+var have_wifi_flag = (typeof(top.have_wifi_flag) == "undefined")? 1 : top.have_wifi_flag;
+
+function loadvalue()
+{
+	IE_RST_status();
+	document.getElementById("icon1_td").width="59%";
+    if(have_wifi_flag == 1){
+	document.getElementById("wireless_set").width="62%";
+	document.getElementById("wireless_set_an").width="62%";
+	document.getElementById("icon5_td").width="62%";
+	document.getElementById("icon6_td").width="62%";
+    }
+	setTableHeight();//use this function because when the page zoom:95% some grey line would disappear
+}
+
+function setTitleClass(argv)
+{
+	var title_height, title_div;
+	for(num=0; num<arguments.length; num++)
+	{
+		title_div = document.getElementById(arguments[num]);
+		if( title_div == null ) continue;
+		title_height = title_div.getElementsByTagName("b")[0].clientHeight;
+		if( title_height > 16 )
+			title_div.className = "title_doubleline";
+		else
+			title_div.className = "title";
+	}
+}
+
+function setTableHeight()
+{	
+	if( get_browser() == "IE" ){
+		var table_num = document.getElementsByTagName("table").length;
+		for(i=0; i<table_num; i++){
+		var table_height = document.getElementsByTagName("table")[i].clientHeight;
+		document.getElementsByTagName("table")[i].style.height = (table_height) + "px";	
+		}
+	}
+	else if( get_browser() == "Firefox" ){
+		var table_height_1 = document.getElementsByTagName("table")[1].clientHeight;
+		document.getElementsByTagName("table")[1].style.height = (table_height_1 + 1) + "px";
+	      if(have_wifi_flag == 1)
+	      {
+		var table_height_3 = document.getElementsByTagName("table")[3].clientHeight;
+		var table_height_4 = document.getElementsByTagName("table")[4].clientHeight;
+		var table_height_5 = document.getElementsByTagName("table")[5].clientHeight;
+		var table_height_6 = document.getElementsByTagName("table")[6].clientHeight;
+		document.getElementsByTagName("table")[3].style.height = (table_height_3 + 1) + "px";
+		document.getElementsByTagName("table")[4].style.height = (table_height_4 + 1) + "px";
+		document.getElementsByTagName("table")[5].style.height = (table_height_5 + 2) + "px";
+		document.getElementsByTagName("table")[6].style.height = (table_height_6 + 2) + "px";
+	      }
+	}
+}
+
+function click_direct(str1,str2)
+{
+   var sub_name= str1+"_sub";
+    if(top.document.getElementById(sub_name).style.display == "none")
+	parent.open_or_close_sub(str1);
+	
+	parent.click_adv_action(str2);
+}
+
+function click_status()
+{
+	if (internet_type == "0" && internet_ppp_type == "3")
+		window.open('RST_multipppoe_conn_status.htm','multi_connect_status','width=625,height=600,top=50,left=200,status=yes,resizable=yes');
+	else
+		window.open('RST_conn_status.htm','connect_status','width=625,height=400,top=50,left=200,status=yes,resizable=yes');
+}
+
+if(isIE()){
+	var frame_div = top.document.getElementById("formframe_div");
+	frame_div.onresize =  function(){
+		IE_RST_status();
+	}
+}
+if(get_browser() == "Opera"){
+	window.onresize =  function(){
+		IE_RST_status();
+	}
+}
+please_wait(false);
+setTitleClass("icon1_title", "icon2_title", "icon2_title_ap", "wds2_4_title", "wds5_title", "words_title", "words_title_5G", "guest_bgn", "guest_an", "wds2_4_base_title", "wds5_base_title");
+</script>
+</div><!-- end of content_icons -->
+</BODY>
+</HTML>

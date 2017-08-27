@@ -1,0 +1,86 @@
+<% http_header("style/form.css", "/funcs.js", "/qos.js") %>
+<% body_header("_qos", "QOS_rule.htm", "edit_qos_ether") %>
+<div class="page_title">$qos_add_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+        <TR>
+                <TD nowrap colspan=2 align=center>
+		<script>
+			var master="<% cfg_get("http_loginname") %>";
+			if( master=="admin" )
+				document.write('<input class="cancel_bt" type="button" name="Cancel" value="$cancel_mark" onClick="qosRule();">&nbsp;&nbsp;<input class="apply_bt" type="submit" name="apply" value="$apply_mark" onClick="return check_qos_ether(document.forms[0],\'edit\');">');
+			else
+				document.write('<input class="cancel1_bt" type="button" name="Cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit" name="apply" value="$apply_mark" disabled>');
+		</script>
+            </TD>
+        </TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<% refresh_timestamp("qos_editnum") %>
+<script>
+<!--% qos_items() %-->
+<% qos_items_xss() %>
+<!--% qosMac_items_xss() %-->
+
+var select_editnum="<% cfg_get("qoslist_editnum") %>";
+function loadvalue()
+{
+	var cf=document.forms[0];
+	var edit_str=eval('qosArray'+select_editnum).replace(/&#92;/g, "\\").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+	var each_info=edit_str.split(' ');
+	cf.name.value=change_name_online(each_info[0]);
+	cf.hidden_qos_policy_name.value=each_info[0];
+	cf.port_num.value=each_info[2];
+	cf.priority.value=each_info[3];
+}
+</script>
+<input type="hidden" name="hidden_qos_policy_name">
+<input type="hidden" name="hidden_priority_category" value=2>
+	<TR><TD nowrap colspan=2><b>$qos_priority</b> </TD></TR>
+	<TR>
+		<TD nowrap>$qos_policy_for</TD>
+		<TD nowrap> <INPUT type="text" name="name" maxLength="60" size="16" onKeyPress="return getkey('ssid', event)" value=""></TD>
+	</TR>
+	<TR>
+		<TD nowrap>$qos_priority_category</TD>
+		<TD nowrap> 
+			<SELECT name="category" onChange="change_priority()" disabled>
+				<OPTION value="0" >$qos_application</OPTION>
+				<OPTION value="1" >$qos_online</OPTION>
+				<OPTION value="2" selected>$qos_ether</OPTION>
+				<OPTION value="3" >$qos_mac</OPTION>
+			</SELECT>
+		</TD>		
+	</TR>
+	<TR>
+		<TD nowrap>$qos_ether</TD>
+		<TD nowrap> 
+			<SELECT name="port_num" onChange="change_serv_ether()">
+				<OPTION value="1" >1</OPTION>
+				<OPTION value="2" >2</OPTION>
+				<OPTION value="3" >3</OPTION>
+				<OPTION value="4" >4</OPTION>
+			</SELECT>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>$qos_priority</TD>
+		<TD nowrap> 
+			<SELECT name="priority">
+				<OPTION value="0" >$qos_highest</OPTION>
+				<OPTION value="1" selected>$qos_high</OPTION>			
+				<OPTION value="2" >$qos_normal</OPTION>
+				<OPTION value="3" >$qos_low</OPTION>
+			</SELECT>
+		</TD>		
+	</TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_qos") %>
+</FORM>
+</BODY>
+</HTML>

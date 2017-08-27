@@ -1,0 +1,460 @@
+<% http_header("style/form.css", "/funcs.js", "/bas_l2tp.js") %>
+<% body_header("_BAS_pptp", "BAS_update.htm", "l2tp") %>
+<div class="page_title">$int_setup</div>
+
+<script>
+var run_test="<% cfg_get("run_test") %>";
+var in_hijack=( "<% cfg_get("dns_hijack") %>" == "1" && "<% cfg_get("hijack_process") %>" != "3" );
+<% cfg_set("run_test", "no") %>
+<% commit() %>
+var ipv6_type = "<% cfg_get("ipv6_type") %>";
+var connection_type = "<% cat_file("/tmp/ipv6_auto_output") %>";
+var wan_factory_mac="<% cfg_get("wan_factory_mac") %>";
+var wan_remote_mac="<% cfg_get("wan_remote_mac") %>";
+var l2tp_get_this_mac="<% cfg_get("wan_l2tp_this_mac") %>";
+var gui_region="<% cfg_get("GUI_Region") %>";
+var lan_ip="<% cfg_get("lan_ipaddr") %>";
+var lan_subnet="<% cfg_get("lan_netmask") %>";
+var netgear_region=top.netgear_region;
+var wanproto_type="l2tp";
+
+var old_endis_ddns="<% cfg_get("endis_ddns") %>";
+var vpn_enable = "<% cfg_get("vpn_enable") %>";
+
+//bug 23653:add a new checkox 'Enable automatic Internet connection reset at'
+var bas_auto_conn_flag="<% cfg_get("bas_auto_conn_flag") %>";
+var bas_conn_time_num="<% cfg_get("bas_conn_time_num") %>";
+if ( bas_conn_time_num == "" ) // to fix bug 23294
+	bas_conn_time_num="0";
+var auto_conn_flag=parent.parent.auto_conn_flag;
+var autoconn_flag=(auto_conn_flag == 1 && ((gui_region == "German" &&  (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "GR")) ? 1 : 0;
+
+var wan_mtu_now='<% wan_mtu() %>';
+var l2tp_empty=<% cfg_get_length("wan_l2tp_password") %>;
+var readycloud_enable = "<% cfg_get("readycloud_enable") %>";
+var upnp_enableMedia = "<% cfg_get("upnp_enableMedia") %>";
+if (l2tp_get_this_mac == "")
+	l2tp_get_this_mac="<% wan_mac() %>";
+
+function init_passwd()
+{
+	var form=document.forms[0];
+	if(l2tp_empty == "0")
+		form.l2tp_passwd.value = "";
+	else
+		form.l2tp_passwd.value = "*********";
+}
+
+function loadvalue()
+{
+	var form=document.forms[0];
+	
+	if(bas_auto_conn_flag == "1")
+ 		form.auto_conn_24hr.checked = true;
+ 	else
+ 		form.auto_conn_24hr.checked = false;
+
+ 	if(autoconn_flag == 1)
+ 		document.getElementById("auto_conn_play").style.display="";
+ 	else
+ 		document.getElementById("auto_conn_play").style.display="none";
+	form.auto_conn_time.options[eval(bas_conn_time_num)].selected =true;
+	
+	if( l2tp_empty == "0" )
+	{
+		if( get_browser() == "Firefox" )
+		{
+			form.l2tp_passwd.type = "text";
+		}
+		else 
+		{
+			form.l2tp_passwd.outerHTML = '<input type="text" name="l2tp_passwd" id="l2tp_passwd" maxlength="60" size="16" onFocus="this.select();change_l2tp_password(this);" onKeyPress="return getkey(\'ssid\', event)">';
+		}
+	}
+	else if( get_browser() == "IE" )
+	{
+		form.l2tp_passwd.outerHTML = '<input type="password" name="l2tp_passwd" id="l2tp_passwd" maxlength="60" size="16" style="width: 131px" onFocus="change_l2tp_password(this);" onKeyPress="return getkey(\'ssid\', event)">';
+	}
+
+	init_passwd();
+	form.l2tp_dod.value="<% cfg_get("wan_l2tp_demand") %>";
+	show_idleout(form,form.l2tp_dod.value);
+	
+	if(ipv6_type=="6to4" || (ipv6_type=="autoDetect"&&connection_type=="6to4 Tunnel"))
+	{
+		form.l2tp_dod.value="0";	//bug 31125 l2tp_dod should be changed to "Always On" and gray out
+		form.l2tp_dod.disabled = true;
+	}
+	else
+	{
+		form.l2tp_dod.disabled = false;
+	}
+
+	var l2tp_get_myip="<% cfg_get("wan_l2tp_local_ip") %>";
+	var l2tp_get_wan_assign="<% cfg_get("wan_l2tp_wan_assign") %>";
+	var l2tp_get_gateway="<% cfg_get("l2tp_gw_static_route") %>";
+	var l2tp_get_subnet="<% cfg_get("wan_l2tp_eth_mask") %>";
+	if (l2tp_get_wan_assign == 0)
+	{
+		form.myip_1.value=form.myip_2.value=form.myip_3.value=form.myip_4.value="";
+		setDisabled(true, form.mygw_1, form.mygw_2, form.mygw_3, form.mygw_4);
+		setDisabled(true, form.mymask_1, form.mymask_2, form.mymask_3, form.mymask_4);
+	}
+	else if(l2tp_get_myip!="")
+        {
+		var ip_array=l2tp_get_myip.split('.');
+		form.myip_1.value=ip_array[0];
+		form.myip_2.value=ip_array[1];
+		form.myip_3.value=ip_array[2];
+		form.myip_4.value=ip_array[3];
+	}
+	if( l2tp_get_gateway!="" )
+    	{
+		var gateway_array=l2tp_get_gateway.split('.');
+        	form.mygw_1.value=gateway_array[0];
+        	form.mygw_2.value=gateway_array[1];
+        	form.mygw_3.value=gateway_array[2];
+        	form.mygw_4.value=gateway_array[3];
+    	}
+	if(l2tp_get_subnet!="")
+       	{
+                var subnet_array=l2tp_get_subnet.split('.');
+                form.mymask_1.value=subnet_array[0];
+               	form.mymask_2.value=subnet_array[1];
+               	form.mymask_3.value=subnet_array[2];
+              	form.mymask_4.value=subnet_array[3];
+       	}
+
+	var l2tp_get_dns_assign='<% cfg_get("wan_l2tp_dns_assign") %>';
+	if(l2tp_get_dns_assign == '0')
+		form.DNSAssign[0].checked = true;
+	else
+		form.DNSAssign[1].checked = true;
+	setDNS(form);	
+	var l2tp_get_dns1="<% bas_l2tp_dns("0") %>";
+	if(l2tp_get_dns1 != "")
+	{
+		var dns1_array=l2tp_get_dns1.split('.');
+		form.DAddr1.value=dns1_array[0];
+		form.DAddr2.value=dns1_array[1];
+		form.DAddr3.value=dns1_array[2];
+		form.DAddr4.value=dns1_array[3];
+	}
+	var l2tp_get_dns2="<% bas_l2tp_dns("1") %>";
+	if(l2tp_get_dns2 != "")
+	{
+		var dns2_array=l2tp_get_dns2.split('.');
+		form.PDAddr1.value=dns2_array[0];
+		form.PDAddr2.value=dns2_array[1];
+		form.PDAddr3.value=dns2_array[2];
+		form.PDAddr4.value=dns2_array[3];
+	}
+	var l2tp_get_mac_assign='<% cfg_get("wan_l2tp_mac_assign")%>';
+	if(l2tp_get_mac_assign == '0')
+	{
+		form.MACAssign[0].checked = true;
+		setMAC(form, wan_factory_mac);
+	}
+	else if(l2tp_get_mac_assign == '1')
+	{
+		form.MACAssign[1].checked = true;
+		setMAC(form, wan_remote_mac);
+	}
+	else
+	{
+		form.MACAssign[2].checked = true;
+		setMAC(form, l2tp_get_this_mac);
+	}
+	l2tp_servip_update();
+	goTestApply();	
+}
+function show_idleout(form,time)
+{
+	if( time == 1 )
+	{
+
+		form.l2tp_idletime.disabled = false;
+		form.auto_conn_24hr.disabled = true;
+		form.auto_conn_time.disabled = true;
+	}
+	else
+	{
+		form.l2tp_idletime.disabled = true;
+		form.auto_conn_24hr.disabled = false;
+		form.auto_conn_time.disabled = false;
+	}		
+}
+var old_wan_type="<% cfg_get("wan_proto") %>";
+
+function cilck_jump()
+{
+  if(top.dsl_enable_flag == 0)
+    goto_formframe("BAS_ether.htm");
+  else
+    goto_formframe("BAS_ether_dsl.htm");
+}
+</script>
+
+<input type="hidden" name="change_wan_type">
+<input type="hidden" name="run_test" value="">
+<input type="hidden" name="l2tp_myip">
+<input type="hidden" name="l2tp_gateway">
+<input type="hidden" name="l2tp_subnet">
+<input type="hidden" name="l2tp_dnsaddr1">
+<input type="hidden" name="l2tp_dnsaddr2">
+<input type="hidden" name="hidden_l2tp_idle_time">
+<input type="hidden" name="conflict_wanlan">
+<input type="hidden" name="hid_mtu_value">
+<input type="hidden" name="hidden_conn_time_num">
+<input type="hidden" name="hidden_auto_conn_flag">
+<input type="hidden" name="hid_enable_vpn">
+<input type="hidden" name="hidden_pwd_change" value="0">
+
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+document.write('<TR><TD nowrap colspan=2 align=center><input class="common_bt" type="button" name="Test" id="test" value="$test_mark" onClick="return check_l2tp(document.forms[0],1)">&nbsp;&nbsp;<input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'BAS_l2tp.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onClick="return check_l2tp(document.forms[0],0)">&nbsp;&nbsp;</TD></TR>');
+else
+document.write('<TR><TD nowrap colspan=2 align=center><input class="common1_bt" type="button" name="Test" id="test" value="$test_mark" disabled>&nbsp;&nbsp;<input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="button" name="Apply" id="apply" value="$apply_mark" disabled>&nbsp;&nbsp;</TD></TR>');
+</script>
+
+
+</TABLE>
+
+</div><!--button-->
+<div id="bas_top">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR><TD nowrap>
+<A tabindex=-1 href="javascript:loadhelp('_BAS_pptp','question')"><B>$basic_top_info</B></A>
+</TD></TR>
+<TR>
+        <TD nowrap>
+        <input onclick=''  type="radio" name="loginreq" id="loginreq" value="pppoe" checked="true">$yes_mark
+        </TD>
+</TR>
+<TR>
+        <TD nowrap>
+        <input onclick='cilck_jump()' type="radio" name="loginreq" id="no_loginreq" value="dhcp">$no_mark
+        </TD>
+</TR>
+$bluebar
+</TABLE>
+</div> <!-- bas_top -->
+<div id="main" class="main_bas">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pptp','isp')"><B>$basic_intserv_provider</B></A>
+	</TD>
+	<TD nowrap align=right>
+	<select name="login_type" id="login_type" onChange="change_serv(document.forms[0])">
+		<option value="PPTP" >$basic_intserv_pptp</option>
+		<option value="L2TP" selected>$basic_intserv_l2tp</option>
+<script>
+	if(parent.parent.bigpond_flag == 1)
+		document.write('<option value="Telstra Bigpond">$basic_intserv_bpa</option>');
+</script>
+		<option value="PPPoE">$basic_intserv_pppoe</option>
+	</select>
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pptp','login')"><B>$basic_pppoe_login</B></A>
+	</TD>
+	<TD nowrap align=right>
+	<input type="text" name="l2tp_username" id="l2tp_username" maxLength="60" size="16" onKeyPress="return getkey('ssid', event)" value="<% cfg_sed_xss("wan_l2tp_username") %>">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pptp','password')"><B>$basic_pppoe_passwd</B></A>
+	</TD>
+	<TD nowrap align=right>
+	<input type="password" name="l2tp_passwd" id="l2tp_passwd" maxlength="60" size="16" onFocus="change_l2tp_password(this);" onKeyPress="return getkey('ssid', event)">
+	</TD>
+</TR>
+<TR> 
+	<TD><A tabindex=-1 href="javascript:loadhelp('_BAS_pptp','conn_mode')"><B>$basic_int_connection_mode</B></A></TD> 
+	<TD align=right>
+	<select name="l2tp_dod" id="l2tp_dod" onchange="show_idleout(document.forms[0],this.value)"> 
+		<option value="0">$basic_mode_always</option>
+		<option value="1">$basic_mode_dial</option>
+		<option value="2">$basic_mode_manual</option>
+	</select>
+	</TD>
+</TR>
+<TR>
+	<TD>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pptp','idletime')">$basic_pppoe_idle</A>
+	</TD>
+	<TD nowrap align=right>
+	<input type="text" name="l2tp_idletime" id="l2tp_idletime" maxLength="5" size="16" value="<% idle_time("wan_l2tp_idle_time") %>" onKeyPress="return getkey('num', event)">
+	</TD>
+</TR>
+<TR id=auto_conn_play style="display:none">
+	<td colspan="2">
+	<input type="checkbox" name="auto_conn_24hr" value="">$bsaic_settings_auto_internet_conn
+	<select class="divselect" name="auto_conn_time">
+               <option value="1" selected>00:00</option>
+               <option value="2">00:30</option>
+               <option value="3">01:00</option>
+               <option value="4">01:30</option>
+               <option value="5">02:00</option>
+               <option value="6">02:30</option>
+               <option value="7">03:00</option>
+               <option value="8">03:30</option>
+               <option value="9">04:00</option>
+               <option value="10">04:30</option>
+               <option value="11">05:00</option>
+               <option value="12">05:30</option>
+               <option value="13">06:00</option>
+               <option value="14">06:30</option>
+               <option value="15">07:00</option>
+               <option value="16">07:30</option>
+               <option value="17">08:00</option>
+               <option value="18">08:30</option>
+               <option value="19">09:00</option>
+               <option value="20">09:30</option>
+               <option value="21">10:00</option>
+               <option value="22">10:30</option>
+               <option value="23">11:00</option>
+               <option value="24">11:30</option>
+               <option value="25">12:00</option>
+               <option value="26">12:30</option>
+               <option value="27">13:00</option>
+               <option value="28">13:30</option>
+               <option value="29">14:00</option>
+               <option value="30">14:30</option>
+               <option value="31">15:00</option>
+               <option value="32">15:30</option>
+               <option value="33">16:00</option>
+               <option value="34">16:30</option>
+               <option value="35">17:00</option>
+               <option value="36">17:30</option>
+               <option value="37">18:00</option>
+               <option value="38">18:30</option>
+               <option value="39">19:00</option>
+               <option value="40">19:30</option>
+               <option value="41">20:00</option>
+               <option value="42">20:30</option>
+               <option value="43">21:00</option>
+               <option value="44">21:30</option>
+               <option value="45">22:00</option>
+               <option value="46">22:30</option>
+               <option value="47">23:00</option>
+               <option value="48">23:30</option>
+	</select>
+	</td>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pptp','myip')"><B>$basic_pptp_myip</B></A>
+	</TD>
+	<TD nowrap align=right><!--bug 22411:when manually input IP,don't click the mouse,the subnet mask can be used -->
+	<input type="text" name="myip_1" id="myip1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onChange="myip_update('bas');" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);myip_update('bas');" >.
+	<input type="text" name="myip_2" id="myip2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onChange="myip_update('bas');" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);myip_update('bas');" >.
+	<input type="text" name="myip_3" id="myip3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onChange="myip_update('bas');" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);myip_update('bas');" >.
+	<input type="text" name="myip_4" id="myip4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onChange="myip_update('bas');" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);myip_update('bas');" >
+	<input type="hidden" name="WANAssign" value="1">
+	</TD>
+</TR>
+<TR id=l2tp_sub> 
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pptp','myip')"><B>$lan_mark_subnet</B></A>
+	</TD><TD nowrap align=right>
+        <input type="text" name="mymask_1" id="mymask1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">.
+        <input type="text" name="mymask_2" id="mymask2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">.
+        <input type="text" name="mymask_3" id="mymask3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">.
+        <input type="text" name="mymask_4" id="mymask4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event)" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pptp','serverip')"><B>$basic_pptp_servip</B></A>
+	</TD>
+	<TD nowrap align=right><!--bug 20279-->
+	<input type="text" size="33" name="l2tp_serv_ip" id="l2tp_serv_ip" maxlength="255" onFocus="this.select();" onblur="l2tp_servip_update();" onKeyPress="return getkey('ddns_hostname', event)" onkeyup="l2tp_servip_update();" value="<% cfg_sed_xss("wan_l2tp_server_ip") %>">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pptp','gateway')"><B>$basic_int_gateway</B></A>
+	</TD>
+	<TD nowrap align=right>
+	<input type="text" name="mygw_1" id="mygw1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="mygw_2" id="mygw2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="mygw_3" id="mygw3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="mygw_4" id="mygw4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	<input type="hidden" name="Gateway" value="">
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pptp','DNSaddress')"><B>$basic_int_dns</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="DNSAssign" id="dns_assign_auto" value="0" onClick="setDNS(document.forms[0])">$basic_int_autodns
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="DNSAssign" id="dns_assign_static" value="1" onClick="setDNS(document.forms[0])">$basic_int_these
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=20 height=12 border=0>$basic_int_primary_dns</TD>
+	<TD nowrap align=right>
+	<input type="text" name="DAddr1" id="primary_dns_address1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="DAddr2" id="primary_dns_address2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="DAddr3" id="primary_dns_address3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="DAddr4" id="primary_dns_address4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=20 height=12 border=0>$basic_int_second_dns</TD>
+	<TD nowrap align=right>
+	<input type="text" name="PDAddr1" id="second_dns_address1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="PDAddr2" id="second_dns_address2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="PDAddr3" id="second_dns_address3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="PDAddr4" id="second_dns_address4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pptp','localaddress')"><B>$basic_int_mac</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="MACAssign" id="mac_assign_default" value="0" onClick="setMAC(document.forms[0], wan_factory_mac)">$basic_int_default_mac
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="MACAssign" id="mac_assign_computer" value="1" onClick="setMAC(document.forms[0], wan_remote_mac)">$basic_int_computer_mac
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<input type="radio" name="MACAssign" id="mac_assign_define" value="2" onClick="setMAC(document.forms[0], l2tp_get_this_mac)">$basic_int_this_mac
+	</TD>
+	<TD nowrap align=right>
+	<input type="text" value="" name="Spoofmac" id="spoof_mac" maxlength="17" size="20" onKeyPress="return getkey('mac',event)">
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+</div><!--main-->
+<% help_box("1","_BAS_pptp") %>
+</FORM>
+</BODY>
+</HTML>

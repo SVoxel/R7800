@@ -1,0 +1,15 @@
+<% http_header("style/advanced.css") %>
+<body>
+<div id="top">
+<div id="logo"> </div>
+<% top_hardware_version() %>
+<div id="firm_version" name="firm_version">$router_firmware_version<br /><% cat_file("/firmware_version") %></div>
+</div>
+
+<div id="container" class="container_center">
+	<iframe name="formframe" id="formframe" allowtransparency="true" height="100%" width="100%" scrolling="no" frameborder="0" src="debug_run.htm">
+	</iframe>
+</div>
+
+</body>
+</html>

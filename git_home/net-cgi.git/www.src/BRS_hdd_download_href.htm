@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<!--link rel="stylesheet" type="text/css" href="hdd_cd_less.css" /-->
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<link rel="stylesheet" type="text/css" href="style/form.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<% hijack_language() %>
+</head>
+<style>
+.wizard_words_div .st_header_font{font-family:Arial; font-size:12pt; font-weight:bold; color:#9D98FF;}
+.wizard_words_div tr td {font-family:Arial; font-size:10pt; font-weight:normal; color:#404040;}
+</style>
+<body >
+<form method="post" action="" >
+<input type="hidden" name="submit_flag" />
+<% cfg_set("from_download", "1") %>
+
+<script>
+<% refresh_timestamp( "download_confile") %>
+
+var ts="<% cfg_get("download_confile") %>";
+
+var download_desktop = "<% cfg_get("hdd_download_desktop") %>"; //onLoad=loadvalue();
+var download_readyshare = "<% cfg_get("hdd_download_readyshare") %>";
+var is_Mac = detectOS();
+var cf = document.forms[0];
+var downloadStatus = 0;
+var downloadIndex = 0;
+var downloadCount = 2;
+var is_in_cd_less = isCDLESS();
+
+function isCDLESS()
+{
+       var flag = top.location.href.indexOf("BRS_index.htm") > -1 ;
+       return flag;
+}
+
+window.onblur = start_download;
+function  start_download(){
+	if(downloadStatus == 1)
+		downloadStatus = 2;
+}
+
+window.onfocus = finish_download;
+function finish_download(){
+	if(downloadStatus == 2 && downloadIndex < downloadCount -1){
+		downloadStatus = 1;
+		downloadIndex = downloadIndex + 1;
+	}else if(downloadIndex == downloadCount -1){
+		downloadStatus = 0;
+		downloadIndex = 0;
+	}
+
+}
+
+function download()
+{
+   if ( download_desktop == "1")
+   {
+		if( is_Mac == "Mac")
+		{
+				document.write("<img id=\"download_mac_genie\" src=\"http://updates1.netgear.com/readysharevault/ReadySHARE_Vault.jpg\" onload=\"download_app('mac_genie')\" style=\"display:none\" onerror='download_fail(\"mac_genie\")'>");
+		}
+		else
+		{
+				document.write("<img id=\"download_genie\" src=\"http://updates1.netgear.com/readysharevault/ReadySHARE_Vault.jpg\" style=\"display:none\" onload=\"download_app('genie')\" onerror='download_fail(\"genie\")'>");
+		}
+   }
+   if  ( download_readyshare == "1")
+   {
+	   document.write("<img id=\"download_readyshare\" src=\"http://updates1.netgear.com/readysharevault/ReadySHARE_Vault.jpg\" style=\"display:none\" onload=\"download_app('readshare')\" onerror='download_fail(\"readshare\")'>");
+   }
+	
+}
+
+function download_fail(argv)
+{
+	if(argv == "mac_genie")
+		alert(not_download+" "+mac_genie+" "+now+","+install_later);
+	else
+		alert(not_download+" "+argv+" "+now+","+install_later);
+	if( is_in_cd_less )
+		top.document.getElementById("content_frame").scrolling="no";
+}
+
+function download_app(argv)
+{
+	downloadStatus = 1;
+	var ifr = document.createElement("IFRAME");
+	if(argv == "genie")
+		ifr.src="http://updates1.netgear.com/netgeargenie/update/NETGEARGenie-install.exe";
+	else if(argv == "mac_genie")
+		ifr.src="http://updates1.netgear.com/netgeargenie/mac/update/NETGEARGenieInstaller.dmg";
+	else if(argv == "readshare")
+		ifr.src="http://updates1.netgear.com/readysharevault/ReadySHAREVault-install.exe";
+	ifr.frameBorder = 0;
+	ifr.scrolling ="no";
+	ifr.width = 0;
+	ifr.height =0;
+	document.body.appendChild(ifr);
+}
+</script>
+<div id="choices_div" class="wizard_words_div">
+	<TABLE align=center width=80% border=0 cellpadding=0 cellspacing=1>
+<script>
+	if( download_desktop == "1" || download_readyshare == "1")
+		document.write('<TR height=40px;> <TD colspan=2 class="st_header_font">'+bh_downloading+' </TD></TR>')
+	else{	
+		cf.submit_flag.value="download_confile";
+		cf.action="/func.cgi?/AUTO_search.htm timestamp="+ts;
+		if( is_in_cd_less )
+			top.document.getElementById("content_frame").scrolling="no";
+		cf.submit();
+	}
+</script>
+	<TR height=40px; id="genie_mac_show" style="display:none"> <TD colspan=2 ><script>document.write(install_start+" " + mac_genie+ ".");</script></TD></TR>
+	<TR height=40px; id="genie_show" style="display:none"> <TD colspan=2 ><script>document.write(bh_dl_genie1);</script></TD></TR>
+	<TR height=40px; id="rs_show" style="display:none" > <TD colspan=2 ><script>document.write(bh_dl_vault1);</script></TD></TR>
+	<TR height=40px; id="genie_rs_show" style="display:none" > <TD colspan=2 ><script>document.write(bh_dl_all1);</script></TD></TR>
+
+	<tr height=40px; id="next_genie_show" style="display:none"> <td colspan=2 ><script>document.write(bh_dl_genie2);</script></td></tr>
+	<tr height=40px; id="next_rs_show" style="display:none"> <td colspan=2 ><script>document.write(bh_dl_vault2);</script></td></tr>
+	<tr height=40px; id="next_genie_rs_show" style="display:none"> <td colspan=2 ><script>document.write(bh_dl_all2);</script></td></tr>
+	</TABLE>
+	
+	<div id="wait_img" align="center" class="waiting_img_div">
+	<img src="/image/wait30.gif" />
+	</div>
+	
+	<div id="buttons_div_02" class="wizard_buttons_div" align="center">
+	  <TABLE align=center width="90%" border=0 cellpadding=0 cellspacing=2>
+         <TR><TD nowrap align=right>
+         <script>
+	      document.write('<INPUT class="short_common_hdd" type="button" name="Next" value="'+bh_next_mark+' >'+'" onClick="download_next( document.forms[0])">');
+	 </script>
+	     </TD></TR>
+      </TABLE>
+	</div>	
+</div>
+
+<script>
+show_first();
+function show_first()
+{
+
+	document.getElementById("genie_mac_show").style.display="none";
+	document.getElementById("genie_show").style.display="none";
+	document.getElementById("rs_show").style.display="none";
+	
+	if( download_desktop == "1" && download_readyshare == "1")
+	{
+		document.getElementById("genie_rs_show").style.display="";
+		document.getElementById("next_genie_rs_show").style.display="";
+		downloadCount = 2;
+
+	}
+	else if( download_desktop == "1" && download_readyshare == "0"){
+		document.getElementById("genie_show").style.display="";
+		document.getElementById("next_genie_show").style.display="";
+		downloadCount = 1;
+
+	}
+	else if(download_desktop == "0" && download_readyshare == "1"){
+		document.getElementById("rs_show").style.display="";
+		document.getElementById("next_rs_show").style.display="";
+		downloadCount = 1;
+	}
+}
+
+download();
+
+function download_next()
+{
+	cf = document.forms[0];
+
+	cf.submit_flag.value="download_confile";
+	cf.action="/func.cgi?/AUTO_search.htm timestamp="+ts;
+	if( is_in_cd_less )
+		top.document.getElementById("content_frame").scrolling="no";
+	cf.submit();
+}
+</script>
+</form>
+</body>
+</html>

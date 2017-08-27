@@ -1,0 +1,46 @@
+<!doctype html>
+
+<!--
+ * Copyright (c) 2014 Qualcomm Atheros, Inc.
+ *
+ * All Rights Reserved.
+ * Qualcomm Atheros Confidential and Proprietary
+-->
+<html lang="en" ng-app="ozkerDebug">
+<head>
+  <meta charset="utf-8">
+  <title>Ozker Debug</title>
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css"/>
+  <style>
+    table.table td img {
+      height: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="streamboost_state" style="display:none;">1</div>
+
+  <div class="container">
+    <div ng-view></div>
+  </div>
+
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+  <script src="/js/URI.min.js"></script>
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/fxEnvironment.js"></script>
+  <script src="/js/angular-route.min.js"></script>
+  <script src="/js/angular-stats.js"></script>
+  <script src="/js/angular-ozker.js"></script>
+  <script src="/js/angular-poll.js"></script>
+  <script src="/js/angular-rate.js"></script>
+  <script src="/js/angular-translate.min.js"></script>
+
+  <script src="/js/angular-fallback-loader.js"></script>
+  <script src="/js/angular-translate-partial-fallback-loader.js"></script>
+  <script src="/js/angular-icon-loader.js"></script>
+
+  <script src="/debug/js/app.js"></script>
+  <script src="/debug/js/controllers.js"></script>
+  <script src="/debug/js/filters.js"></script>
+</body>
+</html>

@@ -1,0 +1,734 @@
+<!--% cfg_set("set_wireless_tag", "0") %-->
+<% http_header("style/form.css", "/funcs.js", "/wlan_bridge.js") %>
+<% nohelp_header("rae_bridge_wireless_settings.html", "bridge_wlan") %>
+<div class="page_title">$wlan_mark</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if(master=="admin")
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'rae_bridge_wireless_settings.html\';">&nbsp;&nbsp;<input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onclick="check_wlan();"></TD>');
+else
+	document.write(' <TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit" name="Apply" value="$apply_mark" disabled></TD>');
+</script>      
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<script>
+var netgear_region=top.netgear_region;
+var host_name=top.host_name;
+var wds_support_wpa = top.wds_support_wpa;
+var gui_region="<% cfg_get("GUI_Region") %>"
+//var pr_flag = (( gui_region == "Chinese" && (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "PR") ? 1 : 0
+var pr_wds_support_wpa=( wds_support_wpa == 1  && pr_flag == 1) ? 1 : 0;
+
+var lanIP = "<% cfg_get("lan_ipaddr") %>";
+var lanSubnet = "<% cfg_get("lan_netmask") %>";
+var wanIP = "<% wan_ip() %>";
+var wanSubnet = "<% wan_netmask() %>";
+
+var str_wpae="";
+var str_none="";
+var str_wep="";
+var str_wpa="";
+var str_wpa2="";
+var str_wpas="";
+var str_none_an="";
+var str_wep_an="";
+var str_wpa_an="";
+var str_wpa2_an="";
+var str_wpas_an="";
+
+<% dfs_radar_detect() %>
+var an_router_flag = opener.parent.an_router_flag;
+
+//var an_router_flag = 1;
+var str_have_an="";
+
+var dfs_channel_router_flag = top.dfs_channel_router_flag;
+var dfs_channel2_router_flag = top.dfs_channel2_router_flag;/* bug 25665: DFS channel supported in canada,Europe and Austrilia */
+var enable_ht160 = "<% cfg_get("wla_ht160") %>";
+<% show_bridge_wlan_variable() %>
+
+
+if(wl_sectype == ""  || wl_sectype == 5  || wl_sectype == 6)
+	wl_sectype=1;
+
+if(wla_sectype == "" || wla_sectype == 2  || wla_sectype == 3 || wla_sectype == 5 || wla_sectype == 6)
+	wla_sectype=1;	
+	
+var href = window.location.href;
+var ac_router = href.split("=");
+var ac_router_flag = ac_router[1];
+function mode_change( )
+{
+	var form=document.forms[0];
+	document.getElementById("bgn_wpas").style.display="none";
+	document.getElementById("bgn_wpa_en").style.display="none"; 
+	document.getElementById("wep_an_54").style.display="none";
+	document.getElementById("wpa_psk_an_54").style.display="none";
+	document.getElementById("an_wpas").style.display="none";
+	document.getElementById("wpa_wpa2_an_enterprise").style.display="none";
+	if(form.bridge_sec_type.selectedIndex == 0)
+	{
+		document.getElementById("ssid_bgn").style.display="";
+		document.getElementById("ssid_a").style.display="none";
+		document.getElementById("bgn_tab").style.display="";
+		document.getElementById("an_tab").style.display="none";
+		document.getElementById("bgn_sec").style.display="";
+		document.getElementById("bgn_non").style.display="";
+		document.getElementById("wep_54").style.display="";
+		document.getElementById("wpa_psk_54").style.display="";
+		document.getElementById("bgn_wpa2").style.display="";
+		document.getElementById("an_sec").style.display="none";
+		document.getElementById("an_non").style.display="none";
+		document.getElementById("an_wpa2").style.display="none";
+		document.getElementById("bu_line").style.display="";
+		getObj("view_a").innerHTML='';
+		setSecurity(wl_sectype);
+		
+	}
+	else
+	{
+		document.getElementById("ssid_bgn").style.display="none";
+		document.getElementById("ssid_a").style.display="";
+		document.getElementById("bgn_tab").style.display="none";
+		document.getElementById("an_tab").style.display="";
+		document.getElementById("bgn_sec").style.display="none";
+		document.getElementById("bgn_non").style.display="none";
+		document.getElementById("wep_54").style.display="none";
+		document.getElementById("wpa_psk_54").style.display="none";
+		document.getElementById("bgn_wpa2").style.display="none";
+		document.getElementById("an_sec").style.display="";
+		document.getElementById("an_non").style.display="";
+		document.getElementById("an_wpa2").style.display="";
+		document.getElementById("bu_line").style.display="none";
+		getObj("view").innerHTML='';
+		setSecurity_an(wla_sectype);
+	}
+}
+</script>
+<input type="hidden" name="generate_flag">
+<input type="hidden" name="old_length">
+<input type="hidden" name="old_length_a">
+<input type="hidden" name="wl_sec_wpaphrase_len">
+<input type="hidden" name="wla_sec_wpaphrase_len">
+<input type="hidden" name="wl_hidden_wpa_psk">
+<input type="hidden" name="wla_hidden_wpa_psk">
+<input type="hidden" name="hidden_sec_type">
+<input type="hidden" name="wep_press_flag">
+<input type="hidden" name="wpa1_press_flag" value=0>
+<input type="hidden" name="wpa2_press_flag" value=0>
+<input type="hidden" name="wpas_press_flag" value=0>
+<input type="hidden" name="wla_wpa1_press_flag" value=0>
+<input type="hidden" name="wla_wpa2_press_flag" value=0>
+<input type="hidden" name="wla_wpas_press_flag" value=0>
+<input type="hidden" name="wps_change_flag" value="<% cfg_get("wps_status") %>">
+<input type="hidden" name="hidden_enable_guestNet">
+<input type="hidden" name="hidden_enable_ssidbro">
+<input type="hidden" name="hidden_allow_guest">
+<input type="hidden" name="radiusServerIP">
+<input type="hidden" name="radiusServerIP_a">
+
+<input type="hidden" name="wl_ssid">
+<input type="hidden" name="wla_ssid">
+<input type="hidden" name="wl_hidden_sec_type">
+<input type="hidden" name="wla_hidden_sec_type">
+
+<input type="hidden" name="hidden_WpaeRadiusSecret">
+<input type="hidden" name="hidden_WpaeRadiusSecret_a">
+
+<input type="hidden" name="wl_apply_flag" value="0">
+
+<input type="hidden" name="hid_bridge_sec_type">
+
+<TR> 
+	<TD nowrap width=35%>$wl_network_chose :</TD>
+	<TD nowrap>
+	<select name="bridge_sec_type" id="bridge_sec_type" size="1" onchange="mode_change()">
+		<option value="Wireless Network(2.4GHz b/g/n)" selected>$wlan_network_mark<script> if( an_router_flag == 1) document.write("(2.4GHz b/g/n)")</script></option>
+		<option value="Wireless Network(5GHz a/n)"><script>
+		if( ac_router_flag == 1)
+			document.write("$wlan_network_ac_mark")
+		else
+			document.write("$wlan_network_mark (5GHz a/n)")
+	</script></option>	
+    </select>
+	</TD>
+</TR>
+<TR id=ssid_bgn> 
+	<TD nowrap width=35% >$wlan_mark_ssid:</TD>
+	<TD nowrap><input type="text" id="ssid" name="ssid" value="<% cfg_get_ssid_value("bridge_wl_ssid") %>" size="20" maxlength="32"></TD>
+</TR>
+<tr style="display:none">
+	<td><input type="text" name="wla1ssid" value="<% cfg_get_ssid_value("wla1_ssid") %>" size="20" maxlength="32"></td>
+	<td><input type="text" name="wlg1ssid" value="<% cfg_get_ssid_value("wlg1_ssid") %>" size="20" maxlength="32"></td>
+</tr>
+
+<tr id=bu_line>
+	<td colspan="2"><img src="/liteblue.gif" width="100%" height="12"></td>
+</tr>
+</TABLE>
+
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2 id=bgn_tab >
+<TR id=bgn_sec>
+	<TD nowrap colspan=2><A tabindex=-1 href="javascript:loadhelp('_wlan','security')"><B>$sec_type</B></A></TD>
+</TR>
+<TR id=bgn_non>
+	<TD nowrap colspan=2>
+	<input type="radio" name="security_type" id="security_disable" value="Disable" onClick=setSecurity(1) AccessKey="N">$sec_off
+	<TD>
+</TR>
+<TR id="wep_54">
+	<TD nowrap colspan=2>
+	<input type="radio" name="security_type" id="security_wep" value="WEP" onClick=setSecurity(2)>$sec_wep
+	</TD>
+</TR>
+<TR id="wpa_psk_54">
+	<TD nowrap colspan=2>
+	<input type="radio" name="security_type" id="security_wpa" value="WPA-PSK" onClick=setSecurity(3)>$sec_wpa
+	</TD>
+</TR>
+<TR id=bgn_wpa2>
+	<TD nowrap colspan=2>
+	<input type="radio" name="security_type" id="security_wpa2" value="WPA2-PSK" onClick=setSecurity(4)>$sec_wpa2
+	</TD>
+</TR>
+<TR id=bgn_wpas>
+	<TD nowrap colspan=2>
+	<input type="radio" name="security_type" id="security_auto" value="AUTO-PSK" onClick=setSecurity(5)>$sec_wpas
+	</TD>
+</TR>
+<TR id=bgn_wpa_en>
+	<TD nowrap colspan=2>
+	<input type="radio" name="security_type" id="security_wpa_enter" value="WPA-ENTER" onClick=setSecurity(6)>$sec_wpa_enterprise
+	</TD>
+</TR>
+</TABLE>
+
+<div id=view></div>
+
+<div align="center" ID="none" style="position:absolute;top:0;left:0;visibility:hidden">
+	<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+	<TR>
+		<TD nowrap colspan=2></TD>
+	</TR>
+	</TABLE>
+</div>   
+
+<div align="center" ID="wep" style="position:absolute;top:0;left:0;visibility:hidden">
+	<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+	$bluebar
+	<TR>
+		<TD nowrap colspan=2>
+		<A tabindex=-1 href="javascript:loadhelp('_wlan','wep')"><B>$sec_enc_head</B></A>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>$sec_auth</TD>
+		<TD nowrap>
+			<select NAME="authAlgm" id="wep_auth_type" size="1">
+				<option value=1 <% select_check("wl_bridge_auth", "1") %> >$sec_share</option>
+				<option value=2 <% select_check("wl_bridge_auth", "2") %> >$sec_auto</option>
+			</select>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>$sec_enc</TD>
+		<TD nowrap> 
+			<select NAME="wepenc" id="wep_enc_strength" size="1" onChange="changekeylen(document.forms[0]);">
+				<option value=5  <% select_check("wl_bridge_key_length", "5") %> >$sec_64</option>
+				<option value=13 <% select_check("wl_bridge_key_length", "13") %> >$sec_128</option>
+			</select>
+		</TD>
+	</TR>
+	$bluebar
+	<TR>
+		<TD nowrap colspan=2>
+		<A tabindex=-1 href="javascript:loadhelp('_wlan','wepkey')"><B>$sec_key</B></A>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap colspan=2>
+		<TABLE>
+		<TR>
+			<TD nowrap>$sec_key1
+			<input type=radio NAME="wep_key_no" id="wep_key_no1" checked value="1">
+			</TD>
+			<TD nowrap>
+			<input TYPE="TEXT" SIZE="document.forms[0].wepenc.value*2+2" autocomplete="off"  MAXLENGTH="32" NAME="KEY1" id="key1" VALUE="" OnFocus="this.maxLength=document.forms[0].wepenc.value*2;this.size=document.forms[0].wepenc.value*2+2;">
+			</TD>
+		</TR>
+		<TR>
+			<TD nowrap>$sec_key2
+			<input type=radio NAME="wep_key_no" id="wep_key_no2" value="2">
+			</TD>
+			<TD nowrap>
+			<input TYPE="TEXT" SIZE="document.forms[0].wepenc.value*2+2" autocomplete="off" MAXLENGTH="32" NAME="KEY2" id="key2" VALUE="" OnFocus="this.maxLength=document.forms[0].wepenc.value*2;this.size=document.forms[0].wepenc.value*2+2;">
+			</TD>
+		</TR>
+		<TR>
+			<TD nowrap>$sec_key3
+			<input type=radio NAME="wep_key_no" id="wep_key_no3" value="3">
+			</TD>
+			<TD nowrap><input TYPE="TEXT" SIZE="document.forms[0].wepenc.value*2+2" autocomplete="off" MAXLENGTH="32" NAME="KEY3" id="key3" VALUE="" OnFocus="this.maxLength=document.forms[0].wepenc.value*2;this.size=document.forms[0].wepenc.value*2+2;">
+			</TD>
+		</TR>
+		<TR>
+			<TD nowrap>$sec_key4
+			<input type=radio NAME="wep_key_no" id="wep_key_no4" value="4">
+			</TD>
+			<TD nowrap>
+			<input TYPE="TEXT" SIZE="document.forms[0].wepenc.value*2+2" autocomplete="off" MAXLENGTH="32" NAME="KEY4" id="key4" VALUE=""  OnFocus="this.maxLength=document.forms[0].wepenc.value*2;this.size=document.forms[0].wepenc.value*2+2;">
+			</TD>
+		</TR>
+		</TABLE>
+		</TD>
+	</TR>
+	</TABLE>
+</div>
+
+<div align="center" ID="wpa" style="position:absolute;top:0;left:0;visibility:hidden">
+	<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+	$bluebar
+	<TR>
+		<TD nowrap colspan=2>
+		<A tabindex=-1 href="javascript:loadhelp('_wlan','wpa-psk')"><B>$sec_type (WPA-PSK)</B></A>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>$sec_phr :</TD>
+		<TD nowrap>
+		<input type="text" id="passphrase" size="20" autocomplete="off" maxlength="64" name="passphrase" value="<% cfg_sed_passphrase("wl_bridge_wpa1_psk") %>" onFocus="document.forms[0].wpa1_press_flag.value=1" onKeyPress="document.forms[0].wpa1_press_flag.value=1">
+		<span class="optiondesc" id="wpaPwdPhrExtText">$sec_863_or_64h</span>
+		</TD>
+	</TR>
+	</TABLE>
+</div>
+ 
+<div align="center" ID="wpa2" style="position:absolute;top:0;left:0;visibility:hidden">  
+	<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+	$bluebar
+	<TR>
+		<TD nowrap colspan=2>
+		<A tabindex=-1 href="javascript:loadhelp('_wlan','wpa2-psk')"><B>$sec_type (WPA2-PSK)</B></A>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>
+		<span class="optiondesc" id="wpaPwdPhraseText">$sec_phr :</span>
+		</TD>
+		<TD nowrap>
+		<input type="text" id="passphrase" autocomplete="off" maxlength="64" size="20" name="passphrase" value="<% cfg_sed_passphrase("wl_bridge_wpa2_psk") %>" onFocus="document.forms[0].wpa2_press_flag.value=1" onKeyPress="document.forms[0].wpa2_press_flag.value=1">
+		<span class="optiondesc" id="wpaPwdPhrExtText">$sec_863_or_64h</span>
+		</TD>
+	</TR>
+	</TABLE>
+</div>
+
+<div align="center" ID="wpas" style="position:absolute;top:0;left:0;visibility:hidden">
+	<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+	$bluebar
+	<TR>
+		<TD nowrap colspan=2>
+		<A tabindex=-1 href="javascript:loadhelp('_wlan','wpa-psk+wpa2-psk')"><B>$sec_type (WPA-PSK + WPA2-PSK)</B></A>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>
+		<span class="optiondesc" id="wpaPwdPhraseText">$sec_phr :</span>
+		</TD>
+		<TD nowrap>
+		<input type="text" id="passphrase" size="20" autocomplete="off" maxlength="64" name="passphrase" value="<% cfg_sed_passphrase("wl_bridge_wpas_psk") %>" onFocus="document.forms[0].wpas_press_flag.value=1" onKeyPress="document.forms[0].wpas_press_flag.value=1">
+		<span class="optiondesc" id="wpaPwdPhrExtText">$sec_863_or_64h</span>
+		</TD>	  
+	</TR>
+	</TABLE>
+</div>
+
+<div align="center" ID="wpae" style="position:absolute;top:0;left:0;visibility:hidden">
+	<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+	$bluebar
+	<TR>
+		<TD nowrap colspan=2>
+		<A tabindex=-1 href="javascript:loadhelp('_wlan','wpawpa2')"><B>$sec_type ( $sec_wpa_enterprise )</B></A>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>$sec_wpa_mode</TD>
+		<TD>
+		<select name="wpae_mode" size='1' onchange="wpaemode()">
+			<option value='WPAE-TKIP'>WPA [TKIP]</option>
+			<option value='WPAE-AES'>WPA2 [AES]</option>
+			<option value='WPAE-TKIPAES'>WPA [TKIP] + WPA2 [AES]</option>
+		</select>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>$radius_serverIP</TD>
+        <TD nowrap>
+        <input type="text" size="3" autocomplete="off" maxlength="3" name="radiusIPAddr1" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+        <input type="text" size="3" autocomplete="off" maxlength="3" name="radiusIPAddr2" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+        <input type="text" size="3" autocomplete="off" maxlength="3" name="radiusIPAddr3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+        <input type="text" size="3" autocomplete="off" maxlength="3" name="radiusIPAddr4" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+        </TD>  
+	</TR>
+	<TR>
+		<TD nowrap>$radius_serverPort</TD>	
+		<TD nowrap><input type="text" id="textWpaeRadiusPort" size="20" maxlength="5" name="textWpaeRadiusPort" value="1812" onKeyPress="return getkey('num',event);"></TD>	
+	</TR>	
+	<TR>
+		<TD nowrap>$radius_serverSecret</TD>	
+		<TD nowrap><input type="text" id="textWpaeRadiusSecret" size="20" autocomplete="off" maxlength="128" value="<% cfg_get_ssid_value("wl_radiusSecret") %>" name="textWpaeRadiusSecret" onKeyPress="return getkey('ssid', event)"></TD>	
+	</TR>	
+	</TABLE>
+</div>
+
+<!--the following message is for a/n -->
+<div id="have_an"></div>
+<div align="center" ID="hidden_an" style="position:absolute;top:0;left:0;visibility:hidden">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0 >
+<TR id=ssid_a> 
+	<TD nowrap width=35%>$wlan_mark_ssid:</TD>
+	<TD nowrap><input type="text" id="ssid_an" name="ssid_an" value="<% cfg_get_ssid_value("bridge_wla_ssid") %>" size="20" maxlength="32"></TD>
+</TR>
+
+$bluebar
+</table>
+
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2 id=an_tab>
+<TR id=an_sec>
+	<TD nowrap colspan=2><A tabindex=-1 href="javascript:loadhelp('_wlan','security')"><B>$sec_type</B></A></TD>
+</TR>
+<TR id=an_non>
+	<TD nowrap colspan=2>
+	<input type="radio" name="security_type_an" id="security_an_disable" value="Disable" onClick=setSecurity_an(1) AccessKey="N">$sec_off
+	<TD>
+</TR>
+<TR id="wep_an_54">
+	<TD nowrap colspan=2>
+	<input type="radio" name="security_type_an" id="security_an_wep" value="WEP" onClick=setSecurity_an(2)>$sec_wep
+	</TD>
+</TR>
+<TR id="wpa_psk_an_54">
+	<TD nowrap colspan=2>
+	<input type="radio" name="security_type_an" id="security_an_wpa" value="WPA-PSK" onClick=setSecurity_an(3)>$sec_wpa
+	</TD>
+</TR>
+<TR id=an_wpa2>
+	<TD nowrap colspan=2>
+	<input type="radio" name="security_type_an" id="security_an_wpa2" value="WPA2-PSK" onClick=setSecurity_an(4)>$sec_wpa2
+	</TD>
+</TR>
+<TR id=an_wpas>
+	<TD nowrap colspan=2>
+	<input type="radio" name="security_type_an" id="security_an_auto" value="AUTO-PSK" onClick=setSecurity_an(5)>$sec_wpas
+	</TD>
+</TR>
+<TR id="wpa_wpa2_an_enterprise">
+	<TD nowrap colspan=2>
+	<input type="radio" name="security_type_an" id="security_an_wpa_enter" value="WPA-ENTER" onClick=setSecurity_an(6)>$sec_wpa_enterprise
+	</TD>
+</TR>
+</TABLE>
+
+<div id=view_a></div>
+
+<div align="center" ID="none_an" style="position:absolute;top:0;left:0;visibility:hidden">
+	<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+	<TR>
+		<TD nowrap colspan=2></TD>
+	</TR>
+	$bluebar
+	</TABLE>
+</div>   
+
+<div align="center" ID="wep_an" style="position:absolute;top:0;left:0;visibility:hidden">
+	<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+	$bluebar
+	<TR>
+		<TD nowrap colspan=2>
+		<A tabindex=-1 href="javascript:loadhelp('_wlan','wep')"><B>$sec_enc_head</B></A>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>$sec_auth</TD>
+		<TD nowrap>
+			<select NAME="authAlgm_an" size="1"><!--bug 21943:change authAlgm_a to authAlgm_an,other changes is same as this -->
+				<option value=1 <% select_check("wla_bridge_auth", "1") %> >$sec_share</option>
+				<option value=2 <% select_check("wla_bridge_auth", "2") %> >$sec_auto</option>
+			</select>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>$sec_enc</TD>
+		<TD nowrap> 
+			<select NAME="wepenc_an" size="1" onChange="changekeylen_a(document.forms[0]);">
+				<option value=5  <% select_check("wla_bridge_key_length", "5") %> >$sec_64</option>
+				<option value=13 <% select_check("wla_bridge_key_length", "13") %> >$sec_128</option>
+			</select>
+		</TD>
+	</TR>
+	$bluebar
+	<TR>
+		<TD nowrap colspan=2>
+		<A tabindex=-1 href="javascript:loadhelp('_wlan','wepkey')"><B>$sec_key</B></A>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap colspan=2>
+		<TABLE>
+		<TR>
+			<TD nowrap>$sec_key1
+			<input type=radio NAME="wep_key_no_an" checked value="1">
+			</TD>
+			<TD nowrap>
+			<input TYPE="TEXT" SIZE="document.forms[0].wepenc_an.value*2+2" autocomplete="off" MAXLENGTH="32" NAME="KEY1_an" VALUE="" OnFocus="this.maxLength=document.forms[0].wepenc_an.value*2;this.size=document.forms[0].wepenc_an.value*2+2;">
+			</TD>
+		</TR>
+		<TR>
+			<TD nowrap>$sec_key2
+			<input type=radio NAME="wep_key_no_an" value="2">
+			</TD>
+			<TD nowrap>
+			<input TYPE="TEXT" SIZE="document.forms[0].wepenc_an.value*2+2" autocomplete="off" MAXLENGTH="32" NAME="KEY2_an" VALUE="" OnFocus="this.maxLength=document.forms[0].wepenc_an.value*2;this.size=document.forms[0].wepenc_an.value*2+2;">
+			</TD>
+		</TR>
+		<TR>
+			<TD nowrap>$sec_key3
+			<input type=radio NAME="wep_key_no_an" value="3">
+			</TD>
+			<TD nowrap><input TYPE="TEXT" SIZE="document.forms[0].wepenc_an.value*2+2" autocomplete="off" MAXLENGTH="32" NAME="KEY3_an" VALUE="" OnFocus="this.maxLength=document.forms[0].wepenc_an.value*2;this.size=document.forms[0].wepenc_an.value*2+2;">
+			</TD>
+		</TR>
+		<TR>
+			<TD nowrap>$sec_key4
+			<input type=radio NAME="wep_key_no_an" value="4">
+			</TD>
+			<TD nowrap>
+			<input TYPE="TEXT" SIZE="document.forms[0].wepenc.value*2+2" autocomplete="off" MAXLENGTH="32" NAME="KEY4_an" VALUE=""  OnFocus="this.maxLength=document.forms[0].wepenc_an.value*2;this.size=document.forms[0].wepenc_an.value*2+2;">
+			</TD>
+		</TR>
+		</TABLE>
+		</TD>
+	</TR>
+	$bluebar
+	</TABLE>
+</div>
+
+<div align="center" ID="wpa_an" style="position:absolute;top:0;left:0;visibility:hidden">
+	<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+	$bluebar
+	<TR>
+		<TD nowrap colspan=2>
+		<A tabindex=-1 href="javascript:loadhelp('_wlan','wpa-psk')"><B>$sec_type (WPA-PSK)</B></A>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>$sec_phr :</TD>
+		<TD nowrap>
+		<input type="text" id="passphrase_an" size="20" autocomplete="off" maxlength="64" name="passphrase_an" value="<% cfg_sed_passphrase("wla_bridge_wpa1_psk") %>" onFocus="document.forms[0].wla_wpa1_press_flag.value=1" onKeyPress="document.forms[0].wla_wpa1_press_flag.value=1">
+		<span class="optiondesc" id="wpaPwdPhrExtText">$sec_863_or_64h</span>
+		</TD>
+	</TR>
+	$bluebar
+	</TABLE>
+</div>
+ 
+<div align="center" ID="wpa2_an" style="position:absolute;top:0;left:0;visibility:hidden">  
+	<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+	$bluebar
+	<TR>
+		<TD nowrap colspan=2>
+		<A tabindex=-1 href="javascript:loadhelp('_wlan','wpa2-psk')"><B>$sec_type (WPA2-PSK)</B></A>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>
+		<span class="optiondesc" id="wpaPwdPhraseText">$sec_phr :</span>
+		</TD>
+		<TD nowrap>
+		<input type="text" id="passphrase_an" autocomplete="off" maxlength="64" size="20" name="passphrase_an" value="<% cfg_sed_passphrase("wla_bridge_wpa2_psk") %>" onFocus="document.forms[0].wla_wpa2_press_flag.value=1" onKeyPress="document.forms[0].wla_wpa2_press_flag.value=1">
+		<span class="optiondesc" id="wpaPwdPhrExtText">$sec_863_or_64h</span>
+		</TD>
+	</TR>
+	$bluebar
+	</TABLE>
+</div>
+
+<div align="center" ID="wpas_an" style="position:absolute;top:0;left:0;visibility:hidden">
+	<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+	$bluebar
+	<TR>
+		<TD nowrap colspan=2>
+		<A tabindex=-1 href="javascript:loadhelp('_wlan','wpa-psk+wpa2-psk')"><B>$sec_type (WPA-PSK + WPA2-PSK)</B></A>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>
+		<span class="optiondesc" id="wpaPwdPhraseText">$sec_phr :</span>
+		</TD>
+		<TD nowrap>
+		<input type="text" id="passphrase_an" size="20" autocomplete="off" maxlength="64" name="passphrase_an" value="<% cfg_sed_passphrase("wla_bridge_wpas_psk") %>" onFocus="document.forms[0].wla_wpas_press_flag.value=1" onKeyPress="document.forms[0].wla_wpas_press_flag.value=1">
+		<span class="optiondesc" id="wpaPwdPhrExtText">$sec_863_or_64h</span>
+		</TD>	  
+	</TR>
+	$bluebar
+	</TABLE>
+</div>
+
+<div align="center" ID="wpae_an" style="position:absolute;top:0;left:0;visibility:hidden">
+	<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+	$bluebar
+	<TR>
+		<TD nowrap colspan=2>
+		<A tabindex=-1 href="javascript:loadhelp('_wlan','wpawpa2')"><B>$sec_type ( $sec_wpa_enterprise )</B></A>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>$sec_wpa_mode</TD>
+		<TD>
+		<select name="wpae_mode_an" size='1' onchange="wpaemode_an()">
+		<script>
+		if(ac_router_flag != 1)
+			document.write('<option value="WPAE-TKIP">WPA [TKIP]</option>');
+		</script>
+			<option value='WPAE-AES'>WPA2 [AES]</option>
+			<option value='WPAE-TKIPAES'>WPA [TKIP] + WPA2 [AES]</option>
+		</select>
+		</TD>
+	</TR>
+	<TR>
+		<TD nowrap>$radius_serverIP</TD>
+        <TD nowrap>
+        <input type="text" size="3" autocomplete="off" maxlength="3" name="radiusIPAddr1_an" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+        <input type="text" size="3" autocomplete="off" maxlength="3" name="radiusIPAddr2_an" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+        <input type="text" size="3" autocomplete="off" maxlength="3" name="radiusIPAddr3_an" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+        <input type="text" size="3" autocomplete="off" maxlength="3" name="radiusIPAddr4_an" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+        </TD>  
+	</TR>
+	<TR>
+		<TD nowrap>$radius_serverPort</TD>	
+		<TD nowrap><input type="text" id="textWpaeRadiusPort_an" size="20" maxlength="5" name="textWpaeRadiusPort_an" value="1812" onKeyPress="return getkey('num',event);"></TD>	
+	</TR>	
+	<TR>
+		<TD nowrap>$radius_serverSecret</TD>	
+		<TD nowrap><input type="text" id="textWpaeRadiusSecret_an" size="20" autocomplete="off" maxlength="128" value="<% cfg_get_ssid_value("wla_radiusSecret") %>" name="textWpaeRadiusSecret_an" onKeyPress="return getkey('ssid', event)"></TD>	
+	</TR>
+$bluebar	
+	</TABLE>
+</div>
+</div>
+
+</div> <!-- main -->
+<% help_box("0","_wlan") %>
+</FORM>
+<script>
+
+function close_window()
+{
+	window.close();
+}
+function loadvalue()
+{
+	if( opener.opener_apply_click == 1)
+	{
+		opener.opener_apply_click = 0;
+		close_window();
+	}
+	top.enabled_wds="<% wds_enable() %>";
+	top.enabled_wps="<% wps_menu() %>";
+	var form=document.forms[0];	
+	wl_mode="<% cfg_get("bridge_band_choose") %>";
+	
+	var form=document.forms[0];
+			
+	str_none=getObj("none").innerHTML;
+	str_none=str_none.replace(/\`/g, "&#96;");
+	str_wep=getObj("wep").innerHTML;
+	str_wep=str_wep.replace(/\`/g, "&#96;");
+	str_wpa=getObj("wpa").innerHTML;
+	str_wpa=str_wpa.replace(/\`/g, "&#96;");
+	str_wpa2=getObj("wpa2").innerHTML;
+	str_wpa2=str_wpa2.replace(/\`/g, "&#96;");
+	str_wpas=getObj("wpas").innerHTML;
+	str_wpas=str_wpas.replace(/\`/g, "&#96;");
+	str_wpae=getObj("wpae").innerHTML;	
+	str_wpae=str_wpae.replace(/\`/g, "&#96;");
+	getObj("none").innerHTML='';	
+	getObj("wep").innerHTML='';	
+	getObj("wpa").innerHTML='';	
+	getObj("wpa2").innerHTML='';	
+	getObj("wpas").innerHTML='';	
+	getObj("wpae").innerHTML='';	
+	
+	var sectype=wl_sectype;	
+	
+	form.security_type[parseInt(sectype)-1].checked=true;
+	
+	if(an_router_flag == 1){	
+		str_have_an=getObj("hidden_an").innerHTML;
+		str_have_an=str_have_an.replace(/\`/g, "&#96;");
+		getObj("hidden_an").innerHTML='';
+		getObj("have_an").innerHTML=str_have_an;
+
+		str_none_an=getObj("none_an").innerHTML;
+		str_none_an=str_none_an.replace(/\`/g, "&#96;");
+		str_wep_an=getObj("wep_an").innerHTML;
+		str_wep_an=str_wep_an.replace(/\`/g, "&#96;");
+		str_wpa_an=getObj("wpa_an").innerHTML;
+		str_wpa_an=str_wpa_an.replace(/\`/g, "&#96;");
+		str_wpa2_an=getObj("wpa2_an").innerHTML;
+		str_wpa2_an=str_wpa2_an.replace(/\`/g, "&#96;");
+		str_wpas_an=getObj("wpas_an").innerHTML;
+		str_wpas_an=str_wpas_an.replace(/\`/g, "&#96;");
+		str_wpae_an=getObj("wpae_an").innerHTML;	
+		str_wpae_an=str_wpae_an.replace(/\`/g, "&#96;");
+		getObj("none_an").innerHTML='';	
+		getObj("wep_an").innerHTML='';	
+		getObj("wpa_an").innerHTML='';	
+		getObj("wpa2_an").innerHTML='';	
+		getObj("wpas_an").innerHTML='';	
+		getObj("wpae_an").innerHTML='';		
+
+		var sectype_a=wla_sectype;
+
+		form.security_type_an[parseInt(sectype_a)-1].checked=true;
+	
+	}
+
+	if( wl_mode == "5g")
+		form.bridge_sec_type.selectedIndex = 1;
+	else
+		form.bridge_sec_type.selectedIndex = 0;
+	mode_change( );
+
+}
+
+function KeyDown(e)
+{
+	var currKey=0, e=e||window.event;
+	currKey= e.keyCode||e.which||e.charCode;
+
+	if((e.altKey)&&(e.keyCode==53))
+	{
+		document.forms[0].opmode.value = 2;
+	}
+	else if((e.altKey)&&(e.keyCode==52))
+	{
+		document.forms[0].opmode.value = 3;
+	}
+	else if((e.altKey)&&(e.keyCode==48))
+	{
+		document.forms[0].Apply.selected=true;
+		if(check_wlan())
+			document.forms[0].submit();
+	}
+}
+</script>
+</BODY>
+</HTML>

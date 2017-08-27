@@ -1,0 +1,18 @@
+{
+    "legal":
+    {
+        "Update_License" :  [
+                                "Aiutateci a migliorare la prestazione di Streamboost e i relativi prodotti e servizi. ",
+	                            "Spuntando questa casella, Streamboost ci invia informazioni di flusso anonime e aggregate e analisi ",
+	                            "relative dal router. Grazie del vostro aiuto.<br><br>Se volete aiutarci a migliorare ",
+	                            "Streamboost e i relativi prodotti e servizi, il router abilitato StreamBoost fornirà ",
+	                            "Qualcomm Atheros Inc. con informazioni di flusso anonime e aggregate dal router. Le informazioni ",
+	                            "di flusso anonime possono includere:  pacchetti di dati trasmessi tramite il router, misurazioni di banda ",
+	                            "larga disponibili e condizioni di sottoscrizione eccessiva (ad es., la quantità di banda larga richiesta ",
+	                            "supera la banda larga disponibile), dispositivi connessi e il flusso associato ai dispositivi, e ",
+	                            "statistiche sull'uso delle applicazioni.  A turno, Qualcomm Atheros accetta di tenere il router abilitato StreamBoost ",
+	                            "aggiornato alle più recenti definizioni di flusso."
+                            ]
+    }
+}
+

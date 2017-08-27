@@ -1,0 +1,37 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<META http-equiv="refresh" content="2; url=lang_search.htm">
+<BODY bgcolor=#ffffff onLoad="loadhelp('_auto_upgrade');">
+<% table_header("$wait_upg_head") %>
+$bluebar
+
+<TR><TD><BR>
+<script>
+parent.charcount=0;
+var wan_status=<% detwan_valid() %>;
+var status=<% autoup_status() %>;
+if (wan_status == 1)
+{
+	if (status == 9999)
+		location.href="UPG_check_version_hidden.htm";
+	else if (status >= 10000) 
+		location.href="AUTO_upgrade_no_langversion.htm";
+	else
+		document.write("$wizard_pls_wait");
+}
+else 
+{
+	location.href="AUTO_language_nowan.htm";
+}
+</script>
+<BR></TD></TR>
+
+$bluebar
+
+<TR>
+	<TD nowrap align=center> 
+	<input type='button' name='Cancel' value='$cancel_mark' onclick='location.href="UPG_upgrade.htm"'>
+	</TD>
+</TR>
+</TABLE>
+</BODY>
+</HTML>

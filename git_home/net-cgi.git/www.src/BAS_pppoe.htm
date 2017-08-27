@@ -1,0 +1,544 @@
+<% http_header("style/form.css", "/funcs.js", "/bas_pppoe.js") %>
+<% body_header("_BAS_pppoe", "BAS_update.htm", "pppoe") %>
+
+<div class="page_title">$int_setup</div>
+<script>
+var run_test="<% cfg_get("run_test") %>";
+var in_hijack=( "<% cfg_get("dns_hijack") %>" == "1" && "<% cfg_get("hijack_process") %>" != "3" );
+<% cfg_set("run_test", "no") %>
+<% commit() %>
+var ipv6_type = "<% cfg_get("ipv6_type") %>";
+var ipv6_sameinfo = "<% cfg_get("ipv6_sameinfo") %>";
+var connection_type = "<% cat_file("/tmp/ipv6_auto_output") %>";
+var lan_ip="<% cfg_get("lan_ipaddr") %>";
+var lan_subnet="<% cfg_get("lan_netmask") %>";
+var pppoe_get_ip="<% bas_pppoe_ip() %>";
+var pppoe_get_wan_assign='<% cfg_get("wan_pppoe_wan_assign") %>';
+var pppoe_get_dns_assign='<% cfg_get("wan_pppoe_dns_assign") %>';
+var old_wan_type="<% cfg_get("wan_proto") %>";
+var old_wan_ip=pppoe_get_ip;
+var old_pppoe_wan_assign=pppoe_get_wan_assign;
+
+var vpn_enable = "<% cfg_get("vpn_enable") %>";
+var old_endis_ddns="<% cfg_get("endis_ddns") %>";
+
+var russian_pppoe_flag=parent.parent.russian_pppoe_flag;
+var gui_region="<% cfg_get("GUI_Region") %>";
+var netgear_region=top.netgear_region;
+
+//add a new checkox 'Enable automatic Internet connection reset at'
+var bas_auto_conn_flag="<% cfg_get("bas_auto_conn_flag") %>";
+var bas_conn_time_num="<% cfg_get("bas_conn_time_num") %>";
+if ( bas_conn_time_num == "" ) // to fix bug 23294
+	bas_conn_time_num="0";
+var auto_conn_flag=parent.parent.auto_conn_flag;
+var autoconn_flag=(auto_conn_flag == 1 && ((gui_region == "German" &&  (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "GR")) ? 1 : 0;
+
+var pppoe_myip_flag=( top.pppoe_intranet_flag == 1 && ( (gui_region == "Russian" && (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "RU")) ? 1 : 0;
+
+var is_jp_version = ((netgear_region == "" || netgear_region.toUpperCase() == "WW") && gui_region == "Japanese") || netgear_region.toUpperCase() == "JP";
+var wan_factory_mac="<% cfg_get("wan_factory_mac"); %>";
+var wan_remote_mac="<% cfg_get("wan_remote_mac") %>";
+var pppoe_get_this_mac="<% cfg_get("wan_pppoe_this_mac") %>";
+var wanproto_type="pppoe";
+var wan_mtu_now='<% wan_mtu() %>';
+if (pppoe_get_this_mac == "")
+        pppoe_get_this_mac="<% wan_mac() %>";
+
+var pppoe_mac_router_flag=parent.parent.pppoe_mac_router_flag;
+var pppoe_empty=<% cfg_get_length("wan_pppoe_passwd") %>;
+var vlan_iptv_enable = "<% cfg_get("vlan_iptv_enable"); %>";
+var readycloud_enable = "<% cfg_get("readycloud_enable") %>";
+var upnp_enableMedia = "<% cfg_get("upnp_enableMedia") %>";
+
+function change_web_format()
+{
+        if( pppoe_mac_router_flag == 1 ){
+                document.getElementById("mac_head").style.display="";
+		document.getElementById("mac_default").style.display="";
+		document.getElementById("mac_comp").style.display="";
+		document.getElementById("mac_this").style.display="";
+		document.getElementById("bluebar").style.display="";
+	}
+        else{
+                document.getElementById("mac_head").style.display="none";
+		document.getElementById("mac_default").style.display="none";
+		document.getElementById("mac_comp").style.display="none";
+		document.getElementById("mac_this").style.display="none";
+		document.getElementById("bluebar").style.display="none";
+		
+	}
+	
+	if( pppoe_myip_flag == 1 )
+	{
+                document.getElementById("intranet_myip").style.display="";
+                document.getElementById("intranet_mask").style.display="";
+                document.getElementById("intranet_bluebar").style.display="";
+	} 
+	else{
+		document.getElementById("intranet_myip").style.display="none";
+		document.getElementById("intranet_mask").style.display="none";
+		document.getElementById("intranet_bluebar").style.display="none";
+	}
+}
+
+function init_passwd()
+{
+	var form=document.forms[0];
+	if(pppoe_empty == "0")
+		form.pppoe_passwd.value = "";
+	else
+		form.pppoe_passwd.value = "*********";
+}
+
+function loadvalue()
+{
+	change_web_format();
+
+	var form=document.forms[0];
+
+	if(bas_auto_conn_flag == "1")
+		form.auto_conn_24hr.checked = true;
+	else
+		form.auto_conn_24hr.checked = false;
+
+	if(autoconn_flag == 1)
+		document.getElementById("auto_conn_play").style.display="";
+	else
+		document.getElementById("auto_conn_play").style.display="none";
+	form.auto_conn_time.options[eval(bas_conn_time_num)].selected =true;
+			
+	if( pppoe_empty == "0" )
+	{
+		if( get_browser() == "Firefox" )
+		{
+			form.pppoe_passwd.type = "text";
+		}
+		else
+		{
+			form.pppoe_passwd.outerHTML='<input type="text" name="pppoe_passwd" id="pppoe_passwd" maxlength="64" size="16" onFocus="this.select();change_pppoe_password(this);" onKeyPress="return getkey(\'ssid\', event)">';
+		}
+	}
+	else if( get_browser() == "IE" )
+	{
+		form.pppoe_passwd.outerHTML='<input type="password" name="pppoe_passwd" id="pppoe_passwd" maxlength="64" size="16" style="width: 126px" onFocus="change_pppoe_password(this);" onKeyPress="return getkey(\'ssid\', event)">';
+	}
+	init_passwd();
+	form.pppoe_dod.value = '<% cfg_get("wan_pppoe_demand") %>';
+	show_idleout(form,form.pppoe_dod.value);
+	if(ipv6_type=="6to4" || (ipv6_type=="autoDetect"&&connection_type=="6to4 Tunnel") || (ipv6_type=="pppoe" && ipv6_sameinfo=="1"))
+	{
+		form.pppoe_dod.value = '0';	//bug 31125
+		form.pppoe_dod.disabled = true;
+	}
+	else
+	{
+		form.pppoe_dod.disabled = false;
+	}
+
+	if( pppoe_myip_flag == 1)
+	{
+		var pppoe_intranet_myip="<% bas_pppoe_intranet_ip() %>";
+		var pppoe_intranet_wan_assign="<% cfg_get("wan_pppoe_intranet_wan_assign") %>";
+		var pppoe_internet_mask="<% cfg_get("wan_pppoe_intranet_mask") %>";
+		if( pppoe_intranet_wan_assign == 0 )
+		{
+			form.myip_1.value=form.myip_2.value=form.myip_3.value=form.myip_4.value="";
+			setDisabled(true, form.mymask_1, form.mymask_2, form.mymask_3, form.mymask_4);
+		}
+		else
+		{
+			if(pppoe_intranet_myip != "")
+			{
+		                var ip_array=pppoe_intranet_myip.split('.');
+                		form.myip_1.value=ip_array[0];
+                		form.myip_2.value=ip_array[1];
+                		form.myip_3.value=ip_array[2];
+                		form.myip_4.value=ip_array[3];
+			}
+			if(pppoe_internet_mask!="")
+			{
+                                var mask_array=pppoe_internet_mask.split('.');
+                                form.mymask_1.value=mask_array[0];
+                                form.mymask_2.value=mask_array[1];
+                                form.mymask_3.value=mask_array[2];
+                                form.mymask_4.value=mask_array[3];
+			}
+		
+		}
+
+	}
+
+	if(pppoe_get_wan_assign == '0')
+		form.WANAssign[0].checked = true;
+	else
+		form.WANAssign[1].checked = true;
+	setIP(form,'bas');		
+	if(pppoe_get_ip!="")
+	{
+		var ip_array=pppoe_get_ip.split('.');
+		form.WPethr1.value=ip_array[0];
+		form.WPethr2.value=ip_array[1];
+		form.WPethr3.value=ip_array[2];
+		form.WPethr4.value=ip_array[3];
+	}
+
+	if(pppoe_get_dns_assign == '0')
+		form.DNSAssign[0].checked = true;
+	else
+		form.DNSAssign[1].checked = true;
+	var pppoe_get_dns1="<% bas_pppoe_dns("0") %>";
+	if(pppoe_get_dns1!="")
+	{
+		var dns1_array=pppoe_get_dns1.split('.');
+
+		if(dns1_array.length == 4)
+		{
+			form.DAddr1.value=dns1_array[0];
+			form.DAddr2.value=dns1_array[1];
+			form.DAddr3.value=dns1_array[2];
+			form.DAddr4.value=dns1_array[3];
+		}
+	}
+	var pppoe_get_dns2="<% bas_pppoe_dns("1") %>";
+	if(pppoe_get_dns2!="")
+	{
+		var dns2_array=pppoe_get_dns2.split('.');
+
+		if(dns2_array.length == 4)
+		{
+			form.PDAddr1.value=dns2_array[0];
+			form.PDAddr2.value=dns2_array[1];
+			form.PDAddr3.value=dns2_array[2];
+			form.PDAddr4.value=dns2_array[3];
+		}
+	}
+	setDNS(form);
+	var pppoe_get_mac_assign='<% cfg_get("wan_pppoe_mac_assign")%>';
+        if(pppoe_get_mac_assign == '0')
+        {
+                form.MACAssign[0].checked = true;
+                setMAC(form, wan_factory_mac);
+        }
+        else if(pppoe_get_mac_assign == '1')
+        {
+                form.MACAssign[1].checked = true;
+                setMAC(form, wan_remote_mac);
+        }
+        else
+        {
+                form.MACAssign[2].checked = true;
+                setMAC(form, pppoe_get_this_mac);
+        }
+
+	goTestApply();	
+}
+function show_idleout(form,time)
+{
+	if( time == 1 )
+	{
+		form.pppoe_idletime.disabled = false;
+		form.auto_conn_24hr.disabled = true;
+		form.auto_conn_time.disabled = true;
+	}
+	else
+	{
+		form.pppoe_idletime.disabled = true;
+		form.auto_conn_24hr.disabled = false;
+		form.auto_conn_time.disabled = false;
+	}		
+}
+
+</script>
+
+<input type="hidden" name="conflict_wanlan">
+<input type="hidden" name="change_wan_type">
+<input type="hidden" name="run_test" value="">
+<input type="hidden" name="pppoe_ipaddr">
+<input type="hidden" name="pppoe_subnet">
+<input type="hidden" name="pppoe_dnsaddr1">
+<input type="hidden" name="pppoe_dnsaddr2">
+<input type="hidden" name="hidden_pppoe_idle_time">
+<input type="hidden" name="intranet_wan_assign">
+<input type="hidden" name="pppoe_myip">
+<input type="hidden" name="pppoe_mask">
+<input type="hidden" name="hid_mtu_value">
+<input type="hidden" name="hid_pppoe_dod"><!--bug 22322:when connection mode gray out,need a hidden-value to transfer -->
+<input type="hidden" name="hidden_conn_time_num">
+<input type="hidden" name="hidden_auto_conn_flag">
+<input type="hidden" name="hid_enable_vpn">
+<input type="hidden" name="hidden_pwd_change" value="0">
+
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+
+if( master =="admin" )
+	document.write('<TD nowrap colspan=2 align=center><input class="common_bt" type="button" name="Test" id="test" value="$test_mark" onClick="return check_pppoe(document.forms[0],1)">&nbsp;&nbsp;<input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'BAS_pppoe.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onClick="return check_pppoe(document.forms[0],0)">&nbsp;&nbsp;</TD>');
+else
+	document.write('<TD nowrap colspan=2 align=center><input class="common1_bt" type="button" name="Test" id="test" value="$test_mark" disabled>&nbsp;&nbsp;<input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="button" name="Apply" id="apply" value="$apply_mark" disabled>&nbsp;&nbsp;</TD>');
+</script>        
+</TR>
+</TABLE>
+</div> <!--button -->
+
+<div id="bas_top">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR><TD nowrap>
+<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','question')"><B>$basic_top_info</B></A>
+</TD></TR>
+<TR>
+        <TD nowrap>
+        <input type="radio" name="loginreq" id="loginreq" value="pppoe" checked="true">$yes_mark
+        </TD>
+</TR>
+<TR>
+        <TD nowrap>
+        <input onclick='goto_formframe("BAS_ether.htm");' type="radio" name="loginreq" id="no_loginreq" value="dhcp">$no_mark
+        </TD>
+</TR>
+$bluebar
+</TABLE>
+</div> <!-- bas_top -->
+
+<div id="main" class="main_bas">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','isp')"><B>$basic_intserv_provider</B></A>
+	</TD>
+	<TD nowrap align=right>
+	<select name="login_type" id="login_type" onChange="change_serv(document.forms[0])">
+<script>
+	if( !is_jp_version )
+		document.write('<option value="PPTP">$basic_intserv_pptp</option>');
+	if(parent.parent.l2tp_flag == 1 && !is_jp_version)
+                document.write('<option value="L2TP">$basic_intserv_l2tp</option>');
+
+	if(parent.parent.bigpond_flag == 1 && !is_jp_version)
+		document.write('<option value="Telstra Bigpond">$basic_intserv_bpa</option>');
+</script>
+		<option value="PPPoE" selected>$basic_intserv_pppoe</option>
+<script>
+	if( ((parent.jp_multiPPPoE == 1 || gui_region == "Japanese") && (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "JP")
+		document.write('<option value=\"multiPPPoE\">$basic_intserv_mulpppoe</OPTION>');
+</script>
+	</select>
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','login')"><B>$basic_pppoe_login</B></A>
+	</TD>
+	<TD nowrap align=right>
+	<input type="text" name="pppoe_username" id="pppoe_username" maxLength="64" size="16" onKeyPress="return getkey('ssid', event)" value="<% cfg_sed_xss("wan_pppoe_username") %>">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','password')"><B>$basic_pppoe_passwd</B></A>
+	</TD>
+	<TD nowrap align=right>
+	<input type="password" name="pppoe_passwd" id="pppoe_passwd" maxlength="64" size="16" onFocus="change_pppoe_password(this);" onKeyPress="return getkey('ssid', event)">
+	</TD>
+</TR>
+<TR>
+	<TD>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','serv_name')">$basic_pppoe_serv_name</A>
+	</TD>
+	<TD nowrap align=right>
+	<input type="text" name="pppoe_servername" id="pppoe_servername" maxLength="50" size="16" onKeyPress="return getkey('ssid', event)" value="<% cfg_sed_xss("wan_pppoe_service") %>">
+	</TD>
+</TR>
+<TR> 
+	<TD>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','conn_mode')"><B>$basic_int_connection_mode</B></A></TD> 
+	<TD align=right> 
+	<select name="pppoe_dod" id="pppoe_dod" onchange="show_idleout(document.forms[0],this.value)"> 
+		<option value="0">$basic_mode_always</option>
+		<option value="1">$basic_mode_dial</option>
+		<option value="2">$basic_mode_manual</option> 
+	</select>
+	</TD>
+</TR> 
+<TR>
+	<TD>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','pppoe_idletime')">$basic_pppoe_idle</A>
+	</TD>
+	<TD align=right>
+	<input type="text" name="pppoe_idletime" id="pppoe_idletime" maxLength="5" size="16" value="<% idle_time("wan_pppoe_idletime") %>" onKeyPress="return getkey('num', event)">
+	</TD>
+</TR>
+<TR id=auto_conn_play style="display:none">
+	<td colspan="2"><!--fix bug 28258:use weblist-->
+	<input type="checkbox" name="auto_conn_24hr" value="">$bsaic_settings_auto_internet_conn
+	<select class="divselect" name="auto_conn_time">
+		<option value="1" selected>00:00</option>
+		<option value="2">00:30</option>
+		<option value="3">01:00</option>
+		<option value="4">01:30</option>
+		<option value="5">02:00</option>
+		<option value="6">02:30</option>
+		<option value="7">03:00</option>
+		<option value="8">03:30</option>
+		<option value="9">04:00</option>
+		<option value="10">04:30</option>
+		<option value="11">05:00</option>
+		<option value="12">05:30</option>
+		<option value="13">06:00</option>
+		<option value="14">06:30</option>
+		<option value="15">07:00</option>
+		<option value="16">07:30</option>
+		<option value="17">08:00</option>
+		<option value="18">08:30</option>
+		<option value="19">09:00</option>
+		<option value="20">09:30</option>
+		<option value="21">10:00</option>
+		<option value="22">10:30</option>
+		<option value="23">11:00</option>
+		<option value="24">11:30</option>
+		<option value="25">12:00</option>
+		<option value="26">12:30</option>
+		<option value="27">13:00</option>
+		<option value="28">13:30</option>
+		<option value="29">14:00</option>
+		<option value="30">14:30</option>
+		<option value="31">15:00</option>
+		<option value="32">15:30</option>
+		<option value="33">16:00</option>
+		<option value="34">16:30</option>
+		<option value="35">17:00</option>
+		<option value="36">17:30</option>
+		<option value="37">18:00</option>
+		<option value="38">18:30</option>
+		<option value="39">19:00</option>
+		<option value="40">19:30</option>
+		<option value="41">20:00</option>
+		<option value="42">20:30</option>
+		<option value="43">21:00</option>
+		<option value="44">21:30</option>
+		<option value="45">22:00</option>
+		<option value="46">22:30</option>
+		<option value="47">23:00</option>
+		<option value="48">23:30</option>
+	</select>
+	</td>
+</TR>
+$bluebar
+<TR id=intranet_myip style="display:none">
+        <TD nowrap>
+        <A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','myip')"><B>$basic_pptp_myip</B></A>
+        </TD>
+        <TD nowrap align=right><!--bug 22411:when manually input IP,don't click the mouse,the subnet mask can be used -->
+        <input type="text" name="myip_1"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onChange="myip_update();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);myip_update();" >.
+        <input type="text" name="myip_2"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onChange="myip_update();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);myip_update();">.
+        <input type="text" name="myip_3"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onChange="myip_update();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);myip_update();">.
+        <input type="text" name="myip_4"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onChange="myip_update();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);myip_update();">
+        </TD>
+</TR>
+<TR id=intranet_mask style="display:none">
+	<TD nowrap>
+        <A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','myip')"><B>$lan_mark_subnet</B></A>
+	</td>
+        <TD nowrap align=right>
+        <input type="text" name="mymask_1"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+        <input type="text" name="mymask_2"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+        <input type="text" name="mymask_3"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+        <input type="text" name="mymask_4"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+        </TD>
+</TR>
+<TR id=intranet_bluebar style="display:none"><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+
+<TR>
+       <TD nowrap colspan=2>
+       <A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','InternetIP')"><B>$basic_int_intip</B></A>
+       </TD>
+</TR>
+<TR>
+       <TD nowrap colspan=2>
+       <input type="radio" name="WANAssign" id="wan_assign_dynamic" value="Dynamic" onClick="setIP(document.forms[0],'bas')">$basic_int_autoip
+       </TD>
+</TR>
+<TR>
+       <TD nowrap colspan=2>
+       <input type="radio" name="WANAssign" id="wan_assign_fixed" value="Fixed" onClick="setIP(document.forms[0],'bas')">$basic_int_static_ip
+       </TD>
+</TR>
+<TR>
+        <TD nowrap><img src=/spacer.gif width=20 height=12 border=0>$lan_mark_ip</TD>
+        <TD nowrap align=right>
+        <input type="text" name="WPethr1" id="wpethr1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+        <input type="text" name="WPethr2"  id="wpethr2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+        <input type="text" name="WPethr3" id="wpethr3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+        <input type="text" name="WPethr4" id="wpethr4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+        </TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','DNSaddress')"><B>$basic_int_dns</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="DNSAssign" id="dns_assign_auto" value="0" onClick="setDNS(document.forms[0])">$basic_int_autodns
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="DNSAssign" id="dns_assign_static" value="1" onClick="setDNS(document.forms[0])">$basic_int_these
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=20 height=12 border=0>$basic_int_primary_dns</TD>
+	<TD nowrap align=right>
+	<input type="text" name="DAddr1" id="daddr1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="DAddr2" id="daddr2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="DAddr3" id="daddr3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="DAddr4" id="daddr4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=20 height=12 border=0>$basic_int_second_dns</TD>
+	<TD nowrap align=right>
+	<input type="text" name="PDAddr1" id="pdaddr1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="PDAddr2" id="pdaddr2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="PDAddr3" id="pdaddr3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="PDAddr4" id="pdaddr4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+$bluebar
+<TR id=mac_head style="display:none">
+        <TD nowrap colspan=2>
+        <A tabindex=-1 href="javascript:loadhelp('_BAS_pppoe','localaddress')"><B>$basic_int_mac</B></A>
+        </TD>
+</TR>
+<TR id=mac_default style="display:none">
+        <TD nowrap colspan=2>
+        <input type="radio" name="MACAssign" id="mac_assign_default" value="0" onClick="setMAC(document.forms[0], wan_factory_mac)">$basic_int_default_mac
+        </TD>
+</TR>
+<TR id=mac_comp style="display:none">
+        <TD nowrap colspan=2>
+        <input type="radio" name="MACAssign" id="mac_assign_computer" value="1" onClick="setMAC(document.forms[0], wan_remote_mac)">$basic_int_computer_mac
+        </TD>
+</TR>
+<TR id=mac_this style="display:none">
+        <TD nowrap>
+        <input type="radio" name="MACAssign" id="mac_assign_define" value="2" onClick="setMAC(document.forms[0], pppoe_get_this_mac)">$basic_int_this_mac
+        </TD>
+        <TD nowrap align=right>
+        <input type="text" value="" name="Spoofmac" id="spoof_mac" maxlength="17" size="20" onKeyPress="return getkey('mac',event)">
+        </TD>
+</TR>
+<TR id=bluebar style="display:none"><td colspan=2><img src=/liteblue.gif width=100% height=12></td></TR>
+</TABLE>
+</div> <!-- main -->
+<% help_box("0","_BAS_pppoe") %>
+</FORM>
+</BODY>
+</HTML>

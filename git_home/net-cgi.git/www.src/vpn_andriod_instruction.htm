@@ -1,0 +1,53 @@
+<% http_header("style/form.css", "/funcs.js", "/vpn.js") %>
+<body>
+<form method="post" action="/apply.cgi?/vpn_frame.htm" target="formframe">
+<input type="hidden" name="submit_flag" value="vpn_compress_conf" />
+<input type="hidden" name="download_button_type">
+<script>
+	<% save_timestamp("vpn", "vpn_compress_conf") %>
+	var ts='<% cfg_get("vpn") %>';
+	var vpn_enable="<% cfg_get("vpn_enable")%>";
+	var old_endis_ddns="<% cfg_get("endis_ddns") %>";
+
+</script>
+	<table>
+	<TR><TD nowrap>$vpn_andriod_instruct</TD></TR>
+</table>
+<table>
+<TR>
+	<TD nowrap style="vertical-align:top">$step1</TD>
+	<TD>$vpn_step1</TD>
+</TR>
+<TR>
+        <TD style="vertical-align:top">$step2</TD>
+        <TD>$vpn_andriod_step2</TD>
+</TR>
+<TR>
+        <TD style="vertical-align:top">$step3</TD>
+        <TD><TABLE><TR>
+	<TD>$vpn_step3</TD></TR>
+	<TR><TD>
+    <input class="non_window_bt" type="submit" name="smart_phone" value="$phone_mark" onClick='return checkdownload(document.forms[0], 3)'>	
+	</TD>
+	</TR></TABLE></TD>
+</TR>
+<TR><TD></TD></TR>
+<TR>
+        <TD style="vertical-align:top">$step4</TD>
+        <TD  >$vpn_iphone_step4</TD>
+</TR>
+<TR>
+        <TD style="vertical-align:top">$step5</TD>
+        <TD  >$vpn_andriod_step5</TD>
+</TR>
+<TR><TD><p></p></TD></TR>
+<TR><TD><p></p></TD></TR>
+<TR>
+        <TD nowrap colspan=2>
+        $vpn_note1
+        </TD>
+</TR>
+</table>
+</form>
+</body>
+</html>

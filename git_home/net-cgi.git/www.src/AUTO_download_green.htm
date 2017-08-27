@@ -1,0 +1,56 @@
+<% http_header("/funcs.js") %>
+<META http-equiv="refresh" content="1; url=AUTO_download_green.htm">
+<% func_header( "", "pls_wait_run_green.htm", "run_green") %>
+<% hijack_language() %>
+<table width="100%" border="0" cellpadding="0" cellspacing="3">
+<tr><td colSpan="2"><h1><script>printText(bh_wait_upg_head, "$wait_upg_head");</script></h1></td></tr>
+</TABLE>
+<DIV id="msg"></DIV>
+<script>
+
+var status=<% image_status() %>;
+var md5=<% md5_have_checked() %>;
+
+var percComplete = 0;
+if(status < 1000)
+	getObj("msg").innerHTML="<TR><TD>" + getText(bh_downloading_ver, "$downloading_ver") + "</TD></TR>";
+else if (status >= 1000 && status < 2000)
+{
+	percComplete = status - 1000;
+	getObj("msg").innerHTML=""
+	if(percComplete >= 100 && md5 == 1 )
+	{
+		getObj("msg").innerHTML="$pro100";
+		getObj("msg").innerHTML+="<BR>";
+		getObj("msg").innerHTML="<TR><TD>" + getText(bh_downloading_ver, "$downloading_ver") + "</TD></TR>";
+		document.forms[0].submit();
+	}
+	else
+	{
+		if( percComplete >= 100 )
+			percComplete = 99;
+		getObj("msg").innerHTML="$pro1"+percComplete+"$pro2"+percComplete+"$pro3"+(100-percComplete)+"$pro4";
+		getObj("msg").innerHTML+="<BR>";
+		getObj("msg").innerHTML="<TR><TD>" + getText(bh_downloading_ver, "$downloading_ver") + "</TD></TR>";
+	}
+}
+else if (status == 10008)
+{
+	top.topframe.location.href="top.html";
+	//top.contents.location.href="<% menu_link() %>";
+	document.location.href="AUTO_MD5_failure.htm";
+}
+else if (status >= 10000) 
+{
+	top.topframe.location.href="top.html";
+	//top.contents.location.href="<% menu_link() %>";
+	document.location.href="AUTO_download_failure.htm";
+}
+
+</script>
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+$bluebar
+</TABLE>
+</FORM>
+</BODY>
+</HTML>

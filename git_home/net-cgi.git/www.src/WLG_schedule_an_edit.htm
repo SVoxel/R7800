@@ -1,0 +1,141 @@
+<% http_header_no_doc("style/form.css", "/funcs.js", "/wadv_sechdule.js") %>
+<% body_header("_wladv", "WLG_adv.htm", "wadv_schedule_edit_an") %>
+
+<div class="page_title">$wlan_adv_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="edit_schedule" value="$cancel_mark" onClick="location.href=\'WLG_adv.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="submit" name="add_schedule" value="$apply_mark" onClick="return wireless_schedule_add(\'an\',\'edit\');"></TD>');
+else
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="edit_schedule" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit" name="add_schedule" value="$apply_mark" disabled></TD>');
+        
+</script>
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button">
+<script>
+var ts="<% cfg_get("wadv_schedule_edit_an") %>";
+var p=0;
+var gui_region="<% cfg_get("GUI_Region") %>";
+var netgear_region=(top.netgear_region == "") ? "WW" : top.netgear_region;
+var each_info = new Array();
+<% wireless_schedule_items_a() %>
+var edit_num = "<% cfg_get("wless_schedule_edit_num") %>";
+function loadvalue()
+{
+	var cf = document.forms[0];
+	
+	var schedule_item = eval("wireless_schedule_array_a" + edit_num);
+	each_info = schedule_item.split("-");
+
+	cf.start_time.value = each_info[0];
+	cf.end_time.value = each_info[1];
+	var start_time_index = cf.start_time.value;
+	var end_time_index = cf.end_time.value;
+	//initSelect();
+	if(each_info[2] == "Daily")
+	{
+		cf.selday[0].checked = true;
+		cf.sun.checked = true;
+		cf.mon.checked = true;
+		cf.tue.checked = true;
+		cf.wed.checked = true;
+		cf.thu.checked = true;
+		cf.fri.checked = true;
+		cf.sat.checked = true;
+	}
+	else
+	{
+		cf.selday[1].checked = true;
+
+		var select_days = each_info[2].split(",");
+		var i = 0;
+	
+		for(i=0; i<select_days.length; i++)
+		{
+			if(select_days[i] == 0)
+				cf.sun.checked = true;
+			else if(select_days[i] == 1)
+				cf.mon.checked = true;
+			else if(select_days[i] == 2)
+				cf.tue.checked = true;
+			else if(select_days[i] == 3)
+				cf.wed.checked = true;
+			else if(select_days[i] == 4)
+				cf.thu.checked = true;
+			else if(select_days[i] == 5)
+				cf.fri.checked = true;
+			else if(select_days[i] == 6)
+				cf.sat.checked = true;
+		}
+	}
+	schedule_check_pattern();
+}
+</script>
+
+<input type="hidden" name="schedule_info" value="">
+
+<TABLE width="100%" border="0" cellpadding="2" cellspacing="3">
+<TR><TD colspan="2"><b>$adva_turnoff</b></TD></TR>
+<TR>
+	<TD width="10%" align="left">$adva_start :</td>
+	<TD align="left">
+		<select class="divselect" name="start_time">
+		<script>
+		var i=0;
+		for(i=0; i<48; i++)
+		{
+			if((gui_region=="German" && netgear_region=="WW") || netgear_region=="GR")
+				document.write('<option value="'+i+'">'+hour_schedule_24[i]+'</option>');
+			else
+				document.write('<option value="'+i+'">'+hour_schedule_12[i]+'</option>');
+		}
+		</script>
+		</select>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap width="10%" align="left">$adva_end :</td>
+	<TD align="left">
+		<select class="divselect" name="end_time">
+		<script>
+                var i=0;
+                for(i=0; i<48; i++)
+                {
+                        if((gui_region=="German" && netgear_region=="WW") || netgear_region=="GR")
+                                document.write('<option value="'+i+'">'+hour_schedule_24[i]+'</option>');
+                        else
+                                document.write('<option value="'+i+'">'+hour_schedule_12[i]+'</option>');
+                }
+                </script>
+		</select>
+	</TD>
+</TR>
+<TR><TD colspan="2"><b>$adva_recur_pattern</b></TD></TR>
+<TR><TD colspan="2"><input type="radio" name="selday" value="0" onClick="schedule_check_pattern();"><b>$email_daily</b></TD></TR>
+<TR><TD colspan="2"><input type="radio" name="selday" value="1" onClick="schedule_check_pattern();"><b>$adva_select_days</b></TD></TR>
+<TR><TD colspan="2">
+	<TABLE width="90%" align="center" cellpadding="2" cellspacing="3" border="0">
+	<TR>
+		<TD nowrap width="25%" align="left"><input type="checkbox" name="sun" value="0" >$schedule_sun</TD>
+		<TD nowrap width="25%" align="left"><input type="checkbox" name="mon" value="1" >$schedule_mon</TD>
+		<TD nowrap width="25%" align="left"><input type="checkbox" name="tue" value="2" >$schedule_tue</TD>
+		<TD nowrap width="25%" align="left"><input type="checkbox" name="wed" value="3" >$schedule_wed</TD>
+	</TR>
+	<TR>
+		<TD nowrap width="25%" align="left"><input type="checkbox" name="thu" value="4" >$schedule_thu</TD>
+		<TD nowrap width="25%" align="left"><input type="checkbox" name="fri" value="5" >$schedule_fri</TD>
+		<TD nowrap width="25%" align="left"><input type="checkbox" name="sat" value="6" >$schedule_sat</TD>
+	</TR>
+	</TABLE>
+</td></tr>
+</TABLE>
+</div>
+<% help_box("0","_wladv") %>
+</FORM>
+</BODY>
+</HTML>

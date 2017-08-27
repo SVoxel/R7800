@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<script language="javascript" type="text/javascript" src="script/brs_hijack_wanlan_conflict.js"></script>
+<% hijack_language() %>
+
+<script language="javascript" type="text/javascript">
+var ip_addr = "<% cfg_get("lan_ipaddr") %>";
+var toppic = "<% cfg_get("toppic") %>";
+</script>
+</head>
+
+<body>
+<form action="/apply.cgi?/continue.htm timestamp=<% hijack_get_timestamp("conflict") %>" method="post">
+<input type="hidden" name="submit_flag" value="conflict">
+
+<div class="wizard_content_div">
+
+	<div class="wizard_words_div">
+		
+			<h1 class="h1_red_large"><!--important--></h1>
+
+			<p><b><!--wanlan_conflict_info--></b></p>
+
+	</div>
+	
+	<div class="wizard_buttons_div" align="center">
+
+		<div id="btnsContainer_div" class="buttons_img_div"  align="center">
+		<script>
+			var master="<% cfg_get("http_loginname") %>";
+			if( master == "admin" )
+				document.write('<img src="image/ca-little-purple-button.gif" />');
+			else
+				document.write('<img src="image/ca-little-grey-button.png" />');
+		</script>
+			<div id="btn_div" class="buttons_words_div"><!--continue--></div>
+		</div>
+	
+	</div>
+
+</div>
+
+</form>
+</body>
+
+</html>

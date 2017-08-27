@@ -1,0 +1,102 @@
+<% http_header("style/form2.css", "/funcs.js") %>
+<% body_header("_edit_device", "edit_device_name.htm", "edit_devname") %>
+<style type="text/css">
+#device_name_tb {display:block; margin:40px auto; width: 80%;}
+#device_name_tb td {height:30px; line-height:30px; font-size: 13px;}
+</style>
+<div class="page_title">$edit_devname</div>
+<div class="fix_button" id="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+	<TD nowrap align=center>
+	<script>
+		var master="<% cfg_get("http_loginname") %>";
+		if( master=="admin" )
+			document.write('<input class="new_cancel_bt ui-corner-all" type="reset" name="Cancel" value="$cancel_mark" onClick="location.href=\'edit_device_name.htm\';"><input id="new_apply_bt" class="new_apply_bt ui-corner-all" type="button" name="Apply" value="$apply_mark" onClick="return check_dev();">');
+		else
+			document.write('<input class="new_greycancel_bt ui-corner-all" type="reset" name="Cancel" value="$cancel_mark" disabled><input class="new_greyapply_bt ui-corner-all" type="submit" name="Apply" value="$apply_mark" disabled>');
+	</script>
+	</TD>
+</TR>
+</TABLE>
+</div>
+<script language="javascript" type="text/javascript">
+var old_name="<% cfg_sed_xss("wan_hostname") %>";
+var dev_name="<% cfg_sed_xss("Device_name") %>";
+var show_deviceName="<% cfg_sed_xss("Readyshare_name") %>";
+function loadvalue()
+{
+	var cf = document.forms[0];
+	cf.new_devname.value = dev_name.replace(/: <% cat_file("/module_name") %>/g, "").replace(/&#92;/g, "\\").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+}
+
+function check_dev()
+{
+	var num;
+	var cf = document.forms[0];
+	var user_dev_name=cf.new_devname.value;
+	warning=document.getElementById("devn_error");
+	warning.style.display="none";
+
+	if(user_dev_name == ""){
+		warning.innerHTML="$device_name_null";
+		warning.style.display="";
+		return false;
+	}
+	
+	if(user_dev_name.length > 16){
+		warning.innerHTML="$devname_long";
+		warning.style.display="";
+		return false;
+	}
+	for(i=0;i<user_dev_name.length;i++){
+		if(isValidLetter(user_dev_name.charCodeAt(0))==false || isValidDevName(user_dev_name.charCodeAt(i))==false)
+		{
+			warning.innerHTML="$device_name_error";
+			warning.style.display="";
+			return false;   
+		}
+	}
+	if( user_dev_name.checkShareName()){
+		warning.innerHTML="$invalid_char "+"$device_name";
+		warning.style.display="";
+		return false;
+	}
+
+	var message='<table cellpadding=0 cellspacing=2  border=0>'+
+		'<tr><td colspan=3><h3>$readyshare_devname \\\\'+ show_deviceName+'?</h3></td></tr>'+
+		'<tr><td colspan=3><input type=radio name="device_name_change" checked>$change_readyshare_path \\\\'+ show_deviceName +' $to_mark2 \\\\'+ user_dev_name +'</td></tr>'+
+		'<tr><td colspan=3><input type=radio name="device_name_change">$keep_readyshare_path \\\\'+ show_deviceName +'</td></tr>'+
+		'<tr><td colspan=3 height="20px"></td></tr>'+
+	'</table>';
+	if(show_deviceName != user_dev_name || user_dev_name != dev_name )
+		sAlert(message, function(){location.href='edit_device_name.htm';}, function(){submit_devname();}, 475, 1, "cancel/apply");
+	
+
+}
+function submit_devname(){
+	var cf=document.forms[0];
+	if(cf.device_name_change[0].checked == true)
+		cf.device_name_change_flag.value = "1";
+	else
+		cf.device_name_change_flag.value = "0";
+	cf.submit();
+}
+</script>
+<input type="hidden" name="device_name_change_flag">
+<div id="main" class="main_top_button">
+<table id="device_name_tb">
+<tr><td colspan=3>$devame_note</td></tr>
+<tr><td colspan=3>$readyshare_devname_note</td></tr>
+<tr><td colspan=3></td></tr>
+<tr><td>$edit_devname :</td>
+<td><div id="devn_error" style="color: red"></div></td>
+<td><input type="text" name="new_devname" value="" size="20" autocomplete="off" maxlength="16" onFocus="this.select();" onKeyPress="return getkey('deviceName', event)" ></td></tr>
+<tr><td colspan=2>$devname_warning</td><td></td></tr>
+
+</table>
+</div>
+<% help_box("0","_edit_device") %>
+</form>
+</body>
+</html>

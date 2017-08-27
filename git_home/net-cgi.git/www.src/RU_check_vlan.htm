@@ -1,0 +1,98 @@
+<% ca_http_header("style/hijack_style.css","style/hijack_success.css", "/funcs.js") %>
+
+<BODY onLoad="loadvalue();" bgcolor=#ffffff>
+<% nohelp_header("welcomeok.htm", "hijack_set_vlan")  %>
+	
+<script>
+var ts="<% cfg_get("hijack_set_vlan") %>";
+var master="<% cfg_get("http_loginname") %>";
+
+function loadvalue()
+{
+	var form=document.forms[0];
+
+	//buttons left
+	var btns_div1 = document.getElementById("btnsContainer_div1");
+	if(master=="admin")
+	{
+		btns_div1.onclick = function()
+		{
+			location.href="RU_manual_spoof.htm";
+		}
+	}
+	//buttons right
+	var btns_div3 = document.getElementById("btnsContainer_div3");
+	if(master=="admin")
+	{
+		btns_div3.onclick = function()
+		{
+			location.href="RU_finish_manual.htm";
+		}
+	}
+	//buttons vlan
+	var btns_div2 = document.getElementById("btnsContainer_div2");
+	if(master=="admin")
+	{
+		btns_div2.onclick = function()
+		{
+			form.hid_vlan_tag.value = "1";
+			form.action = "/apply.cgi?/adv_index.htm timestamp=" + ts;
+			form.target = "_top";
+			form.submit_flag.value = "hijack_set_vlan";
+			form.submit();
+		}
+	}
+}
+
+</script>
+<input type="hidden" name="hid_vlan_tag" value="0" />
+
+<div class="wizard_content_div">
+<div class="wizard_words_div">
+	<H1><script>document.write(RU_CA_head)</script></H1>
+<TABLE>
+<tr>
+	<td colspan=3><script>document.write(RU_vlan_msg)</script></td>
+</tr>
+	<tr><td><br></td></tr>
+
+<tr><td><br></td></tr>
+</TABLE>
+</div><!--wizard_words_div -->
+<div id="center_buttons">
+	<div id="allBtns_div" class="wizard_buttons_div" align="center">
+		<div id="btnsContainer_div1" class="buttons_img_div" align="center">
+			<script>
+			if( master == "admin" )
+				document.write('<img src="image/ca-little-purple-button.gif" />');
+			else
+				document.write('<img src="image/ca-little-grey-button.png" />');
+			</script>
+			<div class="buttons_words_div"><script>document.write(RU_back)</script></div>
+		</div>
+
+		<div id="btnsContainer_div2" class="buttons_img_div" align="center">
+			<script>
+			if( master == "admin" )
+				document.write('<img src="image/ca-little-purple-button.gif" />');
+			else
+				document.write('<img src="image/ca-little-grey-button.png" />');
+			</script>
+			<div class="buttons_words_div"><script>document.write(RU_vlan_setup)</script></div>
+		</div>			
+
+		<div id="btnsContainer_div3" class="buttons_img_div" align="center">
+                        <script>
+                        if( master == "admin" )
+                                document.write('<img src="image/ca-little-purple-button.gif" />');
+                        else
+                                document.write('<img src="image/ca-little-grey-button.png" />');
+                        </script>			
+			<div class="buttons_words_div"><script>document.write(RU_no)</script></div>
+		</div>
+	</div><!--allBtns_div -->
+</div>
+</div><!--wizard_content_div -->
+</FORM>
+</BODY>
+</HTML>

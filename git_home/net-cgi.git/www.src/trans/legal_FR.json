@@ -1,0 +1,18 @@
+{
+    "legal":
+    {
+        "Update_License" :  [
+                                "Veuillez nous aider à améliorer la performance de Streamboost et nos services et produits connexes. ",
+	                            "En cochant cette case, Streamboost nous enverra des informations de transmission en continu cumulées anonymes et ",
+	                            "des données analytiques de votre routeur. Nous apprécions votre aide.<br><br>Si vous êtes bénévole pour nous aider à ",
+	                            "améliorer Streamboost et nos produits et services connexes, le routeur activé pour Streamboost fournira à ",
+	                            "Qualcomm Atheros Inc. des informations de transmission en continu cumulées anonymes de votre routeur. Les informations ",
+	                            "de transmission en continu anonymes peuvent comprendre :  des paquets de données transmises à travers le routeur, les mesures et conditions ",
+	                            "de souscription excédentaires de la bande passante disponible (c'est-à-dire la quantité de bande passante demandée ",
+	                            "dépassant la bande passante disponible), les périphériques et la transmission en continu associée aux périphériques et ",
+	                            "les statistiques d'utilisation de l'application. En contrepartie, Qualcomm Atheros accepte de conserver votre routeur activé pour ",
+	                            "StreamBoost à jour avec les dernières définitions de transmission en continu."
+                            ]
+    }
+}
+

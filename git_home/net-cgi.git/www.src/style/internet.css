@@ -1,0 +1,15 @@
+#login_label{width: 778px; height: 46px; background-image:url(../image/internet/internet-top-line.gif); background-repeat: no-repeat; 	background-position:left bottom; background-color: #e5e5e5;}
+#no_login,#login{float:left; font-family: Arial; font-weight: bold; font-size: 16px; text-align: center;}
+#no_login b,#login b {position:relative; top: 5px;}
+#login { margin-left:2px;}
+.selected{width: 106px; height: 37px; background-image:url(../image/internet/internet-select-label.gif); background-repeat: no-repeat; color:#e5e5e5;}
+.no_selected{width: 106px; height: 37px; background-image:url(../image/internet/internet-unselect-label.gif); background-repeat: no-repeat; color: black;}
+#macshow{position:relative; left: 6px; width: 344px; height: 152px; background-image:url(../image/internet/mac-show-back.gif); background-repeat: no-repeat; text-align:center;}
+
+.mac_use{font:bold 18px arial; color: #837ee6; position:relative; top: 10px;}
+.mac_value{font:18px arial; color: #000000;}
+.mac_note{font:12px arial; color: #000000;}
+#testbutton{ margin:0 auto; }
+#left{float: left; width:370px; margin-left:10px; }
+
+#right{float:left; width: 370px; margin:0px 10px 0px 10px;}

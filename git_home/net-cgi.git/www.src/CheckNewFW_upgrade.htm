@@ -1,0 +1,71 @@
+<% http_header("style/form.css", "/funcs.js", "/upgrade.js") %>
+<!--% body_header("_upgrade", "UPG_upgrade.htm", "auto_upgrade_check") %-->
+<BODY onLoad="loadvalue();">
+<div class="page_title">$firm_upgrade</div>
+<div id="main" class="main">
+<FORM method="POST" action="/apply.cgi?/UPG_upgrade.htm">
+<INPUT type=hidden name=submit_flag value="auto_upgrade_check">
+<% table_header() %>
+$bluebar
+<script>
+<% refresh_timestamp("auto_upgrade_check", "download_confile") %>
+var ts="<% cfg_get("auto_upgrade_check") %>"
+
+function loadvalue()
+{
+	var autoup = '<% cfg_get("auto_check_for_upgrade") %>';
+	var cf = document.forms[0];
+
+	cf.action = "/apply.cgi?/UPG_upgrade.htm timestamp=" + ts;
+/*	if (autoup == '0')
+		cf.enable.checked = false;
+	else
+		cf.enable.checked = true; */
+}
+var netgear_module="<% cat_file("/module_name") %>";
+var netgear_region=top.netgear_region;
+var netgear_ver="<% cat_file("/firmware_version") %>";
+</script>
+
+<input type="hidden" name="auto_check_for_upgrade">
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_upgrade','check')"><B>$upgrade_new_version</B></A></TD>
+	<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if( master == "admin" )
+		document.write('<TD nowrap><input class="short_common_bt" type="button" name="Check" value="$check_mark" onclick="click_check();"></TD>');
+	else
+		document.write('<TD nowrap><input class="short_common1_bt" type="button" name="Check" value="$check_mark" disabled></TD>');
+	</script>
+</TR>
+<!--TR>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="enable" value=1 onclick="check_if_show();"><B>$upgrade_upon</B>
+	</TD>
+</TR-->
+$bluebar
+</table>
+</FORM>
+<FORM method="post" action="/upgrade_check.cgi" target=formframe enctype="multipart/form-data">
+<table width="100%" border="0" cellpadding="0" cellspacing="3">
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_upgrade','locate')"><B>$upgrade_select_disk</B></A>
+	</TD>
+</TR>
+<TR><TD nowrap><input name="mtenFWUpload" type="file" size="32"></TD></TR>
+$bluebar
+<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if( master == "admin" )
+		document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel_bt" type="reset" name="Cancel" value="$cancel_mark" onClick="location.href=\'UPG_upgrade.htm\';">&nbsp;&nbsp;<input class="apply_bt" type=submit name="Upgrade" value="$upg_mark" onClick="return clickUpgrade(document.forms[1])"></TD></TR>');
+	else
+		document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel1_bt" type="reset" name="Cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type=submit name="Upgrade" value="$upg_mark" disabled></TD></TR>');
+
+</script>
+</TABLE>
+</FORM>
+</div>
+<% help_box("0","_upgrade") %>
+</BODY>
+</HTML>

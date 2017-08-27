@@ -33,14 +33,6 @@
 	}
 
 /**
- * bw_id - Band width level IDs
-*/
-enum bw_id {
-	BW_NOMINAL = 4,
-	BW_TURBO = 5
-};
-
-/**
  * src_id - Clock source IDs.
  */
 enum src_id {

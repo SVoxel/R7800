@@ -1,0 +1,232 @@
+<% http_header("style/form.css", "/funcs.js", "/UPnP_Media.js") %>
+<% body_header("_UPNP_media", "UPNP_media.htm", "upnp_media") %>
+<div name="Media Server (Settings)" class="page_title">$media_settins</div>
+<div id="main" class="main"> 
+<% table_header() %>
+$bluebar
+
+<% save_timestamp("upnp_media", "upnp_media_scan", "iTunes_allow_control","edit_devname") %>
+<script>
+var consolidate_device_name = parent.consolidate_device_name;
+
+var upnp_media_onoff="<% cfg_get("upnp_enableMedia") %>";
+
+if (consolidate_device_name == 1)
+	var upnp_media_name="<% cfg_sed_xss("Device_name") %>";
+else
+	var upnp_media_name="<% cfg_sed_xss("upnp_serverName") %>";
+var scanType="<% cfg_get("upnp_scanType") %>";
+//var scanPeriod="<% cfg_get("upnp_scanPeriod") %>";
+//bug 24250:Tivo supporting from NETGEAR's request
+var upnp_enabletivo_flag="<% cfg_get("upnp_enable_tivo") %>";
+var endis_itunes="<% cfg_get("endis_itunes") %>";
+var passcode="<% cfg_get("itunes_app_passcode")%>";
+<% itunes_open_flag() %>
+var tivo_flag=parent.tivo_flag;
+
+var gui_region="<% cfg_get("GUI_Region") %>";
+var netgear_region=top.netgear_region;
+var is_jp_version=((gui_region == "Japanese" && (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "JP")? 1 : 0;
+var device_name="<% cfg_sed_xss("netbiosname") %>";
+function loadvalue()
+{
+	var cf=document.forms[0];
+	
+	if(tivo_flag == 1 && is_jp_version == 0)
+		document.getElementById("tivo_display").style.display="";
+	else
+		document.getElementById("tivo_display").style.display="none";
+	
+	if(upnp_media_onoff == "1")
+		cf.media_server.checked =true;
+	else
+		cf.media_server.checked =false;
+
+	if(consolidate_device_name == "0"){
+		cf.media_server_name.value=device_name.replace(/&#92;/g, "\\").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+	}
+
+	
+//	if(scanType == "0")
+//		cf.scan.checked=false;
+//	else
+		cf.scan.checked=true;
+	//else
+		//cf.scan[1].checked=true;
+	//cf.scan_time.value=scanPeriod;
+	if(upnp_enabletivo_flag == "yes")
+		cf.media_server_tivo.checked = true;
+	else
+		cf.media_server_tivo.checked = false;
+	<% display_iTunes() %>
+	if(endis_itunes == "1"){
+                cf.enable_itunes.checked = true;
+		cf.app_passcode.value=passcode;
+	}
+        else{
+                cf.enable_itunes.checked = false;
+		cf.app_passcode.disabled=true;
+		cf.app_passcode.value="";
+	}
+	mediaserver_enable();
+}
+
+function check_name()
+{
+	var cf=document.forms[0];
+	if (consolidate_device_name == 0)
+	{
+		var media_name=cf.media_server_name.value;
+		// cf.hidden_media_server_name.value=media_name+": WNDR3700";
+		if(itunes_open == 1)
+			cf.hidden_media_server_name.value=media_name;
+		else if(itunes_open == 0){
+			if(media_name.indexOf(":") == -1)//bug 29090:user input ':',then ':<model name>'must not be added and advertise to the network
+				cf.hidden_media_server_name.value=media_name+": <% cat_file("/module_name") %>";
+			else
+				cf.hidden_media_server_name.value=media_name;
+		}
+	}
+}
+
+function mediaserver_enable()
+{
+	var cf=document.forms[0];
+	if(cf.media_server.checked == true)
+	{
+		cf.media_server_tivo.disabled=false;
+		if (consolidate_device_name == 0)
+			cf.media_server_name.disabled=false;
+		cf.scan.disabled=false;
+	}
+	else
+	{
+		cf.media_server_tivo.disabled=true;
+		if (consolidate_device_name == 0)
+			cf.media_server_name.disabled=true;
+		cf.scan.disabled=true;
+	}
+}
+
+function allow_control_submit(cf)
+{
+	cf.submit_flag.value="iTunes_allow_control";
+	return true;
+}
+</script>
+<input type="hidden" name="media_server_onoff">
+<input type="hidden" name="itunes_onoff">
+<input type="hidden" name="changetime">
+<input type="hidden" name="hidden_advertime" value="">
+<input type="hidden" name="hidden_timetolive" value="">
+<input type="hidden" name="hidden_media_server_name">
+<input type="hidden" name="media_server_tivo_flag">
+<TR>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="media_server" id="enable_media_server"  value="1" onClick="mediaserver_enable()">
+	<A tabindex=-1 href="javascript:loadhelp('_UPNP_media','turnon')"><B>$media_server_enable</B></A>
+	</TD>
+</TR>
+<TR id=tivo_display>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="media_server_tivo" id="enable_media_server_tivo" value="1">
+	<A tabindex=-1 href="javascript:loadhelp('_UPNP_media','tivo')"><B>$media_server_tivo</B></A>
+	</TD>
+</TR>
+<TR id=itunes_display style="display:none">
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="enable_itunes" value="0">
+	<B>$enable_itunes</B></TD>
+</TR>
+<TR id="itunes_app_passcode" style="display:none">
+	<TD nowrap>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	&nbsp;&nbsp;&nbsp;$app_passcode 
+	<input type="text" name="app_passcode" id="app_passcode" size="4">&nbsp;&nbsp;</td>
+	<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if( master == "admin" )
+		document.write('<td><input type="submit" name="allow_control" class="common_key_bt" value="$allow_control" onClick="allow_control_submit(document.forms[0])"></TD>');
+	else
+		document.write('<td><input type="submit" name="allow_control" class="common1_key_bt" value="$allow_control" disabled></TD>');
+	</script>
+</TR>
+<TR>
+	<TD id="server_name_td" nowrap width="30%" >
+	<div style="float:left"><A  tabindex=-1 href="javascript:loadhelp('_UPNP_media','name')"><B>$media_server_name :</B></A></div>
+	<div style="float:right" >
+	<script>
+	var old_name="<% cfg_sed_xss("upnp_serverName") %>";
+	var dev_name="<% cfg_sed_xss("Device_name") %>";
+	if(old_name != "")
+		dev_name=old_name;
+	if(consolidate_device_name == "1"){
+		document.write(dev_name);
+		document.write("&nbsp;&nbsp;&nbsp;");
+	}else{
+		document.write('<input type="text" name="media_server_name" id="device_name" size="32" readonly="" onBlur="check_name()" onKeyPress="return getkey(\'mediaServerName\', event)">');
+		
+	}
+		
+	</script>
+	</div></td><td>
+	<script>
+	if(consolidate_device_name == "1"){
+		document.write('<input class="short_edit_bt" type="button" name="edit" value="$edit_mark" onClick="edit_devicename(dev_name)">');
+	}else{
+		if(itunes_open == 0){
+			var medianame=upnp_media_name.replace(": <% cat_file("/module_name") %>", "");
+			if(medianame.indexOf(":") == -1)
+				document.write(": <% cat_file("/module_name") %>");
+		}
+		else if(itunes_open == 1){
+			document.write("<a href='LAN_lan.htm'><u>$change_device_name</u></a>");
+		}
+	}
+	</script>
+	</TD>
+</TR>
+$bluebar
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TR><TD><input class="apply_bt" type="button" name="apply_media" id="apply_media" value="$apply_mark" onClick="check_media(document.forms[0])"></TD></TR>');
+else
+	document.write('<TR><TD><input class="apply1_bt" type="button" name="Apply_Media" value="$apply_mark" disabled></TD></TR>');
+</script>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_UPNP_media','scan')"><B>$media_scan</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="scan" id="scan" value="0" onClick="">$media_auto_scan
+	</TD>
+</TR>
+<!--<TR>
+        <TD nowrap colspan=2>
+        <input type="radio" name="scan" value="1" onClick="">$media_schedule_scan
+	<input type="text" name="scan_time" size="4" onKeyPress="return getkey('num', event)">$media_minutes
+        </TD>
+</TR>
+<TR>
+	<TD>
+	<input type="button" name="Apply_Scan" value="$media_scan_now" onClick="">
+	</TD>
+</TR>-->
+$bluebar
+<script>
+if( master == "admin" )
+	document.write('<TR><TD nowrap><input class="apply_media" type="button" name="Apply" id="apply" value="$rescan_media_files" onClick="check_media_scan(document.forms[0])"></TD></TR>');
+else
+	document.write('<TR><TD nowrap><input class="apply1_media" type="button" name="Apply" id="apply" value="$rescan_media_files" disabled></TD></TR>');
+</script>
+
+</TABLE>
+
+</div>
+<% help_box("1","_UPNP_media") %>
+</FORM>
+</BODY>
+</HTML>

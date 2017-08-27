@@ -1,0 +1,78 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<% body_header("_index", "welcomeok.htm", "change_language") %>
+<input type=hidden name=hidden_lang_avi>
+<input type=hidden name=browser_or_top>
+<input type=hidden name=language_in_flash>
+<script>
+<% save_timestamp("change_language", "select_language") %>
+var GUI_Region='<% cfg_get("GUI_Region") %>';
+var lang_select='<% cfg_get("Language_Selection") %>';
+var language_list='1 2 3 4 5 6';
+var dis_lang_crl='<% cfg_get("Enable_GUIStringTable") %>';
+var new_language='<% cfg_get("New_Language") %>';
+var have_in_flash='<% cfg_get("lang_in_flash") %>';
+
+function changeBrowser_langage()
+{
+	form=document.forms[0];
+	top.topframe.location.href="top_submit.html";
+	top.enable_action=0;/* to fix bug 23252, disable the link of the menu */
+	location.href="pls_wait_updateLanguage.html";	
+//	form.submit();
+}
+
+function do_not_change()
+{//not change language, Language_Selection regurn back to GUI_Region
+	top.enable_action=1;
+	form=document.forms[0];
+	form.hidden_lang_avi.value=GUI_Region;
+	form.submit_flag.value="select_language";
+	form.submit();
+	                                
+}
+
+function loadvalue()
+{
+	top.enable_action=0;
+	top.auto_change_lang = 0;
+	if( (have_in_flash == "1" || have_in_flash == "2" ) && new_language != GUI_Region)
+		changeBrowser_langage();	
+}
+
+var browser_language_show;
+var GUI_Region_show="English";
+var language_nowArray="<% lang_en() %>".split(" ");
+var language_showArray="<% lang_show() %>".split(" ");
+
+for (k=0; k<language_nowArray.length; k++)
+{
+	if (GUI_Region == language_nowArray[k])
+		GUI_Region_show=language_showArray[k];
+}
+
+if (language_nowArray != "")
+{
+	for ( i=0; i<language_nowArray.length; i++)
+	{
+		if (have_in_flash == "1" || have_in_flash == "2")// defaul language not have warning.
+			break;
+		if (new_language == language_nowArray[i] && new_language != GUI_Region && dis_lang_crl == '1' )
+		{
+			browser_language_show=language_showArray[i];
+			document.write("<br/><br/>");
+			document.write("<table width=100% border=0 cellpadding=0 cellspacing=2>");
+			document.write("$bluebar");
+			document.write("<tr><td colspan=2><br/>$ml_switch <B>\""+GUI_Region_show+"\"</B> $ml_curlang <B>\""+browser_language_show+"\"</B>? <br/><br/></td></tr>");
+			document.write("$bluebar");
+			document.write('<tr><td colspan=2><br/><br/><br/><center><input type="button" name="yes" value="$yes_mark" onclick="changeBrowser_langage();">&nbsp;<input type="button" name="no" value="$no_mark" onclick="do_not_change();"><br/></center></td></tr>');
+			document.write("</table>");
+			break;
+		}
+	}
+	if (i == language_nowArray.length || (new_language == GUI_Region))
+		parent.location.href="index.htm";
+}
+</script>
+</FORM>
+</BODY>
+</HTML>

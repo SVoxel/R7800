@@ -1,0 +1,2 @@
+<% obtain_ip_txt() %>
+<% hijack_netDetectingip() %>

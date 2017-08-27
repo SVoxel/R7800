@@ -1,0 +1,59 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<BODY bgcolor=#ffffff onLoad="loadhelp('_auto_upgrade');loadvalue();">
+
+<% refresh_timestamp("download_confile") %>
+<TABLE width=100% border=0 cellpadding=0 cellspacing=3>
+<TR><TD colSpan=2><H1>$wait_green_head</H1></TD></TR>
+<TR><TD colSpan=2></TD></TR>
+$bluebar
+<TR><TD colSpan=2></TD></TR>
+<TR id="pls_wait"><TD><BR>$wizard_pls_wait<BR></TD></TR>
+<script>
+parent.charcount=0;
+var wan_status=<% detwan_valid() %>;
+var status=<% autoup_status() %>;
+
+function loadvalue()
+{
+	detec_status();
+}
+
+function detec_status()
+{
+	if (wan_status == 1)
+	{
+		status = top.formframe.auto_search_frame.status;
+		if (status == 9999)
+			location.href="green_check_version.htm";
+		else if (status >= 10000)
+			location.href="AUTO_green_upgrade_noversion.htm";
+		else
+		{
+			//document.write("$wizard_pls_wait");
+			//document.getElementById("pls_wait").style.display="";
+			setTimeout("detec_status();",1000);
+		}
+	}
+	else
+	{
+		location.href="green_upgrade_no_internet.htm";
+	}
+}
+function click_cancel()
+{
+	location.href="green_cancel.htm";
+}
+</script>
+
+
+$bluebar
+
+<TR>
+	<TD nowrap align=center> 
+	<input type='button' name='cancel' value='$cancel_mark' onclick='click_cancel();'>
+	</TD>
+</TR>
+</TABLE>
+<iframe name="auto_search_frame" src="autoup_get_status.htm" allowtransparency="true" scrolling="no" frameborder="0" ></iframe>
+</BODY>
+</HTML>

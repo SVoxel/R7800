@@ -1,0 +1,44 @@
+<% http_header("style/form.css") %>
+
+<script type="text/javascript">
+var pchar = "||"; // progress char
+var maxchars = 33; 
+var delay_time = 1000; // msecs
+var charcount = 0; 
+
+function makeStr(strSize, fillChar)
+{
+	var temp = "";
+	for (i=0; i < strSize ; i ++)
+		temp = temp + fillChar;
+	return temp;
+}
+
+function updateProgress()
+{
+	var cf = document.forms[0];
+	if (charcount < maxchars)
+	{
+		charcount ++;
+		cf.progress.value = makeStr(charcount,pchar);
+		setTimeout("updateProgress()",delay_time);
+	}
+	else
+	{ 
+		location.href="WAN_wan.htm";
+	}
+}
+</script>
+
+<BODY bgcolor="#ffffff" onLoad="updateProgress()">
+<FORM>
+<TABLE border="0" cellpadding="0" cellspacing="3" width="100%">
+<TR>
+	<TD align="left"><H1>$update_head</H1></TD>
+ 	<TD nowrap><input type="text" name="progress" class="prgbar" value=""></TD>
+</TR>
+$bluebar
+</table>
+</form>
+</BODY>
+</HTML>

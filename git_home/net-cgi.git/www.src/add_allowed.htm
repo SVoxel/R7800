@@ -1,0 +1,41 @@
+<% http_header("style/form.css", "/funcs.js", "/AccessControl.js") %>
+<% noload_header("_access_add", "access_control.htm", "add_acc") %>
+<div class="page_title">$acc_add_allow</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if(master=="admin")
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'access_control.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onClick="return check_acc_add(document.forms[0], \'add\');"></TD>');
+else
+	document.write('<TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="button" name="Apply" id="apply" value="$apply_mark" disabled></TD>');
+</script>
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+<script>
+<% list_access_saved_devices() %>
+</script>
+<input type="hidden" name="hidden_acc_add_type" value="allow"/>
+<TR>
+	<TD nowrap>$info_mark_mac</TD>
+	<TD nowrap>
+		<input type="text" value="" name="mac_addr" id="mac_addr" maxlength="17" size="20" onKeyPress="return getkey('mac',event)">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$lan_mark_name</TD>
+	<TD nowrap><input type="text" name="dev_name" id="dev_name" maxLength="20" size="16">
+	</TD>
+</TR>
+
+$bluebar
+</TABLE>
+</div>
+<!--% help_box("0","_STR_routes") %-->
+</FORM>
+</BODY>
+</HTML>

@@ -1,0 +1,222 @@
+<% http_header("style/form.css", "/funcs.js", "/USB_NETStorage.js") %>
+<% nohelp_header("USB_Folder_creat.htm", "sharefolder_creat") %>
+<div name="Create Network Folder" class="page_title">$create_network_folder</div>
+<div id="main" class="main">
+<% table_header() %>
+$bluebar
+
+<script>
+<!--
+<% show_usb_fileder_items() %>
+<% change_folder_path() %>
+<% save_timestamp("sharefolder_creat","open_browser_window") %>
+<% check_path() %>
+var nopassword_num=opener.nopassword_num;
+var isfirst_submit=1;
+if( noThisPath == 0 )
+{
+	alert("$folder_notExist");
+}
+function openBrowse()
+{
+	var form = document.forms[0];
+
+	for(i=0; i<sda_num; i++){
+		var sda_str = eval('sda_U' + i);
+		each_info = sda_str.split('*');
+		if( form.usbDevice.value == each_info[1] ){
+			form.devicePath.value = each_info[0];
+		}
+	}
+//16168	form.action="/apply.cgi?/USB_browse.htm?openfile=USB_Folder_creat.htm"; 
+        form.submit_flag.value="open_browser_window";
+        form.submit();
+//	setTimeout("openwindow()",500);	
+	window.open('USB_browse.htm','browse','resizable=0,scrollvars=yes,width=400,height=400,left=400,top=300').focus();
+}
+function openwindow()
+{
+	window.open('USB_browse.htm','browse','resizable=0,scrollvars=yes,width=400,height=400,left=400,top=300').focus();
+}
+
+function loadvalue()
+{
+	form=document.forms[0];
+	var usbDeviceName="<% cfg_get("usbDeviceName") %>";
+	for(i=0; i<sda_num; i++){
+		var sda_str = eval('sda_U' + i);
+		each_info = sda_str.split('*');
+		if( usbDeviceName == each_info[0] ){
+			form.usbDevice.value = each_info[1];
+		}
+	}
+
+	if(opener.parent.usb_creat_apply_already == 1)//bug 41187
+	{
+		opener.parent.usb_creat_apply_already = 0;
+		close_window();
+	}
+//16168	form.folder.value=parent.folder_path;	
+//	form.usbDevice.value="<% cfg_get("usbDeviceName") %>";
+}
+function click_creat()
+{
+	var form = document.forms[0];
+	
+/*	if( form.folder.value.checkFolder()){
+		alert("$invalid_folderPath");
+		return false;
+	} */
+	if( form.shareName.value.checkShareName()){
+		alert("$invalid_shareName");
+		return false;
+	}
+	
+	//delete all the space at the begainning and the end of the foler name.
+	form.folder.value = form.folder.value.replace(/(^\s*)/g, "");	
+	form.folder.value = delete_end_space(form.folder.value);
+	if( form.folder.value == ""){					
+		alert("$folder_NULL");
+		return false;
+	}	
+	if( checkPathValid(form.folder.value) ){
+		alert("$invalid_up_folderpath");
+		return false;
+	}
+
+	form.shareName.value = form.shareName.value.replace(/(^\s*)/g, "");	
+	form.shareName.value = delete_end_space(form.shareName.value);
+	if( form.shareName.value == ""){
+		alert("$shareName_NULL");
+		return false;
+	}
+	if( form.shareName.value == "Not Shared" ){
+		alert("$usb_notSharedName");
+		return false;
+	}
+	for( i=0; i < folder_number ; i++ ){
+		var str = eval( 'usb_sharefolder' + i ).replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+		each_info = str.split('*');
+		if(  form.shareName.value.toLowerCase() == each_info[4].toLowerCase() ){
+			alert("$shareName_exist");
+			return false;
+		}
+	}
+	if(form.readAccess.value == 1 && form.writeAccess.value == 0){
+		alert("$readAccess_writeAccess");
+		return false;
+	}
+
+	if(nopassword_num == 0 && form.readAccess.value == 1)
+	{
+		alert("$usb_nopassward_msg");
+	}
+		
+       	var info=form.folder.value.replace(/\\/g,"\/").split(":");
+       	var device_lable=info[0];
+	if(form.usbDevice.value != device_lable){
+		var war="$folder "+form.folder.value+" $not_in_device "+form.usbDevice.value;
+		alert(war);
+		return false;
+	}
+        /*      ----change path ----    */
+       	for(i=0; i<sda_num; i++){
+               var sda_str = eval('sda_U' + i);
+               each_info = sda_str.split('*');
+               if( device_lable == each_info[1] ){
+                       info[0]=each_info[0];
+               }
+       	}
+       	var str=""+info[0]+info[1]+"";
+       	form.folderPath.value=str;
+
+	if(isfirst_submit==0)
+		return false;
+	isfirst_submit=0;
+
+	form.submit_flag.value="sharefolder_creat";
+	form.submit();
+	opener.parent.usb_creat_apply_already = 1;
+	opener.parent.formframe.location.href = "USB_advanced.htm";
+}
+-->
+</script>
+<input type=hidden name=folderPath>
+<input type=hidden name=devicePath>
+<TR><TD colspan=2>
+	<TABLE border ="1" cellpadding ="2" cellspacing ="0" width="100%">
+	<TR>
+		<TD nowrap align=center><span class="thead">$usb_device</span></TD>
+		<TD nowrap><span class="ttext">
+			<select name="usbDevice" id="usb_device" size="1" onchange="">
+<!--			<option value="U">U:(Tim's Pen Drive)</option>  -->
+<% show_usbDevice() %>
+			</select>
+		</span>	</TD>
+	</TR>
+	<TR>
+		<TD nowrap align=center><span class="thead">$folder</span></TD>	
+		<TD nowrap><span class="ttext">
+			<input type="text" name="folder" id="folder" value="" size=20 >
+			<script>
+			var master="<% cfg_get("http_loginname") %>";
+			if( master =="admin" )
+				document.write('<input class="short_common_bt" type="button" name="browse" id="browse" value="$browse_mark" onClick="openBrowse();">');
+			else
+				document.write('<input class="short_common1_bt" type="button" name="browse" id="browse" value="$browse_mark" disabled>');
+			
+			</script>
+		</span></TD>
+	</TR>
+	<TR>
+		<TD nowrap align=center><span class="thead">$share_name</span></TD>
+		<TD nowrap><span class="ttext">
+			<input type="text" name="shareName" id="share_name" value="" size=20 maxlength="31" onKeyPress="return getkey('shareName', event)">
+		</span></TD>
+	</TR>
+	<TR>
+		<TD nowrap align=center><span class="thead">$read_access</span></TD>
+		<TD nowrap><span class="ttext">
+			<select name="readAccess" id="read_access" size="1" onchange="set_read(document.forms[0],this.value);">
+				<option value="0">$usb_access_no_pass</option>
+				<option value="1">$usb_access_admin</option>
+			</select>	
+		</span></TD>
+	</TR>
+	<TR>
+		<TD nowrap align=center><span class="thead">$write_access</span></TD>
+		<TD nowrap><span class="ttext">
+			<select name="writeAccess" id="write_access" size="1" onchange="set_write(document.forms[0],this.value);">
+				<option value="0">$usb_access_no_pass</option>
+				<option value="1">$usb_access_admin</option>
+			</select>
+		</span></TD>
+	</TR>
+	</TABLE>
+</TD></TR>
+
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD colspan=2 align="center">
+<script>
+
+if( master =="admin" )
+	document.write('<input class="apply_bt" type="button" name="Apply" id="apply" value="  $apply_mark  " onClick="click_creat();">');
+else
+	document.write('<input class="apply1_bt" type="button" name="Apply" id="apply" value="  $apply_mark  " disabled>');
+</script>
+</TD></TR>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD colspan=2><img src=/liteblue.gif width=100%% height=12></TD></TR>
+<TR><TD colspan=2>&nbsp;</TD></TR>
+<TR><TD colspan=2 align="center">
+<input class="delete_bt" type="button" name="Close" id="close" value="  $close_win_mark  " onClick='close_window();'>
+</TD></TR>
+
+
+</TABLE>
+
+</div>
+
+</FORM>
+</BODY>
+</HTML>

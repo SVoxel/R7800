@@ -1,0 +1,154 @@
+
+.Left
+{
+    height: 100%;
+    position: relative;
+    display: inline-table;
+    margin-left: 0;
+    margin-top: 0;
+    margin-right: -4px;
+}
+.Right
+{
+    /*height: 100%;*/
+    width: 77%;
+    position: absolute;
+    display: inline-table;
+    right: auto;
+    /*margin-left: -4px;
+    margin-top: 0;
+    margin-right: 0;
+    padding-right: 100%;*/
+}
+.TopLeft
+{
+    position: relative;
+    display: block;
+
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/nhii-topleft.png', sizingMethod='scale');
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/nhii-topleft.png', sizingMethod='scale')";
+
+    height: 79px;
+    width: 100%;
+    padding-top: 0px;
+    /*[empty]border-top:;*/
+}
+.LeftMenu
+{
+    position: relative;
+    display: block;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/nhii-leftmenu.png', sizingMethod='scale');
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/nhii-leftmenu.png', sizingMethod='scale')";
+    background-repeat: no-repeat;
+    -moz-background-size: 100% 100%;
+    -o-background-size: 100% 100%;
+    -webkit-background-size: 100% 100%;
+    height: 79px;
+    width: 100%;
+}
+.BottomLeft
+{
+    position: relative;
+    display: block;
+    background-image: url(../images/nhii-bottomleft.png);
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/nhii-bottomleft.png', sizingMethod='scale');
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/nhii-bottomleft.png', sizingMethod='scale')";
+    background-repeat: no-repeat;
+    -moz-background-size: 100% 100%;
+    -o-background-size: 100% 100%;
+    -webkit-background-size: 100% 100%;
+    /*height: 1024px;*/
+    width: 100%;
+    height: auto;
+}
+.TopRight
+{
+    position: relative;
+    display: block;
+    background-image: url(../images/nhii-topright.png);
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/nhii-topright.png', sizingMethod='scale');
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/nhii-topright.png', sizingMethod='scale')";
+    background-repeat: no-repeat;
+    -moz-background-size: 100% 100%;
+    -o-background-size: 100% 100%;
+    -webkit-background-size: 100% 100%;
+    height: 79px;
+    width: 100%;
+    padding-top: 20px;
+    margin-bottom: -20px;
+}
+.RightMenu
+{
+    position: relative;
+    display: block;
+    background-image: url(../images/nhii-rightmenu-ie8.png);
+    background-repeat: no-repeat;
+    -moz-background-size: 100% 100%;
+    -o-background-size: 100% 100%;
+    -webkit-background-size: 100% 100%;
+    height: 79px;
+    width: 100%;
+}
+.BottomlRight
+{
+    position: relative;
+    display: block;
+    background-image: url(../images/nhii-bottomright-ie8.png);
+    background-repeat: no-repeat;
+    -moz-background-size: 100% 100%;
+    -o-background-size: 100% 100%;
+    -webkit-background-size: 100% 100%;
+    /*height: 1024px;*/
+    width: 100%;
+}
+
+.SubMenuTab
+{
+    background-image: url(../images/transparent.png);
+    z-index:101;
+}
+#clonebutton
+{
+    top:0;
+}
+
+body:nth-of-type(1) #clonebutton
+{
+    top:0px;
+    visibility:hidden;
+}
+
+.Help {
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/nhii-help.png', sizingMethod='scale');
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/nhii-help.png', sizingMethod='scale')";
+}
+
+.HelpButton {
+    background-image:none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/helpbt_gray.png', sizingMethod='scale');
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/helpbt_gray.png', sizingMethod='scale')";
+}
+
+.HelpButtonSelect {
+    background-image:none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/helpbt_blue.png', sizingMethod='scale');
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/helpbt_blue.png', sizingMethod='scale')";
+}
+
+.HelpButton:hover {
+    background-image:none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/helpbt_orange.png', sizingMethod='scale');
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/helpbt_orange.png', sizingMethod='scale')";
+}
+.HelpButtonSelect:hover {
+    background-image:none;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/helpbt_orange.png', sizingMethod='scale');
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/helpbt_orange.png', sizingMethod='scale')";
+}
+
+.nodeselSelect {
+    height:24px;
+}
+.nodeselHeader {
+    height:32px;
+}

@@ -404,12 +404,12 @@ void iptv_port_update_mgroup(const struct sk_buff *skb)
                                igmpv12_report = (igmpr_t *)igmp_type;
                                gip = *((uint32_t *)&igmpv12_report->igmpr_group);
                                proc_mcast_entry('a', sip, gip);
-                               /* printk("IPTV client : [%8x] join group [%8x]\n",sip,gip); */
+                               printk("IPTV client : [%8x] join group [%8x]\n",sip,gip);
                                break;
                        case IGMP_V2_MEMBERSHIP_LEAVE:
                                igmpv12_report = (igmpr_t *)igmp_type;
                                gip = *((uint32_t *)&igmpv12_report->igmpr_group);
-                               /* printk("IPTV client : [%8x] leave group [%8x]\n",sip,gip); */
+                               printk("IPTV client : [%8x] leave group [%8x]\n",sip,gip);
                                proc_mcast_entry('d', sip, gip);
                                break;
                        case IGMP_V3_MEMBERSHIP_REPORT:
@@ -427,17 +427,17 @@ void iptv_port_update_mgroup(const struct sk_buff *skb)
                                                case 6:
                                                        gip = *((uint32_t *)&igmpv3_report->igmpr_group[i].igmpg_group);
                                                        proc_mcast_entry('a', sip, gip);
-                                                       /* printk("IPTV client : [%8x] join group [%8x]\n",sip,gip); */
+                                                       printk("IPTV client : [%8x] join group [%8x]\n",sip,gip);
                                                        break;
                                                case 3:
                                                        igmpv3_numsrc = ntohs(igmpv3_report->igmpr_group[i].igmpg_numsrc);
                                                        gip = *((uint32_t *)&igmpv3_report->igmpr_group[i].igmpg_group);
                                                        if (igmpv3_numsrc == 0) {
                                                            proc_mcast_entry('d', sip, gip);
-                                                           /* printk("IPTV client : [%8x] leave group [%8x]\n",sip,gip); */
+                                                           printk("IPTV client : [%8x] leave group [%8x]\n",sip,gip);
                                                        } else {
                                                            proc_mcast_entry('a', sip, gip);
-                                                           /* printk("IPTV client : [%8x] join group [%8x]\n",sip,gip); */
+                                                           printk("IPTV client : [%8x] join group [%8x]\n",sip,gip);
                                                        }
                                                        break;
                                                default:

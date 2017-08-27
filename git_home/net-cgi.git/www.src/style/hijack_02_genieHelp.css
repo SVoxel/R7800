@@ -1,0 +1,63 @@
+
+.helpChoice_divs { height:220px; width:100%; margin:0px auto 0px auto; }
+.helpChoice_divs_dsl { height:200px; width:100%; margin:0px auto 0px auto; }
+.userChoice_divs{ height:65px; width:100%; margin:10px auto 3px auto; }
+.choose_router_ap_divs { height:70px; width:100%; margin:0px auto 0px auto; padding-left:25px}
+.hijack_02_buttons_div { height:50px; width:15%; line-height:50px; padding:0; margin:50px auto; }
+
+#btnsContainer_div { width:15%; }
+
+#words_div_02{ margin:30px 10% 0px 10%;}
+#buttons_div_02{ margin:0px auto;}
+
+#allBtns_div { width:500px;  margin:10px auto;}
+
+#btnsContainer_div1 { width:30%; float:left;}
+
+#btnsContainer_div2 { width:30%; float:left; left:25px; }
+
+#btnsContainer_div3 { width:30%; float:right; }
+
+
+.wizard_words_div1{ width:80%; padding:5% 10% 0 10%; font-family:Arial; font-size:10pt; font-weight:normal; color:#404040; }
+.wizard_words_div1 h1 { font-family:Arial; font-size:12pt; font-weight:bold; color:#9D98FF; }
+.wizard_words_div1 .apradio_div{ height:80px; margin:3px 0 auto 0; line-height:20px; }
+.wizard_words_div1 .apradio_lean{ height:50px; margin:30px 0 auto 25px; line-height:20px; }
+.wizard_words_div1 .apradio_div .apradio_doc{ height:40px; margin:3px 0 auto 0; line-height:20px; padding-left:25px }
+.wizard_lesrn_div{ width:80%; padding:2% 10% 0px 10%; font-family:Arial; font-size:10pt; font-weight:normal; color:#404040; }
+.wizard_words_div1 .apradio_big_div{height:80px; margin:8px 0 auto 0; line-height:20px; font-size:11pt;}
+.wizard_words_div1 .apradio_big_div .apradio_doc{ height:40px; margin:3px 0 auto 0; line-height:20px; padding-left:25px }
+
+.wizard_lesrn_div h1 { font-family:Arial; font-size:12pt; font-weight:bold; }
+.learnChoice_divs { height:25px; width:100%; margin:8px auto 0px auto; padding:2% 0% 0px 0%;line-height:20px;}
+.apradio_doc_learn{ height:30px; margin:0px -3px auto 0; line-height:20px;}
+.apradio_learn_doc{ height:300px; margin:3px 0 auto 0; line-height:20px; padding-left:75px; margin:20px auto 0px auto;}
+
+.wizard_warning_div{ width:80%; padding:2% 10% 0px 10%; font-family:Arial; font-size:10pt; font-weight:normal; color:#404040; }
+
+.wizard_warning_div h1{ font-family:Arial; font-size:13pt; font-weight:bold; color:#9D98FF; }
+.warning_doc_div { height:150px; width:100%; margin:10px auto 0px auto; line-height:20px;}
+
+/*learn more page */
+.ap_learn_div{ margin:30px 100px;}
+.ap_learn_div h1{font: bold 17px arial; color: #000000}
+.ap_learn_div img{width:80%; height:80%}
+/*router function page*/
+.ap_words_line_div{ height:8px; width:100%; margin:10px auto 0px auto; padding:1% 0% 0px 0%;line-height:10px;}
+.ap_list_doc_div{ height:180px; margin:3px 0 auto 0; line-height:20px; padding-left:0px; margin:20px auto 0px auto;}
+.ap_words_div{ width:80%; padding:5% 10% 0px 10%; font-family:Arial; font-size:10pt; font-weight:normal; color:#404040; }
+.ap_words_div h1 { font-family:Arial; font-size:12pt; font-weight:bold; color:#9D98FF; }
+.ap_words_div p{ font-family:Arial; font-size:10pt; font-weight:normal; color:#404040; }
+.ap_words_div .ap_radio_div{ height:50px; margin:10px 0 auto 0; line-height:20px; }
+.ap_words_div .ap_radio_div .ap_radio_doc{ height:40px; margin:3px 0 auto 0; line-height:20px; padding-left:25px }
+
+.ap_doc_div{width:80%; padding:0% 10% 0px 10%; font-family:Arial; font-size:10pt; font-weight:normal; color:#404040;}
+.ap_doc_div .img_left {height:220px; width:50%; margin:0px 0 0px 0; float:left;}
+.ap_doc_div .img_left img{height:200px; width:380px;}
+.ap_doc_div .img_right {height:220px; width:50%; margin:3px 0 3px 0; float:right;}
+.ap_doc_div .img_right img{height:200px; width:380px;}
+.ap_doc_div .left_div{ height:30px; width:46%; margin:3px 0 3px 3px; line-height:30px; float:left; }
+.ap_doc_div  .right_div{ height:30px; width:30%; margin:3px 0 3px 50px; line-height:30px; float:right; font-weight:bold; }
+.ap_doc_div  .line_div{ height:30px; width:80%; margin:3px 0 3px 3px; line-height:30px; float:left;}
+.ap_warning_div{ height:50px; width:80%; line-height:30px; padding:0; margin:3px auto; font-family:Arial; font-size:10pt; font-weight:normal;}
+

@@ -1,0 +1,83 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<META http-equiv="refresh" content="1; url=AUTO_download_language.htm">
+<% func_header( "", "pls_wait_updateLanguage.html", "reload_language") %>
+<% hijack_language() %>
+<table width="100%" border="0" cellpadding="0" cellspacing="3">
+<tr><td colSpan="2"><h1><script>printText(bh_wait_upg_head, "$wait_upg_head");</script></h1></td></tr>
+$bluebar
+
+</TABLE>
+<DIV id="msg"></DIV>
+<script>
+<% save_timestamp("write_image","cancel_image") %>
+var ts="<% cfg_get("cancel_image") %>";
+
+var status=<% image_status() %>;
+var md5=<% md5_have_checked() %>;
+var wan_status="<% detwan_valid() %>";
+var ftp_status="<% detftp_valid() %>";
+
+var percComplete = 0;
+
+if(wan_status == 0 || ftp_status == 0)
+{
+	if(top.topframe)
+		top.topframe.location.href="top.html";
+	//if(top.contents)
+	//	top.contents.location.href="<% menu_link() %>";
+	document.location.href="AUTO_download_failure.htm";
+}
+
+if (status < 1000)
+	getObj("msg").innerHTML=getText(bh_downloading_ver, "$downloading_ver");
+else if (status >= 1000 && status < 2000) 
+{
+	percComplete = status - 1000;
+	getObj("msg").innerHTML=""
+	if(percComplete >= 100 && md5 == 1 )
+	{	
+		getObj("msg").innerHTML="$pro100";
+		getObj("msg").innerHTML+="<BR>";
+		getObj("msg").innerHTML+=getText(bh_downloading_ver, "$downloading_ver");
+		location.href="AUTO_write_language.htm";
+	}
+	else
+	{
+		if( percComplete >= 100 )
+			percComplete = 99;
+		getObj("msg").innerHTML="$pro1"+percComplete+"$pro2"+percComplete+"$pro3"+(100-percComplete)+"$pro4";
+		getObj("msg").innerHTML+="<BR>";
+		getObj("msg").innerHTML+=getText(bh_downloading_ver, "$downloading_ver");
+	}	
+}
+else if (status == 10008)
+{
+	if(top.topframe && !top.hidden_upgrade) //if top.topframe exists and top.hidden_upgrade does not exit
+		top.topframe.location.href="top.html";
+	else if(top.topframe && top.hidden_upgrade)     //if top.hidden_upgrade exits, top is the hidden page CheckNewFirmware.htm
+		top.topframe.location.href="CheckNewFW_top.htm";
+
+	top.enable_action=1;
+	document.location.href="AUTO_MD5_failure.htm";
+}
+else if (status >= 10000) 
+{
+	if(top.topframe && !top.hidden_upgrade) //if top.topframe exists and top.hidden_upgrade does not exit 
+		top.topframe.location.href="top.html";
+	else if(top.topframe && top.hidden_upgrade)     //if top.hidden_upgrade exits, top is the hidden page CheckNewFirmware.htm
+	{
+		document.forms[0].action = "/func.cgi?/AUTO_start.htm timestamp="+ts;
+		top.topframe.location.href="CheckNewFW_top.htm";
+	}
+	
+	top.enable_action=1;
+	document.location.href="AUTO_download_failure.htm";
+}
+
+</script>
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+$bluebar
+</TABLE>
+</FORM>
+</BODY>
+</HTML>

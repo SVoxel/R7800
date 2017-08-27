@@ -1,0 +1,28 @@
+<% http_header("style/form.css", "/funcs.js") %>
+<body onLoad='redirect_to()'>
+<script>
+function redirect_to()
+{
+	setTimeout("location.href='<% cat_file("/tmp/p_ft") %>';", 5000);
+}
+</script>
+<% table_header("$failure_head") %>
+$bluebar
+
+<TR>
+<script>
+/* to fix bug 26235 */
+var filename = "<% cat_file("/tmp/p_ft") %>";
+if( filename.indexOf("WLG_adv") != -1 )
+	document.write("<TD nowrap align=center><B>$port_del</B></TD>");
+else
+	document.write("<TD nowrap align=center><B>$select_serv_del</B></TD>");
+</script>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap align=center>$few_second</TD>
+</TR> 
+</TABLE>
+</BODY>
+</HTML>

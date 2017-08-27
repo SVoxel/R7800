@@ -1,0 +1,98 @@
+body{ background: url(../image/oneline.gif) 0 -80px repeat-x #e5e5e5; margin: auto;}/* to fix bug  23323 */
+
+.container_center{min-width: 820px; _width: 1440px; min-height:532px; _height: 800px; position:absolute; top:97px; bottom:0; left: 20px; right: 20px; }
+
+#top{_width: 1440px; min-width: 820px; height: 97px; position: absolute; left: 20px; right: 20px; }
+#topframe{width: 100%; height: 97px; }
+
+#middle{ width: 100%; min-height:455px; _height: 795px; position:absolute; top:5px; bottom:0px; left: 0; right: 0; }
+
+#menu{ float: left; width: 195px; font-family: Arial; text-align: left; position:absolute; }
+#menu .advanced_black_button{margin-bottom: 5px;  width: 182px; height: 28px;background:url(../image/menus.gif) no-repeat 0 0;color: #ffffff;cursor:pointer; position: relative }
+#menu .advanced_black_button_double{margin-bottom: 5px;  width: 182px; height: 42px;background:url(../image/menus.gif) no-repeat 0 -28px; color: #ffffff;cursor:pointer; overflow:hidden; position: relative }
+#menu .advanced_black_button_triple{margin-bottom: 5px;  width: 182px; height: 58px;background:url(../image/menus.gif) no-repeat 0 -70px;color: #ffffff;cursor:pointer; position: relative }
+.menu_common_words{ font-weight: Bold; font-size: 15px;}
+.menu_rufi_words{ font-weight: Bold; font-size: 13px;}
+.menu_ie9_words{ font-weight: 350; font-size: 14.8px;}
+
+.advanced_purple_button{margin-bottom: 5px;  width: 182px; height: 28px;background:url(../image/menus.gif) no-repeat -364px 0; color: #ffffff; cursor:pointer; overflow:hidden; position: relative}
+.advanced_purple_button_double{margin-bottom: 5px;  width: 182px; height: 42px;background:url(../image/menus.gif) no-repeat -364px -28px; color: #ffffff; cursor:pointer; overflow:hidden; position: relative}
+.advanced_purple_button_triple{margin-bottom: 5px;  width: 182px; height: 58px; background:url(../image/menus.gif) no-repeat -364px -70px; color: #ffffff; cursor:pointer; overflow:hidden; position: relative}
+
+.advanced_grey_button{margin-bottom: 5px;  width: 182px; height: 28px;background:url(../image/menus.gif) no-repeat -182px 0;color: #808080;cursor:pointer; position: relative}
+.advanced_grey_button_double{margin-bottom: 5px;  width: 182px; height: 42px;background:url(../image/menus.gif) no-repeat -182px -28px;color: #808080;cursor:pointer; position: relative}
+.advanced_grey_button_triple{margin-bottom: 5px;  width: 182px; height: 58px; background:url(../image/menus.gif) no-repeat -182px -70px;color: #808080;cursor:pointer; position: relative}
+
+.advanced_black_button span, .advanced_purple_button span, .advanced_grey_button span, .advanced_black_button_double span, .advanced_purple_button_double span, .advanced_grey_button_double span, .advanced_black_button_triple span, .advanced_purple_button_triple span, .advanced_grey_button_triple span{ display:-moz-inline-box; display:inline-block; width:170px; position: absolute; top: 6px; left: 6px; line-height: 15px; }
+
+.advanced_white_open_button{margin-bottom: 5px;  width: 182px; height: 28px;background:url(../image/menus.gif) no-repeat -728px 0;color: #4c4c4c;cursor:pointer; position: relative}
+.advanced_white_open_button_double{margin-bottom: 5px;  width: 182px; height: 42px;background:url(../image/menus.gif) no-repeat -728px -28px; color: #4c4c4c;cursor:pointer; overflow:hidden; position: relative }
+.advanced_white_open_button_triple{margin-bottom: 5px;  width: 182px; height: 56px;background:url(../image/menus.gif) no-repeat -182px -312px; color: #4c4c4c;cursor:pointer; overflow:hidden; position: relative }
+
+.advanced_white_close_button{margin-bottom: 5px;  width: 182px; height: 28px; background:url(../image/menus.gif) no-repeat -546px 0;color: #4c4c4c;cursor:pointer; position: relative }
+.advanced_white_close_button_double{margin-bottom: 5px;  width: 182px; height: 42px;background:url(../image/menus.gif) no-repeat -546px -28px;color: #4c4c4c;cursor:pointer; overflow:hidden; position: relative}
+.advanced_white_close_button_triple{margin-bottom: 5px;  width: 182px; height: 56px;background:url(../image/menus.gif) no-repeat -4px -312px;color: #4c4c4c;cursor:pointer; overflow:hidden; position: relative}
+
+.advanced_white_open_button span, .advanced_white_close_button span, .advanced_white_open_button_double span, .advanced_white_close_button_double span, .advanced_white_open_button_triple span, .advanced_white_close_button_triple span{ display:-moz-inline-box; display:inline-block; width:150px; position: absolute; left: 20px; line-height:15px; top: 6px;}
+
+dl{ margin: 0px; padding: 5px 0 8px 0; float: left; position: relative }
+.sub_men{ margin-left: 12px; width:170px; font-family: Arial; font-weight: normal; font-size: 12px; text-align: left; overflow:hidden;}
+#usb_basic{ margin-left: 15px; }
+#usb_adv{ margin-left: 15px; }
+#media{ margin-left: 15px; }
+#userset{ margin-left: 15px; }
+.sub_men span{text-decoration:underline}
+.sub_men  .sub_back{ margin:5px auto; width: 162px; height: 14px; cursor:pointer; float: left; position: relative }
+.sub_men  .sub_back a{line-height:14px; top: 0px; left: 10px; float: left; position: absolute }
+.sub_men  .sub_back_purple{ margin-top:5px; height: 26px; width: 170px;background:url(../image/menus.gif) no-repeat -736px -99px;cursor:pointer; float: left; position: relative }
+.sub_men  .sub_back_purple a{top:6px; left:10px; width: 150px; line-height:14px; float: left; position: absolute}
+.sub_men  .sub_back_purple_usb{ margin-top:5px; height: 26px; width: 155px;background:url(../image/menus.gif) no-repeat 0px -166px;cursor:pointer; float: left; position: relative }
+.sub_men  .sub_back_purple_usb a{top:6px; left:10px; width: 150px; line-height:14px; float: left; position: absolute}
+
+.sub_men .middle_name{margin:5px auto; width: 150px; height: 28px; cursor:pointer; float: left; position: relative }
+.sub_men .middle_name a{line-height:14px; top: 0px; left: 10px; width:150px; float: left; position: absolute;}
+.sub_men .long_name{ margin:5px auto; width: 150px; height: 50px; cursor:pointer; float: left; position: relative }
+.sub_men .long_name a{line-height:14px; top: 0px; left: 10px; width:150px; float: left; position: absolute }
+.sub_men .sub_back_purple_double{height: 38px;width:170px;background:url(../image/menus.gif) no-repeat 0 -128px;cursor:pointer; float: left; position: relative}
+.sub_men .sub_back_purple_triple{height: 52px;width:170px;background:url(../image/menus.gif) no-repeat -170px -128px;cursor:pointer; float: left; position: relative }
+.sub_men .sub_back_purple_usb_double{height: 38px; width: 155px; background: url(../image/menus.gif) no-repeat 0 -214px; cursor: pointer; float: left; position: relative}
+.sub_men .sub_back_purple_double a, .sub_men .sub_back_purple_triple a, .sub_men .sub_back_purple_usb_double a{line-height:14px; top: 5px; left: 10px; width: 150px; float: left; position: absolute;}
+.sub_men .sub_back a, .sub_men .middle_name a, .sub_men  .long_name a { color:  #4c4c4c; word-wrap: break-word;}
+.sub_men .sub_back_purple a, .sub_men  .sub_back_purple_double a, .sub_back_purple_triple a, .sub_back_purple_usb a, .sub_back_purple_usb_double a{ color: #ffffff; word-wrap: break-word;}
+
+.sub_men .sub_grey{margin:5px auto; width: 150px; height: 14px; cursor:pointer; color:#808080; float: left; position: relative}
+.sub_men .sub_grey a{float: left; position:absolute; left: 10px; top: 0px; line-height: 14px;}
+.sub_men .middle_grey{ margin: 5px auto; width: 150px; height: 28px; cursor:pointer; color:#808080; float: left; position: relative;}
+.sub_men .middle_grey a{ float: left; position:absolute; top: 0px; left: 10px; line-height: 14px;}
+.sub_men .long_grey{ margin: 5px auto; width: 150px; height: 42px; cursor:pointer; color:#808080; float: left; position: relative;}
+.sub_men .long_grey a{ float: left; position:absolute; top: 0px; left: 10px; line-height: 14px;}
+
+#formframe_div{float: left; min-width: 625px; _width: 1245px; position:absolute; top:0; bottom:45px; left:200px; right: 0; }
+#formframe{float: left; position:absolute; top:0; bottom:45px; overflow: hidden;}
+
+.footer{ width: 100%; height: 43px; color: #ffffff; position:absolute; left: 0; bottom:0;}
+.footer_double{ width: 100%; height: 86px; color: #ffffff; position:absolute; left: 0; bottom:0; }
+.footer_img { width: 100%; height: 100%; }
+.footer b, .footer_double b{font: bold 16px arial;}
+.footer a, .footer_double a{ color: #ffffff; font: normal 11px arial; text-decoration: none;}
+
+.footer #support{ float:left; line-height: 42px; position: absolute; left: 10px; top: 0; }
+.footer_double #support{ line-height: 42px; position: absolute; left: 10px; top: 0;}
+.footer #search{float: right; position: absolute; top: 10px; right: 10px;}
+.footer_double #search{ float: right; position: absolute; bottom: 10px; right: 10px;}
+
+#footer #search .search_button{background: Transparent url(../image/menus.gif ) no-repeat 0px -192px; border: none; width:39px; height:22px; font: bold 14px arial ; color: #ffffff; cursor: pointer; }
+#footer #search .search_button_middle{background: Transparent url(../image/menus.gif ) no-repeat -39px -192px; border: none; width:65px; height:22px; font: bold 14px arial ; color: #ffffff; cursor: pointer; }
+#footer #search .search_button_long{background: Transparent url(../image/menus.gif ) no-repeat -104px -192px; border: none; width:95px; height:22px; font: bold 14px arial ; color: #ffffff; cursor: pointer; }
+
+/* LGO_logout.htm goodby.htm multi_login.htm*/
+#logo{ width: 533px; height: 43px; background: url(../image/tops.gif) no-repeat 0px -76px; position: absolute; left : 0px; top: 0px;}
+#router_name{position:absolute; left: 0px; top: 40px; font-family: Arial; font-size: 18px; font-weight: Bold; color: #000000; text-align: left; }
+#centria-router-name{position:absolute; left: 88px; top: 42px; font-family: Arial; color: #000000; text-align: left; }
+#router-centria{ position:absolute; left: 0px; top: 42px; font-family:Arial; color: #000000; text-align: left; }
+#firm_version{ position:absolute; right: 0px; top: 30px; font-family: Arial; font-size: 14px; font-weight: Bold; color: #000000; text-align: right; }
+p{ margin:50px 100px 50px 100px; font: 18px arial; color: #323232;}
+/* multi_login.htm */
+.single_middle{width: 820px; position:absolute; top:97px; left: 50%; margin-left: -410px; }
+.button{width:250px; height: 42px; margin: 0 auto;}
+.common_button_short{ float: left; width:100px; height: 22px; background: url(../image/buttons.gif) no-repeat -200px -66px; color: #f2f2f2; font-family: Arial; font-weight: Bold; font-size: 14px; text-align: center; cursor:pointer; margin:10px;}

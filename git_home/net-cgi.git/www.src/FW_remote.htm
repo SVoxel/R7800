@@ -1,0 +1,184 @@
+<% http_header("style/form.css", "/funcs.js", "/remote.js") %>
+<% body_header("_FW_remote", "FW_remote.htm", "remote") %>
+<div class="page_title">$remote_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+    document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'FW_remote.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onClick="check_remote();"></TD></TR>');
+else
+	document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="button" name="Apply" id="apply" value="$apply_mark" disabled></TD></TR>');
+</script>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<script>
+<% forward_items_xss() %>
+<% trigger_items_xss() %>
+<% upnp_items() %>
+
+<% check_ftp() %>
+var show_enableHTTP="<% cfg_get("usb_enableHTTP") %>";
+var show_enableHvia="<% cfg_get("usb_enableHvia") %>";
+var show_HTTP_via_port="<% cfg_get("usb_HTTP_via_port") %>";
+var show_enableFTP="<% cfg_get("usb_enableFTP") %>";
+var show_enableFvia="<% cfg_get("usb_enableFvia") %>";
+var show_FTP_via_port="<% cfg_get("usb_FTP_via_port") %>";
+
+var endis_ntp="<% cfg_get("endis_ntp") %>";
+var endis_upnp="<% cfg_get("upnp_enable") %>";
+var lan_ip="<% cfg_get("lan_ipaddr") %>";
+var lan_subnet="<% cfg_get("lan_netmask") %>";
+var wan_ip="<% wan_ip() %>";
+var wan_subnet="<% wan_netmask() %>";
+var info_get_wanproto="<% cfg_get("wan_proto") %>";
+var endis_remote='<% cfg_get("remote_endis") %>';
+var remote_access='<% cfg_get("remote_access") %>';
+var remote_iplist="<% cfg_get("remote_iplist") %>";
+var remote_port="<% cfg_sed_xss("remote_port") %>";
+var remote_manage_ip=wan_ip;
+var usb_router_flag=parent.usb_router_flag;
+
+var old_sysDNSHost=wan_ip;
+var old_endis_ddns="<% cfg_get("endis_ddns") %>";
+if( old_endis_ddns == "1" )
+{
+	var dnsstatus="<% cat_file("/tmp/ez-ipupd.status") %>";
+	var dns_list="<% cfg_get("sysDNSProviderlist") %>";
+        if( dnsstatus == "1" )
+	{
+		if( dns_list == "NETGEAR" )
+			old_sysDNSHost="<% cfg_sed_xss("sysDNSHost_5") %>";
+		else
+			old_sysDNSHost="<% cfg_sed_xss("sysDNSHost") %>";
+	}
+}
+
+function loadvalue()
+{
+	var cf = document.forms[0];
+	if(endis_remote == '1')
+		cf.remote_mg_enable.checked= true;
+	else
+		cf.remote_mg_enable.checked =false;
+	if(remote_access == '0')
+	{
+		cf.rm_access[0].checked = true;
+		if(remote_iplist != "")
+			var ipaddr = remote_iplist; 
+		var ip_array=ipaddr.split('.');
+		cf.local_ip_1.disabled = false;
+		cf.local_ip_2.disabled = false;
+		cf.local_ip_3.disabled = false;
+		cf.local_ip_4.disabled = false;
+		cf.local_ip_1.value=ip_array[0];
+		cf.local_ip_2.value=ip_array[1];
+		cf.local_ip_3.value=ip_array[2];
+		cf.local_ip_4.value=ip_array[3];
+		clearData2();
+	}
+	else if(remote_access == '2')
+	{
+		cf.rm_access[2].checked = true;
+		clearData1();
+	}
+	else
+	{
+		cf.rm_access[1].checked = true;
+		if(remote_iplist != "")
+			var ipaddr = remote_iplist;
+		var ip_array=ipaddr.split('-');
+		var start_array=ip_array[0].split('.');
+		var end_array=ip_array[1].split('.');
+		cf.start_ip_1.value = start_array[0];
+		cf.start_ip_2.value = start_array[1];
+		cf.start_ip_3.value = start_array[2];
+		cf.start_ip_4.value = start_array[3];
+		cf.fin_ip_1.value = end_array[0];
+		cf.fin_ip_2.value = end_array[1];
+		cf.fin_ip_3.value = end_array[2];
+		cf.fin_ip_4.value = end_array[3];
+		clearData3();
+	}
+}
+</script>
+<input type="hidden" name="http_rmenable">
+<input type="hidden" name="local_ip">
+<TR>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="remote_mg_enable" id="remote_mg_enable" value="0">
+	<A tabindex=-1 href="javascript:loadhelp('_FW_remote','turnon')"><B>$enable_remote</B></A>
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_FW_remote','address')"><B>$remote_addr:</B></A></TD>
+	<TD nowrap>
+	<script>
+	if(old_sysDNSHost != "" && old_sysDNSHost != "0.0.0.0")
+		document.write("https://"+old_sysDNSHost+":"+remote_port);
+	else
+		document.write("https://0.0.0.0:"+remote_port);
+	</script>
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_FW_remote','access')"><B>$allow_remote_access_by:</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<input type="radio" name="rm_access" id="rm_only" value="ip_single" onClick="clearData2();">$remote_this_computer:</TD>
+	<TD nowrap align=right>	
+	<input type="text" name="local_ip_1" id="local_ip_1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="local_ip_2" id="local_ip_2"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="local_ip_3" id="local_ip_3"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="local_ip_4" id="local_ip_4"  size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<input type="radio" name="rm_access" id="rm_range" value="ip_range" onClick="clearData3();">$remote_ip_rang:</TD>
+	<TD nowrap align="right">$from_mark
+	<input type="text" size="3" autocomplete="off" maxlength="3" name="start_ip_1" id="start_ip_1" value="" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" size="3" autocomplete="off" maxlength="3" name="start_ip_2" id="start_ip_2" value="" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" size="3" autocomplete="off" maxlength="3" name="start_ip_3" id="start_ip_3" value="" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" size="3" autocomplete="off" maxlength="3" name="start_ip_4" id="start_ip_4" value="" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap> &nbsp;</TD>
+	<TD nowrap align="right"> $to_mark 
+	<input type="text" size="3" autocomplete="off" maxlength="3" name="fin_ip_1" id="fin_ip_1" value="" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" size="3" autocomplete="off" maxlength="3" name="fin_ip_2" id="fin_ip_2" value="" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" size="3" autocomplete="off" maxlength="3" name="fin_ip_3" id="fin_ip_3" value="" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" size="3" autocomplete="off" maxlength="3" name="fin_ip_4" id="fin_ip_4" value="" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="rm_access" id="rm_all" value="all" onClick="clearData1()">$remote_everyone</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_FW_remote','port')"><B>$remote_port_num:</B></A>
+	</TD>
+	<TD nowrap>
+<script>
+	document.write('<input type="text" class="num" name="http_rmport" id="http_rmport" size=6 maxlength=5 onKeyPress="return getkey(\'num\',event)" value='+remote_port+'>')
+</script>
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_FW_remote") %>
+</FORM>
+</BODY>
+</HTML>

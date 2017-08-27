@@ -23,20 +23,18 @@ start() {
 	# If no *.ovpn file in /etc/openvpn/config/client
 	if [ $OVPN_CLIENT_CONF = "0" ]; then
 		echo "Error: No *.ovpn file in /etc/openvpn/config/client directory."
-		exit 1;
+		exit 1
 	fi
 
 	# Check if not router mode
 	if [ "$AP_MODE" == "1" ] || [ "$BRIDGE_MODE" == "1" ] || [ "$EXTENDER_MODE" == "1" ]; then
-		echo "Error: Not router mode."
-		echo "Error: Not router mode." >> $LOG_FILE
+		echo "Error: Not router mode." | tee -a $LOG_FILE
 		exit 1
 	fi
 
 	# Check if OpenVPN server is enabled
 	if [ "$($CONFIG get vpn_enable)" = "1" ]; then
-		echo "Error: OpenVPN server is enabled. Disable it to start OpenVPN client."
-		echo "Error: OpenVPN server is enabled. Disable it to start OpenVPN client." >> $LOG_FILE
+		echo "Error: OpenVPN server is enabled. Disable it to start OpenVPN client." | tee -a $LOG_FILE
 		/sbin/ledcontrol -n wan -c red -s on
 		exit 1
 	fi
@@ -44,8 +42,7 @@ start() {
 	# Check if tun0 interface already exists
 	ifconfig | grep -q tun0
 	if [ $? -eq 0 ]; then
-		echo "Error: tun0 interface exists. OpenVPN client is probably already started."
-		echo "Error: tun0 interface exists. OpenVPN client is probably already started." >> $LOG_FILE
+		echo "Error: tun0 interface exists. OpenVPN client is probably already started." | tee -a $LOG_FILE
 		exit 1
 	fi
 
@@ -55,8 +52,7 @@ start() {
 	sleep 20
 	ifconfig | grep -q tun0
 	if [ $? -ne 0 ]; then
-		echo "Error: OpenVPN client start failed."
-		echo "Error: OpenVPN client start failed." >> $LOG_FILE
+		echo "Error: OpenVPN client start failed." | tee -a $LOG_FILE
 		/sbin/ledcontrol -n wan -c red -s on
 		if [ -f $PID_FILE ]; then
 			kill `cat $PID_FILE` 

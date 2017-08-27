@@ -1,0 +1,105 @@
+<% http_header("style/form.css", "/funcs.js") %>
+
+<BODY onLoad="loadhelp('_upgrade');" bgcolor=#ffffff>
+<FORM>
+<script language="javascript">
+var auto_flag = '<% cfg_get("auto_upgrade_flag") %>';
+</script>
+<div id=upgrade_msg style="display:none">
+<table width=100% border=0 cellpadding=0 cellspacing=3>
+	<tr><td colSpan=2><H1>$firm_upgrade</H1></td></tr>
+	<tr><td colSpan=2></td></tr>
+	<tr><td colSpan=2><img src=/liteblue.gif width=100% height=12></td></tr>
+	<tr><td nowrap><a tabindex=-1 href=\"javascript:loadhelp('_upgrade','check')\"><B>$upgrade_new_version</B></a></td></tr>
+	$bluebar
+	<tr><td nowrap><a tabindex=-1 href=\"javascript:loadhelp('_upgrade','locate')\"><B>$upgrade_select_disk</B></a></td></tr>
+	<tr><td nowrap><input name=filename disabled=true type=file size=32></td></tr>
+	$bluebar
+</table>
+</div>
+</FORM>
+
+<FORM><CENTER><DIV id=show_upgrade style="display:none">
+	<font size=2>$upgrade_str_1 3 $upgrade_str_2</font><br>
+	<input type=text name=progress class=prgbar width=600 height=70><br><br>
+	<img src=/upload.gif width=200 height=70 border=0>
+</DIV></CENTER></FORM>
+</BODY>
+
+<script >
+var upg_status;
+//fix bug 28923
+upg_status = <% upgrade_status() %>;
+var pchar = "|"; // progress char
+var delay_time = 1000; // msecs
+var maxchars = 60;
+var percent = (upg_status - 1000) *  maxchars / 100;
+var charcount = percent;
+var upgrade_str="<P><font size=2>$upgrade_str_1 3 $upgrade_str_2<P><input type=text name=progress class=prgbar width=600 height=70><P><P><img src=/upload.gif width=200 height=70 border=0></TD></TR><P>";
+var upgrade_msgstr="<TABLE width=100% border=0 cellpadding=0 cellspacing=3><TR><TD colSpan=2><H1>$firm_upgrade</H1></TD></TR><TR><TD colSpan=2></TD></TR><TR><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR><TR><TD nowrap> <A tabindex=-1 href=\"javascript:loadhelp('_upgrade','check')\"><B>$upgrade_new_version</B></A></TD></TR>$bluebar<TR><TD nowrap> <A tabindex=-1 href=\"javascript:loadhelp('_upgrade','locate')\"><B>$upgrade_select_disk</B></A></TD></TR><TR><TD nowrap> <input name=filename disabled=true type=file size=32></TD></TR>$bluebar</TABLE>";
+
+function refreshnexttime()
+{
+	document.location.href="UPG_process.htm";
+}
+
+function updateProgress()
+{
+	var cf = document.forms[1];
+	charcount = (upg_status - 1000) *  maxchars / 100;
+	cf.progress.value = makeStr(charcount,pchar);
+	if (upg_status == 1100 )
+	{
+		document.location.href="/pls_wait.html";
+	}
+	setTimeout("updateProgress()",delay_time);
+} 
+
+function menu_change() 
+{
+	top.enable_action=1;
+}
+
+function refreshError()
+{
+	top.topframe.location.href="top.html";	
+	top.formframe.location.href="UPG_failure.htm";
+	menu_change();
+}
+
+function updateInfo()
+{
+	if (upg_status >= 10000)
+	{
+		refreshError();
+	}
+	else if (upg_status >= 1000 && upg_status < 2000)
+	{
+		//fixed bug28269
+		if(auto_flag != '1')
+			document.getElementById("upgrade_msg").style.display="";
+		document.getElementById("show_upgrade").style.display="";
+		if (upg_status == 1100)
+			document.location.href="/pls_wait.html";
+		else
+			updateProgress();
+	}
+	else if (upg_status != "")
+	{
+		//bug 21610:upgrade from UI,the UI not show hourglass Immediately,so add wait message
+		document.getElementById("upgrade_msg").style.display="none";
+		document.write("<table width=100% border=0 cellpadding=0 cellspacing=3>");
+		document.write("<TR><TD colspan=2><img src=liteblue.gif width=100% height=12></TD></TR>");
+		document.write("<TR><TD colspan=2><BR><BR>$wizard_pls_wait<BR><BR></TD></TR>");
+		document.write("<TR><TD colspan=2><img src=liteblue.gif width=100% height=12></TD></TR>")
+		document.write("</table>");
+
+		setTimeout("refreshnexttime()", 3000);
+	}
+	else
+		refreshError();
+}
+updateInfo();
+</script>
+<iframe name="upg_status_frame" src="upg_get_status.htm" allowtransparency="true" scrolling="no" frameborder="0" ></iframe>
+</HTML>

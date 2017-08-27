@@ -1,0 +1,431 @@
+<% http_header("style/form2.css", "/funcs.js", "/jquery-1.7.2.min.js") %>
+<% body_header("_wladv", "rae_waiting.htm", "rae_ap") %>
+<style type="text/css">
+<% rae_css() %>
+.ipbox{width: 450px; height: 210px; position:absolute; left:5%; top:320px;z-index:2; }
+</style>
+<div class="page_title"><% rae_page_title() %></div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+	<TD nowrap align=center>
+	<script>
+		var master="<% cfg_get("http_loginname") %>";
+		if( master=="admin" )
+			document.write('<input class="new_cancel_bt ui-corner-all" type="reset" name="Cancel" value="$cancel_mark" onClick="location.href=\'rae_main.htm\';"><input class="new_apply_bt ui-corner-all" type="submit" name="Apply" value="$apply_mark" onClick="check_ap();return false;">');
+		else
+			document.write('<input class="new_greycancel_bt ui-corner-all" type="reset" name="Cancel" value="$cancel_mark" disabled><input class="new_greyapply_bt ui-corner-all" type="submit" name="Apply" value="$apply_mark" disabled>');
+	</script>
+	</TD>
+</TR>
+</TABLE>
+</div>
+<script language="javascript" type="text/javascript">
+<% save_timestamp("rae_ap", "edit_devname") %>
+var ts = "<% cfg_get("edit_devname") %>";
+var ed_action= "/apply.cgi?/rae_ap.htm timestamp="+ts;
+var wl_sectype = "<% cfg_get("wl_sectype") %>";
+var wla_sectype = "<% cfg_get("wla_sectype") %>";
+var key1 = "<% cfg_get("wl_key1") %>";
+var key2 = "<% cfg_get("wl_key2") %>";
+var key3 = "<% cfg_get("wl_key3") %>";
+var key4 = "<% cfg_get("wl_key4") %>";
+var key_no = "<% cfg_get("wl_key") %>";
+var ts = "<% cfg_get("rae_ap") %>";
+
+var password1= "<% cfg_sed_passphrase("wl_wpa2_psk") %>";
+var password2= "<% cfg_sed_passphrase("wl_wpas_psk") %>";
+var wla_password1= "<% cfg_sed_passphrase("wla_wpa2_psk") %>";
+var wla_password2= "<% cfg_sed_passphrase("wla_wpas_psk") %>";
+var wl_wpaemode ="<% cfg_get("wl_wpae_mode") %>";
+var wl_radiusSerIp ="<% cfg_get("wl_radiusSerIp") %>";
+var wl_radiusPort="<% cfg_get("wl_radiusPort") %>";
+var wl_radiusSecret="<% cfg_get("wl_radiusSecret") %>";
+var enable_ap_flag="<% cfg_get("ap_mode") %>";//bug 22880 according to the page 128 of spec 2.0,add AP mode
+var dyn_get_ip_flag="<% cfg_get("ap_ether_ip_assign") %>";
+
+function getkey1()
+{
+
+	var keycode, event;
+
+	if (window.event) 
+	{
+		event = window.event;
+		keycode = window.event.keyCode;
+	}	
+	else if (e)
+	{
+		event = e;
+		keycode = e.which;
+	}	
+	else 
+		return true;
+	if	(((keycode>47) && (keycode<58)) || (keycode==8)||(keycode==0) || (keycode==46))
+			return true;		
+		else 
+			return false;
+}
+
+function check_static_ip_mask_gtw()
+{
+	form=document.forms[0];
+	form.hid_ap_ipaddr.value=form.APaddr1.value;
+    form.hid_ap_subnet.value=form.APmask1.value;
+    form.hid_ap_gateway.value=form.APgateway1.value;
+	
+	if(checkipaddr(form.hid_ap_ipaddr.value)==false || is_sub_or_broad(form.hid_ap_ipaddr.value, form.hid_ap_ipaddr.value, form.hid_ap_subnet.value) == false)
+	{
+		sAlert("$invalid_ip");
+		return false;
+	}
+	if(checksubnet(form.hid_ap_subnet.value, 0)==false)
+	{
+		sAlert("$invalid_mask");
+		return false;
+	}
+	if(checkgateway(form.hid_ap_gateway.value)==false || is_sub_or_broad( form.hid_ap_gateway.value, form.hid_ap_gateway.value, form.hid_ap_subnet.value) == false)
+	{
+		sAlert("$invalid_gateway");
+		return false;
+	}
+	if(isGateway(form.hid_ap_ipaddr.value,form.hid_ap_subnet.value,form.hid_ap_gateway.value)==false)
+	{
+		sAlert("$invalid_gateway");
+		return false;		
+	}
+	if( isSameIp(form.hid_ap_ipaddr.value, form.hid_ap_gateway.value) == true )
+	{
+		sAlert("$invalid_gateway");
+		return false;
+	}
+	if(isSameSubNet(form.hid_ap_ipaddr.value,form.hid_ap_subnet.value,form.hid_ap_gateway.value,form.hid_ap_subnet.value) == false)
+	{
+		sAlert("$same_subnet_ip_gtw");
+		return false;
+	}
+	return true;
+}
+
+function check_static_dns( wan_assign )
+{
+	var form=document.forms[0];
+	form.ap_dnsaddr1.value=form.APDAddr1.value;
+    form.ap_dnsaddr2.value=form.APPDAddr1.value;
+	form.hid_ap_ipaddr.value=form.APaddr1.value;
+
+	if(form.ap_dnsaddr1.value=="...")
+		form.ap_dnsaddr1.value="";
+
+	if(form.ap_dnsaddr2.value=="...")
+		form.ap_dnsaddr2.value="";
+	if( check_DNS(form.ap_dnsaddr1.value,form.ap_dnsaddr2.value,wan_assign,form.hid_ap_ipaddr.value))
+		return true;
+	else
+		return false;
+}
+
+function  check_ap()
+{
+	form = document.forms[0];
+	form.hid_ap_ipaddr.value=form.APaddr1.value;
+    form.hid_ap_subnet.value=form.APmask1.value;
+    form.hid_ap_gateway.value=form.APgateway1.value;
+	form.ap_dnsaddr1.value=form.APDAddr1.value;
+    form.ap_dnsaddr2.value=form.APPDAddr1.value;
+	if(form.operation_type[1].checked == true)
+       {	
+				
+               form.hid_enable_apmode.value="1";
+			   
+               if(form.dyn_get_ip[1].checked == true)
+               {
+				
+                       if(check_static_ip_mask_gtw()==false){
+					  
+                               return false;	
+							}
+                       if(check_static_dns(!(form.dyn_get_ip.checked)) == false){
+					   
+                                return false;
+									}
+                       form.hid_dyn_get_ip.value="0";//for static
+				}
+               else
+                       form.hid_dyn_get_ip.value="1"; //for dynamic
+			   }
+       else
+       {
+               form.hid_enable_apmode.value="0"; //when ap mode is off 
+			   form.hid_dyn_get_ip.value="1"; //for dynamic
+       }
+	   sAlert('$ap_work', function(){document.forms[0].submit();}, function(){return false;});
+	  // form.submit();
+}
+function goto_wireless()
+{
+	top.open_or_close_sub('setup');
+	top.click_adv_action('wireless');
+}
+function ap_show(type)
+{
+	cf=document.forms[0];
+	if(type == 0)
+	{
+	//	document.getElementById("learn").style.display="";
+		document.getElementById("iptab").style.display="none";	
+	}
+	else if (type == 1)
+	{
+	//	document.getElementById("learn").style.display="none";
+		document.getElementById("iptab").style.display="";
+	}
+		
+}
+
+function loadvalue()
+{
+var form=document.forms[0];
+
+	top.enable_ap_flag="<% cfg_get("ap_mode") %>";
+	var apmode_get_ip="<% ap_mode_ip() %>";
+	if (apmode_get_ip!="")
+	{
+		if(apmode_get_ip=="0.0.0.0")
+			form.APaddr1.value="";
+		else
+		{
+			form.APaddr1.value=apmode_get_ip;
+		}
+	}
+	if(dyn_get_ip_flag == '0')
+	{
+		form.dyn_get_ip[1].checked = true;
+		//document.getElementById("learn").style.display="none";
+		document.getElementById("iptab").style.display="";
+	}
+	else
+	{
+		form.dyn_get_ip[0].checked = true;
+		//document.getElementById("learn").style.display="";
+		document.getElementById("iptab").style.display="none";
+		
+		}
+	
+	var apmode_get_subnet="<% ap_mode_netmask() %>";
+	if (apmode_get_subnet!="")
+	{
+		if(apmode_get_subnet=="0.0.0.0")
+			form.APmask1.value=""; 
+		else
+		{
+			form.APmask1.value=apmode_get_subnet;
+		}
+	}
+	var apmode_get_gateway="<% ap_mode_gateway() %>";
+	if (apmode_get_gateway!="")
+	{
+		if(apmode_get_gateway=="0.0.0.0")
+		{
+			form.APgateway1.value="";
+		}
+		else
+		{
+			form.APgateway1.value=apmode_get_gateway;
+		}
+	}
+	//setDNS(form);
+	var apmode_get_dns1="<% ap_ether_dns() %>";
+	if (apmode_get_dns1!="" && apmode_get_dns1.indexOf(":")==-1)
+	{
+		if(apmode_get_dns1=="0.0.0.0")
+		form.APDAddr1.value="";
+		else
+		{
+			form.APDAddr1.value=apmode_get_dns1;
+		}
+	}
+	var apmode_get_dns2="<% ap_ether_dns("1") %>";
+	if (apmode_get_dns2!="" && apmode_get_dns2.indexOf(":")==-1)
+	{
+		if(apmode_get_dns2=="0.0.0.0")
+		form.APPDAddr1.value="";
+		else
+		{
+			form.APPDAddr1.value=apmode_get_dns2;
+		}
+	}
+}
+
+</script>
+<input type="hidden" name="hid_enable_apmode">
+<input type="hidden" name="hid_dyn_get_ip">
+<!--input type="hidden" name="hid_dyn_get_dns"-->
+<input type="hidden" name="hid_ap_ipaddr">
+<input type="hidden" name="hid_ap_subnet">
+<input type="hidden" name="hid_ap_gateway">
+<input type="hidden" name="ap_dnsaddr1">
+<input type="hidden" name="ap_dnsaddr2">
+<div id="main" class="main_top_button">
+
+<% rae_radios("2") %>
+<div id="content1"  style="font-size:14px;">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+	<TD  colspan=3><A tabindex=-1 href="javascript:loadhelp('_rae_ap','ip_tag')"><b>$ap_mode:</b></a> $ap_descript</TD>
+</TR>
+<TR><TD height="20px"></TD></TR>
+<TR>
+	<td nowrap colspan=3>$ap_IP</td>
+</TR>
+<TR id=ap_radio_1>
+	<TD nowrap colspan=3>
+	<A tabindex=-1 href="javascript:loadhelp('_rae_ap','mac_tag')"><input type="radio" name="dyn_get_ip" checked value="1" onclick="ap_show(0)">$dyn_get_dns</A>
+	</TD>
+</TR>
+<TR id=ap_radio_2>
+	<TD nowrap colspan=3>
+	<A tabindex=-1 href="javascript:loadhelp('_rae_ap','name_tag')"><input type="radio" name="dyn_get_ip" value="0" onclick="ap_show(1)">$fix_dns</A>
+	</TD>
+</TR>
+<TR><TD height="20px"></TD></TR>
+<TR><TD nowrap colspan=3>&nbsp; $lan_mark_name: 
+<script>
+var old_name = "<% cfg_get("ap_netbiosname") %>";
+var dev_name = "<% cfg_get("Device_name") %>";
+if( old_name != "" )
+	dev_name = old_name;
+document.write(dev_name);
+</script>
+ &nbsp;&nbsp;&nbsp; <input class="new_edit_bt ui-corner-all" type="button" name="Apply" value="$edit_mark" onClick="edit_devicename(dev_name)"></TD><TD></td></TR>
+<TR><TD height="10px"></TD></TR>
+<TR id=learn>
+	<TD nowrap colspan=3>
+	<input class="new_apply_bt2 ui-corner-all" type="button" name="learn_router" value="$learn_more" onclick="window.open('rae_learn.htm','newwindow','resizable=no,scrollbars=yes,toolbar=no,menubar=no,status=no,location=no,alwaysRaised=yes,z-look=yes,width=800,height=600,left=200,top=100').focus();" >
+	</TD>
+</TR>
+</TABLE>
+</div>
+
+<div id="content3" style="font-size:14px;">
+<TABLE width=70% border=0 cellpadding=0 cellspacing=2 align=center>
+<TR>
+	<TD nowrap colspan=2><b>$ap_downlink</b></TD>
+</TR>
+<TR>
+	<TD nowrap colspan=1>$rae_sub_des</TD>
+</TR>
+<TR><TD height="15px"></TD></TR>
+<TR>
+	<TD nowrap colspan=3 style="font-size:12px;color:#702b86"><b>2.4G $guest_table_ssid</b></TD>		
+</TR>
+<TR>
+	<TD nowrap colspan=3><% cfg_get_ssid_html("wl_ssid") %></TD>		
+</TR>
+<script>
+if (wl_sectype == 1)
+	document.write('<TR><TD nowrap colspan=3>NULL</TD></TR>');
+else if (wl_sectype == 2) {  //wep
+	if(key_no == 1)
+		document.write('<TR><TD nowrap colspan=3>key1:'+key1+'</TD></TR>');
+	else if(key_no == 2)
+		document.write('<TR><TD nowrap colspan=3>key2:'+key2+'</TD></TR>');
+	else if(key_no == 3)
+		document.write('<TR><TD nowrap colspan=3>key3:'+key3+'</TD></TR>');
+	else if(key_no == 4)
+		document.write('<TR><TD nowrap colspan=3>key4:'+key4+'</TD></TR>');
+	}
+else if (wl_sectype == 4)
+	document.write('<TR><TD nowrap colspan=3>'+password1+'</TD></TR>');
+else if (wl_sectype == 5)
+	document.write('<TR><TD nowrap colspan=3>'+password2+'</TD></TR>');
+else if (wl_sectype == 6)
+	document.write('<TR><TD nowrap colspan=3>'+wl_radiusSecret+'</TD></TR>');
+</script>
+<TR><TD height="15px"></TD></TR>
+<TR>
+	<TD nowrap colspan=3 style="font-size:12px;color:#702b86"><b>5G $guest_table_ssid</b></TD>		
+</TR>
+<TR>
+	<TD nowrap colspan=3><% cfg_get_ssid_html("wla_ssid") %></TD>		
+</TR>
+<script>
+if (wla_sectype == 1)
+	document.write('<TR><TD nowrap colspan=3>NULL</TD></TR>');
+else if (wla_sectype == 4)
+	document.write('<TR><TD nowrap colspan=3>'+wla_password1+'</TD></TR>');
+else if (wla_sectype == 5)
+	document.write('<TR><TD nowrap colspan=3>'+wla_password2+'</TD></TR>');
+</script>
+<TR><TD height="15px"></TD></TR>
+<TR>
+	<td nowrap colspan=3>$ap_tochange:</td>
+</TR>
+<TR><TD height="5px"></TD></TR>
+<TR>
+	<td nowrap colspan=3><input class="wireless_bt2 ui-corner-all" type="button" name="Apply" value="$wls_setup" onClick="gotto_link('setup', 'wireless');"></td>
+</TR>
+</TABLE>
+</div>
+
+<div class="ipaddres" id="iptab" style="font-size:14px; display: none;">
+<table width=420px height=210px cellpadding=0 cellspacing=2  border=0 class="iptable">
+<tr height="15px"></tr>
+<TR id=ap_addr>
+<TD width="10px"></TD>
+	<TD>&nbsp;</TD>
+	<TD nowrap>$block_ser_setup_ip_jp</TD>
+	<TD nowrap align=right>
+		<input type="text" name="APaddr1"  size="20" autocomplete="off" maxlength="20" onFocus="this.select();"  onKeyPress="return getkey1();" >
+	</TD>
+	<td width="20px"></td>
+</TR>
+<TR id=ap_mask>
+<TD width="10px"></TD>
+	<TD>&nbsp;</TD>
+	<TD nowrap>$router_status_ip_sub</TD>		
+	<TD nowrap align=right>
+		<input type="text" name="APmask1"  size="20" autocomplete="off" maxlength="20" onFocus="this.select();" onKeyPress="return getkey1();" >
+	</TD> 
+	<td width="20px"></td>
+</TR>
+<TR id=ap_gateway>
+<TD width="10px"></TD>
+	<TD>&nbsp;</TD>
+	<TD nowrap>$sta_routes_gtwip</TD>		
+	<TD nowrap align=right>
+		<input type="text" name="APgateway1"  size="20" autocomplete="off" maxlength="20" onFocus="this.select();"  onKeyPress="return getkey1();" >
+	</TD>
+	<td width="20px"></td>
+</TR>
+<TR id=ap_daddr>
+<TD width="10px"></TD>
+	<TD>&nbsp;</TD>
+	<TD nowrap>$basic_int_primary_dns</TD>
+	<TD nowrap align=right>
+	<input type="text" name="APDAddr1"  size="20" autocomplete="off" maxlength="20" onFocus="this.select();" onKeyPress="return getkey1();">
+	</TD>
+	<td width="20px"></td>
+</TR>
+<TR id=ap_pdaddr>
+<TD width="10px"></TD>
+	<TD>&nbsp;</TD>
+	<TD nowrap>$basic_int_second_dns</TD>
+	<TD nowrap align=right>
+	<input type="text" name="APPDAddr1"  size="20" autocomplete="off" maxlength="20" onFocus="this.select();" onKeyPress="return getkey1();">
+	</TD>
+	<td width="20px"></td>
+</TR>
+<tr height="15px"></tr>
+</table>
+
+</div>
+
+<div class="foot">
+<img src="/image/ap-4.gif">
+</div>
+</div>
+<% help_box("0","_rae_ap") %>
+</form>
+</body>
+</html>

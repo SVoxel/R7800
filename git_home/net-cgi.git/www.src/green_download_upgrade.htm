@@ -1,0 +1,129 @@
+<% http_header("style/form.css", "/funcs.js", "/upgrade.js") %>
+<!--% body_header("_green_download_upgrade", "green_download_upgrade.htm", "green_upgrade_check") %-->
+<body onLoad="loadvalue();">
+<div id="page_title_div" class="page_title" style="display:block">$greendl_upgrade_name</div>
+<div id="main" class="main">
+<div id="FW_checking_div" style="display:block">
+<form method="post" action="/apply.cgi?/green_download_upgrade.htm" target="formframe">
+<input type="hidden" name="submit_flag" value="green_upgrade_check" />
+<div><img src=/liteblue.gif width=100% height=12></div>
+
+<script>
+<% show_devices() %>
+<% refresh_timestamp("green_upgrade_check", "green_download", "download_green_confile") %>
+var ts="<% cfg_get("green_upgrade_check") %>"
+parent.run_green_time = 0;
+var green_download_upgrade_stat="<% cfg_get("green_download_upgrade_stat") %>";
+<% cfg_set("green_download_upgrade_stat", "0") %>
+<% commit() %>
+var green_download_version="<% cat_file("/tmp/jffs2_green_download/version") %>";
+parent.green_refresh_time = 0;
+
+function change_web_format()
+{
+	var form0 = document.forms[0];
+	var form1 = document.forms[1];
+
+	if(disk_num == 0)
+	{
+		form0.Check.disabled = true;
+		form1.mtenFWUpload.disabled = true;
+		form1.Cancel.disabled = true;
+		form1.Upgrade.disabled = true;
+		form0.Check.className ="short_common_gr_bt";
+		form1.Upgrade.className ="common_gray_bt";
+		form1.Cancel.className ="common_gray_bt";
+	}
+	else
+	{
+		form0.Check.disabled = false;
+		form1.mtenFWUpload.disabled = false;
+		form1.Cancel.disabled = false;
+		form1.Upgrade.disabled = false;
+		form0.Check.className ="short_common_bt";
+		form1.Upgrade.className ="apply_bt";
+		form1.Cancel.className ="cancel_bt";
+	}
+}
+
+function loadvalue()
+{
+	change_web_format();
+
+	if(disk_num != 0)
+	{
+		if( green_download_upgrade_stat == "1" )
+		{
+			alert("$greendl_upgrade_alert_done");
+			top.location.href="adv_index.htm";
+		}
+		else if( green_download_upgrade_stat != "0" && green_download_upgrade_stat != "")
+		{
+			alert("$greendl_upgrade_alert_failed");
+			top.location.href="adv_index.htm";
+		}
+	}
+}
+function click_check()
+{
+	var cf=document.forms[0];
+	cf.submit_flag.value="download_green_confile";
+	cf.action="/func.cgi?/green_search.htm timestamp="+ts;
+	cf.submit();
+}
+
+function clickUpgrade(form)
+{
+    if(form.mtenFWUpload.value=="")
+    {
+        alert("$in_upgrade");
+        return false;
+    }
+    var filestr=form.mtenFWUpload.value;
+    var file_format=filestr.substr(filestr.lastIndexOf(".")+1);
+    if(file_format.toUpperCase()!="SQUASHFS")
+    {
+        alert("$not_correct_file"+"squashfs");
+        return false;
+    }
+    return true;
+}
+
+</script>
+
+<input type="hidden" name="auto_check_for_upgrade">
+<% table_header() %>
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_green_download_upgrade','check')"><B>$upgrade_new_version</B></A></TD>
+	<TD nowrap>
+	<input class="short_common_bt" type="button" name="Check" value="$check_mark" onclick="click_check();">
+	</TD>
+</TR>
+$bluebar
+</table>
+</FORM>
+</div>
+
+<div id="FW_upg_div" style="display:block">
+<FORM method="post" action="/green_upg.cgi" target=formframe enctype="multipart/form-data">
+<table width="100%" border="0" cellpadding="0" cellspacing="3">
+<TR>
+	<TD nowrap>
+	<A tabindex=-1 href="javascript:loadhelp('_green_download_upgrade','locate')"><B>$upgrade_select_disk</B></A>
+	</TD>
+</TR>
+<TR><TD nowrap><input name="mtenFWUpload" type="file" size="32"></TD></TR>
+$bluebar
+<TR>
+        <TD nowrap colspan=2 align=center>
+        <input class="cancel_bt" type='reset' name="Cancel" value='$cancel_mark' onClick='location.href="green_download_upgrade.htm";'>
+        <input class="apply_bt" type=submit name="Upgrade" value="$upg_mark" onClick='return clickUpgrade(document.forms[1])'>&nbsp;&nbsp;
+        </TD>
+</TR>
+</TABLE>
+</form>
+</div>
+</div>
+<% help_box("0","_green_download_upgrade") %>
+</BODY>
+</HTML>

@@ -1,0 +1,78 @@
+<% http_header("style/form.css", "/funcs.js", "/reservation.js") %>
+<% body_header("_lan", "LAN_lan.htm", "reservation_edit") %>
+<div class="page_title">$reservation_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+	document.write('<TR><TD nowrap colspan=2 align=center><input id="cancel" class="cancel_bt" type="button" name="Cancel" value="$cancel_mark" onClick="location.href=\'LAN_lan.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="submit" name="Apply" value="$apply_mark" onClick="return check_reservation_add(document.forms[0],\'edit\')"></TD></TR>');
+else
+	document.write('<TR><TD nowrap colspan=2 align=center><input id="cancel" class="cancel1_bt" type="button" name="Cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit" name="Apply" value="$apply_mark" disabled></TD></TR>');
+</script>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+<% refresh_timestamp("reservation_editnum") %>
+
+<script>
+<% reservation_items_xss() %>
+
+var lanip="<% cfg_get("lan_ipaddr") %>";
+var lanmask="<% cfg_get("lan_netmask") %>";
+var startip="<% cfg_get("dhcp_start") %>";
+var endip="<% cfg_get("dhcp_end") %>";
+var select_editnum="<% cfg_get("resev_editnum") %>";
+
+var have_ipmac_flag=parent.have_ipmac_flag;
+var ipmac_binding_flag="<% cfg_get("ipmac_binding_on")%>";
+var is_ipmac=(have_ipmac_flag == 1 && ipmac_binding_flag == 1 && (parent.is_ru_version == 1 || parent.is_pr_version == 1)) ? 1 : 0;
+
+function loadvalue()
+{
+	var cf=document.forms[0];
+	var str = eval ( 'resevArray' + select_editnum );
+	var each_info=str.split(' ');
+	var reservation_ipaddr=each_info[0];
+	var ip_array=reservation_ipaddr.split('.');
+	cf.rsv_ip1.value=ip_array[0];
+	cf.rsv_ip2.value=ip_array[1];
+	cf.rsv_ip3.value=ip_array[2];
+	cf.rsv_ip4.value=ip_array[3];
+	cf.dv_name.value=each_info[2].replace(/&#92;/g, "\\").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
+	cf.rsv_mac.value=each_info[1];
+}
+
+</script>
+<input type="hidden" name="reservation_ipaddr">
+<input type="hidden" name="duplicated_reservation">
+<input type="hidden" name="duplicated_num" value=0>
+<TR>
+	<TD nowrap>$info_mark_ip</TD>
+	<TD nowrap>
+	<input type="text" name="rsv_ip1" id="rsv_ipaddress1" maxLength="3" size="3" autocomplete="off" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="rsv_ip2" id="rsv_ipaddress2" maxLength="3" size="3" autocomplete="off" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="rsv_ip3" id="rsv_ipaddress3" maxLength="3" size="3" autocomplete="off" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="rsv_ip4" id="rsv_ipaddress4" maxLength="3" size="3" autocomplete="off" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$info_mark_mac</TD>
+	<TD nowrap>
+	<input type="text" value="" name="rsv_mac" id="rsv_mac" maxlength="17" size="20" onKeyPress="return getkey('mac',event)">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$lan_mark_name</TD>
+	<TD nowrap>
+	<input type="text" name="dv_name" id="device_name" maxLength="20" size="16" onKeyPress="return getkey('ssid', event)">
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_lan") %>
+</FORM>
+</BODY>
+</HTML>

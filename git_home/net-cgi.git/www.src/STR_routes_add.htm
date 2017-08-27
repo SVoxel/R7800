@@ -1,0 +1,123 @@
+<% http_header("style/form.css", "/funcs.js", "/str_router.js") %>
+<% noload_header("_STR_routes", "STR_routes.htm", "st_router_add") %>
+<div class="page_title">$static_router_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master =="admin" )
+    document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'STR_routes.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onClick="check_router_add(document.forms[0],\'add\');"></TD></TR>');
+else
+	document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="button" name="Apply" id="apply" value="$apply_mark" disabled></TD></TR>');
+</script>
+</TABLE>
+</div>
+<div id="main" class="main_top_button"> 
+<% table_header() %>
+
+<script>
+<!--% routes_items() %-->
+<% routes_items_xss() %>
+
+var russian_pppoe_flag=parent.parent.russian_pppoe_flag;
+var wan_proto="<% cfg_get("wan_proto") %>";
+var gui_region="<% cfg_get("GUI_Region") %>";
+var netgear_region=top.netgear_region;
+
+if ( (wan_proto == "pptp") || (wan_proto == "l2tp" && (gui_region == "Russian" || netgear_region.toUpperCase() == "RU")) || (wan_proto == "pppoe" && russian_pppoe_flag == 1 && (gui_region == "Russian" || netgear_region.toUpperCase() == "RU")))
+{
+	var pptp_eth1_wanip="<% ether_ip() %>";
+	var pptp_eth1_wanmask="<% ether_netmask() %>";
+}
+
+var wan_ether_wan_assign = "<% cfg_get("wan_ether_wan_assign")%>";
+var wan_ip="<% test_wan_ip() %>";
+var wan_mask="<% test_wan_netmask() %>";
+/*if(wan_ether_wan_assign != '0')
+{
+	var wan_ip="<% cfg_get("wan_ipaddr") %>";
+	var wan_mask="<% cfg_get("wan_netmask") %>";
+}
+*/
+/* 
+ * fix bug[24648]If set PPPoE to Static Address. User will be unable to set Static 
+ * Route table if set the same subnet on "gateway address" when gui region is "Russian".
+ */
+if(wan_proto == "pppoe" && (gui_region == "Russian" || netgear_region.toUpperCase() == "RU"))
+{//fix bug 27739
+        var wan_ip="<% cfg_get("wan_pppoe_intranet_ip") %>";
+        var wan_mask="<% cfg_get("wan_pppoe_intranet_mask") %>";
+}
+
+var lan_ip="<% cfg_get("lan_ipaddr") %>";
+var lan_mask="<% cfg_get("lan_netmask") %>";
+
+if (lan_ip == "")
+{
+	lan_ip="0.0.0.0";
+	lan_mask="0.0.0.0";
+}
+</script>
+
+<input type="hidden" name="route_dest">
+<input type="hidden" name="route_pr">
+<input type="hidden" name="route_ac">
+<input type="hidden" name="count">
+<input type="hidden" name="totalnum" value="$totalnum">
+<input type="hidden" name="SRouteDestAddr">
+<input type="hidden" name="SRouteSubnetMask">
+<input type="hidden" name="SRouteGatewayAddr">
+<TR>
+	<TD nowrap>$sta_routes_rtname</TD>
+	<TD nowrap>
+	<input type="text" name="route_name" id="route_name" size="16" maxlength="30">
+	</TD>
+</TR>
+<TR>
+ 	<TD nowrap colspan=2>
+	<input type="checkbox" name="SRoutePrivate" id="route_private">$sta_routes_private</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="checkbox" name="SRouteActive" id="route_active" checked>$sta_routes_act</TD>
+</TR>
+<TR>
+	<TD nowrap>$sta_routes_destip</TD>
+	<TD nowrap>
+	<input type="text" name="SRouteDestAddr1" id="route_dest_address1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="SRouteDestAddr2" id="route_dest_address2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="SRouteDestAddr3" id="route_dest_address3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="SRouteDestAddr4" id="route_dest_address4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$sta_routes_ipsubnet</TD>
+	<TD nowrap>
+	<input type="text" name="SRouteSubnetMask1" id="route_net_mask1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="SRouteSubnetMask2" id="route_net_mask2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="SRouteSubnetMask3" id="route_net_mask3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="SRouteSubnetMask4" id="route_net_mask4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$sta_routes_gtwip</TD>
+	<TD nowrap>
+	<input type="text" name="SRouteGatewayAddr1" id="route_gateway1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="SRouteGatewayAddr2" id="route_gateway2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="SRouteGatewayAddr3" id="route_gateway3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="SRouteGatewayAddr4" id="route_gateway4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>$sta_routes_metric</TD>
+	<TD nowrap>
+	<input type="text" name="route_metric" id="route_metric" size="3" maxlength="2" onKeyPress="return getkey('num',event);">
+	</TD>
+</TR>	
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_STR_routes") %>
+</FORM>
+</BODY>
+</HTML>

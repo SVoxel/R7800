@@ -1,0 +1,48 @@
+<% http_header("style/form.css") %>
+<body bgcolor="#ffffff" onLoad="updateProgress()">
+<style>
+.waiting { font: bold 17px arial; color: #f508ff; }
+.prgbar { width: 393px; }
+</style>
+<script type="text/javascript">
+var pchar = "|||"; // progress char
+var maxchars = 40; 
+var delay_time = 1969; // msecs
+var charcount = 0;
+
+function makeStr(strSize, fillChar)
+{
+	var temp = "";
+	for (i=0; i < strSize ; i ++)
+		temp = temp + fillChar;
+	return temp;
+}
+
+function updateProgress()
+{
+	var cf = document.forms[0];
+	if (charcount < maxchars)
+	{
+		charcount ++;
+		cf.progress.value = makeStr(charcount,pchar);
+		setTimeout("updateProgress()",delay_time);
+	}
+	else
+	{
+		top.location.href="adv_index.htm";
+	}
+}
+</script>
+<form>
+<table border="0" cellpadding="0" cellspacing="3" width="100%">
+<tr>
+	<td nowrap align=left class="waiting">$reboot_waiting</td>
+</tr>
+<tr>
+	<td nowrap align=center><input type="text" name="progress" class="prgbar" value=""></td>
+</tr>
+$bluebar
+</table>
+</form>
+</body>
+</html>

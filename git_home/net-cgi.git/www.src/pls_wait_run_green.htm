@@ -1,0 +1,65 @@
+<html>
+<head>
+<!--META http-equiv="Refresh" content="150; url=pls_wait_run_green.htm"-->
+<META http-equiv=content-type content='text/html; charset=UTF-8'>
+<LINK rel="stylesheet" href="style/form.css">
+
+<!--body onLoad="updateProgress()" bgcolor=#ffffff-->
+<script type="text/javascript">
+//var run_green_time = parent.run_green_time;
+var green_lang_tag = "<% cfg_get("green_lang_tag") %>";
+var green_image_tag = "<% cfg_get("green_image_tag") %>";
+
+var pchar = "|"; // progress char
+var maxchars = 80;
+var delay_time = 300; // msecs
+var charcount = 0;
+
+function makeStr(strSize, fillChar)
+{
+         var temp = "";
+         for (i=0; i < strSize ; i ++)
+               temp = temp + fillChar;
+         return temp;
+}
+function updateProgress()
+{
+	var cf = document.forms[0];
+	if (charcount < maxchars)
+	{
+		charcount ++;
+		cf.progress.value = makeStr(charcount,pchar);
+		setTimeout("updateProgress()",delay_time);
+	}
+        else
+	{
+		if( green_lang_tag == 0 && green_image_tag == 0 )
+		{
+			if ( typeof(top.topframe) != "undefined" )
+				top.topframe.location.href="top.html";
+			//top.contents.location.href="<% menu_link() %>";
+			if ( is_in_cd_less || isWIZARD())
+				toInternet();
+			else
+				document.location.href="green_download_upgrade.htm";
+		}
+		else if( green_lang_tag == 1 && green_image_tag == 0)
+			document.location.href="AUTO_download_language.htm";
+		else if( green_lang_tag == 0 && green_image_tag == 1 )
+			document.location.href="AUTO_download_image.htm";
+	}				
+}
+</script>
+</head>
+<body onLoad="updateProgress()" bgcolor=#ffffff>
+<form>
+<table border="0" cellpadding="0" cellspacing="3" width=100%>
+<TR>
+	<td align="left"><h1><script>printText(bh_greendl_upgrade_version_waiting, "$greendl_upgrade_version_waiting");</script></h1></td>
+	<td nowrap><input type="text" name="progress" class="reboot1bar" size="60"  value=""></td>
+</TR>
+<TR><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+</table>
+</form>
+</body>
+</html>

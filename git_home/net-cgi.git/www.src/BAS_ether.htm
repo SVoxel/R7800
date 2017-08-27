@@ -1,0 +1,335 @@
+<% http_header("style/form.css", "/funcs.js", "/bas_ether.js") %>
+<% body_header("_BAS_ether", "BAS_update.htm", "ether") %>
+<div class="page_title">$int_setup</div>
+<script>
+<% save_timestamp("ether", "edit_devname") %>
+var ts = "<% cfg_get("edit_devname") %>";
+var ed_action= "/apply.cgi?/BAS_ether.htm timestamp="+ts;
+var run_test="<% cfg_get("run_test") %>";
+var in_hijack=( "<% cfg_get("dns_hijack") %>" == "1" && "<% cfg_get("hijack_process") %>" != "3" );
+<% cfg_set("run_test", "no") %>
+<% commit() %>
+var lan_ip="<% cfg_get("lan_ipaddr") %>";
+var lan_subnet="<% cfg_get("lan_netmask") %>";
+var old_wan_type="<% cfg_get("wan_proto") %>";
+var old_wan_ip="<% bas_ether_ip() %>";
+var ether_get_subnet="<% bas_ether_netmask() %>";
+var ether_get_gateway="<% bas_ether_gateway() %>";
+var vpn_enable = "<% cfg_get("vpn_enable") %>";
+var old_endis_ddns="<% cfg_get("endis_ddns") %>";
+var old_wan_assign="<% cfg_get("wan_ether_wan_assign")%>";
+var wan_factory_mac="<% cfg_get("wan_factory_mac"); %>";
+var wan_remote_mac="<% cfg_get("wan_remote_mac") %>";
+var ether_get_this_mac="<% cfg_get("wan_ether_this_mac") %>";
+var gui_region="<% cfg_get("GUI_Region") %>";
+var vpn_flag="<% cfg_get("vpn_detect_ip_change_flag")%>";
+var netgear_region=(top.netgear_region == "") ? "WW" : top.netgear_region;
+var dns_third_flag=top.dns_third_flag;
+var wanproto_type="dhcp";
+var wan_mtu_now='<% wan_mtu() %>';
+if (ether_get_this_mac == "")
+	ether_get_this_mac="<% wan_mac() %>";
+
+
+var select_basic="<% cfg_get("internet_type") %>";
+var select_type="<% cfg_get("internet_ppp_type") %>";
+var jp_multiPPPoE="<% cfg_get("jp_multiPPPoE") %>";
+var have_l2tp = (top.l2tp_flag == 1) ? 1 : 0;
+var consolidate_device_name = parent.consolidate_device_name;
+
+
+function change_web_format()
+{
+        if( dns_third_flag == 1 )
+                document.getElementById("third_dns").style.display="";
+        else
+                document.getElementById("third_dns").style.display="none";
+	
+}
+
+function loadvalue()
+{
+	change_web_format();
+	var form=document.forms[0];
+	if(consolidate_device_name == "1")
+		document.getElementById("edit_devname_bt").style.display="";
+	
+	if(vpn_flag == "1" && parent.ether_post_flag == 1){
+		parent.ether_post_flag = 0;
+		alert("$warn_change_static_ip");
+	}
+
+	if (old_wan_assign == '0')
+		form.WANAssign[0].checked = true;
+	else
+		form.WANAssign[1].checked = true;
+	setIP(form);		
+	var ether_get_ip=old_wan_ip;
+	if (ether_get_ip!="")
+	{
+		var ip_array=ether_get_ip.split('.');
+		form.WPethr1.value=ip_array[0];
+		form.WPethr2.value=ip_array[1];
+		form.WPethr3.value=ip_array[2];
+		form.WPethr4.value=ip_array[3];
+	}
+	if (ether_get_subnet!="")
+	{
+		var mask_array=ether_get_subnet.split('.');
+		form.WMask1.value=mask_array[0];
+		form.WMask2.value=mask_array[1];	
+		form.WMask3.value=mask_array[2];
+		form.WMask4.value=mask_array[3]; 
+	}
+	if (ether_get_gateway!="")
+	{
+		var gtw_array=ether_get_gateway.split('.');
+		form.WGateway1.value=gtw_array[0];
+		form.WGateway2.value=gtw_array[1];
+		form.WGateway3.value=gtw_array[2];
+		form.WGateway4.value=gtw_array[3];	
+	}
+	var ether_get_dns_assign='<% cfg_get("wan_ether_dns_assign") %>';
+	if (ether_get_dns_assign == '0')
+		form.DNSAssign[0].checked = true;
+	else
+		form.DNSAssign[1].checked = true;
+	setDNS(form);	
+	var ether_get_dns1="<% bas_ether_dns() %>";
+	if (ether_get_dns1!="" && ether_get_dns1.indexOf(":")==-1)
+	{
+		var dns1_array=ether_get_dns1.split('.');
+		form.DAddr1.value=dns1_array[0];
+		form.DAddr2.value=dns1_array[1];
+		form.DAddr3.value=dns1_array[2];
+		form.DAddr4.value=dns1_array[3];
+	}
+	var ether_get_dns2="<% bas_ether_dns("1") %>";
+	if (ether_get_dns2!="" && ether_get_dns2.indexOf(":")==-1)
+	{
+		var dns2_array=ether_get_dns2.split('.');
+		form.PDAddr1.value=dns2_array[0];
+		form.PDAddr2.value=dns2_array[1];
+		form.PDAddr3.value=dns2_array[2];
+		form.PDAddr4.value=dns2_array[3];
+	}
+	if( dns_third_flag == 1)
+	{
+	        var ether_get_dns3="<% bas_ether_dns("2") %>";
+	        if (ether_get_dns3!="" && ether_get_dns3.indexOf(":")==-1)
+	        {
+	                var dns3_array=ether_get_dns3.split('.');
+	                form.TDAddr1.value=dns3_array[0];
+	                form.TDAddr2.value=dns3_array[1];
+	                form.TDAddr3.value=dns3_array[2];
+	                form.TDAddr4.value=dns3_array[3];
+	        }
+	}
+	var ether_get_mac_assign='<% cfg_get("wan_ether_mac_assign") %>';
+	if (ether_get_mac_assign == '0')
+	{
+		form.MACAssign[0].checked = true;
+		setMAC(form,wan_factory_mac);
+	}
+	else if (ether_get_mac_assign == '1')
+	{
+		form.MACAssign[1].checked = true;
+		setMAC(form,wan_remote_mac);
+	}
+	else
+	{
+		form.MACAssign[2].checked = true;
+		setMAC(form,ether_get_this_mac);
+	}
+	goTestApply();
+}
+</script>
+
+<input type="hidden" name="conflict_wanlan">
+<input type="hidden" name="change_wan_type">
+<input type="hidden" name="run_test" value="">
+<input type="hidden" name="ether_ipaddr">
+<input type="hidden" name="ether_subnet">
+<input type="hidden" name="ether_gateway">
+<input type="hidden" name="ether_dnsaddr1">
+<input type="hidden" name="ether_dnsaddr2">
+<input type="hidden" name="ether_dnsaddr3">
+<input type="hidden" name="hid_mtu_value">
+<input type="hidden" name="hid_vpn_detect_flag">
+<input type="hidden" name="hid_enable_vpn" value="1">
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+
+if( master =="admin" ){
+document.write('<TR><TD nowrap colspan=2 align=center><input class="common_bt" type="button" name="Test" id="test" value="$test_mark" onClick="return check_ether(document.forms[0],1)">&nbsp;&nbsp;');
+document.write('<input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'BAS_ether.htm\';">&nbsp;&nbsp;');
+document.write('<input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onClick="return check_ether(document.forms[0],0)"></TD></TR>');
+}
+else
+document.write('<TR><TD nowrap colspan=2 align=center><input class="common1_bt" type="button" name="Test" id="test" value="$test_mark" disabled>&nbsp;&nbsp;<input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="button" name="Apply" id="apply" value="$apply_mark" disabled></TD></TR>');
+</script>
+</TABLE>
+</div><!--button-->
+<div id="bas_top">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR><TD nowrap>
+<A tabindex=-1 href="javascript:loadhelp('_BAS_ether','question')"><B>$basic_top_info</B></A>
+</TD></TR>
+<TR>
+        <TD nowrap>
+        <input onclick='goto_basic_login_page();'  type="radio" name="loginreq" id="loginreq" value="pppoe">$yes_mark
+        </TD>
+</TR>
+<TR>
+        <TD nowrap>
+        <input onclick='' type="radio" name="loginreq" id="no_loginreq" value="dhcp" checked="true">$no_mark
+        </TD>
+</TR>
+$bluebar
+</TABLE>
+</div><!--bas_top -->
+<div id="main" class="main_bas">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_BAS_ether','acname')">$basic_int_acname</A></TD>
+	<TD nowrap align=right>
+	<script>
+	var old_name="<% cfg_sed_xss("wan_hostname") %>";
+	var dev_name="<% cfg_sed_xss("Device_name") %>";
+	if(old_name != "")
+		dev_name = old_name;
+	if(consolidate_device_name == "1"){
+		document.write(dev_name);
+		document.write("&nbsp;&nbsp;&nbsp;");
+	}else
+		document.write('<input type="text" name="system_name" id="system_name" size="20" maxlength="60" value="<% cfg_sed_xss("wan_hostname"); %>" onKeyPress="return getkey(\'apname\',event)">');
+	</script>
+	<input class="short_edit_bt" id="edit_devname_bt" type="button" name="edit" value="$edit_mark" onClick="edit_devicename(dev_name)" style="display:none">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><A tabindex=-1 href="javascript:loadhelp('_BAS_ether','doname')">$basic_int_doname</A></TD>
+	<TD nowrap align=right>
+	<input type="text" name="domain_name" id="domain_name" size="20" maxlength="60" value="<% cfg_sed_xss("wan_domain"); %>" onKeyPress="return getkey( 'ddns_hostname',event)">
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_ether','InternetIP')"><B>$basic_int_intip</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="WANAssign" id="wan_assign_dhcp" value="dhcp" onClick="setIP(document.forms[0])">$basic_int_autoip
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="WANAssign" id="wan_assign_static" value="static" onClick="setIP(document.forms[0])">$basic_int_static_ip
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=20 height=12 border=0>$lan_mark_ip</TD>
+	<TD nowrap align=right>
+	<input type="text" name="WPethr1" id="wpethr1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="WPethr2" id="wpethr2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="WPethr3" id="wpethr3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="WPethr4" id="wpethr4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=20 height=12 border=0>$lan_mark_subnet</TD>
+	<TD nowrap align=right>
+	<input type="text" name="WMask1" id="wmask1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="WMask2" id="wmask2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="WMask3" id="wmask3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="WMask4" id="wmask4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD> 
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=20 height=12 border=0>$lan_mark_gateway</TD>
+	<TD nowrap align=right>
+	<input type="text" name="WGateway1" id="wgateway1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="WGateway2" id="wgateway2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="WGateway3" id="wgateway3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="WGateway4" id="wgateway4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_ether','DNSaddress')"><B>$basic_int_dns</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="DNSAssign" id="dns_assign_auto" value="0" onClick="setDNS(document.forms[0])">$basic_int_autodns
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="DNSAssign" id="dns_assign_static" value="1" onClick="setDNS(document.forms[0])">$basic_int_these
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=20 height=12 border=0>$basic_int_primary_dns</TD>
+	<TD nowrap align=right>
+	<input type="text" name="DAddr1" id="daddr1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="DAddr2" id="daddr2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="DAddr3" id="daddr3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="DAddr4" id="daddr4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+	</TD>
+</TR>
+<TR>
+	<TD nowrap><img src=/spacer.gif width=20 height=12 border=0>$basic_int_second_dns</TD>
+	<TD nowrap align=right>
+	<input type="text" name="PDAddr1" id="pdaddr1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+	<input type="text" name="PDAddr2" id="pdaddr2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="PDAddr3" id="pdaddr3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+	<input type="text" name="PDAddr4" id="pdaddr4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">	
+	</TD>
+</TR>
+<TR id=third_dns style="display:none">
+        <TD nowrap><img src=/spacer.gif width=20 height=12 border=0>$basic_int_third_dns</TD>
+        <TD nowrap align=right>
+        <input type="text" name="TDAddr1" id="tdaddr1" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);" >.
+        <input type="text" name="TDAddr2" id="tdaddr2" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+        <input type="text" name="TDAddr3" id="tdaddr3" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">.
+        <input type="text" name="TDAddr4" id="tdaddr4" size="3" autocomplete="off" maxlength="3" onFocus="this.select();" onkeydown="keydown(event,this);" onKeyPress="return getkey('num',event);" onkeyup="keyup(event,this);">
+        </TD>
+</TR>
+$bluebar
+<TR>
+	<TD nowrap colspan=2>
+	<A tabindex=-1 href="javascript:loadhelp('_BAS_ether','localaddress')"><B>$basic_int_mac</B></A>
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="MACAssign" id="mac_assign_default" value="0" onClick="setMAC(document.forms[0], wan_factory_mac)">$basic_int_default_mac
+	</TD>
+</TR>
+<TR>
+	<TD nowrap colspan=2>
+	<input type="radio" name="MACAssign" id="mac_assign_computer" value="1" onClick="setMAC(document.forms[0], wan_remote_mac)">$basic_int_computer_mac
+	</TD>
+</TR>
+<TR>
+	<TD nowrap>
+	<input type="radio" name="MACAssign" id="mac_assign_define" value="2" onClick="setMAC(document.forms[0], ether_get_this_mac)">$basic_int_this_mac
+	</TD>
+	<TD nowrap align=right>
+	<input type="text" value="" name="Spoofmac" id="spoof_mac" maxlength="17" size="20" onKeyPress="return getkey('mac',event)">
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+</div> <!-- main -->
+<% help_box("0","_BAS_ether") %>
+</FORM>
+</BODY>
+</HTML>

@@ -1,0 +1,28 @@
+{
+    "legal":
+    {
+        "Update_License" :  [
+                                "Keep StreamBoost up to date.  Check below to enable your router to receive automatic StreamBoost ",
+                                "updates during your initial 3-year manufacturer service term (extendable through the manufacturer).",
+                                "StreamBoost updates may help improve its Internet traffic management capabilities. In exchange, your",
+                                "StreamBoost enabled router will send Qualcomm Atheros Inc. anonymous information from your router."
+                                "If you decline, you can find updates through software or firmware postings from your router’s",
+                                "manufacturer.",
+                                " ",
+                                "Your StreamBoost enabled router will provide Qualcomm Atheros Inc. with anonymous data transmitted",
+                                "through the router.  Such anonymous data may include small amounts of information when you launch a",
+                                "streaming service (such as video, audio, or gaming) for the purpose of identifying the data",
+                                "structures of service providers (such as NetFlix, Pandora, World of Warcraft, or other cloud-based",
+                                "service). We use this information to help us optimize StreamBoost for you and other StreamBoost users.",
+                                "We do not use this information to learn the content of what you watch, listen to, download, or play.",
+                                "Anonymous data also may include information about your router such as available bandwidth,",
+                                "oversubscription conditions (e.g., amount of bandwidth that is being requested exceeds the available",
+                                "bandwidth), and types of connected devices to the router, as well as information about your streaming",
+                                "service usage, such as duration of use and volume of data.",
+                                " ",
+                                "As with any Internet communication, we may receive the IP address your router uses to send information,",
+                                "but we do not retain it."
+                            ]
+    }
+}
+

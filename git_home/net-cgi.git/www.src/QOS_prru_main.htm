@@ -1,0 +1,714 @@
+<% start_netscan() %>
+<% http_header("style/form.css", "/funcs.js", "/qos_prru.js") %>
+<% body_header("_qos", "QOS_wait.htm", "apply_prru_qos") %>
+<div class="page_title">$qos_head</div>
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<TR>
+	<TD nowrap colspan=2 align=center>
+	<script>
+		var master="<% cfg_get("http_loginname") %>";
+		if( master=="admin" )
+			document.write('<input class="cancel_bt" type="button" name="Cancel" value="$cancel_mark" onClick="location.href=\'QOS_prru_main.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="submit" name="apply" value="$apply_mark" onClick="return check_prru_qos_apply(document.forms[0]);">');
+		else
+			document.write('<input class="cancel1_bt" type="button" name="Cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit" name="apply" value="$apply_mark" disabled>');
+	</script>	
+	</TD>
+</TR>
+</TABLE>
+</div>
+<div id="main" class="main_top_button">
+<style>
+.i_list{float: left;
+	width: 180px;
+	height: 150px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	}
+.DragBox, .SelectDragBox, .grey_DragBox{
+	font-size: 12px;
+	margin-bottom: 5px;
+	width: 500px;
+	cursor: pointer;
+	font-family: verdana, tahoma, arial;
+}
+.grey_DragBox{
+	cursor: default;
+}
+.SelectDragBox{
+	background-color: #3399ff;
+	color: white;
+}
+</style>
+<% table_header() %>
+<% refresh_timestamp("edit_qoslist") %>
+<script>
+<% save_timestamp("apply_prru_qos", "add_qoslist", "qos_editnode", "qos_deletenode") %>
+var ts='<% cfg_get("apply_prru_qos") %>';
+var selected_node=0;
+var an_router_flag = parent.an_router_flag;
+var max_bandwidth = parent.max_bandwidth;
+var enable_ap_flag="<% cfg_get("ap_mode") %>";//bug 24666 according to the page 128 of spec 2.0,add AP mode
+
+var tcbw_value="<% cfg_get("qos_uprate") %>";
+var tcbw_unit="<% cfg_get("qos_width") %>";
+var qos_mode="<% cfg_get("qos_mode") %>";
+var fast_status="<% cfg_get("qos_fast_status") %>";
+
+var endis_wl_radio="<% enable_ap_orNot("bgn") %>";
+var wds_endis_fun="<% cfg_get("wds_endis_fun") %>";
+var wds_repeater_basic="<% cfg_get("wds_repeater_basic") %>";
+var endis_wla_radio="<% enable_ap_orNot("an") %>";
+var wla_wds_endis_fun="<% cfg_get("wla_wds_endis_fun") %>";
+var wds_repeater_basic_a="<% cfg_get("wds_repeater_basic_a") %>";
+
+var endis_wl_wmm="<% cfg_get("endis_wl_wmm") %>";
+var endis_wla_wmm="<% cfg_get("endis_wla_wmm") %>";
+var qos_endis_on="<% cfg_get("qos_endis_on") %>";
+var qos_type="<% cfg_get("qos_type")%>";
+
+var ac_router_flag = top.ac_router_flag;
+<% qos_items_xss() %>
+<% qos_dft_items() %>
+
+<% list_attach_device()  %>
+<% list_attach_name() %>
+var attach_device_list="<% echo_file("/tmp/netscan/attach_device") %>";
+var attach_array=attach_device_list.split(' @#$$&*! ');
+var attach_ip_array = new Array();
+var attach_mac_array = new Array();
+var attach_name_array = new Array();
+var attach_policy = new Array();
+
+var click_fasttrack=0;
+
+var wps_alert="<% cfg_get("wps_alert") %>";
+<% cfg_set("wps_alert", "0") %>
+
+function change_web_format()
+{
+	if( an_router_flag == 1 )
+		document.getElementById("wmm_an").style.display="";
+	else
+		document.getElementById("wmm_an").style.display="none";
+}
+
+function select_me( node)
+{//qos by servic:  select a dragbox div
+	cf = document.forms[0];
+
+	if(cf.qosEnable.checked == true)
+        {
+                if (selected_node != 0)
+                        selected_node.className="DragBox";
+
+                node.className="SelectDragBox";
+                selected_node = node;
+        }
+}
+
+function creat_a_new_item( value, type)
+{//qos by servic: creat a DragBox div
+	ni = document.createElement('div');
+	ni.className="DragBox";
+	ni.innerHTML=change_service_name_show(value);
+	ni.onclick= function(){select_me(this)};
+	ni.setAttribute('val0_name', value);
+	ni.setAttribute('val2_app_name', type);
+	return ni;
+}
+
+function creat_other_new_item(value, type, connect, start, end)
+{//qos by servic: creat a DragBox div
+        ni = document.createElement('div');
+        ni.className="DragBox";
+        ni.innerHTML=value;
+        ni.onclick= function(){select_me(this)};
+        ni.setAttribute('val0_name', value); //policy name
+        ni.setAttribute('val2_app_name', type); // Add: manully add a new rule
+        ni.setAttribute('val3_app_conn', connect); // connect type
+        ni.setAttribute('val4_app_start', start); // start port
+        ni.setAttribute('val5_app_end', end); // end port
+        return ni;
+}
+
+function creat_a_dev_new_item(value, type, dev, mac)
+{//qos by device: creat a DragBox div
+	ni = document.createElement('div');
+	ni.className="DragBox";
+	ni.innerHTML=value;
+	ni.onclick= function(){select_me(this)};
+	ni.setAttribute('val0_name', value); //policy name
+	ni.setAttribute('val2_app_name', type); // MAC
+	ni.setAttribute('val3_dev_name', dev); //device_name
+	ni.setAttribute('val4_mac', mac); //mac addr
+	return ni;
+}
+
+function remove_ser_from_queue( value, type )
+{// qos by service: if this service have exist, remove old qos rule
+	var i, j;
+	var queue_lists = getElementsByTagAndName("div","queue_list");
+	for( i=0; i< queue_lists.length; i++)
+	{
+		for(j=0; j< queue_lists[i].childNodes.length; j++)
+		{
+			childnode = queue_lists[i].childNodes[j];
+
+			c_name=childnode.getAttribute('val0_name');
+			c_app_type = childnode.getAttribute('val2_app_name');
+			if( type == "1" ) // if add a manully add item(other), compare qos rule name
+			{
+				if(c_name == value)
+				{
+					queue_lists[i].removeChild(childnode);
+					break;
+				}
+			}
+			else
+			{
+				if(c_app_type == type) // if add a current service item, compare service name
+				{
+					queue_lists[i].removeChild(childnode);
+					break;
+				}
+			}
+		}
+	}
+}
+
+function loadvalue()
+{
+	var cf=document.forms[0];
+
+	change_web_format();
+	
+	/* to fix bug 42846 */
+	if ((endis_wl_radio == '1' && wds_endis_fun == '1' && wds_repeater_basic == '0') || (endis_wla_radio == '1' && wla_wds_endis_fun == '1' && wds_repeater_basic_a == '0')){
+		cf.qosEnable.checked = false;
+		cf.qosEnable.disabled = true;
+	}
+	else
+	{
+		cf.qosEnable.disabled = false;
+		if( qos_endis_on == "1" )
+                	cf.qosEnable.checked = true;
+        	else
+                	cf.qosEnable.checked = false;
+	}
+
+	if( endis_wl_wmm == "1" )
+		cf.wmm_enable.checked = true;
+	else
+		cf.wmm_enable.checked = false;
+	if( endis_wla_wmm == "1" )
+		cf.wmm_enable_a.checked = true;
+	else
+		cf.wmm_enable_a.checked = false;
+
+	if(tcbw_unit == "Mbps")
+	{
+		cf.tcbw_value.value = parseInt(tcbw_value/1024);
+		cf.tcbw_unit.selectedIndex=1;
+	}
+	else
+	{
+		cf.tcbw_value.value = tcbw_value;
+		cf.tcbw_unit.selectedIndex=0;
+	}
+
+	trun_bandwidth();
+
+	if(qos_mode == "0")
+		cf.qos_mode[0].checked = true;
+	else
+		cf.qos_mode[1].checked = true;
+	if(qos_type == "1")
+		cf.qos_type[1].checked = true;
+	else
+		cf.qos_type[0].checked = true;
+	if(fast_status == "0" || fast_status == "" )
+		cf.qos_fast.checked = false;
+	else
+		cf.qos_fast.checked = true;
+
+	setGray();
+
+	cf.trust_mac.value="<% cfg_get("trust_mac") %>";
+
+	b_w_value = "<% cfg_get("qos_bandwidth") %>";
+	if( b_w_value != "")
+		cf.bandwidth_reser.value=b_w_value;
+
+	w_f_value = "<% cfg_get("quick_wps_fastlane") %>";
+	if( w_f_value == "fastlane")
+		cf.wps_fastlane[1].checked = true;
+	else
+		cf.wps_fastlane[0].checked = true;
+
+	var queue_lists = getElementsByTagAndName("div", "queue_list");
+	var i=1;
+
+	for(i=1; i<=qos_array_num; i = i+2)
+	{
+		var str = eval('qosArray'+i);
+		var each_info = str.split(' ');
+
+		var j=i+1;
+		var str_next = eval('qosArray'+j);
+		var type;
+
+		var priority = parseInt(each_info[3]);
+		if(each_info[2] == '1')
+		{
+			if(str_next != "0")
+				type="TCP/UDP";
+			else
+				type=each_info[4];
+
+			newitem = creat_other_new_item(each_info[0], each_info[2], type, each_info[5], each_info[6]);
+		}
+		else if(each_info[1] == '3')
+			newitem = creat_a_dev_new_item(each_info[0], each_info[1], each_info[7], each_info[8]);
+		else
+			newitem = creat_a_new_item(each_info[0], each_info[2]);
+		queue_lists[priority].appendChild(newitem);
+	}
+
+	showWps_alert();
+}
+</script>
+<input type="hidden" name="qos_endis_wmm">
+<input type="hidden" name="qos_endis_wmm_a">
+<input type="hidden" name="qos_endis_on">
+<input type="hidden" name="qos_hidden_uprate">
+<input type="hidden" name="hid_qos_mode">
+<input type="hidden" name="hid_qos_type">
+<input type="hidden" name="hid_fast_status">
+<input type="hidden" name="hid_wps_fastlen">
+<input type="hidden" name="the_mac">
+<input type="hidden" name="select_node_editnum">
+<input type="hidden" name="select_node_name">
+<TR>
+	<TD><input type="checkbox" name="wmm_enable" value="1"><a tabindex=-1 href="javascript:loadhelp('_qos','wifi')"><b>$qos_enable_wmm <script>if(an_router_flag) document.write("(2.4GHz b/g/n)");</script></b></a></TD>
+</TR>
+<TR id=wmm_an>
+	<TD><input type="checkbox" name="wmm_enable_a" value="1"><a tabindex=-1 href="javascript:loadhelp('_qos','wifi')"><b>
+	<script>
+		if( ac_router_flag == "1" )
+			document.write("$qos_enable_wmm (5GHz 802.11a/n/ac)")
+		else
+			document.write("$qos_enable_wmm (5GHz a/n)")
+	</script>
+	</b></a></TD>
+</TR>
+$bluebar
+<TR>
+	<TD><input type="checkbox" name="qosEnable" value="1" onClick="setGray()"><a tabindex=-1 href="javascript:loadhelp('_qos','qos_on')"><b>$qos_upstream_enable</b></a></TD>
+</TR>
+<TR>
+	<TD>$spacebar
+	<b>$qos_uplink_width :</b>&nbsp;&nbsp;&nbsp;&nbsp;<b>$qos_width_maximum</b>&nbsp;&nbsp;
+	<input type="text" name="tcbw_value" size="6" onKeyPress="return getkey('num',event)" >
+	<select name="tcbw_unit" size="1">
+		<option value="Kbps">$qos_Kbps</option>
+		<option value="Mbps">$qos_Mbps</option>
+	</select>
+	$qos_speed_link
+	</TD>
+</TR>
+<TR id="qos_modes">
+	<TD>
+		<b>$qqos_mode:</b>
+		<input type="radio" name="qos_mode" value="0" onclick="change_qos_mode()">$qos_rules
+		<input type="radio" name="qos_mode" value="1" onclick="change_qos_mode()">$qos_fast
+	</TD>
+</TR>
+$bluebar
+<TR id="qos_select">
+	<TD>
+		<b>$qos_add_rules</b>
+		<input type="radio" name="qos_type" value="0" onclick="change_qos_type()">$qos_type_service
+		<input type="radio" name="qos_type" value="1" onclick="change_qos_type()">$qos_type_device
+	</TD>
+</TR>
+<TR id="blue_line_1"><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+<TR id="qos_app">
+	<TD><b>$qos_application</b></TD>
+	<TD>
+		<select name="qos_apps" onChange="change_serv_apps()">
+		<script>
+			if(parent.is_pr_version ==1 )
+			{
+				document.write('<option value="PPTV" > PPTV</option>');
+				document.write('<option value="PPS" > PPS</option>');
+				document.write('<option value="Thunder" > $qos_pr_thunder</option>');
+				document.write('<option value="QQ_xuanfeng" > $qos_pr_qq_xuanfeng</option>');
+				document.write('<option value="LOL" > $qos_pr_lol</option>');
+				document.write('<option value="QQ" > QQ</option>');
+				document.write('<option value="YY_yuyin" > $qos_pr_yy</option>');
+				document.write('<option value="Tonghuashun" > $qos_pr_tonghuashun</option>');
+				document.write('<option value="Dazhihui" > $qos_pr_dazhihui</option>');
+			}
+			else if(parent.is_ru_version ==1)
+			{
+				document.write('<option value="sipnet.ru" > $qos_ru_sipnet</option>');
+				document.write('<option value="DC++" > DC++</option>');
+			}
+			document.write('<option value="IP_Phone" > $qos_ipphone</option>');
+			document.write('<option value="Skype" > $qos_skype</option>');
+			document.write('<option value="Netgear_EVA" > $qos_netgear</option>');
+			document.write('<option value="Vonage_IP_Phone" > $qos_vonage</option>');
+			document.write('<option value="Google_Talk" > $qos_google</option>');
+			document.write('<option value="MSN_messenger" selected> $qos_msn</option>');
+			document.write('<option value="Yahoo_messenger" > $qos_yahoo</option>');
+			document.write('<option value="Netmeeting" > $qos_netmeeting</option>');
+			document.write('<option value="AIM" > $qos_aim</option>');
+			document.write('<option value="SlindStream" > $qos_slingstream</option>');
+			document.write('<option value="SSH" > $block_ser_setup_ssh</option>');
+			document.write('<option value="Telnet" > $block_ser_setup_telnet</option>');
+			document.write('<option value="VPN" > $qos_vpn</option>');
+			document.write('<option value="On_line_Game" > On-line Game</option>');
+			document.write('<option value="FTP" > $ftp_mark</option>');
+			document.write('<option value="SMTP" > $block_ser_setup_smtp</option>');
+			document.write('<option value="PPlive" > $qos_pplive</option>');
+			document.write('<option value="WWW" > $qos_www</option>');
+			document.write('<option value="DNS" > $block_ser_setup_dns</option>');
+			document.write('<option value="ICMP" > $qos_icmp</option>');
+			document.write('<option value="eMule" > $qos_emule</option>');
+			document.write('<option value="Kazaa" > $qos_kazaa</option>');
+			document.write('<option value="Gnutella" > $qos_gnutella</option>');
+			document.write('<option value="bt_azureus" > $qos_bt_azureus</option>');
+			document.write('<option value="Counter-Strike" > $qos_counter_strike</option>');
+			document.write('<option value="Age-of-Empires" > $qos_ageof_empires</option>');
+			document.write('<option value="Everquest" > $qos_everquest</option>');
+			document.write('<option value="Quake-2" > $qos_quake2</option>');
+			document.write('<option value="Quake-3" > $qos_quake3</option>');
+			document.write('<option value="Unreal-Tourment" > $qos_unreal</option>');
+			document.write('<option value="Warcraft" > $qos_warcraft</option>');
+			document.write('<option value="other" > $pppoe2_other</option>');
+		</script>
+		</select>
+	</TD>
+</TR>
+<TR id="qos_ser_policy" style="display:none">
+	<TD><b>$qos_policy_for</b></TD>
+	<TD><input type="text" name="ser_poli_name" maxLength="60" size="20" onKeyPress="return getkey('ssid', event)" value=""></TD>
+</TR>
+<TR id="qos_ser_pri">
+	<TD><b>$qos_priority</b></TD>
+	<TD>
+		<select name="ser_priority">
+                        <option value="0" >$qos_highest</option>
+                        <option value="1" selected>$qos_high</option>
+                        <option value="2" >$qos_normal</option>
+                        <option value="3" >$qos_low</option>
+                </select>
+	</TD>
+</TR>
+<TR id="qos_port_type" style="display:none">
+	<TD nowrap><b>$trigger_contype</b></TD>
+	<TD nowrap>
+		<select name="port_type" size="1">
+			<option value="TCP/UDP">TCP/UDP</option>
+			<option value="TCP">TCP</option>
+			<option value="UDP">UDP</option>
+		</select>
+	</TD>
+</TR>
+<TR id="qos_port_start" style="display:none">
+	<TD nowrap><b>$block_ser_start_port</b></TD>
+	<TD nowrap>
+		<input type="text" name="portstart" size="6" maxlength="5" onKeyPress="return getkey('num', event)">(1~65535)
+	</TD>
+</TR>
+<TR id="qos_port_end" style="display:none">
+	<TD nowrap><b>$block_ser_end_port</b></TD>
+	<TD nowrap>
+		<input type="text" name="portend" size="6" maxlength="5" onKeyPress="return getkey('num', event)">(1~65535)
+	</TD>
+</TR>
+<TR id="qos_fast_status" style="display:none">
+	<TD nowrap>
+		<b>$qqos_fast_status:</b>
+		<script>
+			if(fast_status == "1")
+				document.write("$on_mark");
+			else
+				document.write("$OFF_b_mark");
+		</script>
+	</TD>
+</TR>
+<TR id="qos_fast_onoff" style="display:none">
+	<TD nowrap>
+		<input type="checkbox" name="qos_fast" value="0"><a tabindex=-1 href="javascript:loadhelp('_qos','FastTrack')"><b>$qos_fast_onoff</b></a>
+	</TD>
+</TR>
+<TR id="blue_line_3" style="display:none"><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+<TR id="qos_device" style="display:none">
+	<TD nowrap colspan=2><b>$qos_mac_device_list</b></TD>
+</TR>
+<TR id="qos_tru_table" style="display:none">
+	<TD nowrap colspan=2>
+		<TABLE class=tables border=0 cellpadding=2 cellspacing=0 width=100%>
+		<TR class=table_header>
+			<TD nowrap>&nbsp; </TD>
+			<TD nowrap align=center> <span class="subhead">$lan_mark_ip</span></TD>
+			<TD nowrap align=center> <span class="subhead">$qos_mac</span></TD>
+			<TD nowrap align=center> <span class="subhead">$lan_mark_name</span></TD>
+		</TR>
+<script>
+var p=0;
+var mac_show_num=0;
+if(attach_device_list != "")
+{
+	for(i=0, p=0;i<attach_array.length;i++, p++)
+	{
+		var each_info=attach_array[i].split(' ');
+		if(each_info.length>2)
+		{
+			attach_ip_array[p]=each_info[0];
+			attach_mac_array[p]=each_info[1];
+			if(each_info[2].length>0)
+				attach_name_array[p]=each_info[2];
+			else
+				attach_name_array[p]="----";
+		}
+		else
+		{
+			attach_ip_array[p]=each_info[0];
+			attach_mac_array[p]=each_info[1];
+			attach_name_array[p]="----";
+		}
+		if(attach_ip_array[p] == "<unknown>")
+			attach_ip_array[p]="&lt;$unknown_mark&gt;"
+		if(attach_mac_array[p] == "<unknown>")
+			attach_mac_array[p]="&lt;$unknown_mark&gt;"
+
+		if(attach_name_array[p] == "<unknown>" || attach_name_array[p] == "&lt;unknown&gt;" || attach_name_array[p] == "----" ){
+			for( t=0; t<deviceIP_name_num; t++){
+				var dev_name = eval ( 'deviceIP_name' + t );
+				var dev_name_array = dev_name.split(' ');
+				if( attach_ip_array[p] == dev_name_array[0] && dev_name_array[1] != "")
+					attach_name_array[p] = dev_name_array[1];
+			}
+		}
+
+		if( attach_mac_array[p].toUpperCase() == "<% cfg_get("macAddr") %>".toUpperCase().replace(/-/g,":")
+                        && (attach_name_array[p] == "<unknown>" || attach_name_array[p] == "&lt;unknown&gt;" || attach_name_array[p] == "----" ) )
+		{
+			attach_name_array[p] = "<% cfg_get("client_name") %>";
+		}
+		if(attach_name_array[p] == "<unknown>")
+			attach_name_array[p]="&lt;$unknown_mark&gt;"
+	}
+}
+if( p > 0 )
+{
+	for(j=0; j<p; j++)
+	{
+		mac_show_num++;
+		var def_name=attach_mac_array[j].substring(9,11)+attach_mac_array[j].substring(12,14)+attach_mac_array[j].substring(15,17);
+		attach_policy[j]='Pri_MAC_'+def_name;
+		if( mac_show_num%2== 0 )
+			document.write("<TR class=\"even_line\">");
+		else
+			document.write("<TR class=\"odd_line\">");
+		document.write('<TD nowrap align=center><input type="radio" name="MacSelect" value="'+j+'" onclick="attached_qosmac_selected('+j+')"></TD>');
+		document.write('<TD nowrap align=center> '+attach_ip_array[j]+'</TD>');
+		document.write('<TD nowrap align=center> '+attach_mac_array[j]+'</TD><TD nowrap align=center> '+attach_name_array[j]+'</TD></TR>');
+	}
+}
+</script>
+		</TABLE>
+	</TD>
+</TR>
+<TR id="qos_dev_table" style="display:none">
+	<TD nowrap colspan=2>
+		<TABLE class=tables border=0 cellpadding=2 cellspacing=0 width=100%>
+		<TR class=table_header>
+			<TD nowrap>&nbsp; </TD>
+			<TD nowrap align=center> <span class="subhead">$qos_policy</span></TD>
+			<TD nowrap align=center> <span class="subhead">$qos_priority</span></TD>
+			<TD nowrap align=center> <span class="subhead">$lan_mark_name</span></TD>
+			<TD nowrap align=center> <span class="subhead">$qos_mac</span></TD>
+		</TR>
+<script>
+var p=0;
+var mac_show_num=0;
+if(attach_device_list != "")
+{
+	for(i=0, p=0;i<attach_array.length;i++, p++)
+	{
+		var each_info=attach_array[i].split(' ');
+		if(each_info.length>2)
+		{
+			attach_ip_array[p]=each_info[0];
+			attach_mac_array[p]=each_info[1];
+			if (each_info[2].length>0)
+				attach_name_array[p]=each_info[2];
+			else
+				attach_name_array[p]="----";
+		}
+		else
+		{
+			attach_ip_array[p]=each_info[0];
+			attach_mac_array[p]=each_info[1];
+			attach_name_array[p]="----";
+		}
+		if(attach_ip_array[p] == "<unknown>")
+			attach_ip_array[p]="&lt;$unknown_mark&gt;"
+		if(attach_mac_array[p] == "<unknown>")
+			attach_mac_array[p]="&lt;$unknown_mark&gt;"
+
+		if(attach_name_array[p] == "<unknown>" || attach_name_array[p] == "&lt;unknown&gt;" || attach_name_array[p] == "----" ){
+			for( t=0; t<deviceIP_name_num; t++){
+				var dev_name = eval ( 'deviceIP_name' + t );
+				var dev_name_array = dev_name.split(' ');
+				if( attach_ip_array[p] == dev_name_array[0] && dev_name_array[1] != "")
+					attach_name_array[p] = dev_name_array[1];
+			}
+		}
+
+		if( attach_mac_array[p].toUpperCase() == "<% cfg_get("macAddr") %>".toUpperCase().replace(/-/g,":")
+                        && (attach_name_array[p] == "<unknown>" || attach_name_array[p] == "&lt;unknown&gt;" || attach_name_array[p] == "----" ) )
+		{
+			attach_name_array[p] = "<% cfg_get("client_name") %>";
+		}
+		if(attach_name_array[p] == "<unknown>")
+			attach_name_array[p]="&lt;$unknown_mark&gt;"
+	}
+}
+
+if( p > 0 )
+{
+	for(j=0; j<p; j++)
+	{
+		mac_show_num++;
+		var def_name=attach_mac_array[j].substring(9,11)+attach_mac_array[j].substring(12,14)+attach_mac_array[j].substring(15,17);
+		attach_policy[j]='Pri_MAC_'+def_name;
+
+		if( mac_show_num%2== 0 )
+			document.write("<TR class=\"even_line\">");
+		else
+			document.write("<TR class=\"odd_line\">");
+		document.write('<TD nowrap align=center><input type="radio" name="MacSelect" value="'+j+'"  onclick="attached_qosmac_data_selected('+j+')"></TD><TD nowrap align=center><span class="subhead">'+attach_policy[j]+'</span></TD>');
+		document.write('<TD nowrap align=center> $qos_normal</TD>');
+		document.write('<TD nowrap align=center> '+attach_name_array[j]+'</TD><TD nowrap align=center> '+attach_mac_array[j]+'</TD></TR>');
+	}
+}
+</script>
+		</TABLE>
+	</TD>
+</TR>
+<TR id="blue_line_2" style="display:none"><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+<TR id="qos_dev_policy" style="display:none">
+	<TD nowrap>$qos_policy_for</TD>
+	<TD nowrap><input type="text" name="dev_poli_name" maxLength="60" size="16" onKeyPress="return getkey('ssid', event)" value=""></TD>
+</TR>
+<TR id="qos_dev_mac" style="display:none">
+	<TD nowrap>$qos_mac</TD>
+	<TD nowrap><input type="text" value="" name="mac" maxlength="60" size="16" onKekPress="return getkeya(event)"></TD>
+</TR>
+<TR id="qos_dev_name" style="display:none">
+	<TD nowrap>$lan_mark_name</TD>
+	<TD nowrap> <input type="text" name="dev_name" maxLength="60" size="16" onKeyPress="return getkey('hostname', event)" value=""></TD>
+</TR>
+<TR id="qos_dev_pri" style="display:none">
+	<TD nowrap>$qos_priority</TD>
+	<TD nowrap>
+		<select name="dev_priority">
+			<option value="0" >$qos_highest</option>
+			<option value="1" >$qos_high</option>
+			<option value="2" selected>$qos_normal</option>
+			<option value="3" >$qos_low</option>
+		</select>
+	</TD>
+</TR>
+<TR><TD colspan=2></TD></TR>
+<TR><TD colspan=2></TD></TR>
+<TR id="qos_button_1">
+<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if( master=="admin" )
+		document.write('<TD nowrap colspan=2 align=center><input class="add_bt" name="Add" type="submit" value="$add_mark" onClick="return add_rules();">&nbsp;&nbsp;<input class="common_bt" name="Reset" type="button" value="$green_qos_reset" onClick="reset_rules();"></TD>');
+	else
+		document.write('<TD nowrap colspan=2 align=center><input class="add1_bt" name="Add" type="submit" value="$add_mark" disabled>&nbsp;&nbsp;<input class="common1_bt" name="Reset" type="button" value="$green_qos_reset" disabled></TD>');
+</script>
+</TR>
+
+<TR id="qos_trust">
+	<TD nowrap><b>$qos_truDev:</b>$spacebar $spacebar $spacebar $spacebar $spacebar $spacebar &nbsp;<input type="text" value="" name="trust_mac" tabindex="-1" size="16" readonly onfocus="this.blur()" style="border:none"></TD>
+</TR>
+<TR><TD colspan=2></TD></TR>
+<TR id="qos_band">
+	<TD nowrap><b>$qos_bandwidth</b>$spacebar $spacebar $spacebar $spacebar $spacebar $spacebar $spacebar $spacebar
+		<select name="bandwidth_reser">
+			<option value="0" selected>50%</option>
+			<option value="1">60%</option>
+			<option value="2">70%</option>
+			<option value="3">80%</option>
+		</select>
+	</TD>
+</TR>
+<TR><TD colspan=2></TD></TR>
+<TR id="qos_wps">
+	<TD nowrap><b>$qqos_wps_fastlane</b></TD>
+</TR>
+<TR id="qos_wps1">
+	<TD nowrap>$spacebar<input type="radio" name="wps_fastlane" value="wps">$qqos_wps</TD>
+</TR>
+<TR id="qos_wps2">
+	<TD nowrap>$spacebar<input type="radio" name="wps_fastlane" value="fastlane">$qos_fast</TD>
+</TR>
+
+$bluebar
+<TR id="qos_rules">
+	<TD nowrap><b>$qos_rules</b></TD>
+</TR>
+<TR id="qos_show_rule">
+	<TD nowrap colspan=2>
+		<TABLE class="i_table" border="1">
+			<tr>
+				<th> $qqos_queue_highest</th>
+				<th> $qqos_queue_high </th>
+				<th> $qqos_queue_normal </th>
+				<th> $qqos_queue_low </th>
+			</tr>
+			<tr>
+				<td>
+					<div class="i_list" name="queue_list"></div>
+				</td>
+				<td>
+					<div class="i_list" name="queue_list"></div>
+				</td>
+				<td>
+					<div class="i_list" name="queue_list"></div>
+				</td>
+				<td>
+					<div class="i_list" name="queue_list"></div>
+				</td>
+			</tr>
+		</TABLE>
+	</TD>
+</TR>
+<TR><TD colspan=2></TD></TR>
+<TR id="qos_button_2">
+	<TD nowrap colspan=2 align=center>
+		<input class="edit_bt" type="submit" name="Edit" value="$edit_mark" onClick="return edit_qos_rules();">&nbsp;&nbsp;
+	<script>
+		var master="<% cfg_get("http_loginname") %>";
+		if( master=="admin" )
+			document.write('<input class="delete_bt" type="submit" name="Deleteone" value="$delete_mark" onClick="return delete_qos_rule();">&nbsp;&nbsp;<input class="delete_bt" type="submit" name="DeleteAll" value="$deleteall_mark" onClick="clear_qos_rules();">');
+		else
+			document.write('<input class="delete1_bt" type="submit" name="Deleteone" value="$delete_mark" disabled>&nbsp;&nbsp;<input class="delete1_bt" type="submit" name="DeleteAll" value="$deleteall_mark" disabled>');
+	</script>
+	</TD>
+</TR>
+<TR id="blue_line_4"><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+</TABLE>
+</div>
+<% help_box("0","_qos") %>
+</FORM>
+</BODY>
+</HTML>

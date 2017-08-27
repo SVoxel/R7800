@@ -228,6 +228,7 @@ static atomic_t ppp_unit_count = ATOMIC_INIT(0);
 static atomic_t channel_count = ATOMIC_INIT(0);
 
 int dod_skip_control_packet = 0;
+int dial_on_demand_dns= 0;
 #ifdef CONFIG_SYSCTL
 static struct ctl_table_header *dni_sysctl_header;
 #endif
@@ -950,6 +951,13 @@ static ctl_table dni_table[] = {
 		.mode           = 0644,
 		.proc_handler   = &proc_dointvec,
 	},
+	{
+		.procname       = "dial_on_demand_dns",
+		.data           = &dial_on_demand_dns,
+		.maxlen         = sizeof(int),
+		.mode           = 0666,
+		.proc_handler   = &proc_dointvec,
+	},
 	{0}
 };
 
@@ -1316,7 +1324,13 @@ ppp_send_frame(struct ppp *ppp, struct sk_buff *skb)
 	int actived = 1;
 
 	if (proto == PPP_IP && (dod_skip_control_packet != 0))
-		actived = session_actived_frame(skb->data);
+	{
+		//actived = session_actived_frame(skb->data);
+		if(dial_on_demand_dns == 1)
+			actived = 1;
+		else if(skb->mark == 0x2015)
+			actived = 0;
+	}
 
 	if (proto < 0x8000) {
 #ifdef CONFIG_PPP_FILTER
