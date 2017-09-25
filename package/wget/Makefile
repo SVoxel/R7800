@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2007-2015 OpenWrt.org
+# Copyright (C) 2007-2016 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=wget
-PKG_VERSION:=1.18
+PKG_VERSION:=1.19.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNU/$(PKG_NAME)
-PKG_MD5SUM:=af9ca95a4bb8ac4a9bf10aeae66fa5ec
+PKG_MD5SUM:=d30d82186b93fcabb4116ff513bfa9bd
 PKG_MAINTAINER:=Maxim Storchak <m.storchak@gmail.com>
 PKG_LICENSE:=GPL-3.0+
 PKG_LICENSE_FILES:=COPYING
@@ -25,7 +25,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/wget/Default
   SECTION:=net
   CATEGORY:=Network
-  DEPENDS:=+libpcre
+  DEPENDS:=+libpcre +zlib
   SUBMENU:=File Transfer
   TITLE:=Non-interactive network downloader
   URL:=http://www.gnu.org/software/wget/index.html
@@ -55,7 +55,6 @@ endef
 define Package/wget-nossl
 $(call Package/wget/Default)
   TITLE+= (without SSL support)
-  DEPENDS+= +zlib
   VARIANT:=nossl
 endef
 
@@ -87,14 +86,15 @@ endif
 define Package/wget/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/wget $(1)/usr/sbin/wget-ssl
-	(cd $(1)/usr/bin;  $(LN) /usr/sbin/wget-ssl wget)
-	(cd $(1)/usr/sbin; $(LN) /usr/sbin/wget-ssl wget)
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/wget $(1)/usr/bin/wget-ssl
+	(cd $(1)/usr/bin;  $(LN) /usr/bin/wget-ssl wget)
+	(cd $(1)/usr/sbin; $(LN) /usr/bin/wget-ssl wget)
 endef
 
 define Package/wget-nossl/install
-	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/wget $(1)/usr/sbin/wget-nossl
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/wget $(1)/usr/bin/wget-nossl
+	ln -sf wget-nossl $(1)/usr/bin/wget
 endef
 
 $(eval $(call BuildPackage,wget))
