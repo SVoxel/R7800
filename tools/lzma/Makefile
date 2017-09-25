@@ -11,7 +11,7 @@ PKG_VERSION:=4.65
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=http://downloads.openwrt.org/sources/
-PKG_MD5SUM:=434e51a018b4c8ef377bf81520a53af0
+PKG_HASH:=dcbdb5f4843eff638e4a5e8be0e2486a3c5483df73c70823618db8e66f609ec2
 
 HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/$(PKG_NAME)-$(PKG_VERSION)
 
@@ -21,8 +21,8 @@ UTIL_DIR=$(HOST_BUILD_DIR)/C/LzmaUtil
 ALONE_DIR=$(HOST_BUILD_DIR)/CPP/7zip/Compress/LZMA_Alone
 
 define Host/Compile
-	$(MAKE) -C $(UTIL_DIR) -f makefile.gcc LDFLAGS="$(HOST_STATIC_LINKING)"
-	$(MAKE) -C $(ALONE_DIR) -f makefile.gcc LDFLAGS="$(HOST_STATIC_LINKING)"
+	$(MAKE) -C $(UTIL_DIR) -f makefile.gcc
+	$(MAKE) -C $(ALONE_DIR) -f makefile.gcc
 endef
 
 define Host/Install
