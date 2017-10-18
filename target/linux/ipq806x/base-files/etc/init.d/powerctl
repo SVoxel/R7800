@@ -24,8 +24,8 @@ ipq806x_power_auto() {
 	# kraits cannot operate at 384MHz when L2 is at 1GHz.
 	#
 	# The impact on idle-state power with this change is about ~40-45mW.
-	echo "800000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
-	echo "800000" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
+	echo "1400000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+	echo "1400000" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
 
 	# Change sampling rate for frequency scaling decisions to 1s, from 10 ms
 	echo "1000000" > /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate
@@ -34,14 +34,14 @@ ipq806x_power_auto() {
 	echo 10 > /sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor
 
 	# Change the CPU load threshold above which frequency is up-scaled to
-	# turbo frequency,to 50%
-	echo 50 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold
-	echo 50 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold_any_cpu_load
-	echo 50 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold_multi_core
+	# turbo frequency,to 35%
+	echo 35 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold
+	echo 35 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold_any_cpu_load
+	echo 35 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold_multi_core
 
 	# Change the CPU load threshold below which frequency is down-scaled to
 	# 10% (down_threshold = up_threshold - down_differential)
-	echo 40 > /sys/devices/system/cpu/cpufreq/ondemand/down_differential
+	echo 30 > /sys/devices/system/cpu/cpufreq/ondemand/down_differential
 
 	# Set sync_freq and optimal_freq used for multicore scenarios to max
 	# freq
@@ -59,7 +59,9 @@ ipq806x_power_turbo() {
 	echo "1725000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_setspeed
 	echo "1725000" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_setspeed
 
-	echo 733000000 > /proc/sys/dev/nss/clock/current_freq
+	echo 0 > /proc/sys/dev/nss/clock/auto_scale
+	
+	echo 800000000 > /proc/sys/dev/nss/clock/current_freq
 }
 
 
