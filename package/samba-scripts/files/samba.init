@@ -1,6 +1,6 @@
 #!/bin/sh /etc/rc.common
 
-START=60
+START=86
 
 start()
 {
@@ -16,10 +16,10 @@ start()
     mkdir -p /var/log/samba
     #mount -t tmpfs tmpfs /home -o size=64K
     mkdir -p $SMB_CONF_DIR
-    cp -f /usr/config/smb.conf $SMB_CONF_DIR
-    cp -f /usr/config/lowcase.dat $SMB_CONF_DIR
-    cp -f /usr/config/upcase.dat $SMB_CONF_DIR
-    cp -f /usr/config/valid.dat $SMB_CONF_DIR
+    cp -f /etc/config/samba/smb.conf $SMB_CONF_DIR
+    cp -f /etc/config/samba/lowcase.dat $SMB_CONF_DIR
+    cp -f /etc/config/samba/upcase.dat $SMB_CONF_DIR
+    cp -f /etc/config/samba/valid.dat $SMB_CONF_DIR
     mkdir -p $SYS_CONF_DIR
     cp -f /usr/config/passwd $SYS_CONF_DIR
     cp -f /usr/config/group $SYS_CONF_DIR

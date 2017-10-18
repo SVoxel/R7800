@@ -127,7 +127,7 @@ static void reload_services(void)
 	if (ret == 0)
 		system("/usr/bin/killall -SIGHUP smbd");
 	else {
-		system("/bin/nice -n 19 /usr/sbin/smbd -D");
+		system("/usr/sbin/smbd -D");
 		system("/bin/sleep 5");
 		system("/bin/chmod 0666 /tmp/samba/smbpasswd");
 		system("/usr/sbin/update_user");
@@ -171,23 +171,23 @@ static void add_smbd_global(FILE *fp)
 			"  log file = /var/log.samba\n"
 			"  log level = 0\n"
 			"  max log size = 5\n"
+			"  obey pam restrictions = no\n"
+			"  disable spoolss = yes\n"
+			"  strict allocate = no\n"
+			"  host msdfs = no\n"
 			"  security = user\n"
-			"  guest ok = yes\n"
 			"  map to guest = Bad User\n"
 			"  encrypt passwords = yes\n"
 			"  pam password change = no\n"
 			"  null passwords = yes\n"
-			"  max protocol = NT1\n"
+			"  smb encrypt = disabled\n"
+			"  max protocol = SMB2\n"
 			"  passdb backend = smbpasswd\n"
 			"  smb passwd file = /etc/samba/smbpasswd\n"
+			"  enable core files = no\n"
+			"  deadtime = 30\n"
 			"  force directory mode = 0777\n"
 			"  force create mode = 0777\n"
-			"  max connections = 5\n"
-			"  obey pam restrictions = no\n"
-			"  disable spoolss = yes\n"
-			"  host msdfs = no\n"
-			"  strict allocate = No\n"
-			"  bind interfaces only = yes\n"
 			"  use sendfile = yes\n"
 			"  map archive = no\n"
 			"  map hidden = no\n"
@@ -199,7 +199,8 @@ static void add_smbd_global(FILE *fp)
 			"  level2 oplocks = yes\n"
 			"  kernel oplocks = no\n"
 			"  wide links = no\n"
-			"  socket options = SO_RCVBUF=131072 SO_SNDBUF=131072 IPTOS_LOWDELAY TCP_NODELAY\n"
+			"  min receivefile size = 16384\n"
+			"  socket options = IPTOS_LOWDELAY TCP_NODELAY\n"
 			"\n");
 }
 
@@ -260,8 +261,7 @@ static void add_smbd_share_info(FILE *fp, char *displayname, char *reader, char 
 	else
 		fprintf(fp, "[%s]\n"
 			"  path=%s\n"
-			"  browsable=yes\n"
-			"  strict allocate=yes\n",
+			"  browsable=yes\n",
 			displayname, path);
 
 
@@ -1079,7 +1079,7 @@ static void load_share_info(FILE *fp, char *diskname)
                         if (diskinfo->label == 'U')
                                 snprintf(share_name, sizeof(share_name), "USB_Storage");
                         else if (diskinfo->label == 's')
-				snprintf(share_name, sizeof(share_name), "External_Disk");
+				snprintf(share_name, sizeof(share_name), "USB_Storage");
                         else if (diskinfo->label == '0'){
 				snprintf(share_name, sizeof(share_name), "SD_Card");
 			}
@@ -1088,7 +1088,7 @@ static void load_share_info(FILE *fp, char *diskname)
 			else if(isdigit(diskinfo->label))
 				snprintf(share_name, sizeof(share_name),"SD_Card_%c", diskinfo->label);
 			else
-                                snprintf(share_name, sizeof(share_name),"External_Disk%d", 's' + 1 - diskinfo->label);
+                                snprintf(share_name, sizeof(share_name),"USB_Storage%d", 's' + 1 - diskinfo->label);
 
 			snprintf(value,sizeof(value),"%s*/*0*0*%s*%s*%s",share_name,diskinfo->vol_name,diskinfo->vendor,diskinfo->device_id);
 

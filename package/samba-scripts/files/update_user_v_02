@@ -28,8 +28,9 @@ echo "guest::10957:0:99999:7:::"                        >> $SMB_CONF_DIR/shadow
 # clear smbpasswd file
 echo -n ""	> $SMB_PASSWD_DIR
 
-/usr/bin/smbpasswd admin "$($config get http_passwd)"
-/usr/bin/smbpasswd guest ""
+(config get http_passwd; config get http_passwd) | /usr/sbin/smbpasswd root -a -s
+(config get http_passwd; config get http_passwd) | /usr/sbin/smbpasswd admin -a -s
+(echo -n ""; echo -n "") | /usr/sbin/smbpasswd guest -a -s
 
 readycloud_enable=`${config} get readycloud_enable`
 #readycloud_enable=1
@@ -41,15 +42,19 @@ while [ $i -le 9 ]; do
 	if [ "x$readycloud_user" != "x" ]; then
 		username=`echo $readycloud_user | awk '{print $1}'`
 		userpasswd=`echo $readycloud_user | awk '{print $3}'`
-		echo "$username:x:$id:" >> $SMB_CONF_DIR/group
-		(sleep 1; echo $userpasswd; sleep 1; echo $userpasswd) | /bin/adduser -G $username $username -H -h /tmp/ftpadmin -s /bin/ash
-		/usr/bin/smbpasswd $username $userpasswd
+#		echo "$username:x:$id:" >> $SMB_CONF_DIR/group
+#		(sleep 1; echo $userpasswd; sleep 1; echo $userpasswd) | /bin/adduser -G $username $username -H -h /tmp/ftpadmin -s /bin/ash
+#		/usr/bin/smbpasswd $username $userpasswd
+		echo "$username:$id:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:$userpasswd:[U          ]:LCT-00000001:" >> $SMB_PASSWD_DIR
 	else
 		break;
 	fi
 	let i=$i+1
 	let id=$id+1
 # admin permission for cloud user
-sed -i "s/$username\:x\:$id/$username\:x\:0/g" $SMB_CONF_DIR/passwd
+#sed -i "s/$username\:x\:$id/$username\:x\:500/g" $SMB_CONF_DIR/passwd
 done
 fi
+
+# Root permission for admin
+# sed -i "s/admin\:x\:500/admin\:x\:0/g" $SMB_CONF_DIR/passwd

@@ -11,7 +11,7 @@ add_smb_global()
 	echo -n " interfaces = br0 "  >> $SMB_CONF
 	br0ip=`config get lan_ipaddr`
 	echo $br0ip >>  $SMB_CONF	
-	cat /usr/config/smb.conf  >> $SMB_CONF
+	cat /etc/config/samba/smb.conf  >> $SMB_CONF
 }
 
 process_group()
