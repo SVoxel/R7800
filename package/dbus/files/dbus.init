@@ -13,5 +13,5 @@ start() {
 }
 
 stop() {
-	service_stop /usr/sbin/dbus-daemon && rm $SERVICE_PID_FILE
+	service_stop /usr/sbin/dbus-daemon
 }
