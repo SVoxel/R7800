@@ -1,8 +1,9 @@
 #!/bin/sh
 # Shell script compatibility wrappers for /sbin/uci
 #
+# Copyright (c) 2013 The Linux Foundation. All rights reserved.
 # Copyright (C) 2008-2010  OpenWrt.org
-# Copyright (C) 2008  Felix Fietkau <nbd@nbd.name>
+# Copyright (C) 2008  Felix Fietkau <nbd@openwrt.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -83,6 +84,15 @@ uci_set() {
 	local VALUE="$4"
 
 	/sbin/uci ${UCI_CONFIG_DIR:+-c $UCI_CONFIG_DIR} set "$PACKAGE.$CONFIG.$OPTION=$VALUE"
+}
+
+uci_add_list() {
+	local PACKAGE="$1"
+	local CONFIG="$2"
+	local OPTION="$3"
+	local VALUE="$4"
+
+	/sbin/uci ${UCI_CONFIG_DIR:+-c $UCI_CONFIG_DIR} add_list "$PACKAGE.$CONFIG.$OPTION=$VALUE"
 }
 
 uci_get_state() {

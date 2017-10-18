@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2007-2015 OpenWrt.org
+# Copyright (C) 2007-2017 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -9,12 +9,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=util-linux
-PKG_VERSION:=2.30.1
+PKG_VERSION:=2.30.2
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_SOURCE_URL:=@KERNEL/linux/utils/$(PKG_NAME)/v2.30.1
-PKG_MD5SUM:=5e5ec141e775efe36f640e62f3f8cd0d
+PKG_SOURCE_URL:=@KERNEL/linux/utils/$(PKG_NAME)/v2.30.2
+PKG_MD5SUM:=23a5dce0030144a42676b92310026bac
 
 PKG_LICENSE:=GPL-2.0
 PKG_LICENSE_FILES:=COPYING getopt/COPYING libblkid/COPYING libmount/COPYING Documentation/licenses/COPYING.GPLv2 Documentation/licenses/COPYING.LGPLv2.1 libuuid/COPYING Documentation/licenses/COPYING.BSD-3
@@ -430,6 +430,16 @@ define Package/swap-utils/description
  contains: mkswap, swaplabel, swapon, swapoff
 endef
 
+define Package/taskset
+$(call Package/util-linux/Default)
+  TITLE:=Core utilities for embedded Linux
+  SUBMENU=schedutils
+endef
+
+define Package/taskset/description
+ Retrieve or set a processes's CPU affinity.
+endef
+
 define Package/uuidd
 $(call Package/util-linux/Default)
   TITLE:=UUID generation daemon
@@ -656,6 +666,11 @@ define Package/swap-utils/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/.libs/swap{on,off} $(1)/usr/sbin/
 endef
 
+define Package/taskset/install
+	$(INSTALL_DIR) $(1)/usr/sbin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/taskset $(1)/usr/sbin/
+endef
+
 define Package/uuidd/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/.libs/uuidd $(1)/usr/sbin/
@@ -713,6 +728,7 @@ $(eval $(call BuildPackage,script-utils))
 $(eval $(call BuildPackage,setterm))
 $(eval $(call BuildPackage,sfdisk))
 $(eval $(call BuildPackage,swap-utils))
+$(eval $(call BuildPackage,taskset))
 $(eval $(call BuildPackage,uuidd))
 $(eval $(call BuildPackage,uuidgen))
 $(eval $(call BuildPackage,wall))
