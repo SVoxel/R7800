@@ -17,7 +17,7 @@
 
 AM_CFLAGS = -Wall -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 @STATIC_CFLAGS@
 
-SUBDIRS=po
+SUBDIRS=
 
 sbin_PROGRAMS = minidlnad
 check_PROGRAMS = testupnpdescgen
