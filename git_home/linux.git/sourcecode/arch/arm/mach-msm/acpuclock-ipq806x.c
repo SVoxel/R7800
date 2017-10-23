@@ -107,9 +107,9 @@ static struct msm_bus_scale_pdata bus_scale_data __initdata = {
  * These are based on +/-5% Margin on the VDD_APCx that is advertised in our Datasheet across Temperature
  */
 static struct l2_level l2_freq_tbl[] __initdata = {
-	[0] = { {  384000, PLL_8, 0, 0x00 }, 1100000, 1100000, 4 },
-	[1] = { { 1000000, HFPLL, 1, 0x28 }, 1100000, 1100000, 4 },
-	[2] = { { 1200000, HFPLL, 1, 0x30 }, 1150000, 1150000, 5 },
+	[0] = { {  384000, PLL_8, 0, 0x00 }, 1100000, 1100000, BW_NOMINAL },
+	[1] = { { 1000000, HFPLL, 1, 0x28 }, 1100000, 1100000, BW_NOMINAL },
+	[2] = { { 1200000, HFPLL, 1, 0x30 }, 1150000, 1150000, BW_TURBO },
 	{ }
 };
 

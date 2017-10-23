@@ -47,6 +47,8 @@
 
 #define SECCLKAGD		BIT(4)
 
+#define KRAIT_BW_THRESHOLD	1000000
+
 static DEFINE_MUTEX(driver_lock);
 static DEFINE_SPINLOCK(l2_lock);
 
@@ -626,7 +628,10 @@ static int acpuclk_krait_set_rate(int cpu, unsigned long rate,
 		disable_l2_regulators();
 
 	/* Update bus bandwith request. */
-	set_bus_bw(drv.l2_freq_tbl[tgt_l2_l].bw_level);
+	if (rate > KRAIT_BW_THRESHOLD)
+		set_bus_bw(BW_TURBO);
+	else
+		set_bus_bw(BW_NOMINAL);
 
 	/* Drop VDD levels if we can. */
 	decrease_vdd(cpu, &vdd_data, reason);
