@@ -15,12 +15,12 @@ binutils-2.29.1.tar.bz2
 bison-3.0.4.tar.xz
 bridge-utils-1.6.tar.gz
 confuse-3.2.1.tar.xz
-curl-7.55.1.tar.bz2
+curl-7.56.1.tar.bz2
 dbus-1.10.4.tar.gz
 dnscrypt-proxy-1.9.5.tar.bz2
 dropbear-2017.75.tar.bz2
-e2fsprogs-1.43.6.tar.gz
-ethtool-4.11.tar.xz
+e2fsprogs-1.43.7.tar.gz
+ethtool-4.13.tar.xz
 expat-2.2.4.tar.bz2
 flac-1.3.2.tar.xz
 flex-2.6.4.tar.gz
@@ -38,6 +38,7 @@ jq-1.5.tar.gz
 json-c-0.12.1-nodoc.tar.gz
 libcrypto++_5.6.4.orig.tar.xz
 libevent-2.0.22-stable.tar.gz
+libevent-release-1.4.15-stable.tar.gz
 libexif-0.6.21.tar.bz2
 libgcrypt-1.6.6.tar.bz2
 libgpg-error-1.27.tar.bz2
@@ -55,8 +56,8 @@ lz4-1.8.0.tar.gz
 lzo-2.10.tar.gz
 m4-1.4.18.tar.xz
 mklibs_0.1.35.tar.gz
-mm-common-0.9.10.tar.xz
-mp707-1.0.1-20160617.tar.bz2
+mm-common-0.9.11.tar.xz
+mp707-1.0.2-20171025.tar.bz2
 mpc-1.0.3.tar.gz
 mpfr-3.1.6.tar.xz
 mtd-utils-1.5.2-aea36417067dade75192bafa03af70b6eb2677b1.tar.gz
@@ -64,11 +65,11 @@ mtd-utils-1.5.2.tar.gz
 mxml-2.10.tar.gz
 ncurses-6.0.tar.gz
 openssl-1.0.2l.tar.gz
-openvpn-2.4.3.tar.xz
 openvpn-2.4.4.tar.xz
 p0f-3.09b.tgz
-pkg-config-0.29.1.tar.gz
+pkg-config-0.29.2.tar.gz
 popt-1.16.tar.gz
+qca-wifi-fw-QCA9984_hw_1-CNSS.BL.3.0.2-00068-S-1.59256.1.tar.bz2
 quilt-0.65.tar.gz
 samba-3.6.25.tar.gz
 scons-2.5.1.tar.gz
@@ -84,7 +85,7 @@ unzip60.tar.gz
 usb-modeswitch-data-20150115.tar.bz2
 usbmode-2014-08-26-993a9a542791953c4804f7ddbb3a07756738e37a.tar.gz
 util-linux-2.30.2.tar.xz
-wget-1.19.1.tar.xz
+wget-1.19.2.tar.gz
 xz-5.2.3.tar.bz2
 zip30.tar.gz
 zlib-1.2.11.tar.gz
