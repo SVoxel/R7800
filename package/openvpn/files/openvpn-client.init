@@ -47,7 +47,7 @@ start() {
 	fi
 
 	# Start OpenVPN client
-	$PROG --writepid $PID_FILE --log-append $LOG_FILE --config $OVPN_CLIENT_CONF --script-security 2 --up /etc/openvpn/ovpnclient-up.sh --down /etc/openvpn/ovpnclient-down.sh --daemon
+	/usr/sbin/taskset -c 1 $PROG --writepid $PID_FILE --log-append $LOG_FILE --config $OVPN_CLIENT_CONF --script-security 2 --up /etc/openvpn/ovpnclient-up.sh --down /etc/openvpn/ovpnclient-down.sh --daemon
 	echo "Please wait..."
 	sleep 20
 	ifconfig | grep -q tun0

@@ -301,10 +301,10 @@ start() {
 	net-wall start
 
 	# Start TAP server
-	$PROG $OPENVPN_TAP_CONF_FILE &
+	/usr/sbin/taskset -c 0 $PROG $OPENVPN_TAP_CONF_FILE &
 
 	# Start TUN server
-	$PROG $OPENVPN_TUN_CONF_FILE &
+	/usr/sbin/taskset -c 1 $PROG $OPENVPN_TUN_CONF_FILE &
 
 	/usr/sbin/wget -T 10 http://www.speedtest.net/api/country -O /tmp/openvpn/server_location
 }
