@@ -7,11 +7,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=pkg-config
-PKG_VERSION:=0.29.1
+PKG_VERSION:=0.29.2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://pkgconfig.freedesktop.org/releases/
-PKG_MD5SUM:=f739a28cae4e0ca291f82d1d41ef107d
+PKG_HASH:=6fc69c01688c9458a57eb9a1664c9aba372ccda420a02bf4429fe610e7e7d591
 
 HOST_BUILD_PARALLEL:=1
 
