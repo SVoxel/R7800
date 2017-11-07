@@ -68,8 +68,8 @@ define Package/samba36-server/description
  to as the LanManager or Netbios protocol.
 endef
 
-TARGET_CFLAGS:=-O3 -pipe -mcpu=cortex-a15 -mfpu=neon-vfpv4 -mtune=cortex-a15 \
-		-mfloat-abi=softfp -fhonour-copts \
+TARGET_CFLAGS:=-O3 -pipe -mcpu=cortex-a15 -mfpu=neon-vfpv4 -funsafe-math-optimizations \
+		-mtune=cortex-a15 -mfloat-abi=softfp -fhonour-copts \
 		-DMAX_DEBUG_LEVEL=$(CONFIG_PACKAGE_SAMBA_MAX_DEBUG_LEVEL) \
 		-D__location__=\\\"\\\" -ffunction-sections -fdata-sections
 TARGET_LDFLAGS += -Wl,--gc-sections

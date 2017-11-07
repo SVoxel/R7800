@@ -113,6 +113,7 @@ static void reload_services(void)
 	if (!has_usb_storage) {
 		system("/usr/bin/killall smbd > /dev/null 2>&1");
 		system("/usr/bin/killall nmbd > /dev/null 2>&1");
+		system("/usr/sbin/taskset -p 3 `/bin/pidof usb-storage` > /dev/null 2>&1");
 		system("/sbin/cmdftp stop");
 		goto outer;
 	}
@@ -124,13 +125,15 @@ static void reload_services(void)
 	/* Sync with locking file, and wait 1s to not miss SIGUP for `smbd` */
 	sleep(1);
 	ret = system("/bin/pidof smbd > /dev/zero 2>&1");
-	if (ret == 0)
+	if (ret == 0) {
 		system("/usr/bin/killall -SIGHUP smbd");
-	else {
-		system("/usr/sbin/smbd -D");
+		system("/usr/sbin/taskset -p 3 `/bin/pidof usb-storage` > /dev/null 2>&1");
+	} else {
+		system("/usr/sbin/taskset -c 1 /usr/sbin/smbd -D > /dev/null 2>&1");
+		system("/usr/sbin/taskset -p 1 `/bin/pidof usb-storage` > /dev/null 2>&1");
 		system("/bin/sleep 5");
 		system("/bin/chmod 0666 /tmp/samba/smbpasswd");
-		system("/usr/sbin/update_user");
+		system("/usr/sbin/update_user > /dev/null 2>&1");
 	}
 
 	/* NETBIOS Name */
@@ -200,7 +203,7 @@ static void add_smbd_global(FILE *fp)
 			"  kernel oplocks = no\n"
 			"  wide links = no\n"
 			"  min receivefile size = 16384\n"
-			"  socket options = IPTOS_LOWDELAY TCP_NODELAY\n"
+			"  socket options = IPTOS_LOWDELAY TCP_NODELAY SO_KEEPALIVE SO_RCVBUF=131072 SO_SNDBUF=131072\n"
 			"\n");
 }
 
