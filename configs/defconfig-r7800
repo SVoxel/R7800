@@ -2232,8 +2232,9 @@ CONFIG_PACKAGE_unzip=y
 #
 # database
 #
-CONFIG_PACKAGE_redis-cli=y
-CONFIG_PACKAGE_redis-server=y
+# CONFIG_PACKAGE_redis-cli is not set
+# CONFIG_PACKAGE_redis-serveris not set
+CONFIG_PACKAGE_redis=y
 # CONFIG_PACKAGE_sqlite3-cli is not set
 
 #
