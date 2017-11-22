@@ -1,7 +1,7 @@
 #!/bin/sh
 
 version=`cat /cloud_version`
-cloud_url=http://ownweb.eu/Downloads/R7800-Voxel-firmware/ReadyCLOUD/readygeniecloud-r7800new-20161026-01.tar.gz
+cloud_url=http://www.voxel-firmware.com/Downloads/Voxel/R7800-Voxel-firmware/ReadyCLOUD/readygeniecloud-r7800new2-20170914-01.tar.gz
 config=/bin/config
 sleep_time_1=60
 sleep_time_2=300
@@ -24,15 +24,26 @@ start() {
 		sleep 2
 		readycloud_enable=$(/bin/config get readycloud_enable)
 		if [ "$readycloud_enable" = "1" ]; then
-			readycloud_user_admim="$(/bin/config get readycloud_user_admin)"
+			readycloud_user_admin="$(/bin/config get readycloud_user_admin)"
 			readycloud_user_passsword="$(/bin/config get readycloud_user_password)"
-			./opt/rcagent/scripts/register.sh $readycloud_user_admim $readycloud_user_passsword
+			/opt/rcagent/scripts/register.sh $readycloud_user_admin $readycloud_user_passsword
 		fi
 	}
 }
 
 uninstall() {
-	[ -s /opt/filelist ] && cat /opt/filelist | xargs rm -f
+	[ -s /opt/filelist ] && cat /opt/filelist | xargs /bin/rm -f
+	if [ -f /opt/dirlist ]; then
+		/bin/mv -f /opt/dirlist /tmp/cloud_dirlist
+		while read line; do
+			/bin/rmdir $line
+		done < /tmp/cloud_dirlist
+		if [ -d /opt ]; then
+			/bin/rmdir /opt
+		fi
+	fi
+	/bin/rm -f /tmp/cloud_dirlist
+	/bin/rm -f /tmp/.cloud_updated
 }
 
 checkversion() {
@@ -44,24 +55,32 @@ backup() {
 	[ -s /overlay/opt/filelist ] || return 1
 	while read file; do
 		target="/tmp/clouddir$(dirname $file)"
-		mkdir -p $target
-		cp -f $file $target
+		/bin/mkdir -p $target
+		/bin/cp -f $file $target
 	done < /overlay/opt/filelist
 }
 
 restore() {
 	[ -d /tmp/clouddir ] || return 1
-	cp -fpR /tmp/clouddir/overlay/* /overlay
-	rm -rf /tmp/clouddir
+	/bin/cp -fpR /tmp/clouddir/overlay/* /overlay
+	/bin/rm -rf /tmp/clouddir
 }
 
 install_local() {
-	wget --no-check-certificate -T 10 $cloud_url -O /tmp/readygeniecloud-r7800new-20161026-01.tar.gz
-	tar -zxvf /tmp/readygeniecloud-r7800new-20161026-01.tar.gz -C /
-	rm -f /tmp/readygeniecloud-r7800new-20161026-01.tar.gz
-	echo 20161026 > /opt/version
+        [ -f /opt/version ] && return 1
+	/usr/bin/wget --no-check-certificate -T 10 $cloud_url -O /tmp/readygeniecloud-r7800new2-20170914-01.tar.gz
+	/bin/mkdir /tmp/clouddir
+	tar xzf /tmp/readygeniecloud-r7800new2-20170914-01.tar.gz -C /tmp/clouddir
+	echo readygeniecloud-r7800new2-20170914-01.tar.gz > /tmp/clouddir/opt/version
+	touch /tmp/clouddir/opt/filelist
+	find /tmp/clouddir -type f | sed 's/\/tmp\/clouddir/\/overlay/' > /tmp/clouddir/opt/filelist
+	find /tmp/clouddir/opt -type d | sed 's/\/tmp\/clouddir/\/overlay/' | sort -r > /tmp/clouddir/opt/dirlist
+	/bin/cp -fpR /tmp/clouddir/* /
+	/bin/rm -f /tmp/cloud_info
+	/bin/rm -f /tmp/cloud.tar.gz
+	/bin/rm -rf /tmp/clouddir
 	sed '2s/^/source \/etc\/profile\n/' /opt/rcagent/run_server.sh > /tmp/run_server.sh
-	cp /tmp/run_server.sh /opt/rcagent/run_server.sh
+	/bin/cp /tmp/run_server.sh /opt/rcagent/run_server.sh
 
 	start
 }
@@ -86,16 +105,16 @@ update() {
 	echo "start to get info from ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/"
 	retry_count=0
 	while [ 1 ]; do
-		curl ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/ 2>/dev/null | grep readygeniecloud-r7800new-*-.*.tar.gz > /tmp/cloud_info
+		curl ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/ 2>/dev/null | grep readygeniecloud-r7800new2-*-.*.tar.gz > /tmp/cloud_info
 		[ -s /tmp/cloud_info ] && break
 		echo "cannot access ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/ or don't find readygeniecloud tarball with version $version"
 		dynamic_sleep
 	done
 	fullversion=`tail -1 /tmp/cloud_info | awk '{print $9}'`
 	if [ -f /opt/version -a "x$(cat /opt/version)" = "x$fullversion" ]; then
-		rm -f /tmp/cloud_info
+		/bin/rm -f /tmp/cloud_info
 		touch /tmp/.cloud_updated
-		rm -f $PID_file
+		/bin/rm -f $PID_file
 		echo "the readygeniecloud on update server is same as on R/W filesystem"
 		start
 		return 1
@@ -110,24 +129,25 @@ update() {
 		dynamic_sleep
 	done
 	uninstall
-	mkdir /tmp/clouddir
-	tar xfz /tmp/cloud.tar.gz -C /tmp/clouddir
+	/bin/mkdir /tmp/clouddir
+	tar xzf /tmp/cloud.tar.gz -C /tmp/clouddir
 	echo $fullversion > /tmp/clouddir/opt/version
 	touch /tmp/clouddir/opt/filelist
 	find /tmp/clouddir -type f | sed 's/\/tmp\/clouddir/\/overlay/' > /tmp/clouddir/opt/filelist
-	cp -fpR /tmp/clouddir/* /
-	rm -f /tmp/cloud_info
-	rm -f /tmp/cloud.tar.gz
-	rm -rf /tmp/clouddir
+	find /tmp/clouddir/opt -type d | sed 's/\/tmp\/clouddir/\/overlay/' | sort -r > /tmp/clouddir/opt/dirlist
+	/bin/cp -fpR /tmp/clouddir/* /
+	/bin/rm -f /tmp/cloud_info
+	/bin/rm -f /tmp/cloud.tar.gz
+	/bin/rm -rf /tmp/clouddir
 	touch /tmp/.cloud_updated
 	# add newline "source /etc/profile" in file /opt/rcagent/run_server.sh
 	sed '2s/^/source \/etc\/profile\n/' /opt/rcagent/run_server.sh > /tmp/run_server.sh
-	cp /tmp/run_server.sh /opt/rcagent/run_server.sh
+	/bin/cp /tmp/run_server.sh /opt/rcagent/run_server.sh
 
 	echo $fullversion | cut -d - -f 3 > /cloud_version
 	echo "install ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/$fullversion to R/W filesystem successfully"
 	start
-	rm -f $PID_file
+	/bin/rm -f $PID_file
 }
 
 case "$1" in
@@ -146,5 +166,7 @@ case "$1" in
 	update)
 	update
 	;;
+	uninstall)
+	uninstall
+	;;
 esac
-

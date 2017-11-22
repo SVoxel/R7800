@@ -21,7 +21,7 @@ dnscrypt-proxy-1.9.5.tar.bz2
 dropbear-2017.75.tar.bz2
 e2fsprogs-1.43.7.tar.gz
 ethtool-4.13.tar.xz
-expat-2.2.4.tar.bz2
+expat-2.2.5.tar.bz2
 flac-1.3.2.tar.xz
 flex-2.6.4.tar.gz
 gcc-4.8.5.tar.bz2
@@ -46,11 +46,11 @@ libiconv-1.11.1.tar.gz
 libnfnetlink-1.0.1.tar.bz2
 libogg-1.3.2.tar.xz
 libsodium-1.0.15.tar.gz
-libubox-2017-09-29-632688e8.tar.xz
+libubox-2017-10-06-729f47fd.tar.xz
 libusb-1.0.21.tar.bz2
 libusb-compat-0.1.5.tar.bz2
 libvorbis-1.3.5.tar.xz
-libxml2-2.9.6.tar.gz
+libxml2-2.9.7.tar.gz
 lua-5.1.5.tar.gz
 lz4-1.8.0.tar.gz
 lzo-2.10.tar.gz
@@ -64,7 +64,7 @@ mtd-utils-1.5.2-aea36417067dade75192bafa03af70b6eb2677b1.tar.gz
 mtd-utils-1.5.2.tar.gz
 mxml-2.10.tar.gz
 ncurses-6.0.tar.gz
-openssl-1.0.2l.tar.gz
+openssl-1.0.2m.tar.gz
 openvpn-2.4.4.tar.xz
 p0f-3.09b.tgz
 pkg-config-0.29.2.tar.gz
@@ -74,12 +74,12 @@ quilt-0.65.tar.gz
 samba-3.6.25.tar.gz
 scons-2.5.1.tar.gz
 sed-4.4.tar.xz
-sqlite-autoconf-3200100.tar.gz
+sqlite-autoconf-3210000.tar.gz
 sysstat-11.0.4.tar.xz
 tar-1.29.tar.bz2
 transmission-2.92V+git.tar.gz
 u-boot-2014.10.tar.bz2
-ubus-2017-02-18-34c6e818.tar.xz
+ubus-2017-11-06-24ffe9b5.tar.xz
 uci-2017-09-29-5ad59ad4.tar.xz
 unzip60.tar.gz
 usb-modeswitch-data-20150115.tar.bz2
