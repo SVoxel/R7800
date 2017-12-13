@@ -357,6 +357,7 @@ disable_qcawifi() {
 	return 0
 }
 
+
 enable_qcawifi() {
 	local device="$1"
 	echo "$DRIVERS: enable radio $1" >/dev/console
@@ -1194,6 +1195,12 @@ enable_qcawifi() {
 		config_get_bool rrm "$vif" rrm
 		[ -n "$rrm" ] && iwpriv "$ifname" rrm "$rrm"
 
+		config_get_bool nrshareflag "$vif" nrshareflag
+		[ -n "$nrshareflag" ] && iwpriv "$ifname" nrshareflag "$nrshareflag"
+
+		config_get_bool scanentryage "$vif" scanentryage
+		[ -n "$scanentryage" ] && iwpriv "$ifname" scanentryage "$scanentryage"
+
 		config_get_bool rrmslwin "$vif" rrmslwin
 		[ -n "$rrmslwin" ] && iwpriv "$ifname" rrmslwin "$rrmslwin"
 
@@ -1382,6 +1389,11 @@ enable_qcawifi() {
 			}
 		fi
 
+        #because hostapd_setup_vif will change the value of vifs 
+        #so I can just save the value and reset it after that function
+        old_temp_vif=$vif
+        old_temp_vifs=$vifs
+
 		case "$mode" in
 			ap|wrap|ap_monitor|ap_smart_monitor|mesh|ap_lp_iot)
 
@@ -1430,6 +1442,9 @@ enable_qcawifi() {
 					}
 				fi
 		esac
+
+        vif=$old_temp_vif
+        vifs=$old_temp_vifs
 
 		[ -z "$bridge" -o "$isolate" = 1 -a "$mode" = "wrap" ] || {
 			start_net "$ifname" "$net_cfg"
@@ -1518,8 +1533,7 @@ enable_qcawifi() {
 		isup=`ifconfig $ifname | grep UP`
 		no_assoc=`iwconfig $ifname | grep Not-Associated`
 		if [ "$isup" != "" -a "$no_assoc" != "" -a "$mode" != "sta" ]; then
-			ifconfig "$ifname" down
-			ifconfig "$ifname" up
+		    {	sleep 3;ifconfig "$ifname" down;sleep 1;ifconfig "$ifname" up; } &
 		fi
 	done
 
@@ -1789,16 +1803,28 @@ wifiradio_qcawifi()
                             161) chan="149 + 153 + 157 + 161(p)";;
                         esac
                     elif [ -n "$is_80_80" ]; then
+                        # Per "R7800 channel combination for 160Mhz_20170921.docx" conclude:
+                        freq_5210="36 + 40 + 44 + 48"
+                        freq_5690="132 + 136 + 140 + 144"
+                        freq_5775="149 + 153 + 157 + 161"
                         case "${p_chan}" in
-                            132) chan="132(p) + 136 + 140 + 144 + 149 + 153 + 157 + 161" ;;
-                            136) chan="132 + 136(p) + 140 + 144 + 149 + 153 + 157 + 161" ;;
-                            140) chan="132 + 136 + 140(p) + 144 + 149 + 153 + 157 + 161" ;;
-                            144) chan="132 + 136 + 140 + 144(p) + 149 + 153 + 157 + 161" ;;
-                            149) chan="132 + 136 + 140 + 144 + 149(p) + 153 + 157 + 161" ;;
-                            153) chan="132 + 136 + 140 + 144 + 149 + 153(p) + 157 + 161" ;;
-                            157) chan="132 + 136 + 140 + 144 + 149 + 153 + 157(p) + 161" ;;
-                            161) chan="132 + 136 + 140 + 144 + 149 + 153 + 157 + 161(p)" ;;
-                         esac
+                            36|40|44|48) 
+                                chan=$freq_5210
+                                freq1=5210 ;;
+                            132|136|140|144) 
+                                chan=$freq_5690
+                                freq1=5690 ;;
+                            149|153|157|161)
+                                chan=$freq_5775
+                                freq1=5775 ;;
+                        esac
+                        freq2=$(iwpriv $ifname get_cfreq2 | cut -d: -f2)
+                        if [ "$freq1" -lt "$freq2" ]; then
+                            eval "chan=\"$(echo $chan + \$freq_$freq2)\""
+                        else
+                            eval "chan=\"$(echo \$freq_$freq2 + $chan)\""
+                        fi
+                        chan=$(echo $chan | sed "s/${p_chan}/&(p)/")
                     elif [ -n "$is_160" ]; then
                         case "${p_chan}" in
                             36) chan="36(p) + 40 + 44 + 48 + 52 + 56 + 60 + 64" ;;
@@ -2131,6 +2157,28 @@ post_qcawifi() {
 				rm -f /var/run/wifi-wps-enhc-extn.conf
 				config_foreach setup_wps_enhc wifi-device
 			}
+
+			# Add netgear's VIE
+            if [ "x$(/bin/config get ap_mode)" = "x0" ]; then #router mode
+                wlanconfig ath1 vendorie add len 11 oui 00146c pcap_data 0801010110000000 ftype_map 18
+                wlanconfig ath0 vendorie add len 11 oui 00146c pcap_data 0801010110000000 ftype_map 18
+            fi
+            if [ "x$(/bin/config get ap_mode)" = "x1" ]; then #ap mode
+                wlanconfig ath1 vendorie add len 11 oui 00146c pcap_data 0801020110000000 ftype_map 18
+                wlanconfig ath0 vendorie add len 11 oui 00146c pcap_data 0801020110000000 ftype_map 18
+            fi
+            # export record from /tmp/mdns_record and format it to /tmp/mdns_result_tmp
+			{
+				pidlist=`ps | grep 'mdnsrecord' | cut -b1-5`
+				for j in $pidlist
+				do
+					kill -9 $j
+				done
+				/usr/sbin/mdnsrecord &
+			}
+			pidlist=`ps | grep 'hyt_result_maintain' | cut -b1-5`
+			[ "x$pidlist" != "x" ] || /usr/share/udhcpd/hyt_result_maintain &
+
 		;;
 	esac
 }

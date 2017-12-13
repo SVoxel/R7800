@@ -289,8 +289,29 @@ int read_config(char *file)
 	fclose(in);
 	return 1;
 }
+#ifdef SUPPORT_OPTION_43
+void write_vie_lease(char* ip,char *mac,char *hostname)
+{
+    int i;
+    char mac_align[20];
+    char *s=mac_align;
+    mac+=3;       //first two byte is len and type
+    hostname+=2;   //first byte is len
+    for (i=0;i<6;i++){
 
+        s+=sprintf (s,"%02x",mac[i]);
+        if(i<5){
+            s+=sprintf (s,":");   
+        }
+    }
 
+  char cmd[512];
+    sprintf (cmd,"/usr/share/udhcpd/write_vie_lease  %s  %s  %s &",ip,mac_align,hostname);
+    system (cmd);
+
+    
+}
+#endif
 void write_leases(void)
 {
 	FILE *fp;

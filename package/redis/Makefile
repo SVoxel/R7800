@@ -1,12 +1,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=redis
-PKG_VERSION:=2.6.13
+PKG_VERSION:=2.6.17
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://redis.googlecode.com/files/
-PKG_MD5SUM:=c4be422013905c64af18b1ef140de21f
+PKG_MD5SUM:=918d74591e272e4419cba5beef67e995
 PKG_CAT:=zcat
 PKG_START_ORDER:=01
 

@@ -18,6 +18,9 @@ PKG_BUILD_DEPENDS:=libgd libwxwidgets
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -ffunction-sections -fdata-sections
+TARGET_LDFLAGS += -Wl,--gc-sections
+
 define Package/amule
   SECTION:=utils
   CATEGORY:=Network

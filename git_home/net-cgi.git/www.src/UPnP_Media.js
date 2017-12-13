@@ -8,10 +8,6 @@ function check_media(form)
 		form.media_server_tivo_flag.value="yes";
 	else
 		form.media_server_tivo_flag.value="no";	
-	if(form.enable_itunes.checked == true)
-                form.itunes_onoff.value="1";
-        else
-                form.itunes_onoff.value="0";	
 
 	check_name();
 

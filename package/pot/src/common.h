@@ -19,6 +19,10 @@
 #warning "POT: Not define macro FIRST_WIFISTATION_MAC_OFFSET, use default value - 2 block size + 1 page size"
 #define FIRST_WIFISTATION_MAC_OFFSET	(FIRST_NTP_TIME_OFFSET + NAND_FLASH_PAGESIZE)
 #endif
+#if !defined(FIRST_INTERNET_CONNECT_OFFSET)
+#warning "POT: Not define macro FIRST_INTERNET_CONNECT_OFFSET, use default value - 2 block size + 3 page size"
+#define FIRST_INTERNET_CONNECT_OFFSET	(FIRST_WIFISTATION_MAC_OFFSET + NAND_FLASH_PAGESIZE + NAND_FLASH_PAGESIZE )
+#endif
 
 #define dfp(fmt, arg...)	fprintf(stderr, "***(%s,%s,%d): "fmt, __FILE__, __func__, __LINE__, ##arg)
 
@@ -48,3 +52,4 @@ extern char *config_get(char *name);
 //extern int erase_block(char *mtd, int blk);
 extern int ntpst_func(int argc, char *argv[]);
 extern int stamac_func(int argc, char *argv[]);
+extern int netconn_func(int argc, char *argv[]);

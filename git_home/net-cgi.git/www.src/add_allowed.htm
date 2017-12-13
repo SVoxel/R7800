@@ -5,11 +5,13 @@
 <TABLE width=100% border=0 cellpadding=0 cellspacing=2>
 <TR>
 <script>
+var apply_flag = 0;
 var master="<% cfg_get("http_loginname") %>";
 if(master=="admin")
 	document.write('<TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'access_control.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onClick="return check_acc_add(document.forms[0], \'add\');"></TD>');
 else
 	document.write('<TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="button" name="Apply" id="apply" value="$apply_mark" disabled></TD>');
+window.onunload = function leavepage(){if(apply_flag == 0)top.back_flag=1;};
 </script>
 </TR>
 </TABLE>

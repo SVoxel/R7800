@@ -70,6 +70,11 @@ function checkpasswd(cf)
 		cf.hidden_enable_recovery.value="0";
 	}
 
+	cf.sysOldPasswd.value=$$.base64.encode(cf.sysOldPasswd.value);
+	cf.sysNewPasswd.value=$$.base64.encode(cf.sysNewPasswd.value);
+	cf.answer1.value=$$.base64.encode(cf.answer1.value);
+	cf.answer2.value=$$.base64.encode(cf.answer2.value);
+	cf.sysConfirmPasswd.value=cf.sysNewPasswd.value;
 	cf.submit();
 
 	return true;

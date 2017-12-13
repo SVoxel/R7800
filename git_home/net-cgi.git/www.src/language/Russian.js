@@ -238,34 +238,6 @@ bh_wanlan_conflict_info="Для предотвращения конфликта 
 bh_continue_mark="Продолжить"
 bh_same_server_wan_ip="Мой IP-адрес не должен совпадать с адресом сервера!"
 
-//readySHARE remote strings
-remote_share_head="ReadyCLOUD"
-ready_cloud_info="<p>ReadyCLOUD предоставляет удаленный доступ через Интернет к USB-устройству хранения данных, подключенному к USB-порту роутера. Для использования ReadyCLOUD необходимо иметь учетную запись ReadyCLOUD. Если у вас нет учетной записи ReadyCLOUD, <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/clien/index.html#page=access\">нажмите здесь</a>, затем выберите <b>Вход > Создать учетную запись</b>. </p><p><b>Настройка ReadyCLOUD</b></p><p><ol><li>Подключите USB-устройство хранения данных к USB-порту роутера.</li><li>Введите имя пользователя и пароль для ReadyCLOUD в поля, представленные ниже, затем нажмите кнопку <b>Регистрация</b>. Ваш роутер и USB-устройство зарегистрированы в ReadyCLOUD.</li><li> Посетите веб-страницу <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com\">http://readycloud.netgear.com</a>, нажмите 'Вход', введите имя пользователя и пароль для ReadyCLOUD, затем нажмите кнопку <b>Вход</b>.</li></ol></p><p>      Приложение ReadyCLOUD можно также использовать для обеспечения безопасного соединения между компьютером или мобильным устройством и USB-устройством хранения данных, подключенным к роутеру.<br>      <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/client/cloud_download.html\">Нажмите здесь</a> для загрузки приложения ReadyCLOUD.</p>"
-ready_share_info1="Функция ReadySHARE Cloud предоставляет удаленный доступ через Интернет к USB-накопителю, подключенному к USB-порту вашего роутера."
-how_setup_ready_share="Инструкции по настройке ReadySHARE Cloud"
-ready_share_step1="Шаг 1. Вам необходимо иметь учетную запись ReadySHARE Cloud. Если такая учетная запись у вас отсутствует,<a class='linktype' target='_blank' href='https://readyshare.netgear.com/site/index.jsp?pid=4&src=device'>нажмите здесь</a> для ее создания."
-ready_share_step2="Шаг 2. На этой странице введите имя пользователя и пароль ReadySHARE Cloud, чтобы зарегистрировать с вашей учетной записью роутер и подключенное к нему USB-устройство."
-ready_share_step3="Шаг 3. Снова войдите на web-сайт <a class='linktype' target='_blank' href='http://readyshare.netgear.com/'>http://readyshare.netgear.com/</a>, используя свои учетные данные. Вы увидите USB-устройство, подключенное к маршрутизатору."
-ready_share_set_note="<b>Примечание.</b> Без этой клиентской программы вы можете просматривать содержание USB-устройства, но не можете открывать или изменять файлы."
-ready_share_start="Зарегистрируйте роутер и USB-устройство на ReadyCLOUD"
-ready_share_get_account="Если у вас нет учетной записи ReadyCLOUD, <a class='linktype' target='_blank' href='http://readycloud.netgear.com/clien/index.html#page=access'>нажмите здесь</a> для ее создания"
-username="Имя пользователя"
-key_passphrase="Пароль"
-register="Регистрация"
-register_note="<b>Примечание.</b> Ваш роутер будет поддерживать непрерывное подключение к ReadyCLOUD до отмены регистрации."
-help_center="Центр справки"
-help_show_hide="Показать/Скрыть центр справки"
-
-resister_user="Этот роутер зарегистрирован на следующего пользователя ReadyCLOUD:"
-access_storage_method="Теперь вы можете войти на веб-сайт <a class='linktype' target='_blank' href='http://readycloud.netgear.com'>http://readycloud.netgear.com</a> с помощью учетной записи ReadyCLOUD для доступа к USB-устройству из любой точки сети."
-unregister_info="Нажмите <B>Отменить регистрацию</B>, чтобы зарегистрировать этот роутер на другую учетную запись ReadyCLOUD"
-unregister="Отменить регистрацию"
-
-result_register_ok="Регистрация успешно завершена"
-result_register_fail="Регистрация не выполнена. Проверьте ваше имя пользователя и пароль и повторите попытку."
-result_unreg_ok="Отмена регистрации успешно завершена"
-result_unreg_fail="Ошибка при отмене регистрации"
-
 //WIZ_sel_3g_adsl.htm
 bh_connection_mode="Выберите режим подключения"
 

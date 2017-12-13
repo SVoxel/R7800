@@ -37,6 +37,7 @@ var gui_region = "<% cfg_get("GUI_Region") %>";
 var browser_lang="<% get_browser_language() %>";
 var is_Mac_Win = detectOS();
 var have_wifi_flag = "<% get_have_wifi_flag() %>";
+var click_no = top.click_no_flag;
 if(have_wifi_flag != "0" && have_wifi_flag != "1")
 	have_wifi_flag = "1";
 

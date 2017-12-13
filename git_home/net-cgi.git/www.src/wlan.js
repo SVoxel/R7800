@@ -593,6 +593,10 @@ function setAChannel(channel)
 	{
 		tmp_array = ht160_array10;
 	}
+	else if(enable_ht160 == "1" && index == 11)
+	{
+		tmp_array = ht160_array11;
+	}
 	else if ( 1 == currentMode || 2 == currentMode || 7 == currentMode )
 	{
 		tmp_array = ht20_array[index];
@@ -618,7 +622,8 @@ function setAChannel(channel)
 			( dfs_australia_router_flag == 1 &&  index == 2 ) ||
 			( dfs_europe_router_flag == 1 &&  index == 4 ) ||
 			( dfs_japan_router_flag && index == 6 ) || index == 10 ) ||
-			( dfs_russia_router_flag && index == 19 ) )
+			( index == 11 ) ||
+			( dfs_russia_router_flag && index == 19 ) || index ==12)//India
 		{
 			if(currentMode == 9 && index == 21)//50244
 				if(tmp_array[i] == "60" || tmp_array[i] == "64")
@@ -1928,7 +1933,7 @@ var ht20_array = new Array(
 	new Array ( "36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)", "100(DFS)", "104(DFS)", "108(DFS)", "112(DFS)", "116(DFS)", "120(DFS)", "124(DFS)", "128(DFS)", "132(DFS)", "136(DFS)", "140(DFS)", "149", "153", "157", "161", "165" ), //9
 	new Array ( "36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)", "100(DFS)", "104(DFS)", "108(DFS)", "112(DFS)", "116(DFS)", "120(DFS)", "124(DFS)", "128(DFS)", "132(DFS)","136(DFS)", "140(DFS)", "149", "153", "157", "161", "165" ), //10
 	new Array ( "149", "153", "157", "161", "165" ), //11
-	new Array ( "36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)", "149", "153", "157", "161", "165" ), //12
+	new Array ( "36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)"), //12
 	new Array ( "36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)", "149", "153", "157", "161", "165" ), //13
 	new Array ( "" ), //14
 	new Array ( "149", "153", "157", "161", "165" ), //15
@@ -1952,7 +1957,7 @@ var ht40_array = new Array(
 	new Array ( "36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)", "100(DFS)", "104(DFS)", "108(DFS)", "112(DFS)", "116(DFS)", "120(DFS)", "124(DFS)", "128(DFS)", "132(DFS)", "136(DFS)", "149", "153", "157", "161" ), //9
 	new Array ( "36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)", "100(DFS)", "104(DFS)", "108(DFS)", "112(DFS)", "116(DFS)", "120(DFS)", "124(DFS)", "128(DFS)", "132(DFS)", "136(DFS)", "140(DFS)", "149", "153", "157", "161" ), //10
 	new Array ( "149", "153", "157", "161" ), //11
-	new Array ( "36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)", "149", "153", "157", "161" ), //12
+	new Array ( "36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)" ), //12
 	new Array ( "36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)", "149", "153", "157", "161" ), //13
 	new Array ( "" ), //14
 	new Array ( "149", "153", "157", "161" ), //15
@@ -1976,7 +1981,7 @@ var ht80_array = new Array(
 	new Array ( "36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)", "100(DFS)", "104(DFS)", "108(DFS)", "112(DFS)", "116(DFS)", "120(DFS)", "124(DFS)", "128(DFS)", "149", "153", "157", "161" ), //9
 	new Array ( "36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)", "100(DFS)", "104(DFS)", "108(DFS)", "112(DFS)", "116(DFS)", "120(DFS)", "124(DFS)", "128(DFS)", "132(DFS)", "136(DFS)", "140(DFS)", "149", "153", "157", "161" ), //10
 	new Array ( "149", "153", "157", "161" ), //11
-	new Array ( "36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)", "149", "153", "157", "161" ), //12
+	new Array ( "36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)" ), //12
 	new Array ( "36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)", "149", "153", "157", "161" ), //13
 	new Array ( "" ), //14
 	new Array ( "149", "153", "157", "161" ), //15
@@ -1988,3 +1993,4 @@ var ht80_array = new Array(
 	new Array ( "60", "64", "100(DFS)", "104(DFS)", "108(DFS)", "112(DFS)", "116(DFS)", "120(DFS)", "124(DFS)", "128(DFS)", "149", "153", "157", "161" ) //21
 );
 var ht160_array10 = new Array("36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)", "100(DFS)", "104(DFS)", "108(DFS)", "112(DFS)", "116(DFS)", "120(DFS)", "124(DFS)", "128(DFS)", "132(DFS)", "136(DFS)", "140(DFS)", "149", "153", "157", "161");
+var ht160_array11 = new Array("36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)", "149", "153", "157", "161" );

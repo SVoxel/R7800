@@ -1,0 +1,4 @@
+SAMBA_ERRORS_1 {
+	global:
+		*;
+};

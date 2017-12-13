@@ -943,7 +943,7 @@ static int setup_env(pool *p, cmd_rec *cmd, char *user, char *pass) {
   char *local_addr = pr_netaddr_get_ipstr(session.c->local_addr);
   struct in_addr lan_ip, wan_ip;
 
-  wan_ip = get_ipaddr((strcmp(config_get("wan_proto"), "dhcp") == 0) ? WAN_IFNAME : PPPOE_IFNAME);
+  wan_ip = get_ipaddr((strcmp(config_get("wan_proto"), "dhcp") == 0 || strcmp(config_get("wan_proto"), "static") == 0) ? WAN_IFNAME : PPPOE_IFNAME);
   lan_ip = get_ipaddr(LAN_IFNAME);
   pr_log_auth(PR_LOG_NOTICE, "local ipaddr:%s wan ipaddr:%s lan ipaddr:%s", local_addr, inet_ntoa(wan_ip), inet_ntoa(lan_ip));
 

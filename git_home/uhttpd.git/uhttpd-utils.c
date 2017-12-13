@@ -1137,7 +1137,9 @@ int is_router_domain_addr(char *httphost)
                 return 0;
         else if(strcasecmp(httphost, "readyshare")==0)
                 return 0;
-        else if(strcasecmp(httphost, config_get("lan_ipaddr"))==0)
+        else if(strcasecmp(httphost, "mywifiext.net")==0 || strcasecmp(httphost, "mywifiext.com")==0 || strcasecmp(httphost, "www.mywifiext.com")==0 || strcasecmp(httphost, "www.mywifiext.net")==0)
+		return 0;
+	else if(strcasecmp(httphost, config_get("lan_ipaddr"))==0)
                 return 0;
 	else if(config_match("endis_ddns","1") && strncasecmp(httphost,config_get("sysDNSHost"),strlen(config_get("sysDNSHost")))==0)
 		return 0;

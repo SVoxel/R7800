@@ -39,8 +39,13 @@ CONFIGURE_ARGS += \
 	--enable-static \
 	--enable-shared
 
+TARGET_CFLAGS += \
+	-ffunction-sections \
+	-fdata-sections
+
 TARGET_LDFLAGS += \
-	-lpthread
+	-lpthread \
+	-Wl,--gc-sections
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include/crypto++

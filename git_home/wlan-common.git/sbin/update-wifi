@@ -691,6 +691,13 @@ if [ "$_tmp_wlg_onoff" = "on" ]; then
     generate_puren "wlg"
     generate_doth "wlg"
     generate_disablecoext "wlg"
+    if [ "x$(config get enable_11k)" = "x1" ]; then
+        uci set wireless.wlg.rrm='1'
+        uci set wireless.wlg.nrshareflag='3'
+        uci set wireless.wlg.scanentryage='600'
+    else 
+        uci set wireless.wlg.rrm='0'
+    fi
     generate_security "wlg"
     generate_protocol_setting "wlg"
     generate_acl "wlg"
@@ -717,6 +724,13 @@ if [ "$_tmp_wla_onoff" = "on" ]; then
     generate_puren "wla"
     #generate_doth "wla"
     generate_disablecoext "wla"
+    if [ "x$(config get enable_11k)" = "x1" ]; then
+        uci set wireless.wla.rrm='1'
+        uci set wireless.wla.nrshareflag='3'
+        uci set wireless.wla.scanentryage='600'
+    else 
+        uci set wireless.wla.rrm='0'
+    fi
     generate_security "wla"
     generate_protocol_setting "wla"
     generate_acl "wla"

@@ -1,0 +1,43 @@
+#!/bin/sh
+
+start11k()
+{
+    #rrm=1 is enable ,rrm=0 is diable
+    #only enable should set shareflag and scan age
+    #if config default ,do nothing
+    if [ "x`config get enable_11k`" = "x1"  ]
+    then
+         /usr/sbin/iwpriv ath0 rrm 1
+         /usr/sbin/iwpriv ath1 rrm 1
+         /usr/sbin/iwpriv ath0 nrshareflag 3
+         /usr/sbin/iwpriv ath1 nrshareflag 3
+         /usr/sbin/iwpriv ath0 scanentryage 600
+         /usr/sbin/iwpriv ath1 scanentryage 600
+    elif [  "x`config get enable_11k`" = "x0"   ]
+    then
+         /usr/sbin/iwpriv ath0 rrm 0
+         /usr/sbin/iwpriv ath1 rrm 0
+    fi
+
+}
+
+enable11k()
+{
+    config set enable_11k=1
+    config commit
+    start11k    
+}
+
+disable11k()
+{
+    config set enable_11k=0
+    config commit
+    start11k
+}
+
+
+case "$1" in
+    enable) enable11k;;
+    disable) disable11k;;
+    start) start11k;;
+esac

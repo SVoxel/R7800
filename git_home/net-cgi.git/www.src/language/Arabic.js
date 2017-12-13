@@ -238,34 +238,6 @@ bh_wanlan_conflict_info="لتجنب التعارض مع موفر خدمة الإ
 bh_continue_mark="متابعة"
 bh_same_server_wan_ip="يجب ألا يكون عنوان IP الخاص بي هو نفس عنوان الخادم !"
 
-//readySHARE remote strings
-remote_share_head="ReadyCLOUD"
-ready_cloud_info="<p>تمنحك ميزة ReadyCLOUD إمكانية الوصول عن بُعد عبر الإنترنت إلى جهاز تخزين USB متصل بمنفذ USB الخاص بموجهك. لاستخدام ميزة ReadyCLOUD، يجب أن يكون لديك حساب ReadyCLOUD. إذا لم يكن لديك حساب ReadyCLOUD،‏<a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/clien/index.html#page=access\">فانقر هنا</a>، ثم انقر فوق <b>تسجيل الدخول > إنشاء حساب</b>. </p><p><b>لإعداد ميزة ReadyCLOUD</b></p><p><ol><li>قم بتوصيل جهاز تخزين USB بمنفذ USB الخاص بموجهك.</li><li>أدخل اسم مستخدم ReadyCLOUD وكلمة المرور في الحقول أدناه وانقر فوق الزر <b>تسجيل</b>. إن الموجه وجهاز USB مسجلان في ReadyCLOUD.</li><li> قم بزيارة <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com\">http://readycloud.netgear.com</a> وانقر فوق تسجيل الدخول وأدخل اسم مستخدم ReadyCLOUD وكلمة المرور وانقر فوق الزر <b>تسجيل الدخول</b>.</li></ol></p><p>      يمكنك أيضًا استخدام تطبيق ReadyCLOUD لإنشاء اتصال آمن بين الكمبيوتر أو الجهاز المحمول وجهاز تخزين USB الخاص بالموجه.<br>      <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/client/cloud_download.html\">انقر هنا</a> لتنزيل تطبيق ReadyCLOUD.</p>"
-ready_share_info1="تمنحك ميزة ReadySHARE Cloud إمكانية الوصول عن بعد عبر الإنترنت إلى جهاز تخزين USB متصل بمنفذ USB خاص بموجهك."
-how_setup_ready_share="كيفية إعداد ReadySHARE Cloud"
-ready_share_step1="Step 1: You need a ReadySHARE Cloud account. If you do not have one, <a class='linktype' target='_blank' href='https://readyshare.netgear.com/site/index.jsp?pid=4&src=device'>click here</a> to get one."
-ready_share_step2="الخطوة 2: في هذه الصفحة، أدخل اسم مستخدم وكلمة مرور ReadySHARE Cloud الخاصين بك لتسجيل موجهك وجهاز USB المتصل به بواسطة حسابك."
-ready_share_step3="Step 3: Log back into <a class='linktype' target='_blank' href='http://readyshare.netgear.com/'>http://readyshare.netgear.com</a> with your account. You should see the USB device that is connected to your router."
-ready_share_set_note="<b>ملاحظة:</b> بدون هذا العميل، يمكنك استعراض محتويات جهاز USB ولكنك لا تستطيع فتح الملفات أو إجراء تغييرات عليها"
-ready_share_start="سجِّل موجهك وجهاز USB مع ReadyCLOUD"
-ready_share_get_account="إذا لم يكن لديك حساب ReadyCLOUD‏<a class='linktype' target='_blank' href='http://readycloud.netgear.com/clien/index.html#page=access'>انقر هنا</a> للحصول على واحد"
-username="اسم المستخدم"
-key_passphrase="كلمة المرور"
-register="تسجيل"
-register_note="<b>ملاحظة:</b> يحافظ الموجه على اتصال مستمر بميزة ReadyCLOUD إلى حين إلغاء التسجيل."
-help_center="مركز التعليمات"
-help_show_hide="إظهار/إخفاء مركز التعليمات"
-
-resister_user="هذا الموجه مسجّل مع مستخدم ReadyCLOUD التالي:"
-access_storage_method="يمكنك الآن تسجيل الدخول إلى<a class='linktype' target='_blank' href='http://readycloud.netgear.com'>http://readycloud.netgear.com</a> مستخدمًا حسابك في ReadyCLOUD للوصول إلى جهاز USB أينما كنت."
-unregister_info="انقر فوق<B>إلغاء تسجيل</B> لتسجيل هذا الموجه باستخدام حساب مختلف من ReadyCLOUD"
-unregister="إلغاء التسحيل"
-
-result_register_ok="اكتملت عملية التسجيل بنجاح"
-result_register_fail="فشلت عملية التسجيل. يُرجى التحقق من اسم المستخدم وكلمة المرور، ثم المحاولة مرة أخرى."
-result_unreg_ok="اكتملت عملية إلغاء التسجيل بنجاح"
-result_unreg_fail="فشلت عملية إلغاء التسجيل"
-
 //WIZ_sel_3g_adsl.htm
 bh_connection_mode="Choosing Connection Mode"
 

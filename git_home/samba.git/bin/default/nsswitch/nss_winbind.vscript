@@ -1,0 +1,4 @@
+NSS_WINBIND_2 {
+	global:
+		*;
+};

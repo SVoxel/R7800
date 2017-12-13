@@ -1,0 +1,4 @@
+SMBCONF_0 {
+	global:
+		*;
+};

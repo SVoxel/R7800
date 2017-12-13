@@ -238,34 +238,6 @@ bh_wanlan_conflict_info="Na zabránenie konfliktu s poskytovateľom internetov�
 bh_continue_mark="Pokračovať"
 bh_same_server_wan_ip="Moja adresa IP nesmie byť rovnaká, ako je adresa servera!"
 
-//readySHARE remote strings
-remote_share_head="ReadyCLOUD"
-ready_cloud_info="<p>Služba ReadyCLOUD vám poskytuje diaľkový prístup cez internet k úložnému zariadeniu USB pripojenému k portu USB smerovača. Na využívanie služby ReadyCLOUD je potrebný účet ReadyCLOUD. Ak nemáte účet služby ReadyCLOUD, <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/clien/index.html#page=access\">kliknite sem</a> a potom kliknite na položky <b>Prihlásenie > Vytvoriť účet</b>. </p><p><b>Nastavenie služby ReadyCLOUD</b></p><p><ol><li>Do vstupu USB smerovača pripojte pamäťové zariadenie.</li><li>Do nižšie uvedených polí zadajte používateľské meno a heslo služby ReadyCLOUD a kliknite na tlačidlo <b>Registrovať</b>. Váš smerovač a zariadenie USB sú zaregistrované v službe ReadyCLOUD.</li><li> Navštívte lokalitu <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com\">http://readycloud.netgear.com</a>, kliknite na položku Prihlásenie, zadajte používateľské meno a heslo služby ReadyCLOUD a kliknite na tlačidlo <b>Prihlásiť</b>.</li></ol></p><p>      Na vytvorenie zabezpečeného pripojenia medzi vaším počítačom alebo mobilným zariadením a pamäťovým zariadení smerovača môžete použiť aj aplikáciu ReadyCLOUD.<br>      <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/client/cloud_download.html\">Kliknite sem</a> a prevezmite si aplikáciu ReadyCLOUD.</p>"
-ready_share_info1="Funkcia ReadySHARE Cloud vám poskytuje diaľkový prístup cez internet k úložnému zariadeniu pripojenému k USB portu smerovača."
-how_setup_ready_share="Ako nastaviť funkciu ReadySHARE Cloud"
-ready_share_step1="Krok 1: Budete potrebovať konto ReadySHARE Cloud. Ak ste si ho ešte nemáte,<a class='linktype' target='_blank' href='https://readyshare.netgear.com/site/index.jsp?pid=4&src=device'>kliknite sem</a> a vytvorte si ho."
-ready_share_step2="Krok 2: Na tejto stránke zadaním používateľského mena a hesla k funkcii ReadySHARE Cloud zaregistrujte svoj smerovač a k nemu pripojené zariadenie USB do svojho konta."
-ready_share_step3="Krok 3: Na stránke <a class='linktype' target='_blank' href='http://readyshare.netgear.com/'>http://readyshare.netgear.com/</a> sa prihláste zadaním údajov vášho konta. Mali by ste vidieť zariadenie USB pripojené k smerovaču."
-ready_share_set_note="<b>Poznámka:</b> Bez tohto klienta môžete prehľadávať obsah na vašom zariadení USB, nemôžete však otvárať súbory ani ich meniť"
-ready_share_start="Zaregistrujte si svoj smerovač a zariadenie USB prostredníctvom konta ReadyCLOUD"
-ready_share_get_account="Ak nemáte vytvorené konto ReadyCLOUD, <a class='linktype' target='_blank' href='http://readycloud.netgear.com/clien/index.html#page=access'>kliknite sem</a> a založte si ho"
-username="Používateľské meno"
-key_passphrase="Heslo"
-register="Registrovať"
-register_note="<b>Poznámka:</b> Váš smerovač udržiava nepretržité pripojenie k službe ReadyCLOUD až kým registráciu nezrušíte."
-help_center="Stredisko pomoci"
-help_show_hide="Zobraziť/skryť stredisko pomoci"
-
-resister_user="Tento smerovač si zaregistroval nasledujúci používateľ funkcie ReadyCLOUD:"
-access_storage_method="Teraz sa môžete prihlásiť na lokalite <a class='linktype' target='_blank' href='http://readycloud.netgear.com'>http://readycloud.netgear.com</a> pomocou konta ReadyCLOUD a získať prístup k vášmu zariadeniu USB z ľubovoľného miesta na svete."
-unregister_info="Ak chcete tento smerovač zaregistrovať v rámci iného konta ReadyCLOUD, kliknite na tlačidlo <B>Zrušiť registráciu</B>"
-unregister="Zrušiť registráciu"
-
-result_register_ok="Registrácia prebehla úspešne"
-result_register_fail="Registrácia zlyhala. Skontrolujte svoje prihlasovacie údaje a skúste to znova."
-result_unreg_ok="Zrušenie registrácie prebehlo úspešne"
-result_unreg_fail="Zrušenie registrácie zlyhalo"
-
 //WIZ_sel_3g_adsl.htm
 bh_connection_mode="Choosing Connection Mode"
 

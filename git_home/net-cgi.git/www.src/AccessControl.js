@@ -462,6 +462,7 @@ function check_acc_add(cf,flag)
             }
         }
     }
+    	apply_flag = 1;
     	cf.submit();
 	return true;
 }

@@ -1,16 +1,24 @@
 #!/bin/sh
 # Copyright (C) 2006-2010 OpenWrt.org
 
-if grep -qs '^root:[^!]' /etc/passwd /etc/shadow && [ -z "$FAILSAFE" ]; then
-	echo "Login failed."
-	exit 0
-else
 cat << EOF
- === IMPORTANT ============================
-  Use 'passwd' to set your login password
-  this will disable telnet and enable SSH
+ === LOGIN ===============================
+  Please enter your password,It's the same
+  with DUT login password
  ------------------------------------------
 EOF
+echo -n "telnet password:"
+read telnet_passwd
+if [ "$telnet_passwd" = "$(/bin/config get http_passwd)" ];then
+cat << EOF
+=== IMPORTANT ============================
+ Use 'passwd' to set your login password
+ this will disable telnet and enable SSH
+------------------------------------------
+EOF
+	exec /bin/ash --login
+else
+	echo "The password is not correct"
+	exit 0
 fi
 
-exec /bin/ash --login

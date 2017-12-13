@@ -38,6 +38,8 @@ var fileTP_max_concurrent_tasks="<% cfg_get("green_download_fileTP_max_tasks") %
 <% cfg_set("mlnet_error", "0") %>
 <% config_commit() %>
 <% change_folder_path() %>
+var lanip="<% cfg_get("lan_ipaddr") %>";
+var lanmask="<% cfg_get("lan_netmask") %>";
 
 if( "<% cfg_get("green_download_max_tasks_all") %>" != "" )
 	max_tasks_all = parseInt("<% cfg_get("green_download_max_tasks_all") %>", 10);
@@ -62,6 +64,12 @@ function add_item()
 		alert("$greendl_filetp_alert_link");
 		return false;
 	}
+
+	if(check_url_for_lan(str_down_url, lanip, lanmask) == true) {
+		alert("$greendl_filetp_alert_link");
+		return false;
+	}
+
 	if( task_num_all >= max_tasks_all )
 	{
 		alert("$greendl_common_alert_maxtask");

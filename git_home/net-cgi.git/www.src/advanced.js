@@ -431,7 +431,7 @@ function click_adv_action(id)
                 }
 		else if( id == "cloud" )
 		{
-			goto_formframe("/cgi-bin/RMT_invite.htm");
+			goto_formframe("RMT_invite.htm");
 			menu_color_change('cloud');
 		}
 		else if( id == "print" )

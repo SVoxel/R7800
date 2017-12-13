@@ -7,7 +7,7 @@
 ##
 ##  This program is free software; you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
-##  the Free Software Foundation; either version 2 of the License, or
+##  the Free Software Foundation; either version 3 of the License, or
 ##  (at your option) any later version.
 ##
 ##  This program is distributed in the hope that it will be useful,
@@ -16,8 +16,7 @@
 ##  GNU General Public License for more details.
 ##
 ##  You should have received a copy of the GNU General Public License
-##  along with this program; if not, write to the Free Software
-##  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+##  along with this program; if not, see <http://www.gnu.org/licenses/>.
 ##
 ######################################################################
 
@@ -69,7 +68,6 @@ parm_table = {
 	"USESPNEGO"              : ("use spnego", SambaParmBool, P_GLOBAL, "Yes"),
 	"FAKEOPLOCKS"            : ("fake oplocks", SambaParmBool, P_LOCAL, "No"),
 	"FORCECREATEMODE"        : ("force create mode", SambaParmString, P_LOCAL, "00"),
-	"SETDIRECTORY"           : ("set directory", SambaParmBoolRev, P_LOCAL, "No"),
 	"SMBPORTS"               : ("smb ports", SambaParmString, P_GLOBAL, "445 139"),
 	"LOCKDIR"                : ("lock directory", SambaParmString, P_GLOBAL, "/var/lib/samba"),
 	"BROWSEABLE"             : ("browseable", SambaParmBool, P_LOCAL, "Yes"),
@@ -90,7 +88,6 @@ parm_table = {
 	"ROOTPREEXEC"            : ("root preexec", SambaParmString, P_LOCAL, ""),
 	"WRITEOK"                : ("read only", SambaParmBoolRev, P_LOCAL, "Yes"),
 	"MAXLOGSIZE"             : ("max log size", SambaParmString, P_GLOBAL, "5000"),
-	"FORCESECURITYMODE"      : ("force security mode", SambaParmString, P_LOCAL, "00"),
 	"VFSOBJECT"              : ("vfs objects", SambaParmString, P_LOCAL, ""),
 	"CHECKPASSWORDSCRIPT"    : ("check password script", SambaParmString, P_GLOBAL, ""),
 	"DELETEPRINTERCOMMAND"   : ("deleteprinter command", SambaParmString, P_GLOBAL, ""),
@@ -103,7 +100,6 @@ parm_table = {
 	"DOSFILEMODE"            : ("dos filemode", SambaParmBool, P_LOCAL, "No"),
 	"LOGFILE"                : ("log file", SambaParmString, P_GLOBAL, ""),
 	"WORKGROUP"              : ("workgroup", SambaParmString, P_GLOBAL, "WORKGROUP"),
-	"DIRECTORYSECURITYMASK"  : ("directory security mask", SambaParmString, P_LOCAL, "0777"),
 	"ENCRYPTPASSWORDS"       : ("encrypt passwords", SambaParmBool, P_GLOBAL, "Yes"),
 	"PRINTABLE"              : ("printable", SambaParmBool, P_LOCAL, "No"),
 	"MAXPROTOCOL"            : ("max protocol", SambaParmString, P_GLOBAL, "NT1"),
@@ -148,7 +144,6 @@ parm_table = {
 	"LEVEL2OPLOCKS"          : ("level2 oplocks", SambaParmBool, P_LOCAL, "Yes"),
 	"LARGEREADWRITE"         : ("large readwrite", SambaParmBool, P_GLOBAL, "Yes"),
 	"LDAPREPLICATIONSLEEP"   : ("ldap replication sleep", SambaParmString, P_GLOBAL, "1000"),
-	"SECURITYMASK"           : ("security mask", SambaParmString, P_LOCAL, "0777"),
 	"LDAPUSERSUFFIX"         : ("ldap user suffix", SambaParmString, P_GLOBAL, ""),
 	"NETBIOSNAME"            : ("netbios name", SambaParmString, P_GLOBAL, "PANTHER"),
 	"LOCKSPINCOUNT"          : ("lock spin count", SambaParmString, P_GLOBAL, "3"),
@@ -185,7 +180,6 @@ parm_table = {
 	"POSIXLOCKING"           : ("posix locking", SambaParmBool, P_LOCAL, "Yes"),
 	"INCLUDE"                : ("include", SambaParmString, P_LOCAL, ""),
 	"ALGORITHMICRIDBASE"     : ("algorithmic rid base", SambaParmString, P_GLOBAL, "1000"),
-	"FORCEDIRECTORYSECURITYMODE": ("force directory security mode", SambaParmString, P_LOCAL, "00"),
 	"ANNOUNCEVERSION"        : ("announce version", SambaParmString, P_GLOBAL, "4.9"),
 	"USERNAMEMAP"            : ("username map", SambaParmString, P_GLOBAL, ""),
 	"MANGLEDNAMES"           : ("mangled names", SambaParmBool, P_LOCAL, "Yes"),
@@ -203,7 +197,6 @@ parm_table = {
 	"WINBINDUID"             : ("idmap uid", SambaParmString, P_GLOBAL, ""),
 	"READRAW"                : ("read raw", SambaParmBool, P_GLOBAL, "Yes"),
 	"WINBINDENUMGROUPS"      : ("winbind enum groups", SambaParmBool, P_GLOBAL, "Yes"),
-	"PASSWORDLEVEL"          : ("password level", SambaParmString, P_GLOBAL, "0"),
 	"MAXPRINTJOBS"           : ("max print jobs", SambaParmString, P_LOCAL, "1000"),
 	"PRINTCAP"               : ("printcap name", SambaParmString, P_GLOBAL, ""),
 	"LOADPRINTERS"           : ("load printers", SambaParmBool, P_GLOBAL, "Yes"),
@@ -258,7 +251,6 @@ parm_table = {
 	"PARANOIDSERVERSECURITY" : ("paranoid server security", SambaParmBool, P_GLOBAL, "Yes"),
 	"WTMPDIRECTORY"          : ("wtmp directory", SambaParmString, P_GLOBAL, ""),
 	"ADDPRINTERCOMMAND"      : ("addprinter command", SambaParmString, P_GLOBAL, ""),
-	"PRINTERADMIN"           : ("printer admin", SambaParmString, P_LOCAL, ""),
 	"WINSSERVER"             : ("wins server", SambaParmString, P_GLOBAL, ""),
 	"LDAPTIMEOUT"            : ("ldap timeout", SambaParmString, P_GLOBAL, "15"),
 	"LOCKDIRECTORY"          : ("lock directory", SambaParmString, P_GLOBAL, "/var/lib/samba"),
@@ -354,7 +346,6 @@ parm_table = {
 	"ENHANCEDBROWSING"       : ("enhanced browsing", SambaParmBool, P_GLOBAL, "Yes"),
 	"PANICACTION"            : ("panic action", SambaParmString, P_GLOBAL, ""),
 	"LDAPMACHINESUFFIX"      : ("ldap machine suffix", SambaParmString, P_GLOBAL, ""),
-	"UPDATEENCRYPTED"        : ("update encrypted", SambaParmBool, P_GLOBAL, "No"),
 	"MAXTTL"                 : ("max ttl", SambaParmString, P_GLOBAL, "259200"),
 	"WRITABLE"               : ("read only", SambaParmBoolRev, P_LOCAL, "Yes"),
 	"SHAREMODES"             : ("share modes", SambaParmBool, P_LOCAL, "Yes"),

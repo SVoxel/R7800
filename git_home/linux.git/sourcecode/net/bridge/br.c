@@ -71,9 +71,15 @@ int mcast_read( char *page, char **start, off_t off,
 ssize_t mcast_write( struct file *filp, const char __user *buff,
                                          unsigned long len, void *data )
 {
-      char line[32];
+      char line[64];
         char *ptr, *tmp = line;
       unsigned long ip, gip;
+
+	  if (len >= 64) {
+			  printk("mcast_write: input buf len too long(%u)\n", len);
+			  return -EFAULT;
+	  }
+
       if (copy_from_user( line, buff, len ))
               return -EFAULT;
       line[len] = 0;
@@ -104,8 +110,16 @@ ssize_t igmp_snoop_write( struct file *filp, const char __user *buff,
                                          unsigned long len, void *data )
 {
       char line[4];
+	  if (len >= 4) {
+		printk("igmp_snoop_write: input buf len too long(%u)\n", len);
+		return -EFAULT;
+	 }
+
       if (copy_from_user( line, buff, len ))
         return -EFAULT;
+	
+	  line[len] = 0;
+
       igmp_snoop_enable = line[0] - '0';
       return len;
 }

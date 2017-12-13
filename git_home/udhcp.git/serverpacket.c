@@ -341,12 +341,70 @@ int sendACK(struct dhcpMessage *oldpacket, u_int32_t yiaddr)
 		else if (lease_time_align < server_config.min_lease) 
 			lease_time_align = server_config.lease;
 	}
-	
+
 	if (is_guest_client(packet.chaddr))
 		lease_time_align = GUEST_LEASE_TIME;
 
+
 	add_simple_option(packet.options, DHCP_LEASE_TIME, htonl(lease_time_align));
-	
+#ifdef SUPPORT_OPTION_43
+                    char *temp,*temp1,*temp2;
+                    /*I want to show you about why i or other do this.
+                        See the function get_option().It's a very strange function.when you use it to get a value such as hostname.
+                        It will return a string begin at the first character of hostname and end at the packet end or in cache about 300 byte character it will stop
+                        So that's why i use memcpy to cut off the string and get what i want*/
+                    if((temp=get_option(oldpacket,DHCP_VENDOR_SPECIFIC))
+                        &&(temp1=get_option(oldpacket,DHCP_HOST_NAME))
+                        &&(temp2=get_option(oldpacket,DHCP_CLIENT_ID))){
+                    char *temp_align=(char*)malloc(sizeof(char)*33);
+                    memcpy(temp_align,temp,32);
+                    temp_align[32]='\0';
+                     char vie_md5[32+1];
+                     int vie_len;
+                     int i;
+                     unsigned char *vie;
+                     char *vie_clientid;
+                     char *vie_hostname;
+                        vie=(char*)malloc(sizeof(char)*(256+12));
+                        vie_hostname=(char*)malloc(sizeof(char)*(256+1));
+                        vie_clientid=(char*)malloc(sizeof(char)*(12+1));
+                        memset(vie,0,(sizeof(char)*(256+12)));
+                        memset(vie_hostname,0,(sizeof(char)*(256+1)));
+                        memset(vie_clientid,0,(sizeof(char)*(12+1)));
+
+
+
+
+                        for (i=0;i<temp1[-1]+2;i++)//[-1]=length
+                            vie_hostname[i]=temp1[i-2];
+                        for (i=0;i<temp2[-1]+2;i++)//[-1]=length
+                            vie_clientid[i]=temp2[i-2];//because clientid has type .it use 1 byte ,so we should skip it
+
+                        strcat(vie,vie_hostname);//the first two byte is code and len
+                        vie_len=strlen(vie)+6+1+1+1;
+                        memcpy(vie+strlen(vie),vie_clientid,6+1+1+1);//the first 3 byte is code and len and type.mac can be 0x00 means \0,so use this
+                        md5(vie,vie_md5,vie_len);
+                 
+                        vie_md5[32]='\0';
+                        if(!strcmp(temp_align,vie_md5)){
+                            //do something
+                            add_vie_option(packet.options,DHCP_VENDOR_SPECIFIC,vie_md5);
+                            //get ip string and write ip,mac,hostname in a file .
+                            // mac and hostname isn't string , it will change to string in the wirte_vie_lease()
+                            char *vie_ip;
+                            struct in_addr in;
+                            in.s_addr=packet.yiaddr;
+                            vie_ip=inet_ntoa(in);
+                            write_vie_lease(vie_ip,vie_clientid,vie_hostname);
+
+                        }
+                        free(vie);
+                        free(vie_hostname);
+                        free(vie_clientid);
+                        free(temp_align);
+                    }                    
+
+#endif
 	curr = server_config.options;
 	while (curr) {
 		if (curr->data[OPT_CODE] != DHCP_LEASE_TIME)

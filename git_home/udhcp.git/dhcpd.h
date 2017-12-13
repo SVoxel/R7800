@@ -5,6 +5,7 @@
 #include <netinet/ip.h>
 #include <netinet/udp.h>
 
+#include "md5.h"
 #include "libbb_udhcp.h"
 #include "leases.h"
 

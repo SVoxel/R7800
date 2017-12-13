@@ -852,7 +852,7 @@ int main(int argc, char *argv[]) {
 		probe_count = 1;
 		min_interval = 15;
 		max_interval = 60;
-		udp_local_port = 123;
+//		udp_local_port = 123;
 		select_ntp_servers(&hostname, &sec_host);
 #ifdef ENABLE_BOOT_RELAY
 		boot_relay = 0;

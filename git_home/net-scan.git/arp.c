@@ -980,7 +980,7 @@ void show_arp_table(void)
 			/* for GUI dealing easily:  &lt;unknown&gt;   <----> <unknown>*/
 			fprintf(fp, "%s %s %s @#$&*!\n",
 				inet_ntoa(u->ip), ether_etoa(u->mac, mac),
-				u->host[0] == '\0' ? "&lt;unknown&gt;" : host_stod(u->host));
+				u->host[0] == '\0' ? "&lt;unknown&gt;" : u->host);
 #ifdef SUPPORT_STREAMBOOST
 			ether_etoa(u->mac, mac);
 			if (sb_fp){
@@ -1001,7 +1001,7 @@ void show_arp_table(void)
 					inet_ntoa(u->ip),  mac, sb_dlp->type == TYPE_SOAP_OLD ? u->type : sb_dlp->type, netgear_priority,
 					u->state == SB_INFO_STATE_2? u->down : 0.0,
 					u->state == SB_INFO_STATE_2? u->up : 0.0,
-					sb_dlp->host[0] == '\0' ? (u->host[0] == '\0' ? "&lt;unknown&gt;" : host_stod(u->host)) : host_stod(sb_dlp->host));
+					sb_dlp->host[0] == '\0' ? (u->host[0] == '\0' ? "&lt;unknown&gt;" : u->host) : sb_dlp->host);
 				}
 				else{
 					/* This attached device was NOT edited by user*/
@@ -1009,7 +1009,7 @@ void show_arp_table(void)
 					inet_ntoa(u->ip), mac, u->type, netgear_priority,
 					u->state == SB_INFO_STATE_2? u->down : 0.0,
 					u->state == SB_INFO_STATE_2? u->up : 0.0,
-					u->host[0] == '\0' ? "&lt;unknown&gt;" : host_stod(u->host));
+					u->host[0] == '\0' ? "&lt;unknown&gt;" : u->host);
 				}
 			}
 			if (name_type_fp){
@@ -1057,7 +1057,7 @@ void show_arp_table(void)
 						fprintf(sb_fp, "%s %s %d %s %.2f %.2f %s @#$&*!\n",
 							"&lt;unknown&gt", mac , 
 							sb_dlp->type == TYPE_SOAP_OLD ? TYPE_OTHERS : sb_dlp->type, netgear_priority, 0.0, 0.0,
-							sb_dlp->host[0] == '\0' ? "&lt;unknown&gt;" : host_stod(sb_dlp->host));
+							sb_dlp->host[0] == '\0' ? "&lt;unknown&gt;" : sb_dlp->host);
 					}
 					else{
 						fprintf(sb_fp, "%s %s %d %s %.2f %.2f %s @#$&*!\n",
@@ -1123,7 +1123,7 @@ void reset_arp_table()
 void scan_arp_table(int sock, struct sockaddr *me)
 {
 	int i;
-	int count = 0;
+	int count = 0, sum = 0;
 	struct itimerval tv;
 	struct arpmsg *req;
 	struct arp_struct *u;
@@ -1131,14 +1131,24 @@ void scan_arp_table(int sock, struct sockaddr *me)
 	char buffer[512];
 	struct in_addr addr;
 	FILE *fp;
-	
-	while (count != 3) {
+	pid_t pid;
+
+	pid = fork();
+	if(pid < 0)
+		DEBUGP("[%s][%d]error in fork!\n", __FILE__, __LINE__);
+	else if(pid == 0) {
+	while (count != 2) {
 		count++;
 		req = &arpreq;
 		for (i = 0; i < (NEIGH_HASHMASK + 1); i++) {
 			for (u = arp_tbl[i]; u; u = u->next) {
 				memcpy(req->ar_tip, &u->ip, 4);
 				sendto(sock, req, sizeof(struct arpmsg), 0, me, sizeof(struct sockaddr));
+				sum++;
+				if(sum == 128) {
+					usleep(500000);
+					sum = 0;
+				}
 			}
 		}
 		/**
@@ -1159,16 +1169,23 @@ void scan_arp_table(int sock, struct sockaddr *me)
 					if (u) continue;
 					memcpy(req->ar_tip, &addr, 4);
 					sendto(sock, req, sizeof(struct arpmsg), 0, me, sizeof(struct sockaddr));
+					sum++;
+					if(sum == 128) {
+						usleep(500000);
+						sum = 0;
+					}
 				}
 			}
 			fclose(fp);
 		}
-		if(count < 3)
-			usleep(500000);
+	//	if(count < 3)
+	//		usleep(500000);
+	}
+		 _exit(0);
 	}
 	
 	/* show the result after 3s */
-	tv.it_value.tv_sec = 1;
+	tv.it_value.tv_sec = 3;
 	tv.it_value.tv_usec = 0;
 	tv.it_interval.tv_sec = 0;
 	tv.it_interval.tv_usec = 0;

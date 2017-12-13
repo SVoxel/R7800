@@ -23,6 +23,7 @@
 var select_editnum=<%cfg_get("acc_connect_device_editnum")%>;
 select_editnum=select_editnum-1;
 var access_mac = "<% cfg_get("wan_remote_mac") %>";
+var apply_flag = 0;
 
 function loadvalue()
 {
@@ -36,6 +37,7 @@ function loadvalue()
 	cf.hidden_edit_mac.value=cf.mac_addr.value;
 }
 
+window.onunload = function leavepage(){if(apply_flag == 0) top.back_flag=1;};
 </script>
 <input type="hidden" name="hidden_acc_edit_type" value="connect_device"/>
 <input type="hidden" name="hidden_edit_mac" value=""/>

@@ -386,6 +386,39 @@ vlan_create_internet_vif() # $1: vid, $2: pri
 	brctl addif brwan ethwan
 }
 
+vlan_create_internet_vif_for_untag() # $1: vid, $2: pri
+{
+	local brx="br$1"
+
+	if nif_existed $brx; then
+		ifconfig $brx down
+		if [ -n "$RawEth" ]; then
+			ifconfig $RawEth.$1 down && brctl delif $brx $RawEth.$1
+			ip link set dev $RawEth.$1 name ethwan
+		else
+			if [ "$WanIndepPhy" = "0" ]; then
+				ifconfig $RawEthWan.$1 down && brctl delif $brx $RawEthWan.$1
+			else
+				ifconfig $RawEthLan.$1 down && brctl delif $brx $RawEthLan.$1
+				ifconfig $RawEthWan.$1 down && brctl delif $brx $RawEthWan.$1
+				brctl addif brwan $RawEthLan.$1
+			fi
+			ip link set dev $RawEthWan.$1 name ethwan
+		fi
+		brctl delbr $brx
+	else
+		if [ -n "$RawEth" ]; then
+			vconfig add $RawEth $1 && ifconfig $RawEth.$1 down
+			ip link set dev $RawEth.$1 name ethwan
+		else
+			ifconfig $RawEthWan down
+			ip link set dev $RawEthWan name ethwan
+		fi
+	fi
+	vlan_set_vif_pri ethwan $2
+	brctl addif brwan ethwan
+}
+
 vlan_create_intranet_vif() # $1: vid, $2: pri
 {
 	local brx="br$1"
@@ -501,7 +534,7 @@ vlan_create_brs_and_vifs()
 	done
 	if [ "$i_vid" = "0" ]; then
 		i_vid=$(vlan_get_wanvid) && i_pri=0
-		vlan_create_internet_vif $i_vid $i_pri
+		vlan_create_internet_vif_for_untag $i_vid $i_pri
 		sw_configvlan "vlan" "add" "wan" "$i_vid" "0" "$i_pri"
 	else
 		vlan_create_internet_vif $i_vid $i_pri

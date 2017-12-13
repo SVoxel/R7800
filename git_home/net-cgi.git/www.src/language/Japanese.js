@@ -238,34 +238,6 @@ bh_wanlan_conflict_info="プロバイダーとの競合を避けるため、ご�
 bh_continue_mark="続ける"
 bh_same_server_wan_ip="マイIPアドレスはサーバーアドレスと同じにはできません。"
 
-//readySHARE remote strings
-remote_share_head="ReadyCLOUD"
-ready_cloud_info="<p>ReadyCLOUD を使うとルーターの USB ポートに接続された USB ストレージにインターネット経由でリモートアクセスができるようになります。ReadyCLOUD を使うには、ReadyCLOUD アカウントが必要です。ReadyCLOUD アカウントをお持ちでない場合は、<a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/clien/index.html#page=access\">ここをクリック</a>した後に <b>Sign In（サインイン） > Create Account（アカウントの作成）</b>をクリックします。</p><p><b>ReadyCLOUD のセットアップ</b></p><p><ol><li>ルーターの USB ポートにストレージを接続します。</li><li>下の欄に ReadyCLOUD ユーザー名とパスワードを入力し、 <b>Register（登録）</b> ボタンをクリックします。 ルーターと USB ストレージが ReadyCLOUD に登録されます。</li><li> <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com\">http://readycloud.netgear.com</a>にアクセスし、Sign In （サインイン）をクリックします。ReadyCLOUD ユーザー名とパスワードを入力し、<b>Sign In （サインイン）</b> ボタンをクリックします。</li></ol></p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ReadyCLOUD アプリを使って PC やモバイル端末から USB ストレージへ安全な接続をすることができます。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/client/cloud_download.html\">ここをクリック</a> して ReadyCLOUD アプリをダウンロードします。</p>"
-ready_share_info1="ReadySHARE クラウド機能を使うと、ルーターのUSBポートに接続されているUSBストレージ機器へ、インターネットからリモートアクセスできます。"
-how_setup_ready_share="ReadySHARE クラウドの設定方法"
-ready_share_step1="Step 1：ReadySHARE クラウドのアカウントが必要です。 アカウントをお持ちでない方は、<a class='linktype' target='_blank' href ='https://readyshare.netgear.com/site/index.jsp?pid=4&src=device'>こちらをクリック</a>してアカウントを>作成してください。"
-ready_share_step2="Step 2：ここでは、ReadySHARE クラウドのユーザー名とパスワードを入力し、ルーターとUSBデバイスを登録します。"
-ready_share_step3="Step 3：アカウントを使って、もう一度<a  class='linktype' target='_blank' href='http://readyshare.netgear.com/'>http://readyshare.netgear.com/</a>にログインします。 初期設定では、ルータに接続されたUSB機器が表示されます"
-ready_share_set_note="<b>注意：</b> このクライアントをダウンロードしない場合は、ブラウザーを使ってUSBデバイスのコンテンツにアクセスすることができますが、ファイルを開いたり、ファイル内容に変更を加えたりすることはできません。"
-ready_share_start="ルーターと USB デバイスを ReadyCLOUD で登録する"
-ready_share_get_account="ReadyCLOUD アカウントをお持ちでない場合は <a class='linktype' target='_blank' href='http://readycloud.netgear.com/clien/index.html#page=access'>ここをクリック</a> して取得します"
-username="ユーザー名"
-key_passphrase="パスワード"
-register="登録"
-register_note="<b>注意：</b> ルーターは登録を解除するまで ReadyCLOUD への継続的な接続を続けます。"
-help_center="ヘルプセンター"
-help_show_hide="ヘルプセンターを表示/隠す"
-
-resister_user="ルーターは次の ReadyCLOUD ユーザーで登録されています："
-access_storage_method="これでお持ちの ReadyCLOUD アカウントで <a class='linktype' target='_blank' href='http://readycloud.netgear.com'>http://readycloud.netgear.com</a> からどこからでも USB デバイスにアクセスできます。"
-unregister_info="<B>登録解除</B> をクリックしてこのルーターを違う ReadyCLOUD アカウントで登録できます"
-unregister="登録解除"
-
-result_register_ok="登録が完了しました。"
-result_register_fail="登録に失敗しました。ユーザー名とパスワードを確認してもう一度試してみてください。"
-result_unreg_ok="登録解除が完了しました。"
-result_unreg_fail="登録解除できませんでした。"
-
 //WIZ_sel_3g_adsl.htm
 bh_connection_mode="接続モードを選択する"
 

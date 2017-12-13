@@ -589,6 +589,10 @@ static void uh_mainloop(struct config *conf, fd_set serv_fds, int max_fd)
                                                 if(httphost != NULL && strcmp(httphost, "www.msftncsi.com") == 0 && strcmp(req->url,"/ncsi.txt")==0)
                                                        goto cleanup;
 
+						if((strcasecmp(httphost, "mywifiext.net")==0 || strcasecmp(httphost, "mywifiext.com")==0 || strcasecmp(httphost, "www.mywifiext.com")==0 || strcasecmp(httphost, "www.mywifiext.net")==0) && strcmp(req->url,"/wifiSettings.htm")==0){
+							req->url="/";
+						}
+
                                                 if(is_ipv6_domain(remote_addr)==0
                                                         && IsSameSubnet(lan_ip, lan_mask, remote_addr, lan_mask)
                                                         && config_match("dns_hijack", "1")
@@ -597,7 +601,8 @@ static void uh_mainloop(struct config *conf, fd_set serv_fds, int max_fd)
                                                 {
 							if( ( !(strncmp(httphost, "clients.google.com", 7)==0
 								&& strstr(httphost, ".google.com")!=NULL) || strncmp(req->url, "/generate_204",13))
-								&& (strcmp(httphost, "www.google.com") || strncmp(req->url, "/blank.html", 11)) ){
+								&& (strcmp(httphost, "www.google.com") || strncmp(req->url, "/blank.html", 11)) 
+								&& strcmp(httphost, "www.apple.com") && strcmp(httphost, "captive.apple.com") ){
 									req->url="/change_domain.htm";
 								}
 						}	
@@ -643,7 +648,13 @@ static void uh_mainloop(struct config *conf, fd_set serv_fds, int max_fd)
 							}
 							else
 							{
-								ensure_ret(uh_http_sendc(cl, NULL, 0));
+								if( ((strncmp(httphost, "clients.google.com", 7)==0
+									&& strstr(httphost, ".google.com")!=NULL) && !strncmp(req->url, "/generate_204",13))
+									|| (!strcmp(httphost, "www.google.com") && !strncmp(req->url, "/blank.html", 11)))
+									 ensure_ret(uh_http_sendc(cl, NULL, 0));
+								else
+									uh_http_sendhf(cl, 404, "Not Found",
+										"No such file or directory");
 							}
 						}
 					}

@@ -5,7 +5,7 @@
 CC = gcc
 
 FILES = pot.c excmd.c common.h config.h
-TARGET = potd potval ntpst stamac
+TARGET = potd potval ntpst stamac netconn
 CFLAGS += -Wall -Wunused -g
 LDFLAGS += -lconfig
 
@@ -24,6 +24,10 @@ ntpst: $(FILES)
 	@echo "make $@ finished on `date`"
 
 stamac: $(FILES)
+	$(CC) $(CFLAGS) $(FILES) -o $@ $(EXTRA_LDFLAGS) $(LDFLAGS)
+	@echo "make $@ finished on `date`"
+
+netconn: $(FILES)
 	$(CC) $(CFLAGS) $(FILES) -o $@ $(EXTRA_LDFLAGS) $(LDFLAGS)
 	@echo "make $@ finished on `date`"
 

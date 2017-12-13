@@ -214,12 +214,17 @@ if [ -n "$DNI_CONFIG" ]; then
 
         # wireless region is NA and mode is 1733M, when enable HT160, change mode to HT80_80
         # wireless region is EU and mode is 1733M, when enable HT160, change mode to HT160
+        # wireless region is JP and mode is 1733M, when enable HT160, change mode to HT160
         wla_country=`dniconfig get wl_country`
         wl_ht160=`dniconfig get wla_ht160`
         if [ "$wl_ht160" = "1" -a "$wla_country" = "4" -a "$wla_chmode" = "9" ]; then 
             wla_chmode="11"
+        elif [ "$wl_ht160" = "1" -a "$wla_country" = "6" -a "$wla_chmode" = "9" ]; then
+            wla_chmode="11"
         elif [ "$wl_ht160" = "1" -a "$wla_country" = "10" -a "$wla_chmode" = "9" ]; then
             wla_chmode="10"
+        elif [ "$wl_ht160" = "1" -a "$wla_country" = "11" -a "$wla_chmode" = "9" ]; then
+            wla_chmode="12"
         fi
 
         case "${wla_chmode}" in
@@ -289,6 +294,16 @@ if [ -n "$DNI_CONFIG" ]; then
             11)
                 wla_hwmode=11ac;
                 wla_htmode=HT160;
+                ;;
+            12)
+                wla_hwmode=11ac;
+                wla_htmode=HT160;
+                case "$wla_channel" in
+                    149|153|157|161)
+			wla_htmode=HT80_80
+                        wla_cfreq2=5210;
+                        ;;
+                esac
                 ;;
             *)
                 wla_hwmode=11na;

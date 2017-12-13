@@ -9,16 +9,6 @@
 #include <libsmbclient.h>
 #include "get_auth_data_fn.h"
 
-static void
-no_auth_data_fn(const char * pServer,
-                const char * pShare,
-                char * pWorkgroup,
-                int maxLenWorkgroup,
-                char * pUsername,
-                int maxLenUsername,
-                char * pPassword,
-                int maxLenPassword);
-
 static void browse(char * path,
                    int scan,
                    int indent);
@@ -35,8 +25,7 @@ get_auth_data_with_context_fn(SMBCCTX * context,
                               char * pPassword,
                               int maxLenPassword);
 
-int
-main(int argc, char * argv[])
+int main(int argc, const char *argv[])
 {
     int                         debug = 0;
     int                         debug_stderr = 0;
@@ -44,10 +33,8 @@ main(int argc, char * argv[])
     int                         context_auth = 0;
     int                         scan = 0;
     int                         iterations = -1;
-    int                         again;
     int                         opt;
     char *                      p;
-    char *                      q;
     char                        buf[1024];
     poptContext                 pc;
     SMBCCTX *                   context;
@@ -85,7 +72,7 @@ main(int argc, char * argv[])
     
     setbuf(stdout, NULL);
 
-    pc = poptGetContext("opendir", argc, (const char **)argv, long_options, 0);
+    pc = poptGetContext("opendir", argc, argv, long_options, 0);
     
     poptSetOtherOptionHelp(pc, "");
     
@@ -108,24 +95,24 @@ main(int argc, char * argv[])
     }
 
     /* Set mandatory options (is that a contradiction in terms?) */
-    context->debug = debug;
+    smbc_setDebug(context, debug);
     if (context_auth) {
-        context->callbacks.auth_fn = NULL;
-        smbc_option_set(context,
-                        "auth_function",
-                        (void *) get_auth_data_with_context_fn);
-        smbc_option_set(context, "user_data", "hello world");
+        smbc_setFunctionAuthDataWithContext(context,
+                                            get_auth_data_with_context_fn);
+        smbc_setOptionUserData(context, strdup("hello world"));
     } else {
-        context->callbacks.auth_fn =
-            (no_auth ? no_auth_data_fn : get_auth_data_fn);
+        smbc_setFunctionAuthData(context, get_auth_data_fn);
     }
 
-    /* If we've been asked to log to stderr instead of stdout... */
+    smbc_setOptionUseKerberos(context, 1);
+    smbc_setOptionFallbackAfterKerberos(context, 1);
+
+    /* If we've been asked to log to stderr instead of stdout, ... */
     if (debug_stderr) {
         /* ... then set the option to do so */
-        smbc_option_set(context, "debug_stderr", (void *) 1);
+        smbc_setOptionDebugToStderr(context, 1);
     }
-	
+
     /* Initialize the context using the previously specified options */
     if (!smbc_init_context(context)) {
         smbc_free_context(context, 0);
@@ -138,20 +125,22 @@ main(int argc, char * argv[])
 
     if (scan)
     {
-        for (;
-             iterations == -1 || iterations > 0;
-             iterations = (iterations == -1 ? iterations : --iterations))
-        {
+        for (; iterations != 0;) {
+            if (iterations > 0) {
+                iterations--;
+            }
+
             snprintf(buf, sizeof(buf), "smb://");
             browse(buf, scan, 0);
         }
     }
     else
     {
-        for (;
-             iterations == -1 || iterations > 0;
-             iterations = (iterations == -1 ? iterations : --iterations))
-        {
+        for (; iterations != 0;) {
+            if (iterations > 0) {
+                iterations--;
+            }
+
             fputs("url: ", stdout);
             p = fgets(buf, sizeof(buf), stdin);
             if (! p)
@@ -171,21 +160,6 @@ main(int argc, char * argv[])
     exit(0);
 }
 
-
-static void
-no_auth_data_fn(const char * pServer,
-                const char * pShare,
-                char * pWorkgroup,
-                int maxLenWorkgroup,
-                char * pUsername,
-                int maxLenUsername,
-                char * pPassword,
-                int maxLenPassword)
-{
-    return;
-}
-
-
 static void
 get_auth_data_with_context_fn(SMBCCTX * context,
                               const char * pServer,
@@ -197,9 +171,9 @@ get_auth_data_with_context_fn(SMBCCTX * context,
                               char * pPassword,
                               int maxLenPassword)
 {
-    printf("Authenticating with context 0x%lx", context);
+    printf("Authenticating with context %p", context);
     if (context != NULL) {
-        char *user_data = smbc_option_get(context, "user_data");
+        char *user_data = smbc_getOptionUserData(context);
         printf(" with user data %s", user_data);
     }
     printf("\n");
@@ -213,7 +187,7 @@ static void browse(char * path, int scan, int indent)
     char *                      p;
     char                        buf[1024];
     int                         dir;
-    struct stat                 stat;
+    struct stat                 st;
     struct smbc_dirent *        dirent;
 
     if (! scan)
@@ -268,14 +242,14 @@ static void browse(char * path, int scan, int indent)
             p = path + strlen(path);
             strcat(p, "/");
             strcat(p+1, dirent->name);
-            if (smbc_stat(path, &stat) < 0)
+            if (smbc_stat(path, &st) < 0)
             {
                 printf(" unknown size (reason %d: %s)",
                        errno, strerror(errno));
             }
             else
             {
-                printf(" size %lu", (unsigned long) stat.st_size);
+                printf(" size %lu", (unsigned long) st.st_size);
             }
             *p = '\0';
 

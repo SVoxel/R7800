@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# For Atheros solution
+if [ -x /sbin/wlanconfig -a -f /tmp/guestvap ]; then
+	for ifname in `cat /tmp/guestvap`; do
+		if [ "x`wlanconfig $ifname list sta | grep -i $1`" != x ]; then
+			echo 1
+			exit
+		fi
+	done
+fi
+
+echo 0

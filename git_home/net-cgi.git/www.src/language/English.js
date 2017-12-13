@@ -238,34 +238,6 @@ bh_wanlan_conflict_info="To avoid a conflict with your Internet Service Provider
 bh_continue_mark="Continue"
 bh_same_server_wan_ip="My IP address must not be the same as the Server Address !"
 
-//readySHARE remote strings
-remote_share_head="ReadyCLOUD"
-ready_cloud_info="<p>ReadyCLOUD gives you remote access over the Internet to a USB storage device that is connected to your router's USB port. To use ReadyCLOUD, you must have a ReadyCLOUD account. If you do not have a ReadyCLOUD account, <a class='linktype' target='_blank' href='http://readycloud.netgear.com/clien/index.html#page=access'>click here</a>, then click <b>Sign In > Create Account</b>. </p><p><b>To set up ReadyCLOUD</b></p><p><ol><li>Connect a USB storage device to your router's USB port.</li><li>Enter your ReadyCLOUD user name and password in the fields below and click the <b>Register</b> button. Your router and the USB device are registered with ReadyCLOUD.</li><li> Visit <a class='linktype' target='_blank' href='http://readycloud.netgear.com'>http://readycloud.netgear.com</a>, click Sign In, enter your ReadyCLOUD user name and password, and click the <b>Sign In</b> button.</li></ol></p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You can also use the ReadyCLOUD app to make a secure connection between your computer or mobile device and the router's USB storage device.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='linktype' target='_blank' href='http://readycloud.netgear.com/client/cloud_download.html'>Click here</a> to download the ReadyCLOUD app.</p>"
-ready_share_info1="ReadyCLOUD gives you remote access over the Internet to a USB storage device that is connected to your router's USB port. To use ReadyCLOUD, you must have a ReadyCLOUD account. If you do not have a ReadyCLOUD account, <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com\">click here</a>, then click <b>Sign In > Create Account</b>."
-how_setup_ready_share="To Set Up ReadyCLOUD"
-ready_share_step1="Connect a USB storage device to your router's USB port."
-ready_share_step2="Enter your ReadyCLOUD user name and password in the fields below and click the <b>Register</b> button. Your router and the USB device are registered with ReadyCLOUD."
-ready_share_step3="Visit <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com\">http://readycloud.netgear.com</a>, click Sign In, enter your ReadyCLOUD user name and password, and click the <b>Sign In</b> button."
-ready_share_set_note="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You can also use the ReadyCLOUD app to make a secure connection between your computer or mobile device and the router's USB storage device.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/client/cloud_download.html\">Click here</a> to download the ReadyCLOUD app."
-ready_share_start="Register your router and USB device with ReadyCLOUD"
-ready_share_get_account="If you don't have a ReadyCLOUD account <a class='linktype' target='_blank' href='http://readycloud.netgear.com/clien/index.html#page=access'>click here</a> to get one"
-username="Username"
-key_passphrase="Password"
-register="Register"
-register_note="<b>Note:</b> Your router keeps a continuous connection to ReadyCLOUD until you unregister."
-help_center="Help Center"
-help_show_hide="Show/Hide Help Center"
-
-resister_user="This router is registered with the following ReadyCLOUD user:"
-access_storage_method="Now you can login at <a class='linktype' target='_blank' href='http://readycloud.netgear.com'>http://readycloud.netgear.com</a> with your ReadyCLOUD account to access your USB device from anywhere."
-unregister_info="Click <B>Unregister</B> to register this router with a different ReadyCLOUD account"
-unregister="Unregister"
-
-result_register_ok="Registration completed successfully"
-result_register_fail="Registration failed. Please check your user name and password and try again."
-result_unreg_ok="Unregistration completed successfully"
-result_unreg_fail="Unregistration failed"
-
 //WIZ_sel_3g_adsl.htm
 bh_connection_mode="Choosing Connection Mode"
 

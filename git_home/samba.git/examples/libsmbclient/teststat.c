@@ -9,12 +9,11 @@
 int main(int argc, char * argv[]) 
 { 
     int             debug = 0;
-    char            buffer[16384]; 
-    char            mtime[32];
-    char            ctime[32];
-    char            atime[32];
-    char *          pSmbPath = NULL;
-    char *          pLocalPath = NULL;
+    char            m_time[32];
+    char            c_time[32];
+    char            a_time[32];
+    const char *          pSmbPath = NULL;
+    const char *          pLocalPath = NULL;
     struct stat     st; 
     
     if (argc == 1)
@@ -48,10 +47,10 @@ int main(int argc, char * argv[])
         return 1;
     }
     
-    printf("\nSAMBA\n mtime:%lu/%s ctime:%lu/%s atime:%lu/%s\n",
-           st.st_mtime, ctime_r(&st.st_mtime, mtime),
-           st.st_ctime, ctime_r(&st.st_ctime, ctime),
-           st.st_atime, ctime_r(&st.st_atime, atime)); 
+    printf("\nSAMBA\n mtime:%lld/%s ctime:%lld/%s atime:%lld/%s\n",
+           (long long)st.st_mtime, ctime_r(&st.st_mtime, m_time),
+           (long long)st.st_ctime, ctime_r(&st.st_ctime, c_time),
+           (long long)st.st_atime, ctime_r(&st.st_atime, a_time));
     
     if (pLocalPath != NULL)
     {
@@ -61,10 +60,10 @@ int main(int argc, char * argv[])
             return 1;
         }
         
-        printf("LOCAL\n mtime:%lu/%s ctime:%lu/%s atime:%lu/%s\n",
-               st.st_mtime, ctime_r(&st.st_mtime, mtime),
-               st.st_ctime, ctime_r(&st.st_ctime, ctime),
-               st.st_atime, ctime_r(&st.st_atime, atime)); 
+        printf("LOCAL\n mtime:%lld/%s ctime:%lld/%s atime:%lld/%s\n",
+               (long long)st.st_mtime, ctime_r(&st.st_mtime, m_time),
+               (long long)st.st_ctime, ctime_r(&st.st_ctime, c_time),
+               (long long)st.st_atime, ctime_r(&st.st_atime, a_time));
     }
 
     return 0; 

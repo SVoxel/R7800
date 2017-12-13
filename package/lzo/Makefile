@@ -42,7 +42,7 @@ define Build/Configure
 	)
 endef
 
-TARGET_CFLAGS += $(FPIC) -O3
+TARGET_CFLAGS += $(FPIC) -O3 -ffunction-sections -fdata-sections
 MAKE_FLAGS += CFLAGS_O="$(TARGET_CFLAGS)"
 
 ifeq ($(CONFIG_i386)$(CONFIG_x86_64),)

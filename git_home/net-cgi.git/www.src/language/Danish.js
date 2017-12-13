@@ -238,34 +238,6 @@ bh_wanlan_conflict_info="For at undgå konflikt med din internetudbyder er route
 bh_continue_mark="Fortsæt"
 bh_same_server_wan_ip="Min IP-adresse må ikke være den samme som serveradressen!"
 
-//readySHARE remote strings
-remote_share_head="ReadyCLOUD"
-ready_cloud_info="<p>ReadyCLOUD giver ekstern adgang via internettet til en USB-lagerenhed, der er sluttet til din routers USB-port. For at kunne bruge ReadyCLOUD skal du have en ReadyCLOUD-konto. Hvis du ikke har en ReadyCLOUD-konto, skal du<a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/clien/index.html#page=access\">klikke her</a> og derefter klikke på <b>Log på > Opret konto</b>. </p><p><b>Sådan konfigurerer du ReadyCLOUD</b></p><p><ol><li>Tilslut en USB-lagerenhed til din routers USB-port.</li><li>Indtast dit ReadyCLOUD-brugernavn og -adgangskode i felterne nedenfor, og klik på knappen <b>Registrer</b>. Din router og USB-enheden er registreret med ReadyCLOUD.</li><li> Gå ind på <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com\">http://readycloud.netgear.com</a>, klik på Log på, indtast dit ReadyCLOUD-brugernavn og -adgangskode, og klik på knappen <b>Log på</b>.</li></ol></p><p>      Du kan også bruge ReadyCLOUD-appen til at oprette en sikker forbindelse fra din computer eller mobilenhed til routerens USB-lagerenhed.<br>      <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/client/cloud_download.html\">Klik her</a> for at downloade ReadyCLOUD-appen.</p>"
-ready_share_info1="Funktionen ReadySHARE Cloud giver ekstern adgang via Internettet til en USB-lagringsenhed, der er sluttet til din routers USB-port."
-how_setup_ready_share="Sådan konfigureres ReadySHARE Cloud"
-ready_share_step1="Trin 1: Du har behov for en ReadySHARE Cloud-konto. Hvis du ikke har en <a class='linktype' target='_blank' href='https://readyshare.netgear.com/site/index.jsp?pid=4&src=enhed'>, skal du klikke her</a> for at få en."
-ready_share_step2="Trin 2: På denne side skal du angive dit ReadySHARE Cloud-brugernavn og -adgangskode for at registrere din router og den USB-enhed, som er sluttet til den med din konto."
-ready_share_step3="Trin 3: Log igen på <a class='linktype' target='_blank' href='http://readyshare.netgear.com/'>http://readyshare.netgear.com/</a> med din konto. Du bør kunne se den USB-enhed, som er sluttet til din router."
-ready_share_set_note="<b>Bemærk!</b> Uden denne klient kan du gennemse indholdet på din USB-enhed, men du kan ikke åbne filer eller foretage ændringer af dem."
-ready_share_start="Registrer din router og USB-enhed til ReadyCLOUD"
-ready_share_get_account="Hvis du ikke har en ReadyCLOUD-konto, skal du<a class='linktype' target='_blank' href='http://readycloud.netgear.com/clien/index.html#page=access'>klikke her</a> for at få en"
-username="Brugernavn"
-key_passphrase="Adgangskode"
-register="Registrer"
-register_note="<b>Bemærk: </b>Routeren opretholder en konstant forbindelse til ReadyCLOUD, indtil du fjerner registreringen."
-help_center="Hjælp"
-help_show_hide="Vis/skjul Hjælp"
-
-resister_user="Denne router er registreret med følgende ReadyCLOUD-bruger:"
-access_storage_method="Nu kan du logge på<a class='linktype' target='_blank' href='http://readycloud.netgear.com'>http://readycloud.netgear.com</a> med din ReadyCLOUD-konto for at få adgang til din USB-enhed overalt."
-unregister_info="Klik på<B> Fjern registrering</B> for at registrere denne router med en anden ReadyCLOUD-konto"
-unregister="Afregistrer"
-
-result_register_ok="Registreringen er udført"
-result_register_fail="Registreringen mislykkedes. Kontroller dit brugernavn og din adgangskode, og prøv igen."
-result_unreg_ok="Afregistreringen er udført"
-result_unreg_fail="Afregistreringen mislykkedes"
-
 //WIZ_sel_3g_adsl.htm
 bh_connection_mode="Choosing Connection Mode"
 

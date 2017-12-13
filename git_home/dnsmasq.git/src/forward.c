@@ -858,6 +858,212 @@ void reply_query(struct serverfd *sfd, struct daemon *daemon, time_t now)
     }
 }
 
+#pragma pack(1)
+static unsigned short checksum(unsigned short *start, int len)
+{
+	unsigned int sum = 0;
+	unsigned short *w = start;
+	unsigned short answer = 0;
+	while (1 < len) {
+		sum += *w++;
+		len -= 2;
+	}
+	if (1 == len) {
+		*(unsigned char *)(&answer) = *(unsigned char *)w;
+		sum += answer;
+	}
+	while (sum >> 16)
+		sum = (sum & 0xffff) + (sum >> 16);
+	return (unsigned short)~sum;
+}
+
+void receive_raw_query(struct listener *listen, struct daemon *daemon, time_t now)
+{
+	if(config_match("ap_mode", "0"))
+		return 0;
+
+	HEADER *reply_header ;
+	unsigned int fromlen = 0;
+	struct sockaddr_in6 src;
+	struct udp_dns_packet rawhdr;
+	struct udp_dns_packet *packet, *pkt;
+	char buf[1024] = {0}, none_addr[16] = {0}, buf1[1024]={0};
+	char linkprefix[] = {0xfe,0x80,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	int bytes, n, i, flag = 0;
+	u_int16_t check;
+	struct in6_addr source, dest;
+	char *data, *p, dns[256];
+	char sendbuf[1500];
+
+	fromlen = sizeof(src);
+	memset(&src, 0x00, sizeof(src));
+	memset(&rawhdr, 0x00, sizeof(struct udp_dns_packet));
+	memset(buf, 0x00, sizeof(buf));
+
+	bytes = recvfrom(listen->fd, buf, 1024, 0, (struct sockaddr *)&src, &fromlen);
+
+	if(bytes < 0)
+	{
+		my_syslog(LOG_INFO, "couldn't read on raw listening socket -- ignoring");
+		return;
+	}
+
+/*    for (i=0; i<112; i++) {
+        fprintf(stderr, "%02x ", buf[i]);
+        if (i % 16 == 15) fprintf(stderr, "\n");
+    }
+	*/
+	my_syslog(LOG_INFO, "recv message bytes %d", bytes);
+
+	memcpy(&rawhdr, buf, sizeof(struct udp_dns_packet));
+	packet = (struct udp_dns_packet *)buf;
+	memset(buf1, 0x00, sizeof(buf1));
+	pkt = (struct udp_dns_packet *)buf1;
+
+	if(bytes < (int) (sizeof(struct ethhdr) + sizeof(struct ipv6hdr) + sizeof(struct udphdr)))
+	{
+		my_syslog(LOG_INFO, "message too short, ignoring");
+		return;
+	}
+	
+	if(rawhdr.ip6.nexthdr != IPPROTO_UDP || rawhdr.udp.dest != htons(DNS_PORT) || rawhdr.ip6.payload_len != rawhdr.udp.len )
+	{
+		 my_syslog(LOG_INFO, "unrelated/bogus packet nexthdr %x proto %x port %x payload %x", ntohs(rawhdr.ip6.nexthdr), ntohs(rawhdr.eth.h_proto), ntohs(rawhdr.udp.dest), ntohs(rawhdr.ip6.payload_len));
+		 return;
+	}
+
+	if(!memcmp(&(rawhdr.ip6.saddr), none_addr, 2))
+	{
+		my_syslog(LOG_INFO, "ignore src :");
+		return;
+	}
+
+	/*psuedo-header*/
+	source = rawhdr.ip6.saddr;
+	dest = rawhdr.ip6.daddr;
+	check = rawhdr.udp.check;
+	rawhdr.udp.check = 0;
+	memset(&rawhdr.ip6, 0, sizeof(rawhdr.ip6));
+	packet->udp.check = 0;
+	memset(&(packet->ip6), 0, sizeof(rawhdr.ip6));
+	
+	rawhdr.ip6.hop_limit = IPPROTO_UDP;  /*psuedo-header the protocol must add on hop limit to create correct checksum*/
+	rawhdr.ip6.saddr = source;
+	rawhdr.ip6.daddr = dest;
+	rawhdr.ip6.payload_len = rawhdr.udp.len;
+
+	packet->ip6.hop_limit = IPPROTO_UDP;
+	packet->ip6.saddr = source;
+	packet->ip6.daddr = dest;
+	packet->ip6.payload_len = rawhdr.udp.len;
+
+	if (check && check != checksum(&packet->ip6, bytes)) {
+		my_syslog(LOG_INFO, "packet with bad UDP checksum received, %02x ignorin ", ntohs(check));
+		return -2;
+	}
+
+	memcpy(sendbuf, rawhdr.data, (sizeof(rawhdr.data)));
+	data = rawhdr.data;
+	p = &dns[0];
+	/* add the response */
+	int tolen = 0, msglen;
+	struct sockaddr_in6 dst;
+	unsigned char dns_ver;
+	struct in6_addr source_addr, global_addr;
+	struct in_addr local_addr4;
+	char *ansp = (unsigned char *)(sendbuf + ntohs(rawhdr.udp.len) -8);
+
+	if (*(ansp-3) == 0x1c ) 
+		dns_ver = 6;
+	else
+		dns_ver = 4;
+	PUTSHORT(0x0c | 0xc000, ansp);
+	
+	if (dns_ver == 6 )      //ipv6 dns
+	{
+		PUTSHORT(T_AAAA, ansp);
+	} else {
+		PUTSHORT(T_A, ansp);
+		if(!get_lan_ipaddr(&local_addr4))
+		{
+			return -1;
+		}
+	}
+
+	if(get_lan_linklocal_ipaddr6(&source_addr, 0) < 0) 
+		return -1;
+
+	PUTSHORT(C_IN, ansp);
+	PUTLONG(0, ansp);
+	if(dns_ver == 6)
+		PUTSHORT(16, ansp);
+	else
+		PUTSHORT(INADDRSZ, ansp);
+	if(dns_ver == 6)
+	{
+		if(get_lan_linklocal_ipaddr6(&global_addr, 1) < 0)
+			if(get_lan_linklocal_ipaddr6(&global_addr, 0) < 0)
+				return -1;
+
+		memcpy(ansp, &global_addr, 16);
+		ansp +=16;
+	}
+	else
+	{
+		memcpy(ansp, &local_addr4, 4);
+		ansp +=4;
+	}
+	reply_header = (HEADER *)(sendbuf);
+	reply_header->qr = 1;
+	reply_header->aa = 1;
+	reply_header->ra = 1;
+	reply_header->tc = 0;
+	reply_header->rcode = NOERROR;
+	reply_header->ancount = htons(1);
+	reply_header->nscount = htons(0);
+	reply_header->arcount = htons(0);
+
+	msglen = ansp - sendbuf;
+
+	tolen =sizeof(struct ethhdr) + sizeof(struct ipv6hdr) + sizeof(struct udphdr) + msglen;
+
+	/* pack packet */
+	pkt->ip6.hop_limit = IPPROTO_UDP;
+	pkt->ip6.saddr = dest;
+	pkt->ip6.daddr = source;
+	pkt->udp.check = 0;
+
+	pkt->udp.dest  = packet->udp.source;
+	pkt->udp.source = packet->udp.dest;
+	pkt->udp.len = htons (sizeof(struct udphdr) + msglen);
+	pkt->ip6.payload_len =  pkt->udp.len;
+	memcpy(pkt->data, sendbuf, msglen);
+
+	pkt->udp.check = checksum((unsigned short *)&pkt->ip6, tolen);
+	my_syslog(LOG_INFO, " pkt %02x", pkt->udp.check);
+	
+	pkt->ip6.priority = 0;
+	pkt->ip6.version = 6;
+	pkt->ip6.flow_lbl[0] = 0;
+	pkt->ip6.flow_lbl[1] = 0;
+	pkt->ip6.flow_lbl[2] = 0;
+	pkt->ip6.nexthdr = IPPROTO_UDP;
+	pkt->ip6.hop_limit = IPDEFTTL;
+
+	memcpy(pkt->eth.h_dest, rawhdr.eth.h_source, ETH_ALEN);
+	memcpy(pkt->eth.h_source, rawhdr.eth.h_dest, ETH_ALEN);
+	pkt->eth.h_proto = htons(ETH_P_IPV6);
+
+	memset(&dst, 0x00, sizeof(dst));
+	dst.sin6_family = htons(AF_INET6);
+	dst.sin6_addr = rawhdr.ip6.saddr;
+	my_syslog(LOG_INFO, "send dns packet, sockfd = %d", listen->fd);
+	if (0 >= send(listen->fd, pkt, tolen, 0)) {
+		my_syslog(LOG_INFO,"sendto failure! %s\n", strerror(errno));
+	}
+
+}
+#pragma pack()
 void receive_query(struct listener *listen, struct daemon *daemon, time_t now)
 {
   HEADER *header = (HEADER *)daemon->packet;

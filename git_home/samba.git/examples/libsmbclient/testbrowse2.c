@@ -5,14 +5,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <string.h>
 #include <libsmbclient.h>
 
 int	debuglevel	= 0;
-char	*workgroup	= "NT";
-char	*username	= "guest";
-char	*password	= "";
+const char	*workgroup	= "NT";
+const char	*username	= "guest";
+const char	*password	= "";
 
 typedef struct smbitem smbitem;
 typedef int(*qsort_cmp)(const void *, const void *);
@@ -23,55 +22,7 @@ struct smbitem{
     char	name[1];
 };
 
-int smbitem_cmp(smbitem *elem1, smbitem *elem2){
-    return strcmp(elem1->name, elem2->name);
-}
-
-int smbitem_list_count(smbitem *list){
-    int count = 0;
-    
-    while(list != NULL){
-	list = list->next;
-	count++;
-    }
-    return count;
-}
-
-void smbitem_list_delete(smbitem *list){
-    smbitem	*elem;
-    
-    while(list != NULL){
-	elem = list;
-	list = list->next;
-	free(elem);
-    }
-}
-
-smbitem* smbitem_list_sort(smbitem *list){
-    smbitem	*item, **array;
-    int		count, i;
-
-    if ((count = smbitem_list_count(list)) == 0) return NULL;
-    if ((array = malloc(count * sizeof(smbitem*))) == NULL){
-	smbitem_list_delete(list);
-	return NULL;
-    }
-    
-    for(i = 0; i < count; i++){
-	array[i] = list;
-	list = list->next;
-    }	
-    qsort(array, count, sizeof(smbitem*), (qsort_cmp)smbitem_cmp);
-    
-    for(i = 0; i < count - 1; i++) array[i]->next = array[i + 1];
-    array[count - 1]->next = NULL;
-    
-    list = array[0];
-    free(array);
-    return list;
-}
-
-void smbc_auth_fn(
+static void smbc_auth_fn(
                 const char      *server,
 		const char      *share,
 		char            *wrkgrp, int wrkgrplen,
@@ -88,13 +39,13 @@ void smbc_auth_fn(
     strncpy(passwd, password, passwdlen - 1); passwd[passwdlen - 1] = 0;
 }
 
-SMBCCTX* create_smbctx(){
+static SMBCCTX* create_smbctx(void){
     SMBCCTX	*ctx;
 
     if ((ctx = smbc_new_context()) == NULL) return NULL;
 
-    ctx->debug = debuglevel;
-    ctx->callbacks.auth_fn = smbc_auth_fn;
+    smbc_setDebug(ctx, debuglevel);
+    smbc_setFunctionAuthData(ctx, smbc_auth_fn);
 
     if (smbc_init_context(ctx) == NULL){
 	smbc_free_context(ctx, 1);
@@ -104,36 +55,39 @@ SMBCCTX* create_smbctx(){
     return ctx;
 }
 
-void delete_smbctx(SMBCCTX* ctx){
-    ctx->callbacks.purge_cached_fn(ctx);
+static void delete_smbctx(SMBCCTX* ctx){
+    smbc_getFunctionPurgeCachedServers(ctx)(ctx);
     smbc_free_context(ctx, 1);
 }
 
-smbitem* get_smbitem_list(SMBCCTX *ctx, char *smb_path){
+static smbitem* get_smbitem_list(SMBCCTX *ctx, char *smb_path){
     SMBCFILE		*fd;
     struct smbc_dirent	*dirent;
     smbitem		*list = NULL, *item;
 
-    if ((fd = ctx->opendir(ctx, smb_path)) == NULL) return NULL;
-    while((dirent = ctx->readdir(ctx, fd)) != NULL){
+    if ((fd = smbc_getFunctionOpendir(ctx)(ctx, smb_path)) == NULL)
+        return NULL;
+    while((dirent = smbc_getFunctionReaddir(ctx)(ctx, fd)) != NULL){
+	size_t slen;
 	if (strcmp(dirent->name, "") == 0) continue;
 	if (strcmp(dirent->name, ".") == 0) continue;
 	if (strcmp(dirent->name, "..") == 0) continue;
 	
-	if ((item = malloc(sizeof(smbitem) + strlen(dirent->name))) == NULL)
+	slen = strlen(dirent->name)+1;
+	if ((item = malloc(sizeof(smbitem) + slen)) == NULL)
 	    continue;
 	
 	item->next = list;
 	item->type = dirent->smbc_type;
-	strcpy(item->name, dirent->name);
+	memcpy(item->name, dirent->name, slen);
 	list = item;
     }
-    ctx->close_fn(ctx, fd);
+    smbc_getFunctionClose(ctx)(ctx, fd);
     return /* smbitem_list_sort */ (list);    
         
 }
 
-void print_smb_path(char *group, char *path){
+static void print_smb_path(const char *group, const char *path){
     if ((strlen(group) == 0) && (strlen(path) == 0)) printf("/\n");
     else if (strlen(path) == 0) printf("/%s\n", group);
     else{
@@ -142,7 +96,7 @@ void print_smb_path(char *group, char *path){
     }
 }
 
-void recurse(SMBCCTX *ctx, char *smb_group, char *smb_path, int maxlen){
+static void recurse(SMBCCTX *ctx, const char *smb_group, char *smb_path, int maxlen){
     int 	len;
     smbitem	*list, *item;
     SMBCCTX	*ctx1;
@@ -161,13 +115,14 @@ void recurse(SMBCCTX *ctx, char *smb_group, char *smb_path, int maxlen){
 		else print_smb_path(smb_group, list->name);
 		
 		if (maxlen < 7 + strlen(list->name)) break;
-		strcpy(smb_path + 6, list->name);
+		strncpy(smb_path + 6, list->name, maxlen - 6);
+		smb_path[maxlen-1] = '\0';
 		if ((ctx1 = create_smbctx()) != NULL){
 		    recurse(ctx1, smb_group, smb_path, maxlen);
 		    delete_smbctx(ctx1);
 		}else{
 		    recurse(ctx, smb_group, smb_path, maxlen);
-		    ctx->callbacks.purge_cached_fn(ctx);
+		    smbc_getFunctionPurgeCachedServers(ctx)(ctx);
 		}
 		break;
 	    case SMBC_FILE_SHARE:
@@ -176,12 +131,13 @@ void recurse(SMBCCTX *ctx, char *smb_group, char *smb_path, int maxlen){
 		if (maxlen < len + strlen(list->name) + 2) break;
 		
 		smb_path[len] = '/';
-		strcpy(smb_path + len + 1, list->name);
+		strncpy(smb_path + len + 1, list->name, maxlen - len - 1);
+		smb_path[maxlen-1] = '\0';
 		print_smb_path(smb_group, smb_path + 6);
 		if (list->type != SMBC_FILE){
 		    recurse(ctx, smb_group, smb_path, maxlen);
 		    if (list->type == SMBC_FILE_SHARE)
-			ctx->callbacks.purge_cached_fn(ctx);
+			smbc_getFunctionPurgeCachedServers(ctx)(ctx);
 		}
 		break;
 	}

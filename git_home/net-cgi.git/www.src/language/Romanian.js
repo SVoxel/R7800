@@ -238,34 +238,6 @@ bh_wanlan_conflict_info="Pentru a evita un conflict cu furnizorul de servicii de
 bh_continue_mark="Continuare"
 bh_same_server_wan_ip="Adresa mea IP nu trebuie să fie identică cu adresa serverului!"
 
-//readySHARE remote strings
-remote_share_head="ReadyCLOUD"
-ready_cloud_info="<p>ReadyCLOUD vă oferă acces de la distanţă, prin intermediul internetului, la un dispozitiv de stocare USB conectat la portul USB al routerului dvs. Pentru a utiliza ReadyCLOUD, trebuie să dispuneţi de un cont ReadyCLOUD. Dacă nu deţineţi un cont ReadyCLOUD,<a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/clien/index.html#page=access\">faceţi clic aici</a>, apoi faceţi clic pe <b>Conectare > Creare cont</b>. </p><p><b>Pentru configuarea ReadyCLOUD</b></p><p><ol><li>Conectaţi un dispozitiv de stocare USB la portul USB al routerului.</li><li>Introduceţi numele de utilizator şi parola ReadyCLOUD în câmpurile de mai jos şi faceţi clic pe butonul <b>Înregistrare</b>. Routerul şi dispozitivul dvs. USB sunt înregistrate la ReadyCLOUD.</li><li> Vizitaţi <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com\">http://readycloud.netgear.com</a>, faceţi clic pe Conectare, introduceţi numele de utilizator şi parola dvs. ReadyCLOUD şi faceţi clic pe butonul <b>Conectare</b>.</li></ol></p><p>      De asemenea, puteţi utiliza aplicaţia ReadyCLOUD pentru a realiza o conexiune securizată dintre computerul sau dispozitivul dvs. mobil şi dispozitivul de stocare USB al routerului.<br>      <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/client/cloud_download.html\">Faceţi clic aici</a> pentru a descărca aplicaţia ReadyCLOUD.</p>"
-ready_share_info1="Caracteristica ReadySHARE Cloud vă oferă acces de la distanţă prin Internet la un dispozitiv de stocare USB care este conectat la portul USB al routerului dvs."
-how_setup_ready_share="Cum se configurează ReadySHARE Cloud"
-ready_share_step1="Pasul 1: Aveţi nevoie de un cont ReadySHARE Cloud. Dacă nu aveţi cont,<a class='linktype' target='_blank' href='https://readyshare.netgear.com/site/index.jsp?pid=4&src=device'>faceţi clic aici</a> pentru a obţine unul."
-ready_share_step2="Pasul 2: Pe această pagină, introduceţi numele de utilizator şi parola ReadySHARE Cloud pentru a vă înregistra routerul şi dispozitivul USB care este conectat la acesta utilizând contul dvs."
-ready_share_step3="Pasul 3: Reconectaţi-vă la <a class='linktype' target='_blank' href='http://readyshare.netgear.com/'>http://readyshare.netgear.com/</a> utilizând contul dvs. Trebuie să vedeţi dispozitivul USB care este conectat la routerul dvs."
-ready_share_set_note="<b>Notă:</b> Fără acest client, puteţi naviga prin conţinutul dispozitivului USB, dar nu puteţi deschide sau modifica fişiere."
-ready_share_start="Înregistraţi-vă routerul şi dispozitivul USB la ReadyCLOUD"
-ready_share_get_account="Dacă nu aveţi un cont ReadyCLOUD <a class='linktype' target='_blank' href='http://readycloud.netgear.com/clien/index.html#page=access'>faceţi click aici</a> pentru a vă crea unul"
-username="Nume de utilizator"
-key_passphrase="Parolã"
-register="Înregistrare"
-register_note="<b>Notă:</b> Routerul dvs. menţine o conexiune curentă cu ReadyCLOUD până la anularea înregistrării."
-help_center="Centru de asistenţă"
-help_show_hide="Afişare/Ascundere centru de asistenţă"
-
-resister_user="Acest router este înregistrat cu următorul nume de utilizator ReadyCLOUD:"
-access_storage_method="Acum vă puteţi conecta pe <a class='linktype' target='_blank' href='http://readycloud.netgear.com'>http://readycloud.netgear.com</a> cu contul dvs. ReadyCLOUD pentru a vă accesa dispozitivul USB de oriunde."
-unregister_info="Apăsaţi <B>Anulare înregistrare</B> pentru a înregistra acest router cu un cont ReadyCLOUD diferit"
-unregister="Anulare înregistrare"
-
-result_register_ok="Înregistrare finalizată cu succes"
-result_register_fail="Înregistrare nereuşită. Vă rugăm să verificaţi numele de utilizator şi parola şi să încercaţi din nou."
-result_unreg_ok="Anulare înregistrare finalizată cu succes"
-result_unreg_fail="Anulare înregistrare eşuată"
-
 //WIZ_sel_3g_adsl.htm
 bh_connection_mode="Choosing Connection Mode"
 

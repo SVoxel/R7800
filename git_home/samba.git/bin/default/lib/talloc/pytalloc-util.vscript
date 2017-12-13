@@ -1,0 +1,65 @@
+PYTALLOC_UTIL_2.0.6 {
+	global:
+		pytalloc_Check;
+		pytalloc_GetObjectType;
+		pytalloc_CObject_FromTallocPtr;
+		pytalloc_steal_ex;
+		pytalloc_steal;
+		pytalloc_reference_ex;
+};
+
+PYTALLOC_UTIL_2.0.7 {
+} PYTALLOC_UTIL_2.0.6;
+
+PYTALLOC_UTIL_2.0.8 {
+} PYTALLOC_UTIL_2.0.7;
+
+PYTALLOC_UTIL_2.1.0 {
+} PYTALLOC_UTIL_2.0.8;
+
+PYTALLOC_UTIL_2.1.1 {
+} PYTALLOC_UTIL_2.1.0;
+
+PYTALLOC_UTIL_2.1.2 {
+} PYTALLOC_UTIL_2.1.1;
+
+PYTALLOC_UTIL_2.1.3 {
+} PYTALLOC_UTIL_2.1.2;
+
+PYTALLOC_UTIL_2.1.4 {
+} PYTALLOC_UTIL_2.1.3;
+
+PYTALLOC_UTIL_2.1.5 {
+} PYTALLOC_UTIL_2.1.4;
+
+PYTALLOC_UTIL_2.1.6 {
+	global:
+		_pytalloc_get_mem_ctx;
+		_pytalloc_get_ptr;
+		pytalloc_BaseObject_PyType_Ready;
+		pytalloc_BaseObject_size;
+		_pytalloc_get_type;
+		pytalloc_BaseObject_check;
+		pytalloc_GetBaseObjectType;
+} PYTALLOC_UTIL_2.1.5;
+
+PYTALLOC_UTIL_2.1.7 {
+} PYTALLOC_UTIL_2.1.6;
+
+PYTALLOC_UTIL_2.1.8 {
+} PYTALLOC_UTIL_2.1.7;
+
+PYTALLOC_UTIL_2.1.9 {
+	global:
+		pytalloc_GenericObject_steal_ex;
+		pytalloc_GenericObject_reference_ex;
+		_pytalloc_check_type;
+} PYTALLOC_UTIL_2.1.8;
+
+SAMBA_4.6.4 {
+	global:
+		pytalloc_*;
+		_pytalloc_*;
+	local:
+		*;
+};

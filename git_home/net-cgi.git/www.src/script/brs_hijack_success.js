@@ -100,6 +100,11 @@ function preSecurityInit()
 		tooltip = document.getElementById("key_tooltip_3");
 		addTooltip(tooltip);
 	}
+	if(click_no == "1")
+	{
+		head_tag[0].style.display = "none";
+		paragraph[0].style.display = "none";
+	}
 
 	//initial the buttons text and onclick action
 	initBtnsAction();
@@ -127,6 +132,12 @@ function noPreSecurityInit()
 		security_info_div.style.display = "none";
 	}
 	
+	if(click_no == "1")
+	{
+		head_tag[0].style.display = "none";
+		paragraph[0].style.display = "none";
+		paragraph[1].style.display = "none";
+	}
 
 	//initial the buttons text and onclick action
 	initBtnsAction();
@@ -134,6 +145,11 @@ function noPreSecurityInit()
 
 function initBtnsAction()
 {
+	if(click_no == "1")
+	{
+		var next_btn = document.getElementById("next");
+		next_btn.style.display = "none";
+	}
 	//buttons left
 	var btns_div1 = document.getElementById("btnsContainer_div1");
 	if ( btns_div1 )

@@ -28,6 +28,7 @@ var select_editnum="<% cfg_get("resev_editnum") %>";
 var have_ipmac_flag=parent.have_ipmac_flag;
 var ipmac_binding_flag="<% cfg_get("ipmac_binding_on")%>";
 var is_ipmac=(have_ipmac_flag == 1 && ipmac_binding_flag == 1 && (parent.is_ru_version == 1 || parent.is_pr_version == 1)) ? 1 : 0;
+var apply_flag = 0;
 
 function loadvalue()
 {
@@ -44,6 +45,7 @@ function loadvalue()
 	cf.rsv_mac.value=each_info[1];
 }
 
+window.onunload = function leavepage(){if(apply_flag == 0) top.back_flag=1;};
 </script>
 <input type="hidden" name="reservation_ipaddr">
 <input type="hidden" name="duplicated_reservation">

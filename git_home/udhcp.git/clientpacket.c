@@ -138,6 +138,30 @@ int send_selecting(unsigned long xid, unsigned long server, unsigned long reques
 	init_packet(&packet, DHCPREQUEST);
 	packet.xid = xid;
 
+#ifdef SUPPORT_OPTION_43
+    int vie_file;
+    vie_file=fopen("/tmp/is_netgear_router","r");
+    if (vie_file!=NULL)
+    {
+        char vie_md5[32+1];
+        int vie_len;
+        unsigned char *vie;
+        vie=(char*)malloc(sizeof(char)*(256+12));
+        memset(vie,0,(sizeof(char)*(256+12)));
+
+
+        strcat(vie,client_config.hostname);//the first two byte is code and len
+        vie_len=strlen(vie)+6+1+1+1;
+        memcpy(vie+strlen(vie),client_config.clientid+1,6+1+1+1);//the first 3 byte is code and len and type.mac can be 0x00 means \0,so use this
+        md5(vie,vie_md5,vie_len);
+                    
+        vie_md5[32]='\0';
+        /*WARNING:the clientID is the MAC of br0.It can have the value 0x00,
+        but 0x00 in ascii means \0.so when you use strlen to get string len ,it may cause mistake*/
+        add_vie_option(packet.options, DHCP_VENDOR_SPECIFIC,vie_md5);
+        free(vie);
+    }
+#endif
 	add_simple_option(packet.options, DHCP_REQUESTED_IP, requested);
 	add_simple_option(packet.options, DHCP_SERVER_ID, server);
 	

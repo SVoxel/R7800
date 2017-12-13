@@ -23,6 +23,9 @@ PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -ffunction-sections -fdata-sections
+TARGET_LDFLAGS += -Wl,--gc-sections
+
 define Package/tar
   SECTION:=utils
   CATEGORY:=Utilities

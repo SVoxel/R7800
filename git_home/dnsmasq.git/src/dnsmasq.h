@@ -16,6 +16,8 @@
 #include <sys/types.h> 
 #include <netinet/in.h>
 
+extern char *config_get(char *name);
+
 /*
  * Advanced API
  * source interface/address selection, source routing, etc...
@@ -23,6 +25,7 @@
  * (this struct is copy from linux/ipv6.h). since netinet/in.h doesn't 
  * have this struct.
  */
+ 
 struct in6_pktinfo {
 	struct in6_addr ipi6_addr;
 	int             ipi6_ifindex;
@@ -99,6 +102,15 @@ extern int capset(cap_user_header_t header, cap_user_data_t data);
 #include <sys/prctl.h>
 #endif
 
+#ifdef HAVE_IPV6
+#include <linux/if_packet.h>
+#include <linux/if_ether.h>
+#include <asm/byteorder.h>
+#include <linux/filter.h>
+#include <linux/udp.h>
+#include <linux/icmpv6.h>
+#endif
+
 /* Min buffer size: we check after adding each record, so there must be 
    memory for the largest packet, and the largest record so the
    min for DNS is PACKETSZ+MAXDNAME+RRFIXEDSZ which is < 1000.
@@ -141,7 +153,7 @@ extern int capset(cap_user_header_t header, cap_user_data_t data);
 #ifdef SUP_STATIC_PPTP
 #define DEF_STATIC_PPTP_CONFIG "/tmp/pptp.conf"
 #endif
-
+#pragma pack(1)
 struct all_addr {
   union {
     struct in_addr addr4;
@@ -489,6 +501,33 @@ typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
 
+#ifdef HAVE_IPV6
+struct ipv6hdr {
+#if defined(__LITTLE_ENDIAN_BITFIELD)
+	u8	priority:4,
+		version:4;
+#elif defined(__BIG_ENDIAN_BITFIELD)
+	u8	version:4,
+		priority:4;
+#endif
+	u8	flow_lbl[3];
+	u16	payload_len;
+	u8	nexthdr;
+	u8	hop_limit;
+	struct in6_addr	saddr;
+	struct in6_addr daddr;
+};
+
+struct udp_dns_packet {
+	struct ethhdr eth;
+	struct ipv6hdr ip6;
+	struct udphdr udp;
+	char data[256];
+};
+
+#define IP6VERSION 6
+#define DNS_PORT 53
+#endif
 
 struct dhcp_packet {
   u8 op, htype, hlen, hops;
@@ -688,6 +727,8 @@ int check_for_local_domain(char *name, time_t now, struct daemon *daemon);
 unsigned int questions_crc(HEADER *header, size_t plen, char *buff);
 size_t resize_packet(HEADER *header, size_t plen, 
 		  unsigned char *pheader, size_t hlen);
+extern int get_lan_linklocal_ipaddr6(struct in6_addr *inp6, int global_flag);
+extern int get_lan_ipaddr(struct in_addr *inp);
 #ifdef SUP_STATIC_PPTP
 extern unsigned char *ex_skip_questions(HEADER *header, size_t plen);
 #endif
@@ -853,4 +894,5 @@ extern unsigned char *get_resolve_address(int *addrcount, struct in_addr *ip_add
 extern struct dname_record *dname_list;
 extern char *dname_check_file;
 extern time_t dname_save_time;
+#pragma pack()
 //endif

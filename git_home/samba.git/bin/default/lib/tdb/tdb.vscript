@@ -1,0 +1,197 @@
+TDB_1.2.1 {
+	global:
+		tdb_get_logging_private;
+		tdb_close;
+		tdb_needs_recovery;
+		tdb_ofs_read;
+		tdb_setalarm_sigptr;
+		tdb_parse_data;
+		tdb_enable_seqnum;
+		tdb_unlock;
+		tdb_lock_record;
+		tdb_allrecord_unlock;
+		tdb_transaction_commit;
+		tdb_have_extra_locks;
+		tdb_nest_lock;
+		tdb_fd;
+		tdb_chainunlock;
+		tdb_chainlock;
+		tdb_parse_record;
+		tdb_log_fn;
+		tdb_fetch;
+		tdb_transaction_unlock;
+		tdb_brlock;
+		tdb_transaction_start;
+		tdb_reopen;
+		tdb_nest_unlock;
+		tdb_get_seqnum;
+		tdb_exists;
+		tdb_lock_nonblock;
+		tdb_check;
+		tdb_reopen_all;
+		tdb_brunlock;
+		tdb_chainlock_mark;
+		tdb_allocate;
+		tdb_transaction_recover;
+		tdb_transaction_prepare_commit;
+		tdb_traverse_read;
+		tdb_add_flags;
+		tdb_open_ex;
+		tdb_chainlock_read;
+		tdb_lockall_unmark;
+		tdb_repack;
+		tdb_get_flags;
+		tdb_transaction_lock;
+		tdb_alloc_read;
+		tdb_delete;
+		tdb_freelist_size;
+		tdb_chainunlock_read;
+		tdb_name;
+		tdb_printfreelist;
+		tdb_lockall_read_nonblock;
+		tdb_map_size;
+		tdb_firstkey;
+		tdb_transaction_cancel;
+		tdb_rec_read;
+		tdb_allrecord_lock;
+		tdb_error;
+		tdb_chainlock_nonblock;
+		tdb_expand;
+		tdb_lock;
+		tdb_release_transaction_locks;
+		tdb_write_unlock_record;
+		tdb_mmap;
+		tdb_open;
+		tdb_lockall_mark;
+		tdb_increment_seqnum_nonblock;
+		tdb_set_max_dead;
+		tdb_unlock_record;
+		tdb_dump_all;
+		tdb_munmap;
+		tdb_traverse;
+		tdb_free;
+		tdb_lockall;
+		tdb_rec_free_read;
+		tdb_validate_freelist;
+		tdb_transaction_start_nonblock;
+		tdb_set_logging_function;
+		tdb_ofs_write;
+		tdb_remove_flags;
+		tdb_lockall_nonblock;
+		tdb_errorstr;
+		tdb_hash_size;
+		tdb_write_lock_record;
+		tdb_unlockall;
+		tdb_rec_write;
+		tdb_io_init;
+		tdb_append;
+		tdb_do_delete;
+		tdb_convert;
+		tdb_lockall_read;
+		tdb_store;
+		tdb_nextkey;
+		tdb_wipe_all;
+		tdb_chainlock_unmark;
+		tdb_allrecord_upgrade;
+		tdb_unlockall_read;
+		tdb_find_lock_hash;
+};
+
+TDB_1.2.2 {
+	global:
+		tdb_null;
+} TDB_1.2.1;
+
+TDB_1.2.3 {
+} TDB_1.2.2;
+
+TDB_1.2.4 {
+} TDB_1.2.3;
+
+TDB_1.2.5 {
+	global:
+		tdb_jenkins_hash;
+} TDB_1.2.4;
+
+TDB_1.2.6 {
+} TDB_1.2.5;
+
+TDB_1.2.7 {
+} TDB_1.2.6;
+
+TDB_1.2.8 {
+} TDB_1.2.7;
+
+TDB_1.2.9 {
+	global:
+		tdb_summary;
+} TDB_1.2.8;
+
+TDB_1.2.10 {
+	global:
+		tdb_transaction_write_lock_unmark;
+		tdb_transaction_write_lock_mark;
+} TDB_1.2.9;
+
+TDB_1.2.11 {
+	global:
+		tdb_rescue;
+} TDB_1.2.10;
+
+TDB_1.2.12 {
+} TDB_1.2.11;
+
+TDB_1.2.13 {
+} TDB_1.2.12;
+
+TDB_1.3.0 {
+	global:
+		tdb_runtime_check_for_robust_mutexes;
+} TDB_1.2.13;
+
+TDB_1.3.1 {
+} TDB_1.3.0;
+
+TDB_1.3.2 {
+} TDB_1.3.1;
+
+TDB_1.3.3 {
+} TDB_1.3.2;
+
+TDB_1.3.4 {
+} TDB_1.3.3;
+
+TDB_1.3.5 {
+	global:
+		tdb_chainlock_read_nonblock;
+} TDB_1.3.4;
+
+TDB_1.3.6 {
+} TDB_1.3.5;
+
+TDB_1.3.7 {
+} TDB_1.3.6;
+
+TDB_1.3.8 {
+} TDB_1.3.7;
+
+TDB_1.3.9 {
+} TDB_1.3.8;
+
+TDB_1.3.10 {
+} TDB_1.3.9;
+
+TDB_1.3.11 {
+	global:
+		tdb_storev;
+} TDB_1.3.10;
+
+TDB_1.3.12 {
+} TDB_1.3.11;
+
+SAMBA_4.6.4 {
+	global:
+		tdb_*;
+	local:
+		*;
+};

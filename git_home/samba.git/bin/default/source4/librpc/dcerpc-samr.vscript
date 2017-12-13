@@ -1,0 +1,4 @@
+DCERPC_SAMR_0.0.1 {
+	global:
+		*;
+};

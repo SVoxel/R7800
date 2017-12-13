@@ -113,6 +113,9 @@ function check_reservation_add(cf,flag)
 	}
 	cf.reservation_ipaddr.value=address_parseInt(rsvipaddr);
 
+	if(typeof(apply_flag) != "undefined")
+		apply_flag = 1;
+
 	cf.submit();
 
 	return true;

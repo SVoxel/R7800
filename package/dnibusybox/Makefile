@@ -16,6 +16,9 @@ BUSYBOX_HOME=$(GIT_HOME)/busybox.git
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -ffunction-sections -fdata-sections
+TARGET_LDFLAGS += -Wl,--gc-sections
+
 ifeq ($(DUMP),)
   STAMP_CONFIGURED:=$(strip $(STAMP_CONFIGURED))_$(shell grep '^CONFIG_BUSYBOX_' $(TOPDIR)/.config | md5s)
 endif

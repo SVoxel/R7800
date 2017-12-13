@@ -1,0 +1,42 @@
+#!/bin/sh
+lock_file=/tmp/.write_vie_lease_lockfile
+flag=0
+while [[ -f "$lock_file" && "$flag" -lt "10" ]]
+do
+	let flag++
+	sleep 1
+done
+
+[ "$flag" -eq "10" ]&& exit 0
+touch $lock_file
+
+ip=$1
+mac=$2
+hostname=$3
+profile="AllConfig"
+logs="/var/log/soapclient/$mac"
+
+mac="`echo ${mac}|tr [a-z] [A-Z]`"
+if [ -f "/tmp/hyt_result" ] 
+then
+    grep $mac /tmp/hyt_result && sed -i "/$mac/d" /tmp/hyt_result 
+    echo "$mac $ip $hostname @#$&*!" >>/tmp/hyt_result 
+else
+    touch /tmp/hyt_result &&  echo "$mac $ip $hostname @#$&*!">>/tmp/hyt_result
+fi
+
+
+rm -f $lock_file
+
+sleep 3
+
+/bin/config set connect_ext_num=1
+
+#pidfile=$(eval "echo /var/locks/soap-$mac.pid")
+#if [ -f $pidfile ]; then
+#    /usr/share/udhcpd/hyt_result_maintain &
+#    exit 0
+#else
+    /usr/sbin/soapclient -a $ip -p 80 -m $mac -s $profile  $logs &
+    /usr/share/udhcpd/hyt_result_maintain &
+#fi

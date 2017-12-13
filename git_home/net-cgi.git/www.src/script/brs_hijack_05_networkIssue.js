@@ -84,6 +84,7 @@ function clickNext()
 		if(confirm(bh_no_genie_help_confirm) == false)
 			return false;
 
+		top.click_no_flag=1;
 		this.location.href = "BRS_security.html";
 		return true;
 	}

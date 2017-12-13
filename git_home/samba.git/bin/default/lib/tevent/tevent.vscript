@@ -1,0 +1,186 @@
+TEVENT_0.9.9 {
+	global:
+		tevent_debug;
+		tevent_wakeup_recv;
+		tevent_common_fd_set_flags;
+		tevent_queue_stop;
+		tevent_timeval_current;
+		_tevent_queue_create;
+		tevent_backend_list;
+		tevent_set_default_backend;
+		_tevent_add_fd;
+		tevent_req_set_cancel_fn;
+		_tevent_req_notify_callback;
+		tevent_timeval_add;
+		tevent_common_add_timer;
+		tevent_timeval_current_ofs;
+		_tevent_add_timer;
+		tevent_req_is_in_progress;
+		tevent_common_fd_destructor;
+		tevent_set_debug_stderr;
+		tevent_timeval_set;
+		_tevent_create_immediate;
+		tevent_fd_get_flags;
+		_tevent_req_nomem;
+		tevent_timeval_is_zero;
+		tevent_common_loop_wait;
+		_tevent_loop_wait;
+		tevent_timeval_until;
+		tevent_register_backend;
+		tevent_timeval_compare;
+		_tevent_loop_until;
+		tevent_req_is_error;
+		tevent_req_received;
+		tevent_req_set_callback;
+		tevent_cleanup_pending_signal_handlers;
+		tevent_loop_allow_nesting;
+		tevent_req_post;
+		tevent_req_set_print_fn;
+		tevent_signal_support;
+		tevent_context_init;
+		tevent_req_print;
+		tevent_timeval_zero;
+		tevent_req_default_print;
+		_tevent_req_error;
+		tevent_re_initialise;
+		tevent_fd_set_close_fn;
+		_tevent_add_signal;
+		tevent_common_add_fd;
+		tevent_common_fd_get_flags;
+		tevent_common_add_signal;
+		tevent_wakeup_send;
+		_tevent_req_callback_data;
+		tevent_req_poll;
+		tevent_req_set_endtime;
+		tevent_queue_start;
+		tevent_fd_set_auto_close;
+		tevent_set_debug;
+		_tevent_req_data;
+		_tevent_req_create;
+		tevent_set_abort_fn;
+		tevent_queue_length;
+		_tevent_req_done;
+		_tevent_schedule_immediate;
+		tevent_common_fd_set_close_fn;
+		_tevent_loop_once;
+		tevent_queue_add;
+		tevent_context_init_byname;
+		tevent_common_context_destructor;
+		tevent_common_loop_immediate;
+		tevent_common_check_signal;
+		tevent_loop_set_nesting_hook;
+		tevent_fd_set_flags;
+		_tevent_req_cancel;
+		tevent_common_schedule_immediate;
+		tevent_common_loop_timer_delay;
+};
+
+TEVENT_0.9.10 {
+} TEVENT_0.9.9;
+
+TEVENT_0.9.11 {
+} TEVENT_0.9.10;
+
+TEVENT_0.9.12 {
+	global:
+		_tevent_req_oom;
+} TEVENT_0.9.11;
+
+TEVENT_0.9.13 {
+	global:
+		tevent_req_defer_callback;
+} TEVENT_0.9.12;
+
+TEVENT_0.9.14 {
+	global:
+		tevent_queue_add_optimize_empty;
+		tevent_queue_add_entry;
+		tevent_queue_running;
+} TEVENT_0.9.13;
+
+TEVENT_0.9.15 {
+} TEVENT_0.9.14;
+
+TEVENT_0.9.16 {
+	global:
+		tevent_set_trace_callback;
+		tevent_context_init_ops;
+		tevent_get_trace_callback;
+		tevent_trace_point_callback;
+} TEVENT_0.9.15;
+
+TEVENT_0.9.17 {
+} TEVENT_0.9.16;
+
+TEVENT_0.9.18 {
+	global:
+		tevent_common_add_timer_v2;
+} TEVENT_0.9.17;
+
+TEVENT_0.9.19 {
+} TEVENT_0.9.18;
+
+TEVENT_0.9.20 {
+	global:
+		tevent_num_signals;
+		tevent_queue_wait_send;
+		tevent_queue_wait_recv;
+		tevent_sa_info_queue_count;
+} TEVENT_0.9.19;
+
+TEVENT_0.9.21 {
+	global:
+		tevent_req_set_cleanup_fn;
+} TEVENT_0.9.20;
+
+TEVENT_0.9.22 {
+} TEVENT_0.9.21;
+
+TEVENT_0.9.23 {
+} TEVENT_0.9.22;
+
+TEVENT_0.9.24 {
+} TEVENT_0.9.23;
+
+TEVENT_0.9.25 {
+} TEVENT_0.9.24;
+
+TEVENT_0.9.26 {
+	global:
+		tevent_thread_proxy_schedule;
+		tevent_thread_proxy_create;
+} TEVENT_0.9.25;
+
+TEVENT_0.9.27 {
+} TEVENT_0.9.26;
+
+TEVENT_0.9.28 {
+} TEVENT_0.9.27;
+
+TEVENT_0.9.29 {
+} TEVENT_0.9.28;
+
+TEVENT_0.9.30 {
+	global:
+		tevent_common_threaded_activate_immediate;
+		_tevent_threaded_schedule_immediate;
+		tevent_threaded_context_create;
+		tevent_common_have_events;
+		tevent_common_wakeup;
+		tevent_common_wakeup_init;
+} TEVENT_0.9.29;
+
+TEVENT_0.9.31 {
+	global:
+		tevent_update_timer;
+		tevent_req_reset_endtime;
+		tevent_common_wakeup_fd;
+} TEVENT_0.9.30;
+
+SAMBA_4.6.4 {
+	global:
+		tevent_*;
+		_tevent_*;
+	local:
+		*;
+};

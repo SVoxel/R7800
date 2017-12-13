@@ -238,34 +238,6 @@ bh_wanlan_conflict_info="İnternet Servis Sağlayıcınızla bir çakışma olma
 bh_continue_mark="Devam"
 bh_same_server_wan_ip="IP adresim, Sunucu Adresi ile aynı olmamalı!"
 
-//readySHARE remote strings
-remote_share_head="ReadyCLOUD"
-ready_cloud_info="<p>ReadyCLOUD, router'ınızın USB bağlantı noktasına bağlı bir USB depolama aygıtına İnternet üzerinden uzaktan erişebilmenizi sağlar. ReadyCLOUD özelliğini kullanmak için bir ReadyCLOUD hesabınız olmalıdır. ReadyCLOUD hesabınız yoksa <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/clien/index.html#page=access\">buraya tıklayın</a>, ardından <b>Oturum Aç> Hesap Oluştur</b> düğmesine tıklayın. </p><p><b>ReadyCLOUD özelliğini ayarlama</b></p><p><ol><li>Router'ınızın USB bağlantı noktasına bir USB depolama aygıtı takın.</li><li>Aşağıdaki alanlara ReadyCLOUD kullanıcı adınızı ve parolanızı girin ve <b>Kaydet</b> düğmesine tıklayın. Router'ınız ve USB aygıtınız ReadyCLOUD özelliğine kaydolur.</li><li> <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com\">http://readycloud.netgear.com</a> adresini ziyaret edin, Oturum Aç düğmesine tıklayın, ReadyCLOUD kullanıcı adınızı ve parolanızı girin ve <b>Oturum Aç</b> düğmesine tıklayın.</li></ol></p><p>      Bilgisayarınız ya da mobil aygıtınız ve router'ınızın USB depolama aygıtı arasında güvenli bir bağlantı kurmak için de ReadyCLOUD uygulamasını kullanabilirsiniz.<br>      ReadyCLOUD uygulamasını indirmek için <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/client/cloud_download.html\">buraya tıklayın</a>.</p>"
-ready_share_info1="ReadySHARE Cloud özelliği, yönlendiricinizin USB bağlantı noktasına bağlı bir USB depolama aygıtına İnternet üzerinden erişebilmenizi sağlar."
-how_setup_ready_share="ReadySHARE Cloud Nasıl Ayarlanır?"
-ready_share_step1="1. Adım: Bir ReadySHARE Cloud hesabınız olmalıdır. Hesabınız yoksa, hesap almak için <a class='linktype' target='_blank' href='https://readyshare.netgear.com/site/index.jsp?pid=4&src=device'>buraya tıklayın</a>."
-ready_share_step2="2. Adım: Bu sayfada, yönlendiricinizi ve yönlendiriciye bağlı USB aygıtını hesabınıza kaydetmek için ReadySHARE Cloud kullanıcı adınızı ve parolanızı girin."
-ready_share_step3="3. Adım: Hesabınızla tekrar <a class='linktype' target='_blank' href='http://readyshare.netgear.com/'>http://readyshare.netgear.com</a> sayfasında oturum açın. Yönlendiricinize bağlı olan USB aygıtını görmeniz gerekir."
-ready_share_set_note="<b>Not:</b> Bu istemci olmadan, USB aygıtı içeriğine göz atabilirsiniz, ancak dosyaları açamaz ve dosyalarda değişiklik yapamazsınız"
-ready_share_start="Router'ınızı ve USB aygıtınızı ReadyCLOUD'a kaydedin"
-ready_share_get_account="ReadyCLOUD hesabınız yoksa oluşturmak için <a class='linktype' target='_blank' href='http://readycloud.netgear.com/clien/index.html#page=access'>buraya tıklayın</a>"
-username="Kullanıcı Adı"
-key_passphrase="Parola"
-register="Kaydet"
-register_note="<b>Not:</b> Kaydınızı silene kadar router'ınız ReadyCLOUD özelliğine kesintisiz şekilde bağlı kalır."
-help_center="Yardım Merkezi"
-help_show_hide="Yardım Merkezini Göster/Gizle"
-
-resister_user="Bu router, şu ReadyCLOUD kullanıcısıyla ilişkilendirilmiştir:"
-access_storage_method="Artık USB aygıtınıza her yerden erişmek için ReadyCLOUD hesabınızla <a class='linktype' target='_blank' href='http://readycloud.netgear.com'>http://readycloud.netgear.com</a> adresinde oturum açabilirsiniz."
-unregister_info="Bu router'ı farklı bir ReadyCLOUD hesabıyla ilişkilendirmek için <B>Kaydı sil</B> seçeneğine tıklayın"
-unregister="Kaydı Sil"
-
-result_register_ok="Kayıt başarıyla tamamlandı"
-result_register_fail="Kayıt başarısız oldu. Lütfen kullanıcı adınızı ve parolanızı kontrol edip tekrar deneyin."
-result_unreg_ok="Kayıt silme işlemi başarıyla tamamlandı"
-result_unreg_fail="Kayıt silinemedi"
-
 //WIZ_sel_3g_adsl.htm
 bh_connection_mode="Choosing Connection Mode"
 

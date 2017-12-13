@@ -60,7 +60,7 @@ endef
 define Build/Compile
 	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) \
 		$(TARGET_CONFIGURE_OPTS) \
-		CFLAGS="$(TARGET_CFLAGS) -O3" \
+		CFLAGS="$(TARGET_CFLAGS) -O3 -ffunction-sections -fdata-sections" \
 		libz.a libz.so.$(PKG_VERSION)
 	mkdir -p $(PKG_INSTALL_DIR)
 	$(MAKE) -C $(PKG_BUILD_DIR) \

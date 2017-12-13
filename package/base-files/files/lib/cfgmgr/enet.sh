@@ -266,7 +266,7 @@ sw_configvlan_vlan()
 		case "$2" in
 			br) ports="0t 5t" ;;
 			lan) ports="6" ;;
-			wan) ports="0t 5" ;;
+			wan) ports="0 5" ;;
 			vlan) ports="0t 5t 6t" ;
 		esac
 		for i in 1 2 3 4; do

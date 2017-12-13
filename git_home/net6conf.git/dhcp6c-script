@@ -203,4 +203,7 @@ fi
 		echo "dhcpv6 server is running, reload dhcp6s config file !"
 		/etc/net6conf/6service reload &
 	fi
-
+	
+	#Wait 2s to write new prefix value to config by 6service reload
+	sleep 2
+	/usr/sbin/net-wall -6 restart > /dev/console

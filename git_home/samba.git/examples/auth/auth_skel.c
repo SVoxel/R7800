@@ -6,7 +6,7 @@
    
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
+   the Free Software Foundation; either version 3 of the License, or
    (at your option) any later version.
    
    This program is distributed in the hope that it will be useful,
@@ -15,11 +15,11 @@
    GNU General Public License for more details.
    
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "includes.h"
+#include "auth.h"
 
 #undef DBGC_CLASS
 #define DBGC_CLASS DBGC_AUTH
@@ -27,8 +27,8 @@
 static NTSTATUS check_skel_security(const struct auth_context *auth_context,
 					 void *my_private_data, 
 					 TALLOC_CTX *mem_ctx,
-					 const auth_usersupplied_info *user_info, 
-					 auth_serversupplied_info **server_info)
+					 const struct auth_usersupplied_info *user_info,
+					 struct auth_serversupplied_info **server_info)
 {
 	if (!user_info || !auth_context) {
 		return NT_STATUS_LOGON_FAILURE;
@@ -42,18 +42,33 @@ static NTSTATUS check_skel_security(const struct auth_context *auth_context,
 }
 
 /* module initialisation */
-NTSTATUS auth_init_skel(struct auth_context *auth_context, const char *param, auth_methods **auth_method) 
+static NTSTATUS auth_init_skel(struct auth_context *auth_context, const char *param, auth_methods **auth_method)
 {
-	if (!make_auth_methods(auth_context, auth_method)) {
+	struct auth_methods *result;
+
+	result = talloc_zero(auth_context, struct auth_methods);
+	if (result == NULL) {
 		return NT_STATUS_NO_MEMORY;
 	}
+	result->name = "skel";
+	result->auth = check_skel_security;
 
-	(*auth_method)->auth = check_skel_security;
-	(*auth_method)->name = "skel";
+	if (param && *param) {
+		/* we load the 'fallback' module - if skel isn't here, call this
+		   module */
+		auth_methods *priv;
+		if (!load_auth_module(auth_context, param, &priv)) {
+			return NT_STATUS_UNSUCCESSFUL;
+		}
+		result->private_data = (void *)priv;
+	}
+
+        *auth_method = result;
 	return NT_STATUS_OK;
 }
 
-NTSTATUS init_module(void)
+NTSTATUS auth_skel_init(void);
+NTSTATUS auth_skel_init(void)
 {
 	return smb_register_auth(AUTH_INTERFACE_VERSION, "skel", auth_init_skel);
 }

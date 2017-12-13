@@ -6,7 +6,7 @@
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
+ *  the Free Software Foundation; either version 3 of the License, or
  *  (at your option) any later version.
  *  
  *  This program is distributed in the hope that it will be useful,
@@ -15,8 +15,7 @@
  *  GNU General Public License for more details.
  *  
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "perf.h"
@@ -37,10 +36,6 @@ void add_key_raw(TDB_CONTEXT *db, char *keystring, void *databuf, size_t datasiz
   key.dsize = strlen(keystring);
   data.dptr = databuf;
   data.dsize = datasize;
-  fprintf(stderr, "doing insert of [%x] with key [%s] into [%s]\n", 
-	  data.dptr, 
-	  keystring, 
-	  db->name);
 
   tdb_store(db, key, data, flags);
 }
@@ -53,10 +48,6 @@ void add_key(TDB_CONTEXT *db, char *keystring, char *datastring, int flags)
   key.dsize = strlen(keystring);
   data.dptr = datastring;
   data.dsize = strlen(datastring);
-  /*  fprintf(stderr, "doing insert of [%s] with key [%s] into [%s]\n", 
-	  data.dptr, 
-	  keystring, 
-	  db->name);*/
 
   tdb_store(db, key, data, flags);
 }

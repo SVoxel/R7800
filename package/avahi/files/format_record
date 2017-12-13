@@ -1,0 +1,60 @@
+#!/bin/sh
+
+format_mac(){
+    for var in 1 3 5 7 9 11
+    do
+        if [ $var -lt 11 ]
+        then
+            tmp=$tmp$(eval "expr substr $1 $var 2"):
+        else
+            tmp=$tmp$(eval "expr substr $1 $var 4")
+        fi
+    done
+    echo $tmp
+}
+
+format_ip(){
+    for var in 1 3 5 7
+    do
+        if [ $var -lt 7 ]
+        then
+            tmp=$tmp$(echo "obase=10; ibase=16; $(expr substr $1 $var 2)" | bc).
+        else
+            tmp=$tmp$(echo "obase=10; ibase=16; $(expr substr $1 $var 2)" | bc)
+        fi
+    done
+    echo $tmp
+}
+
+#line="ex8000._mywifiext._tcp.local \"01200632A7200002000200010000000000C0A802FAD00DFEFD0034010000000000002C00280000001299EX8000\""
+deal_format(){
+    data=$(echo $1 | cut -d \" -f 2)
+    ver=$(echo "obase=10; ibase=16; $(expr substr $data 1 2)" | bc)
+    len=$(echo "obase=10; ibase=16; $(expr substr $data 3 2)" | bc)
+    #mac=$(expr substr $data 5 12)
+    mac=$(format_mac $(expr substr $data 5 12))
+    extvie=$(expr substr $data 17 16)
+    mdns_joined=$(echo "obase=10; ibase=16; $(expr substr $data 33 2)" | bc)
+    ip=$(format_ip $(expr substr $data 35 8))
+#    mac_2g=$(format_mac ${data:42:12})
+#    chan_2g=$(echo "obase=10; ibase=16; ${data:54:2}" | bc)
+#    mac_5g1=$(format_mac ${data:56:12})
+#    chan_5g1=$(echo "obase=10; ibase=16; ${data:68:2}" | bc)
+#    mac_5g2=$(format_mac ${data:70:12})
+#    chan_5g2=$(echo "obase=10; ibase=16; ${data:82:2}" | bc)
+#    name=${data:84}
+#    name=${data:42}
+    name=$(expr substr $data 43 12)
+#    echo "\"ip=$ip\" \"ver=$ver\" \"mac=$mac\" \"name=$name\" \"extvie=$extvie\" \"mdns_joined=$mdns_joined\" \"5G1_bssid=$mac_5g1\" \"5G1_channel=$chan_5g1\" \"5G2_bssid=$mac_5g2\" \"5G2_channel=$chan_5g2\" \"2G_bssid=$mac_2g\" \"2G_channel=$chan_2g\""
+    echo "\"ip=$ip\" \"ver=$ver\" \"mac=$mac\" \"name=$name\" \"extvie=$extvie\" \"mdns_joined=$mdns_joined\""
+}
+
+main(){
+    [ -f /tmp/mdns_record ] && rm /tmp/mdns_record
+    while read dev line
+    do
+        echo "$dev `deal_format $line`" >> /tmp/mdns_record
+    done < /tmp/mdns_record_format
+}
+
+main

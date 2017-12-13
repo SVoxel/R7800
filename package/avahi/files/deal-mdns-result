@@ -1,0 +1,45 @@
+#!/bin/sh
+
+[ -f /tmp/mdns_result_sort ] && rm -f /tmp/mdns_result_sort
+[ -f /tmp/mdns_result_tmp ] && rm -f /tmp/mdns_result_tmp
+
+#generate a record table
+#[ -f /tmp/mdns_a_record_tmp ] && cat /tmp/mdns_a_record_tmp | sed 's/.local//' | tr 'A-Z' 'a-z' | sort -u > /tmp/mdns_a_record
+#www.mywifiext.net
+#www.mywifiext.com
+#mywifiext.net
+#mywifiext.com
+[ -f /tmp/mdns_a_record ] && rm -f /tmp/mdns_a_record # clean mdns_a_record file 
+#apend above hostname to /tmp/mdns_a_record
+if [ -s /tmp/hyt_result ]; then
+    record_line=$(cat /tmp/hyt_result | awk 'NR==1{print $2}')
+    echo $record_line | awk 'NR==1{print "mywifiext",$1}' > /tmp/mdns_a_append_record
+    echo $record_line | awk 'NR==1{print "ex8000",$1}' >> /tmp/mdns_a_append_record
+    echo $record_line | awk 'NR==1{print "www.mywifiext.net",$1}' >> /tmp/mdns_a_append_record
+    echo $record_line | awk 'NR==1{print "www.mywifiext.com",$1}' >> /tmp/mdns_a_append_record
+    echo $record_line | awk 'NR==1{print "mywifiext.net",$1}' >> /tmp/mdns_a_append_record
+    echo $record_line | awk 'NR==1{print "mywifiext.com",$1}' >> /tmp/mdns_a_append_record
+    cat /tmp/mdns_a_append_record >> /tmp/mdns_a_record
+    rm -rf /tmp/mdns_a_append_record
+fi
+
+local tmp_dev tmp_ip tmp_ver tmp_mac tmp_name tmp_vie xx
+local dev ip ver mac name vie
+while read tmp_dev tmp_ip tmp_ver tmp_mac tmp_name tmp_vie xx; do
+	dev=`echo $tmp_dev |awk  -F '.'  '{print $1}'`
+	ip=`echo $tmp_ip |awk  -F '='  '{print $2}' | awk -F '"' '{print $1}'`
+	ver=`echo $tmp_ver |awk  -F '='  '{print $2}' | awk -F '"' '{print $1}'`
+	mac=`echo $tmp_mac |awk  -F '='  '{print $2}' | awk -F '"' '{print $1}'`
+	name=`echo $tmp_name |awk  -F '='  '{print $2}' | awk -F '"' '{print $1}'`
+	vie=`echo $tmp_vie |awk  -F '='  '{print $2}' | awk -F '"' '{print $1}'`
+
+    #echo "$dev $ip $ver $mac $name " > /dev/console
+    if [ "$(echo $vie | cut -c 3-4)" = "02" ]
+    then
+        echo "$mac $ip $name @#$&*!" >> /tmp/mdns_result_sort
+    fi
+
+done < /tmp/mdns_record
+[ -f /tmp/mdns_result_sort ] && cat /tmp/mdns_result_sort | sort -u > /tmp/mdns_result_tmp
+
+

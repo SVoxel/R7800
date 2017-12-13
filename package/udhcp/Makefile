@@ -68,10 +68,13 @@ define Package/udhcp/install
 	install -m0755 $(PKG_BUILD_DIR)/udhcpd $(1)/sbin/
 	install -m0755 $(PKG_BUILD_DIR)/udhcpc $(1)/sbin/
 	install -d -m0755 $(1)/usr/share/udhcpc
+	install -d -m0755 $(1)/usr/share/udhcpd
 	install -m0755 $(PKG_BUILD_DIR)/default.script $(1)/usr/share/udhcpc/
 	install -m0755 $(PKG_BUILD_DIR)/default.script.ap $(1)/usr/share/udhcpc/
 	install -d -m0755 $(1)/usr/share/zcip
 	install -m0755 ./files/zcip.script $(1)/usr/share/zcip/
+	install -m0755 ./files/write_vie_lease $(1)/usr/share/udhcpd/
+	install -m0755 ./files/hyt_result_maintain $(1)/usr/share/udhcpd/
 endef
 
 $(eval $(call BuildPackage,udhcp))

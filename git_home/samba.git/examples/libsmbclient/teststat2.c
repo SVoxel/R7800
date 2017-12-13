@@ -8,7 +8,7 @@
 /*
  * This test is intended to ensure that the timestamps returned by
  * libsmbclient are the same as timestamps returned by the local system.  To
- * test this, we assume a working Samba environment, and and access the same
+ * test this, we assume a working Samba environment, and access the same
  * file via SMB and locally (or NFS).
  *
  */
@@ -34,11 +34,10 @@ int main(int argc, char* argv[])
 static int gettime(const char * pUrl,
                    const char * pLocalPath)
 {
-        //char *pSmbPath = 0;
         struct stat st;
-        char mtime[32];
-        char ctime[32];
-        char atime[32];
+        char m_time[32];
+        char c_time[32];
+        char a_time[32];
         
         smbc_init(get_auth_data_fn, 0);
         
@@ -48,25 +47,24 @@ static int gettime(const char * pUrl,
                 return 1;
         }
         
-        printf("SAMBA\n mtime:%lu/%s ctime:%lu/%s atime:%lu/%s\n",
-               st.st_mtime, ctime_r(&st.st_mtime, mtime),
-               st.st_ctime, ctime_r(&st.st_ctime, ctime),
-               st.st_atime, ctime_r(&st.st_atime, atime)); 
+        printf("SAMBA\n mtime:%lld/%s ctime:%lld/%s atime:%lld/%s\n",
+               (long long)st.st_mtime, ctime_r(&st.st_mtime, m_time),
+               (long long)st.st_ctime, ctime_r(&st.st_ctime, c_time),
+               (long long)st.st_atime, ctime_r(&st.st_atime, a_time));
         
         
-        // check the stat on this file
+        /* check the stat on this file */
         if (stat(pLocalPath, &st) < 0)
         {
                 perror("stat");
                 return 1;
         }
         
-        printf("LOCAL\n mtime:%lu/%s ctime:%lu/%s atime:%lu/%s\n",
-               st.st_mtime, ctime_r(&st.st_mtime, mtime),
-               st.st_ctime, ctime_r(&st.st_ctime, ctime),
-               st.st_atime, ctime_r(&st.st_atime, atime));
+        printf("LOCAL\n mtime:%lld/%s ctime:%lld/%s atime:%lld/%s\n",
+               (long long)st.st_mtime, ctime_r(&st.st_mtime, m_time),
+               (long long)st.st_ctime, ctime_r(&st.st_ctime, c_time),
+               (long long)st.st_atime, ctime_r(&st.st_atime, a_time));
         
         
         return 0;
 }
-

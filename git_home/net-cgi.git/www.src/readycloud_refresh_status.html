@@ -1,0 +1,21 @@
+<html>
+<head>
+    <script>
+		var state = "<% readycloud_status() %>";
+		if(!parent.is_first || (parent.is_first && parent.status == "running" && state != "running")) {
+			parent.account = "<% cfg_get("readycloud_registration_owner") %>";
+			parent.status = state;
+			if(parent.status != "running" && !parent.is_first)
+				parent.loadvalue();
+		}
+		if(parent.status == "running") {
+			setTimeout(function() {
+				document.location.reload();
+			}, 2000);
+		}
+		parent.is_first = false;
+    </script>
+</head>
+<body>
+</body>
+</html>

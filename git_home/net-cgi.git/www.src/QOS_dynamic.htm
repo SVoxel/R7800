@@ -322,6 +322,8 @@ function loadvalue()
 		document.getElementById("speedtest_content").style.display = "";
 		document.getElementById("speedtest_icon").style.display = "";
 		document.getElementById("speedtest_data").style.display = "";
+		document.getElementById("speedtest_logo").style.display = "";
+		document.getElementById("privacy_policy").style.display = "";
 		document.getElementById("updateBtn").disabled = true;
 		document.getElementById("updateBtn").className="new_greyspeed_test ui-corner-all";
 		getObj("indicate").innerHTML="$taking_speedtest";
@@ -363,6 +365,8 @@ function loadvalue()
 	{
 		document.getElementById("speedtest_icon").style.display = "";
 		document.getElementById("speedtest_data").style.display = "";
+		document.getElementById("speedtest_logo").style.display = "";
+		document.getElementById("privacy_policy").style.display = "";
 	}
 
 	if(update_tag == "11")
@@ -398,13 +402,19 @@ function loadvalue()
 	<input type="radio" name="qosSetting" id="qos_speedtest" value="1" checked onClick="setSpeed(1)"><a tabindex=-1 href="javascript:loadhelp('_quality_service','ookla_detect')">$detect_bandwidth</a></TD>
 </TR>
 <TR id="speedtest_content">
-	<TD width=5%>&nbsp;</TD>
+	<TD width=5% align="right">
+	<table>
+		<tr><td height="50px">&nbsp;</td></tr>
+		<tr id="speedtest_logo" style="display:none"><td><div><a href="http://www.speedtest.net/" target="_blank"><img src="/image/Speedtest_logo.png"></a></div></td></tr>
+		<tr id="privacy_policy" style="display:none"><td align="right"><a class="linktype linkbold" target="_blank" href="http://www.speedtest.net/privacy">Privacy Policy</a></td></tr>
+	</table>
+	</TD>
 	<TD colspan="3">
 	<TABLE>
 		<TR>
 			<TD colspan="2" height="50px" align="center">
 				<input type="button" name="speedtest" id="speedtest" value="$take_speedtest" class="new_speed_test ui-corner-all" onClick="return check_ookla_speedtest(document.forms[0])">
-				<div><span style="padding-left:10px;">$power_by</span><img src="/image/ookla.png" id="ookla_img" width="80px" height="18px" style="vertical-align:bottom;" /></div>
+				<!--div><span style="padding-left:10px;">$power_by</span><img src="/image/ookla.png" id="ookla_img" width="80px" height="18px" style="vertical-align:bottom;" /></div-->
 			</TD>
 		</TR>
 		<TR id="speedtest_tip"><TD colspan="2" align="center"><span id="indicate">

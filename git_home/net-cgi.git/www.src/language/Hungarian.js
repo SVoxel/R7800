@@ -238,34 +238,6 @@ bh_wanlan_conflict_info="Az internetszolgáltatóval való ütközés elkerülé
 bh_continue_mark="Folytatás"
 bh_same_server_wan_ip="A saját IP-cím nem lehet ugyanaz, mint a kiszolgáló címe!"
 
-//readySHARE remote strings
-remote_share_head="ReadyCLOUD"
-ready_cloud_info="<p>A ReadyCLOUD interneten keresztüli, távoli hozzáférést biztosít a router USB-portjához csatlakoztatott USB-tárolóeszközhöz. A ReadyCLOUD használatához ReadyCLOUD fiókkal kell rendelkeznie. Ha nem rendelkezik ReadyCLOUD fiókkal, <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/clien/index.html#page=access\">kattintson ide</a>, majd kattintson a <b>Bejelentkezés > Fiók létrehozása</b> elemre. </p><p><b>A ReadyCLOUD beállítása</b></p><p><ol><li>Csatlakoztasson USB-tárolóeszközt a router USB-portjához.</li><li>Adja meg ReadyCLOUD felhasználónevét és jelszavát az alábbi mezőkben, majd kattintson a <b>Regisztráció</b> gombra. Az útválasztó és az USB-eszköz regisztrálva van a ReadyCLOUD szolgáltatásra.</li><li> Látogasson el a <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com\">http://readycloud.netgear.com</a> oldalra, kattintson a Bejelentkezés elemre, adja meg ReadyCLOUD felhasználónevét és jelszavát, majd kattintson a <b>Bejelentkezés</b> gombra.</li></ol></p><p>      A ReadyCLOUD alkalmazással biztonságos kapcsolatot létesíthet számítógépe vagy mobilkészüléke és a router USB-s tárolóeszköze között.<br>      <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/client/cloud_download.html\">Kattintson ide</a> a ReadyCLOUD alkalmazás letöltéséhez.</p>"
-ready_share_info1="A ReadySHARE Cloud funkció interneten keresztüli, távoli hozzáférést biztosít az útválasztó USB-portjához csatlakoztatott USB-tárolóeszközhöz."
-how_setup_ready_share="A ReadySHARE Cloud telepítése"
-ready_share_step1="1. lépés: egy ReadySHARE Cloud fiókra van szükség. Ha még nem rendelkezik ilyennel,<a class='linktype' target='_blank' href='https://readyshare.netgear.com/site/index.jsp?pid=4&src=device'>kattintson ide</a> a létrehozáshoz."
-ready_share_step2="2. lépés: ezen az oldalon adja meg ReadySHARE Cloud felhasználónevét és jelszavát az útválasztó és a fiókjával hozzá csatlakoztatott USB-eszköz regisztrálásához."
-ready_share_step3="3. lépés: fiókjával jelentkezzen be ismét a <a class='linktype' target='_blank' href='http://readyshare.netgear.com/'>http://readyshare.netgear.com/</a> weboldalra. Ekkor látnia kell az útválasztóhoz csatlakoztatott USB-eszközt."
-ready_share_set_note="<b>Megjegyzés:</b> a kliens nélkül csak böngészheti az USB-eszköz tartalmát, ám nem nyithatja meg, illetve nem módosíthatja a fájlokat."
-ready_share_start="A ReadyCLOUD használatával regisztrálja a routert és az USB-s eszközt"
-ready_share_get_account="Ha nem rendelkezik ReadyCLOUD fiókkal, <a class='linktype' target='_blank' href='http://readycloud.netgear.com/clien/index.html#page=access'>kattintson ide</a> annak beszerzéséhez"
-username="Felhasználónév"
-key_passphrase="Jelszó"
-register="Regisztráció"
-register_note="<b>Megjegyzés:</b> Az útválasztó folyamatos kapcsolatban van a ReadyCLOUD funkcióval, amíg Ön nem törli a regisztrációt."
-help_center="Súgó központ"
-help_show_hide="Súgó központ mutatása/elrejtése"
-
-resister_user="Ez a router az alábbi ReadyCLOUD felhasználóval lett regisztrálva:"
-access_storage_method="Mostantól a ReadyCLOUD fiókkal bejelentkezhet a <a class='linktype' target='_blank' href='http://readycloud.netgear.com'>http://readycloud.netgear.com</a> címre, hogy bárhonnan hozzáférhessen USB-s eszközéhez."
-unregister_info="Kattintson a<B>Regisztráció törlése</B> elemre, hogy egy másik ReadyCLOUD fiókhoz regisztrálja a routert"
-unregister="Regisztráció törlése"
-
-result_register_ok="Regisztráció sikeresen végrehajtva"
-result_register_fail="Regisztráció sikertelen. Ellenőrizze a felhasználónevet és jelszót, majd próbálja újra."
-result_unreg_ok="Regisztráció megszüntetése sikeresen végrehajtva"
-result_unreg_fail="Regisztráció megszüntetése sikertelen"
-
 //WIZ_sel_3g_adsl.htm
 bh_connection_mode="Choosing Connection Mode"
 

@@ -1,0 +1,153 @@
+#!/bin/sh
+lock_file=/tmp/.write_vie_lease_lockfile
+lease_file=/tmp/hyt_result
+lease_file_tmp=/tmp/hyt_result_tmp
+arp_result_file=/tmp/arp_result
+arp_list_file=/tmp/arp_list
+final_result_file=/tmp/final_result
+
+run_file=/tmp/hyt_result_maintain.pid
+
+if_process_exit(){
+	[ -f $run_file ] && {
+	pid=`cat $run_file`
+	ps|grep $pid|grep -v grep && return 1
+	rm -f $run_file
+	return 0
+	}||return 0
+}
+
+if_process_exit ||return 1
+#Don't have rm $run_file because it's a endless loop 
+#and if the script die unreason ,the run_file do not remove
+#So I use process to check if there is a process or not
+touch $run_file
+echo $$>$run_file
+local count=0
+local count1=0
+
+while [ 1 ]
+do
+if [ ! -f $lock_file ]
+then
+	count=$((count+1))
+	count1=$((count1+1))
+	if [ $count = 4 ]; then
+		count1=0
+		cat  /tmp/hyt_result > /tmp/mdns_table
+		cat /tmp/mdns_result_tmp >> /tmp/mdns_table 
+		sort /tmp/mdns_table | uniq > $lease_file_tmp
+		rm -rf /tmp/mdns_table 2>/dev/null
+		count=0
+		touch $lock_file
+		touch $arp_result_file
+		touch $arp_list_file
+		touch $final_result_file
+		while read line
+		do
+			ip=`echo $line| cut -d ' ' -f 2` 
+			/usr/bin/arping -f -I  br0 -c 2 $ip >> $arp_result_file
+		done < $lease_file_tmp
+		sleep 3
+
+		sed -i 's/\[//g' $arp_result_file
+		sed -i 's/\]//g' $arp_result_file
+		while read line
+		do
+			[ `echo $line |cut -d ' ' -f 1` == "Unicast" ] &&{
+				ip=`echo $line |cut -d ' ' -f 4`
+				
+				mac=`echo $line |cut -d ' ' -f 5`
+				#use arping to get mac will get mac like 7:7:7:7:7:7
+				#but we want is 07:07:07:07:07:07 ,so use this code to change it
+				#for (i=1;i<=6;i++){
+				#	mac[$i]=`echo $mac | cut -d ':' -f $i`
+				#	[ ${mac[$i]} -lt 10 -a ${#mac[$i]} -lt 2 ]&&{
+				#		[ ${#mac[$i]} -eq 0 ]&& mac[$i]=00 || mac[$i]=0${mac[$i]}
+				#	}
+				#}
+				#mac=${mac[1]}:${mac[2]}:${mac[3]}:${mac[4]}:${mac[5]}:${mac[6]}
+
+				mac1=`echo $mac | cut -d ':' -f 1`
+				mac2=`echo $mac | cut -d ':' -f 2`
+				mac3=`echo $mac | cut -d ':' -f 3`
+				mac4=`echo $mac | cut -d ':' -f 4`
+				mac5=`echo $mac | cut -d ':' -f 5`
+				mac6=`echo $mac | cut -d ':' -f 6`
+				[  ${#mac1} -lt 2 ] &&{
+					[ ${#mac1} -eq 0 ]&& mac1="00"||mac1="0$mac1"
+				}
+				
+				[ ${#mac2} -lt 2 ] &&{
+					[ ${#mac2} -eq 0 ]&& mac2="00"||mac2="0$mac2"
+				}
+				
+				[ ${#mac3} -lt 2 ] &&{
+					[ ${#mac3} -eq 0 ]&& mac3="00"||mac3="0$mac3"
+				}
+				
+				[ ${#mac4} -lt 2 ] &&{
+					[ ${#mac4} -eq 0 ]&& mac4="00"||mac4="0$mac4"
+				}
+				
+				[ ${#mac5} -lt 2 ] &&{
+					[ ${#mac5} -eq 0 ]&& mac5="00"||mac5="0$mac5"
+				}
+				
+				[ ${#mac6} -lt 2 ] &&{
+					[ ${#mac6} -eq 0 ]&& mac6="00"||mac6="0$mac6"
+				}
+				
+				mac="$mac1:$mac2:$mac3:$mac4:$mac5:$mac6"
+
+				echo "$mac $ip" >> $arp_list_file
+			}
+		done < $arp_result_file
+		rm -f $arp_result_file
+
+		while read line
+		do
+			ip=`echo $line| cut -d ' ' -f 2` 
+			mac=`echo $line| cut -d ' ' -f 1` 
+			while read arplist 
+			do
+				arpip=`echo $arplist|cut -d ' ' -f 2`
+				arpmac=`echo $arplist|cut -d ' ' -f 1`
+				arpmac=$(echo $arpmac | tr '[a-z]' '[A-Z]')
+				[ "$arpip" == "$ip" -a "`echo ${arpmac}|cut -b 10-17`" == "`echo ${mac}|cut -b 10-17`" ] && {
+					echo "$line" >>$final_result_file
+					break
+				} 
+			done <$arp_list_file
+
+		done <$lease_file_tmp
+		rm -f $lease_file_tmp && cp $final_result_file $lease_file
+        
+        #if extender connect to router set to 1
+        if [ "x$(cat $lease_file)" = "x" ]
+        then
+            /bin/config set connect_ext_num=0
+        else
+            eval "/bin/config set connect_ext_num=$(awk 'END{print NR}' /tmp/hyt_result)"
+        fi
+
+        if [ "x$(/bin/config get connect_ext_num)" = "x1" ]; then
+            eval "/bin/config set extender_ipv4=$(/bin/cat /tmp/hyt_result | awk 'NR==1{print $2}')"
+        fi
+
+        #disable dns hijack when connect extender 
+        dns_hijack_old=$(/bin/config get dns_hijack)
+        if [ "x$(/bin/config get connect_ext_num)" != "x0" ]
+        then
+            /bin/config set dns_hijack=0
+        fi
+        dns_hijack_new=$(/bin/config get dns_hijack)
+        [ "x${dns_hijack_old}" != "x${dns_hijack_new}" ] && /usr/sbin/dns-hijack &
+
+		rm -f $arp_list_file
+		rm -f $final_result_file
+		rm -f $lock_file
+	fi
+fi
+	sleep 5
+done

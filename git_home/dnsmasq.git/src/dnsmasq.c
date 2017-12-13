@@ -47,6 +47,10 @@ static char *compile_opts =
 static pid_t pid;
 static int pipewrite;
 
+/* libconfig.so */
+extern char *config_get(char *name);
+extern int config_match(char *name, char *match);
+
 #ifdef DNI_IPV6_FEATURE
 extern void check_timeout_forward(struct daemon *daemon, time_t now);
 #endif
@@ -853,7 +857,7 @@ static int set_dns_listeners(struct daemon *daemon, time_t now, fd_set *set, int
       /* death of a child goes through the select loop, so
 	 we don't need to explicitly arrange to wake up here */
       for (i = 0; i < MAX_PROCS; i++)
-	if (daemon->tcp_pids[i] == 0)
+	if ( daemon->tcp_pids[i] == 0 && listener->tcpfd != -1 )
 	  {
 	    FD_SET(listener->tcpfd, set);
 	    bump_maxfd(listener->tcpfd, maxfdp);
@@ -877,6 +881,8 @@ static void check_dns_listeners(struct daemon *daemon, fd_set *set, time_t now)
 {
   struct serverfd *serverfdp;
   struct listener *listener;	  
+  char *buf = NULL;
+  short dial_flag = 0;
   
   for (serverfdp = daemon->sfds; serverfdp; serverfdp = serverfdp->next)
     if (FD_ISSET(serverfdp->fd, set))
@@ -885,14 +891,32 @@ static void check_dns_listeners(struct daemon *daemon, fd_set *set, time_t now)
   for (listener = daemon->listeners; listener; listener = listener->next)
     {
       if (FD_ISSET(listener->fd, set))
-	receive_query(listener, daemon, now); 
+      {
+	buf = config_get("wan_proto");
+	if(!strncmp(buf, "pppoe", 5) || !strncmp(buf, "pptp", 4) || !strncmp(buf, "l2tp", 4))
+	{
+		if(config_match("wan_pppoe_demand","1") 
+			|| config_match("wan_pptp_demand","1")
+			|| config_match("wan_l2tp_demand","1"))
+		{
+			dial_flag = 1;
+			system("echo \"1\">/proc/sys/net/dni/dial_on_demand_dns"); 
+		}
+	}
+		if(listener->family == AF_PACKET)
+			receive_raw_query(listener, daemon, now);  
+		else
+			receive_query(listener, daemon, now); 
+	if(dial_flag)
+		system("echo \"0\">/proc/sys/net/dni/dial_on_demand_dns"); 
+      }
  
 #ifdef HAVE_TFTP     
       if (listener->tftpfd != -1 && FD_ISSET(listener->tftpfd, set))
 	tftp_request(listener, daemon, now);
 #endif
 
-      if (FD_ISSET(listener->tcpfd, set))
+      if (listener->tcpfd != -1 && FD_ISSET(listener->tcpfd, set))
 	{
 	  int confd;
 	  struct irec *iface = NULL;

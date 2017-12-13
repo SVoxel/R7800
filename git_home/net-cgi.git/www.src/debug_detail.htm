@@ -40,6 +40,10 @@ function loadvalue()
 	else
 		document.forms[7].allow_ipv6_ping.checked = false;
 
+	if("<% cfg_get("debug_11k") %>" == "1")
+		document.forms[8].enable_11k.checked = true;
+	else
+		document.forms[8].enable_11k.checked = false;
 	refresh_start();
 }
 
@@ -112,6 +116,17 @@ function click_ipv6()
 		cf.hid_ipv6.value = "1";
 	else
 		cf.hid_ipv6.value = "0";
+	cf.action="/apply.cgi?/debug_detail.htm timestamp="+ts;
+	cf.submit();
+}
+
+function click_11k()
+{
+	var cf = document.forms[8];
+	if(cf.enable_11k.checked == true)
+		cf.hid_11k.value = "1";
+	else
+		cf.hid_11k.value = "0";
 	cf.action="/apply.cgi?/debug_detail.htm timestamp="+ts;
 	cf.submit();
 }
@@ -218,6 +233,11 @@ function refresh_start()
 <input type="hidden" name="submit_flag" value="debug_info" />
 <input type="hidden" name="hid_ipv6" />
 <input type="checkbox" name="allow_ipv6_ping" onclick="click_ipv6();"><b>Allow external IPv6 hosts ping internal IPv6 hosts</b>
+</form>
+<br/><form method="post" action="/apply.cgi?/debug_detail.htm" target="formframe">
+<input type="hidden" name="submit_flag" value="debug_info" />
+<input type="hidden" name="hid_11k" />
+<input type="checkbox" name="enable_11k" onclick="click_11k();"><b>Enable 11k</b>
 </form>
 
 </div>

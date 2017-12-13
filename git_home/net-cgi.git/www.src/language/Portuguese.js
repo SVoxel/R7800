@@ -238,34 +238,6 @@ bh_wanlan_conflict_info="Para evitar conflitos com o provedor de serviços de In
 bh_continue_mark="Continuar"
 bh_same_server_wan_ip="Meu endereço IP não pode ser igual ao endereço do servidor!"
 
-//readySHARE remote strings
-remote_share_head="ReadyCLOUD"
-ready_cloud_info="<p>O ReadyCLOUD oferece acesso remoto através da Internet a um dispositivo de armazenamento USB ligado à porta USB do router. Para utilizar o ReadyCLOUD, precisa de uma conta ReadyCLOUD. Se não tiver uma conta ReadyCLOUD,<a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/clien/index.html#page=access\">clique aqui</a> e, em seguida, clique em <b>Iniciar sessão > Criar conta</b>. </p><p><b>Para configurar o ReadyCLOUD</b></p><p><ol><li>Ligue um dispositivo de armazenamento USB à porta USB do seu router.</li><li>Introduza o nome de utilizador e a palavra-passe ReadyCLOUD nos campos abaixo e clique no botão <b>Registar</b>. O seu router e o dispositivo USB estão associados ao ReadyCLOUD.</li><li> Visite <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com\">http://readycloud.netgear.com</a>, clique em Iniciar sessão, introduza o seu nome de utilizador e palavra-passe ReadyCLOUD e clique no botão <b>Iniciar a sessão</b>.</li></ol></p><p>      Também pode utilizar a aplicação ReadyCLOUD para estabelecer uma ligação segura entre o seu computador ou dispositivo móvel e o dispositivo de armazenamento USB do router.<br>      <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/client/cloud_download.html\">Clique aqui</a> para transferir a aplicação ReadyCLOUD.</p>"
-ready_share_info1="O recurso ReadySHARE Cloud oferece acesso remoto na Internet para um dispositivo de armazenamento USB, conectado à porta USB do roteador."
-how_setup_ready_share="Como configurar o ReadySHARE Cloud"
-ready_share_step1="Etapa 1: É necessário uma conta ReadySHARE Cloud. Se você não tiver uma,<a class='linktype' target='_blank' href='https://readyshare.netgear.com/site/index.jsp?pid=4&src=device'>clique aqui</a> para criá-la."
-ready_share_step2="Etapa 2: Nesta página, insira seu nome de usuário e senha do ReadySHARE Cloud para registrar seu roteador e o dispositivo USB conectado a ele com sua conta."
-ready_share_step3="Etapa 3: Faça login novamente em <a class='linktype' target='_blank' href='http://readyshare.netgear.com/'>http://readyshare.netgear.com/</a> com a sua conta. Você deverá visualizar o dispositivo USB conectado ao roteador."
-ready_share_set_note="<b>Nota:</b> Sem esse cliente, você pode navegar no conteúdo do dispositivo USB, mas não é possível abrir ou fazer alterações nos arquivos."
-ready_share_start="Associe o seu router e o dispositivo USB com o ReadyCLOUD"
-ready_share_get_account="Se ainda não tem uma conta ReadyCLOUD, <a class='linktype' target='_blank' href='http://readycloud.netgear.com/clien/index.html#page=access'>clique aqui</a> para obter uma"
-username="Nome de usuário"
-key_passphrase="Senha"
-register="Registro"
-register_note="<b>Nota:</b> o seu router mantém uma ligação contínua ao ReadyCLOUD até anular o registo."
-help_center="Centro de Ajuda"
-help_show_hide="Mostrar/ocultar centro de ajuda"
-
-resister_user="Este router está associado ao seguinte utilizador ReadyCLOUD:"
-access_storage_method="Agora, pode iniciar sessão em <a class='linktype' target='_blank' href='http://readycloud.netgear.com'>http://readycloud.netgear.com</a> com a sua conta ReadyCLOUD para aceder ao dispositivo USB em qualquer lugar."
-unregister_info="Clique em <B>Anular registo</B> para associar este router a uma conta ReadyCLOUD diferente"
-unregister="Cancelar registro"
-
-result_register_ok="Registro concluído com sucesso"
-result_register_fail="Falha no registo. Verifique o seu nome de utilizador e palavra-passe e tente novamente."
-result_unreg_ok="Cancelamento do registro concluído com sucesso"
-result_unreg_fail="Falha ao cancelar registro"
-
 //WIZ_sel_3g_adsl.htm
 bh_connection_mode="Choosing Connection Mode"
 

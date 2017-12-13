@@ -1,0 +1,17 @@
+#!/bin/sh /etc/rc.common
+
+START=13
+
+HAVEGED_THRESHOLD=1024
+HAVEGED_DCACHE=32
+HAVEGED_ICACHE=32
+
+start() {
+	# Feed the kernel entropy pool by timing CPU loops
+	/usr/sbin/haveged -w $HAVEGED_THRESHOLD -d $HAVEGED_DCACHE -i $HAVEGED_ICACHE -v 1
+}
+
+stop() {
+	# Stop service
+	killall haveged
+}

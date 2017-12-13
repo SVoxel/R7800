@@ -33,6 +33,7 @@ function genienowanChecking()
 		this.location.href = "BRS_00_01_check_ap_wait.html";
 	}
 	else{
+		top.click_no_flag=1;
 		this.location.href = "BRS_security.html";
 	}
 }

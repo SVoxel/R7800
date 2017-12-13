@@ -3,11 +3,10 @@
 # adssearch.pl 	- query an Active Directory server and
 #		  display objects in a human readable format
 #
-# Copyright (C) Guenther Deschner <gd@samba.org> 2003-2005
+# Copyright (C) Guenther Deschner <gd@samba.org> 2003-2008
 #
 # TODO: add range retrieval
 #	write sddl-converter, decode userParameters
-#	chase referrals
 #	apparently only win2k3 allows simple-binds with machine-accounts.
 #	make sasl support independent from Authen::SASL::Cyrus v >0.11
 use strict;
@@ -43,14 +42,15 @@ my $rebind_url;
 
 
 my $tdbdump	= "/usr/bin/tdbdump";
+my $ntdbdump	= "/usr/bin/ntdbdump";
 my $testparm	= "/usr/bin/testparm";
 my $net		= "/usr/bin/net";
 my $dig		= "/usr/bin/dig";
 my $nmblookup	= "/usr/bin/nmblookup";
 my $secrets_tdb = "/etc/samba/secrets.tdb";
+my $secrets_ntdb = "/etc/samba/secrets.ntdb";
 my $klist	= "/usr/bin/klist";
 my $kinit	= "/usr/bin/kinit";
-my $ads_h 	= "/home/gd/ads.h";
 my $workgroup	= "";
 my $machine	= "";
 my $realm	= "";
@@ -79,6 +79,7 @@ my (
 	$opt_port,
 	$opt_realm,
 	$opt_saslmech,
+	$opt_search_opt,
 	$opt_scope, 
 	$opt_simpleauth,
 	$opt_starttls,
@@ -110,6 +111,7 @@ GetOptions(
 	'saslmech|Y=s'	=> \$opt_saslmech,
 	'schema|c'	=> \$opt_dump_schema,
 	'scope|s=s'	=> \$opt_scope,
+	'searchopt:i'	=> \$opt_search_opt,
 	'simpleauth|x'	=> \$opt_simpleauth,
 	'tls|Z'		=> \$opt_starttls,
 	'user|U=s'	=> \$opt_user,
@@ -148,7 +150,6 @@ my ($sasl_hd, $async_ldap_hd, $sync_ldap_hd);
 my ($mesg, $usn);
 my (%entry_store);
 my $async_search;
-my (%ads_atype, %ads_gtype, %ads_grouptype, %ads_uf);
 
 # fixed values and vars
 my $set   	= "X";
@@ -181,6 +182,7 @@ my %ads_controls = (
 "LDAP_SERVER_ASQ_OID"			=> "1.2.840.113556.1.4.1504",
 "NONE (Get stats control)"		=> "1.2.840.113556.1.4.970",
 "LDAP_SERVER_QUOTA_CONTROL_OID"		=> "1.2.840.113556.1.4.1852",
+"LDAP_SERVER_SHUTDOWN_NOTIFY_OID"	=> "1.2.840.113556.1.4.1907",
 );
 
 my %ads_capabilities = (
@@ -230,6 +232,7 @@ my %ads_mixed_domain = (
 my %ads_ds_func = (
 "DS_BEHAVIOR_WIN2000"			=> 0,	# untested
 "DS_BEHAVIOR_WIN2003"			=> 2,
+"DS_BEHAVIOR_WIN2008"			=> 3,
 );
 
 my %ads_instance_type = (
@@ -242,6 +245,14 @@ my %ads_uacc = (
 	"ACCOUNT_NEVER_EXPIRES"		=> 0x000000, # 0 
 	"ACCOUNT_OK"			=> 0x800000, # 8388608
 	"ACCOUNT_LOCKED_OUT"		=> 0x800010, # 8388624
+);
+
+my %ads_enctypes = (
+	"DES-CBC-CRC"				=> 0x01,
+	"DES-CBC-MD5"				=> 0x02,
+	"RC4_HMAC_MD5"				=> 0x04,
+	"AES128_CTS_HMAC_SHA1_96"		=> 0x08,
+	"AES128_CTS_HMAC_SHA1_128"		=> 0x10,
 );
 
 my %ads_gpoptions = (
@@ -347,6 +358,75 @@ my %ads_gpo_default_guids = (
 "mist"					=> "61718096-3D3F-4398-8318-203A48976F9E",
 );
 
+my %ads_uf = (
+	"UF_SCRIPT"				=> 0x00000001,
+	"UF_ACCOUNTDISABLE"			=> 0x00000002,
+#	"UF_UNUSED_1"				=> 0x00000004,
+	"UF_HOMEDIR_REQUIRED"			=> 0x00000008,
+	"UF_LOCKOUT"				=> 0x00000010,
+	"UF_PASSWD_NOTREQD"			=> 0x00000020,
+	"UF_PASSWD_CANT_CHANGE"			=> 0x00000040,
+	"UF_ENCRYPTED_TEXT_PASSWORD_ALLOWED"	=> 0x00000080,
+	"UF_TEMP_DUPLICATE_ACCOUNT"		=> 0x00000100,
+	"UF_NORMAL_ACCOUNT"			=> 0x00000200,
+#	"UF_UNUSED_2"				=> 0x00000400,
+	"UF_INTERDOMAIN_TRUST_ACCOUNT"		=> 0x00000800,
+	"UF_WORKSTATION_TRUST_ACCOUNT"		=> 0x00001000,
+	"UF_SERVER_TRUST_ACCOUNT"		=> 0x00002000,
+#	"UF_UNUSED_3"				=> 0x00004000,
+#	"UF_UNUSED_4"				=> 0x00008000,
+	"UF_DONT_EXPIRE_PASSWD"			=> 0x00010000,
+	"UF_MNS_LOGON_ACCOUNT"			=> 0x00020000,
+	"UF_SMARTCARD_REQUIRED"			=> 0x00040000,
+	"UF_TRUSTED_FOR_DELEGATION"		=> 0x00080000,
+	"UF_NOT_DELEGATED"			=> 0x00100000,
+	"UF_USE_DES_KEY_ONLY"			=> 0x00200000,
+	"UF_DONT_REQUIRE_PREAUTH"		=> 0x00400000,
+	"UF_PASSWORD_EXPIRED"			=> 0x00800000,
+	"UF_TRUSTED_TO_AUTHENTICATE_FOR_DELEGATION" => 0x01000000,
+	"UF_NO_AUTH_DATA_REQUIRED"		=> 0x02000000,
+#	"UF_UNUSED_8"				=> 0x04000000,
+#	"UF_UNUSED_9"				=> 0x08000000,
+#	"UF_UNUSED_10"				=> 0x10000000,
+#	"UF_UNUSED_11"				=> 0x20000000,
+#	"UF_UNUSED_12"				=> 0x40000000,
+#	"UF_UNUSED_13"				=> 0x80000000,
+);
+
+my %ads_grouptype = (
+	"GROUP_TYPE_BUILTIN_LOCAL_GROUP"	=> 0x00000001,
+	"GROUP_TYPE_ACCOUNT_GROUP"		=> 0x00000002,
+	"GROUP_TYPE_RESOURCE_GROUP"		=> 0x00000004,
+	"GROUP_TYPE_UNIVERSAL_GROUP"		=> 0x00000008,
+	"GROUP_TYPE_APP_BASIC_GROUP"		=> 0x00000010,
+	"GROUP_TYPE_APP_QUERY_GROUP"		=> 0x00000020,
+	"GROUP_TYPE_SECURITY_ENABLED"		=> 0x80000000,
+);
+
+my %ads_atype = (
+	"ATYPE_NORMAL_ACCOUNT"			=> 0x30000000,
+	"ATYPE_WORKSTATION_TRUST"		=> 0x30000001,
+	"ATYPE_INTERDOMAIN_TRUST"		=> 0x30000002,
+	"ATYPE_SECURITY_GLOBAL_GROUP"		=> 0x10000000,
+	"ATYPE_DISTRIBUTION_GLOBAL_GROUP"	=> 0x10000001,
+	"ATYPE_DISTRIBUTION_UNIVERSAL_GROUP"	=> 0x10000001, # ATYPE_DISTRIBUTION_GLOBAL_GROUP
+	"ATYPE_SECURITY_LOCAL_GROUP"		=> 0x20000000,
+	"ATYPE_DISTRIBUTION_LOCAL_GROUP"	=> 0x20000001,
+	"ATYPE_ACCOUNT"				=> 0x30000000, # ATYPE_NORMAL_ACCOUNT
+	"ATYPE_GLOBAL_GROUP"			=> 0x10000000, # ATYPE_SECURITY_GLOBAL_GROUP
+	"ATYPE_LOCAL_GROUP"			=> 0x20000000, # ATYPE_SECURITY_LOCAL_GROUP
+);
+
+my %ads_gtype = (
+	"GTYPE_SECURITY_BUILTIN_LOCAL_GROUP"	=> 0x80000005,
+	"GTYPE_SECURITY_DOMAIN_LOCAL_GROUP"	=> 0x80000004,
+	"GTYPE_SECURITY_GLOBAL_GROUP"		=> 0x80000002,
+	"GTYPE_SECURITY_UNIVERSAL_GROUP"	=> 0x80000008,
+	"GTYPE_DISTRIBUTION_GLOBAL_GROUP"	=> 0x00000002,
+	"GTYPE_DISTRIBUTION_DOMAIN_LOCAL_GROUP"	=> 0x00000004,
+	"GTYPE_DISTRIBUTION_UNIVERSAL_GROUP"	=> 0x00000008,
+);
+
 my %munged_dial = (
 	"CtxCfgPresent"		=> \&dump_int,
 	"CtxCfgFlags1"		=> \&dump_int,
@@ -371,9 +451,6 @@ $SIG{__WARN__} = sub {
 	Carp::cluck (shift);
 };
 
-# parse ads.h
-parse_ads_h();
-
 # if there is data missing, we try to autodetect with samba-tools (if installed)
 # this might fill up workgroup, machine, realm
 get_samba_info();
@@ -388,7 +465,7 @@ $server 	= process_servername($opt_host) ||
 
 
 # get the base
-$base 		= $opt_base || 
+$base 		= defined($opt_base)? $opt_base : "" || 
 	 	  get_base_from_rootdse($server,$dse);
 
 # get the realm
@@ -423,6 +500,7 @@ if (!$password) {
 my %attr_handler = (
 	"Token-Groups-No-GC-Acceptable" => \&dump_sid,	#wrong name
 	"accountExpires"		=> \&dump_nttime,
+	"attributeSecurityGUID"		=> \&dump_guid,
 	"badPasswordTime"		=> \&dump_nttime,			
 	"creationTime"			=> \&dump_nttime,
 	"currentTime"			=> \&dump_timestr,
@@ -442,6 +520,7 @@ my %attr_handler = (
 	"instanceType"			=> \&dump_instance_type,
 	"lastLogon"			=> \&dump_nttime,
 	"lastLogonTimestamp"		=> \&dump_nttime,
+	"lastSetTime"			=> \&dump_nttime,
 	"lockOutObservationWindow"	=> \&dump_nttime_abs,
 	"lockoutDuration"		=> \&dump_nttime_abs,
 	"lockoutTime"			=> \&dump_nttime,
@@ -451,6 +530,7 @@ my %attr_handler = (
 	"modifyTimeStamp"		=> \&dump_timestr,
 	"msDS-Behavior-Version"		=> \&dump_ds_func,	#unsure
 	"msDS-User-Account-Control-Computed" => \&dump_uacc,
+	"msDS-SupportedEncryptionTypes"	=> \&dump_enctypes,
 	"mS-DS-CreatorSID"		=> \&dump_sid,
 #	"msRADIUSFramedIPAddress"	=> \&dump_ipaddr,
 #	"msRASSavedFramedIPAddress" 	=> \&dump_ipaddr,
@@ -461,9 +541,11 @@ my %attr_handler = (
 	"objectSid"			=> \&dump_sid,
 	"pKT"				=> \&dump_pkt,
 	"pKTGuid"			=> \&dump_guid,
+	"priorSetTime"			=> \&dump_nttime,
 	"pwdLastSet"			=> \&dump_nttime,
 	"pwdProperties"			=> \&dump_pwdproperties,
 	"sAMAccountType"		=> \&dump_atype,
+	"schemaIDGUID"			=> \&dump_guid,
 	"sDRightsEffective"		=> \&dump_sdeffective,
 	"securityIdentifier"		=> \&dump_sid,
 	"serverState"			=> \&dump_serverstate,
@@ -643,13 +725,21 @@ sub get_machine_password {
 	my $workgroup = shift || "";
 	$workgroup = uc($workgroup);
 
-	my ($found, $tmp);
-	-x $tdbdump || die "tdbdump is not installed. cannot proceed autodetection\n";
-	-r $secrets_tdb || die "cannot read $secrets_tdb. cannot proceed autodetection\n";
+	my ($found, $tmp, $dbdump, $db);
+	if (-r $secrets_ntdb) {
+	    -x $ntdbdump || die "ntdbdump is not installed. cannot proceed autodetection\n";
+	    $dbdump = $ntdbdump;
+	    $db = $secrets_ntdb;
+	} else {
+	    -x $tdbdump || die "tdbdump is not installed. cannot proceed autodetection\n";
+	    -r $secrets_tdb || die "cannot read $secrets_tdb. cannot proceed autodetection\n";
+	    $dbdump = $tdbdump;
+	    $db = $secrets_tdb;
+	}
 
 	# get machine-password
 	my $key = sprintf("SECRETS/MACHINE_PASSWORD/%s", $workgroup);
-	open(SECRETS,"$tdbdump $secrets_tdb |");
+	open(SECRETS,"$dbdump $db |");
 	while(my $line = <SECRETS>) {
 		chomp($line);
 		if ($found) {
@@ -657,7 +747,7 @@ sub get_machine_password {
 			($line,$password) = split(/"/, $line);
 			last;
 		}
-		if ($line =~ /$key/) {
+		if ($line =~ /\"$key\"/) {
 			$found = 1;
 		}
 	}
@@ -769,7 +859,8 @@ sub get_base_from_rootdse {
 
 	my $server = shift || "";
 	$dse = shift || get_dse($server,$async_ldap_hd) || return -1;
-	return $dse->get_value('defaultNamingContext');
+	return $dse->get_value($opt_dump_schema ? 'schemaNamingContext':
+						  'defaultNamingContext');
 }
 
 sub get_realm_from_rootdse {
@@ -897,45 +988,6 @@ sub check_sasl_mech {
 		return -1;
 	}
 	return 0;
-}
-
-
-sub parse_ads_h {
-
-	-e "$ads_h" || die "cannot open samba3 ads.h ($ads_h): $!";
-	open(ADSH,"$ads_h");
-	while (my $line = <ADSH>) {
-		chomp($line);
-		if ($line =~ /#define.UF.*0x/) {
-			my ($tmp, $name, $val) = split(/\s+/,$line);
-			next if ($name =~ /UNUSED/);
-#			$ads_uf{$name} = sprintf("%d", hex $val);
-			$ads_uf{$name} = hex $val;
-		}
-		if ($line =~ /#define.GROUP_TYPE.*0x/) {
-			my ($tmp, $name, $val) = split(/\s+/,$line);
-			$ads_grouptype{$name} = hex $val;
-		}
-		if ($line =~ /#define.ATYPE.*0x/) {
-			my ($tmp, $name, $val) = split(/\s+/,$line);
-			$ads_atype{$name} = 
-				(exists $ads_atype{$val}) ? $ads_atype{$val} : hex $val;
-		}
-		if ($line =~ /#define.GTYPE.*0x/) {
-			my ($val, $i);
-			my ($tmp, $name, @val) = split(/\s+/,$line);
-			foreach my $tempval (@val) {
-				if ($tempval =~ /^0x/) {
-					$val = $tempval;
-					last;
-				}
-			}
-			next if (!$val);
-			$ads_gtype{$name} = sprintf("%d", hex $val);
-		}
-
-	}
-	close(ADSH);
 }
 
 sub store_result ($) {
@@ -1136,12 +1188,13 @@ sub dump_bitmask {
 	my $mod = shift || die "no mod";
         my (%header) = @_;
 	my %tmp;
-	$tmp{""} = $val;
+	$tmp{""} = sprintf("%s (0x%08x)", $val, $val);
 	foreach my $key (sort keys %header) {	# sort by val !
+		my $val_hex = sprintf("0x%08x", $header{$key});
 		if ($op eq "&") {
-			$tmp{$key} = ( $val & $header{$key} ) ? $set:$unset; 
+			$tmp{"$key ($val_hex)"} = ( $val & $header{$key} ) ? $set:$unset; 
 		} elsif ($op eq "==") {
-			$tmp{$key} = ( $val == $header{$key} ) ? $set:$unset; 
+			$tmp{"$key ($val_hex)"} = ( $val == $header{$key} ) ? $set:$unset; 
 		} else {
 			print "unknown operator: $op\n";
 			return;
@@ -1176,6 +1229,10 @@ sub dump_gpflags {
 
 sub dump_uacc {
 	return dump_bitmask_equal(@_,%ads_uacc); 
+}
+
+sub dump_enctypes {
+	return dump_bitmask_and(@_,%ads_enctypes);
 }
 
 sub dump_uf {
@@ -1436,6 +1493,21 @@ sub gen_controls {
 			critical => 'true',
 			value => $opt_display_extendeddn ? $ctl_extended_dn_val : "");
 
+	# setup search options
+	my $search_opt = Convert::ASN1->new;
+	$search_opt->prepare(
+		q<	searchopt ::= SEQUENCE {
+				flags     INTEGER
+			}
+		>
+	);
+
+	my $tmp = $search_opt->encode( flags => $opt_search_opt);
+	my $ctl_search_opt = Net::LDAP::Control->new( 
+		type => $ads_controls{'LDAP_SERVER_SEARCH_OPTIONS_OID'},
+		critical => 'true',
+		value => $tmp);
+
 	# setup notify control
 	my $ctl_notification = Net::LDAP::Control->new( 
 		type => $ads_controls{'LDAP_SERVER_NOTIFICATION_OID'},
@@ -1454,7 +1526,7 @@ sub gen_controls {
 		critical => 'true',
 		value => "");
 
-	if (defined($opt_paging)) {
+	if (defined($opt_paging) || $opt_dump_schema) {
 		push(@ctrls, $ctl_paged);
 		push(@ctrls_s, "LDAP_PAGED_RESULT_OID_STRING" );
 	}
@@ -1476,6 +1548,11 @@ sub gen_controls {
 	if ($opt_domain_scope) {
 		push(@ctrls, $ctl_domscope);
 		push(@ctrls_s, "LDAP_SERVER_DOMAIN_SCOPE_OID");
+	}
+
+	if ($opt_search_opt) {
+		push(@ctrls, $ctl_search_opt);
+		push(@ctrls_s, "LDAP_SERVER_SEARCH_OPTIONS_OID");
 	}
 
 	return @ctrls;
@@ -1737,9 +1814,9 @@ sub main () {
 
 	if ($opt_dump_schema) {
 		print "Dumping Schema:\n";
-		my $ads_schema = $async_ldap_hd->schema;
-		$ads_schema->dump;
-		exit 0;
+#		my $ads_schema = $async_ldap_hd->schema;
+#		$ads_schema->dump;
+#		exit 0;
 	}
 
 	while (1) {
@@ -1756,8 +1833,9 @@ sub main () {
 		if (!$opt_notify && ($async_search->code == LDAP_REFERRAL)) {
 			foreach my $ref ($async_search->referrals) {
 				print "\ngot Referral: [$ref]\n";
+				my ($prot, $host, $base) = split(/\/+/, $ref);
 				$async_ldap_hd->unbind();
-				$async_ldap_hd = get_ldap_hd($ref, 1);
+				$async_ldap_hd = get_ldap_hd($host, 1);
 				if (do_bind($async_ldap_hd, $sasl_bind) == -1) {
 					$async_ldap_hd->unbind();
 					next;

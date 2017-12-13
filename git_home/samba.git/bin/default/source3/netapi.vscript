@@ -1,0 +1,4 @@
+NETAPI_0 {
+	global:
+		*;
+};

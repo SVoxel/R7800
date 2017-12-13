@@ -28,6 +28,8 @@ var have_ipmac_flag=parent.have_ipmac_flag;
 var ipmac_binding_flag="<% cfg_get("ipmac_binding_on")%>";
 var is_ipmac=(have_ipmac_flag == 1 && ipmac_binding_flag == 1 && (parent.is_ru_version == 1 || parent.is_pr_version == 1)) ? 1 : 0;
 var lanip_array=lanip.split(".");
+var apply_flag = 0;
+window.onunload = function leavepage(){if(apply_flag == 0) top.back_flag=1;};
 </script>
 
 <input type="hidden" name="reservation_ipaddr">  

@@ -4,6 +4,7 @@
 <div class="fix_button">
 <TABLE width=100% border=0 cellpadding=0 cellspacing=2>
 <script>
+back_reload_page("access_control.htm");
 var master="<% cfg_get("http_loginname") %>";
 if(master=="admin")
 document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="access_cancel();"> &nbsp;&nbsp;<input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onClick="access_control_apply(document.forms[0], \'1\');"></TD></TR>');

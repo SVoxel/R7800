@@ -1,0 +1,443 @@
+LDB_0.9.10 {
+	global:
+		ldb_dn_set_component;
+		ldb_search;
+		ldb_attr_in_list;
+		ldb_map_init;
+		ldb_dn_alloc_casefold;
+		ldb_attr_list_copy_add;
+		ldb_msg_find_attr_as_string;
+		ldb_module_get_private;
+		ldb_msg_find_ldb_val;
+		ldb_base64_encode;
+		ldb_get_flags;
+		ldb_setup_wellknown_attributes;
+		ldb_val_dup;
+		ldb_dn_remove_base_components;
+		ldb_transaction_prepare_commit;
+		ldb_dn_from_ldb_val;
+		ldb_schema_attribute_remove;
+		ldb_msg_find_element;
+		ldb_connect;
+		ldb_val_map_remote;
+		ldb_get_opaque;
+		ldb_binary_encode;
+		ldb_dn_is_null;
+		ldb_global_init;
+		ldb_sequence_number;
+		ldb_connect_backend;
+		ldb_reply_get_control;
+		ldb_debug_end;
+		ldb_msg_add_string;
+		ldb_msg_add;
+		ldb_op_default_callback;
+		ldb_msg_copy;
+		ldb_ldif_read_file;
+		ldb_transaction_cancel;
+		ldb_timestring_utc;
+		ldb_any_comparison;
+		ldb_binary_decode;
+		ldb_module_send_referral;
+		ldb_comparison_binary;
+		ldb_get_default_basedn;
+		ldb_set_opaque;
+		ldb_get_create_perms;
+		ldb_attr_casefold;
+		ldb_ldif_read_string;
+		ldb_debug_set;
+		ldb_msg_find_attr_as_bool;
+		ldb_msg_check_string_attribute;
+		ldb_handler_fold;
+		ldb_msg_find_val;
+		ldb_set_default_dns;
+		ldb_set_create_perms;
+		ldb_msg_add_empty;
+		ldb_load_modules;
+		ldb_base64_decode;
+		ldb_dn_get_linearized;
+		ldb_debug_add;
+		ldb_set_utf8_default;
+		ldb_set_utf8_fns;
+		ldb_load_modules_list;
+		ldb_next_init;
+		ldb_dn_is_special;
+		ldb_module_new;
+		ldb_dn_get_comp_num;
+		ldb_binary_encode_string;
+		ldb_dn_is_valid;
+		ldb_dn_get_extended_linearized;
+		ldb_errstring;
+		ldb_attr_dn;
+		ldb_module_get_ctx;
+		ldb_module_send_entry;
+		ldb_mod_register_control;
+		ldb_dn_escape_value;
+		ldb_msg_canonicalize;
+		ldb_ldif_write;
+		ldb_build_add_req;
+		ldb_add;
+		ldb_dn_alloc_linearized;
+		ldb_msg_add_fmt;
+		ldb_build_rename_req;
+		ldb_modules_list_from_string;
+		ldb_build_search_req_ex;
+		ldb_asprintf_errstring;
+		ldb_dn_remove_child_components;
+		ldb_register_backend;
+		ldb_dn_map_local;
+		ldb_set_modules_dir;
+		ldb_transaction_commit;
+		ldb_ldif_write_string;
+		ldb_module_get_name;
+		ldb_casefold;
+		ldb_modify;
+		ldb_build_mod_req;
+		ldb_ldif_message_string;
+		ldb_dn_get_rdn_name;
+		ldb_init_module_chain;
+		ldb_set_event_context;
+		ldb_next_start_trans;
+		ldb_msg_diff;
+		ldb_dn_check_local;
+		ldb_msg_find_attr_as_int;
+		ldb_next_request;
+		ldb_handler_copy;
+		ldb_attr_list_copy;
+		ldb_schema_attribute_add;
+		ldb_dn_get_rdn_val;
+		ldb_qsort;
+		ldb_dn_get_component_val;
+		ldb_parse_control_strings;
+		ldb_set_errstring;
+		ldb_set_debug_stderr;
+		ldb_next_prepare_commit;
+		ldb_val_equal_exact;
+		ldb_should_b64_encode;
+		ldb_ldif_write_file;
+		ldb_request;
+		ldb_request_get_status;
+		ldb_parse_tree_copy_shallow;
+		ldb_dn_extended_add_syntax;
+		ldb_rename;
+		ldb_next_end_trans;
+		ldb_dn_check_special;
+		ldb_msg_add_steal_value;
+		ldb_get_schema_basedn;
+		ldb_debug;
+		ldb_request_set_state;
+		ldb_standard_syntax_by_name;
+		ldb_reset_err_string;
+		ldb_strerror;
+		ldb_msg_add_value;
+		ldb_extended_default_callback;
+		ldb_msg_sanity_check;
+		ldb_casefold_default;
+		ldb_handle_new;
+		ldb_request_done;
+		ldb_msg_sort_elements;
+		ldb_msg_element_compare_name;
+		ldb_dn_get_extended_component;
+		ldb_build_del_req;
+		ldb_transaction_cancel_noerr;
+		ldb_dn_has_extended;
+		ldb_msg_find_attr_as_dn;
+		ldb_transaction_start;
+		ldb_module_set_private;
+		ldb_filter_from_tree;
+		ldb_msg_remove_element;
+		ldb_dn_get_casefold;
+		ldb_set_debug;
+		ldb_dn_extended_filter;
+		ldb_msg_find_attr_as_uint;
+		ldb_msg_add_linearized_dn;
+		ldb_dn_get_component_name;
+		ldb_val_map_local;
+		ldb_msg_find_attr_as_int64;
+		ldb_dump_results;
+		ldb_msg_find_attr_as_double;
+		ldb_msg_add_steal_string;
+		ldb_set_flags;
+		ldb_set_timeout;
+		ldb_ldif_read;
+		ldb_parse_tree;
+		ldb_msg_new;
+		ldb_dn_new;
+		ldb_parse_tree_attr_replace;
+		ldb_dn_update_components;
+		ldb_dn_compare_base;
+		ldb_match_msg_objectclass;
+		ldb_delete;
+		ldb_schema_attribute_add_with_syntax;
+		ldb_val_to_time;
+		ldb_dn_canonical_ex_string;
+		ldb_module_done;
+		ldb_dn_new_fmt;
+		ldb_init;
+		ldb_search_default_callback;
+		ldb_dn_add_base_fmt;
+		ldb_get_config_basedn;
+		ldb_dn_map_rebase_remote;
+		ldb_schema_attribute_by_name;
+		ldb_dn_canonical_string;
+		ldb_reply_add_control;
+		ldb_match_msg;
+		ldb_dn_get_parent;
+		ldb_msg_remove_attr;
+		ldb_msg_rename_attr;
+		ldb_dn_add_child_fmt;
+		ldb_msg_copy_shallow;
+		ldb_dn_copy;
+		ldb_request_add_control;
+		ldb_next_del_trans;
+		ldb_msg_copy_attr;
+		ldb_dn_compare;
+		ldb_dn_set_extended_component;
+		ldb_schema_attribute_set_override_handler;
+		ldb_register_module;
+		ldb_comparison_fold;
+		ldb_dn_add_child;
+		ldb_dn_extended_syntax_by_name;
+		ldb_module_get_ops;
+		ldb_string_utc_to_time;
+		ldb_valid_attr_name;
+		ldb_build_extended_req;
+		ldb_request_get_control;
+		ldb_dn_add_base;
+		ldb_build_search_req;
+		ldb_ldif_read_free;
+		ldb_timestring;
+		ldb_extended;
+		ldb_msg_find_attr_as_uint64;
+		ldb_get_root_basedn;
+		ldb_string_to_time;
+		ldb_msg_element_compare;
+		ldb_dn_map_remote;
+		ldb_next_remote_request;
+		ldb_get_event_context;
+		ldb_dn_validate;
+		ldb_dn_remove_extended_components;
+		ldb_set_timeout_from_prev_req;
+		ldb_wait;
+};
+
+LDB_0.9.12 {
+	global:
+		ldb_modify_default_callback;
+} LDB_0.9.10;
+
+LDB_0.9.15 {
+	global:
+		ldb_error_at;
+		ldb_req_location;
+		ldb_req_set_location;
+		ldb_msg_difference;
+		ldb_match_msg_error;
+		ldb_msg_normalize;
+		ldb_request_replace_control;
+} LDB_0.9.12;
+
+LDB_0.9.16 {
+	global:
+		ldb_req_mark_untrusted;
+		ldb_req_is_untrusted;
+} LDB_0.9.15;
+
+LDB_0.9.17 {
+	global:
+		ldb_options_find;
+} LDB_0.9.16;
+
+LDB_0.9.18 {
+	global:
+		ldb_skel_init;
+		ldb_server_sort_init;
+		ldb_rdn_name_init;
+		ldb_tdb_init;
+		ldb_sample_init;
+		ldb_modules_hook;
+		ldb_modules_load;
+		ldb_register_hook;
+		ldb_paged_searches_init;
+		ldb_paged_results_init;
+		ldb_asq_init;
+} LDB_0.9.17;
+
+LDB_0.9.19 {
+	global:
+		ldb_module_popt_options;
+		ldb_module_load_list;
+		ldb_module_set_next;
+		ldb_module_flags;
+		ldb_module_connect_backend;
+		ldb_module_call_chain;
+		ldb_module_next;
+		ldb_module_init_chain;
+} LDB_0.9.18;
+
+LDB_0.9.20 {
+} LDB_0.9.19;
+
+LDB_0.9.22 {
+	global:
+		ldb_map_rename;
+		ldb_map_search;
+		ldb_map_delete;
+		ldb_check_critical_controls;
+		ldb_map_add;
+		ldb_save_controls;
+		ldb_map_modify;
+		ldb_controls_except_specified;
+} LDB_0.9.20;
+
+LDB_0.9.23 {
+	global:
+		ldb_dn_get_extended_comp_num;
+		ldb_dn_minimise;
+} LDB_0.9.22;
+
+LDB_0.9.24 {
+	global:
+		ldb_req_mark_trusted;
+} LDB_0.9.23;
+
+LDB_1.0.0 {
+} LDB_0.9.24;
+
+LDB_1.0.1 {
+} LDB_1.0.0;
+
+LDB_1.0.2 {
+	global:
+		ldb_control_to_string;
+		ldb_parse_control_from_string;
+} LDB_1.0.1;
+
+LDB_1.1.0 {
+	global:
+		ldb_req_get_custom_flags;
+		ldb_ldif_parse_modrdn;
+		ldb_req_set_custom_flags;
+} LDB_1.0.2;
+
+LDB_1.1.1 {
+	global:
+		ldb_val_string_cmp;
+} LDB_1.1.0;
+
+LDB_1.1.2 {
+	global:
+		ldb_dn_replace_components;
+		ldb_parse_tree_walk;
+} LDB_1.1.1;
+
+LDB_1.1.3 {
+} LDB_1.1.2;
+
+LDB_1.1.4 {
+} LDB_1.1.3;
+
+LDB_1.1.5 {
+	global:
+		ldb_ldif_read_file_state;
+} LDB_1.1.4;
+
+LDB_1.1.6 {
+	global:
+		ldb_msg_element_equal_ordered;
+} LDB_1.1.5;
+
+LDB_1.1.7 {
+} LDB_1.1.6;
+
+LDB_1.1.8 {
+} LDB_1.1.7;
+
+LDB_1.1.9 {
+} LDB_1.1.8;
+
+LDB_1.1.10 {
+	global:
+		ldb_vdebug;
+} LDB_1.1.9;
+
+LDB_1.1.11 {
+} LDB_1.1.10;
+
+LDB_1.1.12 {
+	global:
+		ldb_ldif_write_redacted_trace_string;
+} LDB_1.1.11;
+
+LDB_1.1.13 {
+} LDB_1.1.12;
+
+LDB_1.1.14 {
+	global:
+		ldb_pack_data;
+		ldb_unpack_data;
+} LDB_1.1.13;
+
+LDB_1.1.15 {
+} LDB_1.1.14;
+
+LDB_1.1.16 {
+} LDB_1.1.15;
+
+LDB_1.1.17 {
+} LDB_1.1.16;
+
+LDB_1.1.18 {
+} LDB_1.1.17;
+
+LDB_1.1.19 {
+	global:
+		ldb_register_extended_match_rule;
+} LDB_1.1.18;
+
+LDB_1.1.20 {
+} LDB_1.1.19;
+
+LDB_1.1.21 {
+} LDB_1.1.20;
+
+LDB_1.1.22 {
+	global:
+		ldb_dn_get_ldb_context;
+} LDB_1.1.21;
+
+LDB_1.1.23 {
+} LDB_1.1.22;
+
+LDB_1.1.24 {
+} LDB_1.1.23;
+
+LDB_1.1.25 {
+	global:
+		ldb_unpack_data_only_attr_list;
+} LDB_1.1.24;
+
+LDB_1.1.26 {
+} LDB_1.1.25;
+
+LDB_1.1.27 {
+	global:
+		ldb_unpack_data_only_attr_list_flags;
+} LDB_1.1.26;
+
+LDB_1.1.28 {
+} LDB_1.1.27;
+
+LDB_1.1.29 {
+	global:
+		ldb_schema_attribute_remove_flagged;
+		ldb_schema_attribute_fill_with_syntax;
+} LDB_1.1.28;
+
+SAMBA_4.6.4 {
+	global:
+		ldb_*;
+	local:
+		ldb_*module_ops;
+		ldb_*backend_ops;
+		*;
+};

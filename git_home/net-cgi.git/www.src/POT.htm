@@ -22,6 +22,10 @@ var pot_stamac = "<% get_pot_stamac() %>";
 	<td nowrap><B><script>document.write("MAC address of 1st STA connected: ")</script></B></td>
 	<td nowrap><script>document.write(pot_stamac)</script></td>
 </tr>
+<tr>
+	<td nowrap><B><script>document.write("Ever connected to Internet(Y/N): ")</script></B></td>
+	<td nowrap><script>document.write("<% cat_file("/tmp/POT_netconn") %>")</script></td>
+</tr>
 </table>
 </BODY>
 </HTML>

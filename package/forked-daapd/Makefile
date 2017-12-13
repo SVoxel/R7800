@@ -45,8 +45,8 @@ TARGET_CPPFLAGS += -I$(STAGING_DIR)/usr/include/libevent2
 TARGET_CPPFLAGS += -DDNI_SUPPORT_LIBEVENT2
 TARGET_LDFLAGS += -L$(STAGING_DIR)/usr/lib/libevent2
 
-TARGET_CFLAGS += $(FPIC)
-TARGET_LDFLAGS += -Wl,-rpath-link,$(STAGING_DIR)/usr/lib
+TARGET_CFLAGS += $(FPIC) -ffunction-sections -fdata-sections
+TARGET_LDFLAGS += -Wl,-rpath-link,$(STAGING_DIR)/usr/lib -Wl,--gc-sections
 
 # Modified from "DownloadMethod/git" in include/download.mk
 define DownloadMethod/git

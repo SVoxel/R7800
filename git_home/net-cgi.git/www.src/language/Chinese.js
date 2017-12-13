@@ -238,34 +238,6 @@ bh_wanlan_conflict_info="为了避免和你的网络提供商的IP地址发生�
 bh_continue_mark="继续"
 bh_same_server_wan_ip="我的 IP 地址与服务器地址不能相同！"
 
-//readySHARE remote strings
-remote_share_head="ReadyCLOUD"
-ready_cloud_info="<p>ReadyCLOUD 可让您通过互联网远程访问与您的路由器 USB 端口相连的 USB 存储设备。 要使用 ReadyCLOUD，您必须有一个 ReadyCLOUD 帐户。 如果您没有 ReadyCLOUD 帐户，请<a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/clien/index.html#page=access\">单击此处</a>，然后单击<b>登录 > 创建帐户</b>。 </p><p><b>设置 ReadyCLOUD</b></p><p><ol><li>将 USB 存储设备连接到路由器的 USB 端口。</li><li>在下面的字段中输入您的 ReadyCLOUD 用户名和密码，然后单击<b>注册</b>按钮。 您的路由器和 USB 设备已通过 ReadyCLOUD 注册。</li><li> 访问 <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com\">http://readycloud.netgear.com</a>，单击登录，输入您的 ReadyCLOUD 用户名和密码，然后单击<b>登录</b>按钮。</li></ol></p><p>      您还可以使用 ReadyCLOUD 应用程序在您的计算机或移动设备与路由器的 USB 存储设备之间实现安全连接。<br>      <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/client/cloud_download.html\">单击此处</a>下载 ReadyCLOUD 应用程序。</p>"
-ready_share_info1="ReadySHARE Cloud 功能可让您从因特网远程访问与路由器 USB 端口相连的 USB 存储设备。"
-how_setup_ready_share="如何设置 ReadySHARE Cloud"
-ready_share_step1="第一步：您需要拥有 ReadySHARE Cloud 帐户。如果没有，请<a class='linktype' target='_blank' href='https://readyshare.netgear.com/site/index.jsp?pid=4&src=device'>单击此处</a>获取一个。"
-ready_share_step2="第二步：在此页中输入 ReadySHARE Cloud 用户名和密码，将您的路由器和所连的 USB 设备注册到您的帐户。"
-ready_share_step3="第三步：使用您的帐户重新登录 <a class='linktype' target='_blank' href='http://readyshare.netgear.com/'>http://readyshare.netgear.com/</a>。您应该可以看到与路由器连接的 USB 设备。"
-ready_share_set_note="<b>注意：</b>如果没有此客户端，您只能浏览 USB 设备内容，但无法打开文件或进行更改."
-ready_share_start="请使用 ReadyCLOUD 关联您的路由器和 USB 设备"
-ready_share_get_account="如果您没有 ReadyCLOUD 账户，请<a class='linktype' target='_blank' href='http://readycloud.netgear.com/clien/index.html#page=access'>单击此处</a>获取"
-username="用户名"
-key_passphrase="密码"
-register="注册"
-register_note="<b>注意：</b>您的路由器保持与 ReadyCLOUD 的持续连接，直到您取消注册为止。"
-help_center="帮助中心"
-help_show_hide="显示/隐藏帮助中心"
-
-resister_user="此路由器已关联了以下 ReadyCLOUD 用户："
-access_storage_method="现在您可以使用您的 ReadyCLOUD 帐号登录 <a class='linktype' target='_blank' href='http://readycloud.netgear.com'>http://readycloud.netgear.com</a> 以随时随地访问您的 USB 设备。"
-unregister_info="单击<B>取消注册</B>以使用其他 ReadyCLOUD 帐户关联此路由器"
-unregister="注销"
-
-result_register_ok="已成功完成注册"
-result_register_fail="注册失败。 请检查您的用户名和密码并重试。"
-result_unreg_ok="已成功完成注销"
-result_unreg_fail="注销失败"
-
 //WIZ_sel_3g_adsl.htm
 bh_connection_mode="选择连接模式"
 

@@ -6,7 +6,7 @@
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
+ *  the Free Software Foundation; either version 3 of the License, or
  *  (at your option) any later version.
  *  
  *  This program is distributed in the hope that it will be useful,
@@ -15,8 +15,7 @@
  *  GNU General Public License for more details.
  *  
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "perf.h"
@@ -133,7 +132,7 @@ void get_diskinfo(PERF_DATA_BLOCK *data)
 	int status, num;
 	char buf[LARGE_BUF], *start;
 	FILE *diskstats;
-	long reads, writes, discard;
+	unsigned long reads, writes, discard;
 
 	diskstats = fopen("/proc/diskstats", "r");
 	rewind(diskstats);
@@ -148,10 +147,10 @@ void get_diskinfo(PERF_DATA_BLOCK *data)
 		p->freeMegs = (statfsbuf.f_bfree*statfsbuf.f_bsize)/1048576;
 		start = strstr(buf, data->diskInfo.mdata[i].name);
 		start += strlen(data->diskInfo.mdata[i].name) + 1;
-		num = sscanf(start, "%u %u %u %u",
+		num = sscanf(start, "%lu %lu %lu %lu",
 			     &reads,
-			     &discard, 
-			     &writes, 
+			     &discard,
+			     &writes,
 			     &discard);
 		p->writesPerSec = writes;
 		p->readsPerSec = reads;

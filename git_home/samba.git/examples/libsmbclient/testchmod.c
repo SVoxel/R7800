@@ -8,11 +8,9 @@
 
 int main(int argc, char * argv[]) 
 { 
-    int             ret;
     int             debug = 0;
     int             mode = 0666;
-    char            buffer[16384]; 
-    char *          pSmbPath = NULL;
+    const char *          pSmbPath = NULL;
     struct stat     st; 
     
     if (argc == 1)
@@ -44,7 +42,7 @@ int main(int argc, char * argv[])
         return 1;
     }
     
-    printf("\nBefore chmod: mode = %04o\n", st.st_mode);
+    printf("\nBefore chmod: mode = %04o\n", (unsigned int)st.st_mode);
     
     if (smbc_chmod(pSmbPath, mode) < 0)
     {
@@ -58,7 +56,7 @@ int main(int argc, char * argv[])
         return 1;
     }
     
-    printf("After chmod: mode = %04o\n", st.st_mode);
+    printf("After chmod: mode = %04o\n", (unsigned int)st.st_mode);
     
     return 0; 
 }

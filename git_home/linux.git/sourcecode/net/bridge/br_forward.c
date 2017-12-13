@@ -267,6 +267,11 @@ ssize_t mcast_set_write( struct file *filp, const char __user *buff,
       struct __mgroup_mbr_list *mptr = NULL;
       unsigned long sip, gip;
       struct source_set set;
+
+	  if (len >= 256) {
+			  printk("mcast_set_write: input buf len too long(%u)\n", len);
+			  return -EFAULT;
+	  }
       if (copy_from_user( line, buff, len ))
               return -EFAULT;
       line[len] = 0;

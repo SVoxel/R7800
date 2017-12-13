@@ -507,7 +507,7 @@ function loadvalue()
 		form.pin_attack_count.disabled = true;
 		form.prevent_pin_compromise.disabled = true;
 	}
-	if(!((country == 10 || country == 4) && (wla_mode != 1 && wla_mode != 2 && wla_mode != 7 && wla_mode != 8)))   
+	if(!((country == 10 || country == 4 || country == 6 || country == 11) && (wla_mode != 1 && wla_mode != 2 && wla_mode != 7 && wla_mode != 8)))   
         {
                 getObj('wladv_ht160').color = 'gray';
                 form.enable_ht160.disabled = true;

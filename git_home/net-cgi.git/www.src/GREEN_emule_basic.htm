@@ -42,6 +42,8 @@ var fileTP_max_concurrent_tasks="<% cfg_get("green_download_fileTP_max_tasks") %
 <% change_folder_path() %>
 var this_download_type = "emule";
 <% green_download_changed() %>
+var lanip="<% cfg_get("lan_ipaddr") %>";
+var lanmask="<% cfg_get("lan_netmask") %>";
 
 function add_item()
 {
@@ -67,6 +69,12 @@ function add_item()
 		alert("$greendl_common_alert_no_blank");
 		return false;
 	}
+
+	if(check_url_for_lan(str_down_url, lanip, lanmask) == true) {
+		alert("$greendl_donkey_alert_link");
+		return false;
+	}
+
 	var task_num_all = top.green_download_item_num;
 	if( task_num_all >= max_tasks_all )
 	{

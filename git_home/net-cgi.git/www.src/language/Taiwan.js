@@ -238,34 +238,6 @@ bh_wanlan_conflict_info="為了避免和你的網際網路服務供應商的 IP 
 bh_continue_mark="繼續"
 bh_same_server_wan_ip="我的 IP 位址不可與伺服器位址相同！"
 
-//readySHARE remote strings
-remote_share_head="ReadyCLOUD"
-ready_cloud_info="<p>ReadyCLOUD gives you remote access over the Internet to a USB storage device that is connected to your router's USB port. To use ReadyCLOUD, you must have a ReadyCLOUD account. If you do not have a ReadyCLOUD account, <a class='linktype' target='_blank' href='http://readycloud.netgear.com/clien/index.html#page=access'>click here</a>, then click <b>Sign In > Create Account</b>. </p><p><b>To set up ReadyCLOUD</b></p><p><ol><li>Connect a USB storage device to your router's USB port.</li><li>Enter your ReadyCLOUD user name and password in the fields below and click the <b>Register</b> button. Your router and the USB device are registered with ReadyCLOUD.</li><li> Visit <a class='linktype' target='_blank' href='http://readycloud.netgear.com'>http://readycloud.netgear.com</a>, click Sign In, enter your ReadyCLOUD user name and password, and click the <b>Sign In</b> button.</li></ol></p><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You can also use the ReadyCLOUD app to make a secure connection between your computer or mobile device and the router's USB storage device.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='linktype' target='_blank' href='http://readycloud.netgear.com/client/cloud_download.html'>Click here</a> to download the ReadyCLOUD app.</p>"
-ready_share_info1="ReadySHARE Cloud 功能可讓您從網際網路遠端存取與路由器 USB 連接埠相連的 USB 儲存裝置。"
-how_setup_ready_share="如何設定 ReadySHARE Cloud"
-ready_share_step1="Step 1: You need a ReadySHARE Cloud account. If you do not have one, <a class='linktype' target='_blank' href='https://readyshare.netgear.com/site/index.jsp?pid=4&src=device'>click here</a> to get one."
-ready_share_step2="第 2 步：在此頁面中輸入 ReadySHARE Cloud 使用者名稱和密碼，將您的路由器和所連的 USB 裝置註冊到您的帳戶。"
-ready_share_step3="Step 3: Log back into <a class='linktype' target='_blank' href='http://readyshare.netgear.com/'>http://readyshare.netgear.com</a> with your account. You should see the USB device that is connected to your router."
-ready_share_set_note="<b>注意：</b>如果沒有此用戶端，您只能瀏覽 USB 裝置內容，但無法開啟檔案或進行變更。"
-ready_share_start="使用 ReadyCLOUD 註冊路由器和 USB 裝置"
-ready_share_get_account="如果您沒有 ReadyCLOUD 帳戶，請<a class='linktype' target='_blank' href='http://readycloud.netgear.com/clien/index.html#page=access'>按一下這裡</a>取得"
-username="使用者名稱"
-key_passphrase="密碼"
-register="註冊"
-register_note="<b>注意：</b>您的路由器在您取消註冊前，會持續連線至 ReadyCLOUD。"
-help_center="說明中心"
-help_show_hide="顯示/隱藏説明中心"
-
-resister_user="下列 ReadyCLOUD 使用者已註冊此路由器："
-access_storage_method="現在您可以用 ReadyCLOUD 帳戶登入 <a class='linktype' target='_blank' href='http://readycloud.netgear.com'>http://readycloud.netgear.com</a>，從任何位置存取 USB 裝置。"
-unregister_info="按一下<B>取消註册</B>以使用其他 ReadyCLOUD 帳戶註冊此路由器"
-unregister="取消註册"
-
-result_register_ok="已成功完成註冊"
-result_register_fail="註冊失敗。 請檢查您的使用者名稱和密碼，然後再試一次。"
-result_unreg_ok="已成功完成取消註冊"
-result_unreg_fail="取消註冊失敗"
-
 //WIZ_sel_3g_adsl.htm
 bh_connection_mode="Choosing Connection Mode"
 

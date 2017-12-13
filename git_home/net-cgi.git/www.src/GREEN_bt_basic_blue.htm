@@ -52,6 +52,8 @@ var fileTP_max_concurrent_tasks="<% cfg_get("green_download_fileTP_max_tasks") %
 <% config_commit() %>
 var this_download_type = "bt";
 <% green_download_changed() %>
+var lanip="<% cfg_get("lan_ipaddr") %>";
+var lanmask="<% cfg_get("lan_netmask") %>";
 
 function change_file_path(type)
 {
@@ -166,6 +168,10 @@ function add_magnet()
 		return false;
 	}
 
+	if(check_url_for_lan(magnet_url, lanip, lanmask) == true) {
+		alert("$greendl_invalid_url");
+		return false;
+	}
 
 	if(check_magnet(magnet_url))
 		form.download_url.value = magnet_url;

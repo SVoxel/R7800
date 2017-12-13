@@ -21,7 +21,7 @@ void dump_grent(char *id)
 
     sprintf(fname, "/tmp/getgrent_r-%s.out-%d", id, getpid());
 
-    if ((fptr = fopen(fname, "w")) < 0) {
+    if ((fptr = fopen(fname, "w")) == NULL) {
         fprintf(stderr, "ERROR: could not open file %s: %s\n", fname,
                 sys_errlist[errno]);
         return;
@@ -32,7 +32,7 @@ void dump_grent(char *id)
     setgrent();
         
     while((gr = getgrent()) != NULL) {
-        fprintf(fptr,"%s:%s:%d:%d\n", gr->gr_name, gr->gr_passwd,
+        fprintf(fptr,"%s:%s:%d\n", gr->gr_name, gr->gr_passwd,
                 gr->gr_gid);
     }
         

@@ -20,6 +20,9 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/iproute2-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -ffunction-sections -fdata-sections
+TARGET_LDFLAGS += -Wl,--gc-sections
+
 define Package/iproute2/Default
   SECTION:=net
   CATEGORY:=Network

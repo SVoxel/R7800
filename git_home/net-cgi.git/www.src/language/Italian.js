@@ -238,34 +238,6 @@ bh_wanlan_conflict_info="Per evitare un conflitto con l'ISP, l'indirizzo IP del 
 bh_continue_mark="Continua"
 bh_same_server_wan_ip="L'indirizzo IP non deve coincidere con l'indirizzo server!"
 
-//readySHARE remote strings
-remote_share_head="ReadyCLOUD"
-ready_cloud_info="<p>ReadyCLOUD consente di accedere in modalità remota tramite Internet a un dispositivo di archiviazione USB collegato alla porta USB del router. Per utilizzare ReadyCLOUD, è necessario disporre di un account ReadyCLOUD. Se non si dispone di un account ReadyCLOUD, <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/clien/index.html#page=access\">fare clic qui</a>, quindi fare clic su <b>Accedi > Crea account</b>. </p><p><b>Configurazione di ReadyCLOUD</b></p><p><ol><li>Collegare un dispositivo di archiviazione USB alla porta USB del router.</li><li>Immettere il proprio nome utente e la password ReadyCLOUD nei campi sottostanti e fare clic sul pulsante <b>Registra</b>. A questo punto, il router e il dispositivo USB vengono registrati su ReadyCLOUD.</li><li> Visitare il sito <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com\">http://readycloud.netgear.com</a>, fare clic su Accedi, immettere il proprio nome utente e password ReadyCLOUD, quindi fare clic sul pulsante <b>Accedi</b>.</li></ol></p><p>      È inoltre possibile utilizzare l'app ReadyCLOUD per stabilire una connessione sicura tra il computer o dispositivo mobile e il dispositivo di archiviazione USB del router.<br>      <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/client/cloud_download.html\">Fare clic qui</a> per scaricare l'app ReadyCLOUD.</p>"
-ready_share_info1="La funzionalità ReadySHARE Cloud consente di accedere tin modalità remota a un dispositivo di archiviazione USB collegato alla porta USB del router."
-how_setup_ready_share="Configurazione di ReadySHARE Cloud"
-ready_share_step1="Fase 1: è necessario un account ReadySHARE Cloud. Se non si dispone dell'account,<a class='linktype' target='_blank' href='https://readyshare.netgear.com/site/index.jsp?pid=4&src=device'>fare clic qui</a> per crearne uno."
-ready_share_step2="Fase 2: su questa pagina, immettere il nome utente e la password ReadySHARE Cloud per registrare il router e il dispositivo USB ad esso collegato tramite l'account."
-ready_share_step3="Fase 3: eseguire nuovamente l'accesso a <a class='linktype' target='_blank' href='http://readyshare.netgear.com/'>http://readyshare.netgear.com/</a> con il proprio account. Dovrebbe essere visualizzato il dispositivo USB collegato al router."
-ready_share_set_note="<b>Nota:</b> senza il client, è possibile soltanto visualizzare i contenuti del dispositivo USB e non è possibile aprire o modificare i file."
-ready_share_start="Registra il router e il dispositivo USB con ReadyCLOUD"
-ready_share_get_account="Se non si dispone di un account ReadyCLOUD <a class='linktype' target='_blank' href='http://readycloud.netgear.com/clien/index.html#page=access'>fare clic qui</a> per ottenerne uno"
-username="Nome utente"
-key_passphrase="Password"
-register="Registra"
-register_note="<b>Nota:</b> il router mantiene la connessione in modo continuativo a ReadyCLOUD fino a quando non si annulla la registrazione."
-help_center="Centro assistenza"
-help_show_hide="Mostra/Nascondi centro assistenza"
-
-resister_user="Il router è registrato con il seguente utente ReadyCLOUD:"
-access_storage_method="Ora è possibile accedere a<a class='linktype' target='_blank' href='http://readycloud.netgear.com'>http://readycloud.netgear.com</a> con l'account ReadyCLOUD per accedere al dispositivo USB da qualunque postazione."
-unregister_info="Fare clic su <B>Annulla registrazione</B> per registrare il router con un account ReadyCLOUD diverso"
-unregister="Annulla registrazione"
-
-result_register_ok="Registrazione completata"
-result_register_fail="La registrazione non è riuscita. Controllare il nome utente e la password e riprovare."
-result_unreg_ok="Annullamento registrazione completato"
-result_unreg_fail="Annullamento registrazione non riuscito"
-
 //WIZ_sel_3g_adsl.htm
 bh_connection_mode="Choosing Connection Mode"
 

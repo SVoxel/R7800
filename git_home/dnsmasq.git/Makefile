@@ -12,7 +12,7 @@ CFLAGS?= -O2
 all :   dnsmasq
 
 dnsmasq :
-	$(MAKE) I18N=-DNO_GETTEXT -f ../bld/Makefile -C $(SRC) dnsmasq 
+	$(MAKE) I18N=-DNO_GETTEXT -f ../bld/Makefile -C $(SRC) dnsmasq -lconfig
 
 clean :
 	rm -f *~ $(SRC)/*.mo contrib/*/*~ */*~ $(SRC)/*.pot 

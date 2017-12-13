@@ -112,6 +112,7 @@ start()
 	start0 start
 	/etc/init.d/ntpclient start
 	/etc/init.d/cron start
+	/etc/init.d/dnsmasq stop
 	/etc/init.d/dnsmasq start
 }
 

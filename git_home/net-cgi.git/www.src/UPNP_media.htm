@@ -58,16 +58,7 @@ function loadvalue()
 		cf.media_server_tivo.checked = true;
 	else
 		cf.media_server_tivo.checked = false;
-	<% display_iTunes() %>
-	if(endis_itunes == "1"){
-                cf.enable_itunes.checked = true;
-		cf.app_passcode.value=passcode;
-	}
-        else{
-                cf.enable_itunes.checked = false;
-		cf.app_passcode.disabled=true;
-		cf.app_passcode.value="";
-	}
+
 	mediaserver_enable();
 }
 
@@ -132,23 +123,6 @@ function allow_control_submit(cf)
 	<input type="checkbox" name="media_server_tivo" id="enable_media_server_tivo" value="1">
 	<A tabindex=-1 href="javascript:loadhelp('_UPNP_media','tivo')"><B>$media_server_tivo</B></A>
 	</TD>
-</TR>
-<TR id=itunes_display style="display:none">
-	<TD nowrap colspan=2>
-	<input type="checkbox" name="enable_itunes" value="0">
-	<B>$enable_itunes</B></TD>
-</TR>
-<TR id="itunes_app_passcode" style="display:none">
-	<TD nowrap>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	&nbsp;&nbsp;&nbsp;$app_passcode 
-	<input type="text" name="app_passcode" id="app_passcode" size="4">&nbsp;&nbsp;</td>
-	<script>
-	var master="<% cfg_get("http_loginname") %>";
-	if( master == "admin" )
-		document.write('<td><input type="submit" name="allow_control" class="common_key_bt" value="$allow_control" onClick="allow_control_submit(document.forms[0])"></TD>');
-	else
-		document.write('<td><input type="submit" name="allow_control" class="common1_key_bt" value="$allow_control" disabled></TD>');
-	</script>
 </TR>
 <TR>
 	<TD id="server_name_td" nowrap width="30%" >

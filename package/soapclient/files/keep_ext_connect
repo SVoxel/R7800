@@ -1,0 +1,53 @@
+#!/bin/sh
+
+format_ip(){
+    for var in 1 3 5 7
+    do
+        if [ $var -lt 7 ]
+        then
+            tmp=$tmp$(echo "obase=10; ibase=16; $(expr substr $1 $var 2)" | bc).
+        else
+            tmp=$tmp$(echo "obase=10; ibase=16; $(expr substr $1 $var 2)" | bc)
+        fi
+    done
+    echo $tmp
+}
+
+
+ip=
+mac=
+profile="AllConfig"
+
+if [ "${1:-dhcp}" == "dhcp" ]
+then
+    echo "first brach"
+    lease_file="/tmp/hyt_result"
+    [ ! -f $lease_file ] && exit 0
+    while read line
+    do
+    	ip=`echo $line | cut -d ' ' -f 2`
+    	mac=`echo $line | cut -d ' ' -f 1`
+    	logs="/var/log/soapclient/$mac"
+		#pidfile=$(eval "echo /var/locks/soap-$mac.pid")
+		#[ -f $pidfile ] && exit 0
+    	echo $ip
+    	echo $mac
+    	/usr/sbin/soapclient -a $ip -p 80 -m $mac -s $profile $logs &
+		echo "/usr/sbin/soapclient -a $ip -p 80 -m $mac -s $profile $logs &"
+    done <	$lease_file
+else
+    data=$(echo $2 | sed 's/"//g')
+    mdns_joined=$(echo "obase=10; ibase=16; $(expr substr $data 33 2)" | bc)
+	if [ "$mdns_joined" == "0" ]
+	then
+        ip=$(format_ip $(expr substr $data 35 8))
+        mac=$(expr substr $data 5 12 | sed 's/../&:/g' | sed 's/:$//g')
+		logs="/var/log/soapclient/$mac"
+		#pidfile=$(eval "echo /var/locks/soap-$mac.pid")
+		#[ -f $pidfile ] && exit 0
+		echo $ip
+		echo $mac
+		/usr/sbin/soapclient -a $ip -p 80 -m $mac -s $profile $logs &
+		echo "/usr/sbin/soapclient -a $ip -p 80 -m $mac -s $profile $logs &"
+	fi
+fi

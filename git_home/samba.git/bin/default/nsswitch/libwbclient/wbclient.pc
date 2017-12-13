@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include/samba-4.0
+modulesdir=${prefix}/modules/gensec
+
+Name: wbclient
+Description: Winbind client
+Version: 0.13
+Libs:  -L${libdir} -lwbclient
+Cflags: -I${includedir}  -DHAVE_IMMEDIATE_STRUCTURES=1

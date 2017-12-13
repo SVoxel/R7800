@@ -275,7 +275,23 @@ void get_stamac(unsigned char* mac)
 		close(fd);
 	}
 }
+/*int get_internet_conn(void)
+{
+	int fd = 0;
+        int internet_conn;
 
+	fd = open(POT_MTD, O_RDWR | O_SYNC);
+	if (0 > fd) {
+		dfp("can't open mtd device - %s\n", POT_MTD);
+		internet_conn = 0xffff;
+	} else {
+		lseek(fd, FIRST_INTERNET_CONNECT_OFFSET, SEEK_SET);
+		read(fd, &internet_conn, 2);
+		close(fd);
+	}
+        return internet_conn;
+}
+*/
 int potval_func(int argc, char **argv)
 {
 	FILE *fp;
@@ -285,6 +301,8 @@ int potval_func(int argc, char **argv)
 	struct sockaddr_in addr;
 	time_t ntptime;
 	char strtime[64] = {0};
+//        int internet_conn;
+//        char *net_conn;
 	unsigned char mac[6];
 	const unsigned char nomac[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 	char timezone[64];
@@ -346,6 +364,14 @@ int potval_func(int argc, char **argv)
 			memset(mac, 0, 6);
 		sprintf(potval + strlen(potval), "MAC%02x-%02x-%02x-%02x-%02x-%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
+//		strcat(potval, "NETCONN");
+//                internet_conn = get_internet_conn();
+//                if (0xffff == internet_conn) {
+//                        strcpy(net_conn, "NO");
+//                } else {
+//                        strcpy(net_conn, "YES");
+//                }
+//                strcat(potval, net_conn);
 		send(conn_fd, potval, strlen(potval), 0);
 		r = recv(conn_fd, recvbuf, sizeof(recvbuf) - 1, 0);
 		if (r < 1)
@@ -375,6 +401,8 @@ int main(int argc, char *argv[])
 		return potval_func(argc, argv);
 	else if (strstr(argv[0], "potd") != NULL)
 		return pot_func(argc, argv);
+	else if (strstr(argv[0], "netconn") != NULL)
+		return netconn_func(argc, argv);
 	else
 		dfp("command name is wrong!\n");
 

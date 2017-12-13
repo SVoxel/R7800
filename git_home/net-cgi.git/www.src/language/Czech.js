@@ -238,34 +238,6 @@ bh_wanlan_conflict_info="Aby nedošlo ke konfliktu s počítači poskytovatele 
 bh_continue_mark="Pokračovat"
 bh_same_server_wan_ip="Moje IP adresa nesmí být stejná jako IP adresa serveru!"
 
-//readySHARE remote strings
-remote_share_head="ReadyCLOUD"
-ready_cloud_info="<p>Služba ReadyCLOUD prostřednictvím internetu poskytuje vzdálený přístup k úložnému zařízení USB, které je připojeno k portu USB routeru. K použití služby ReadyCLOUD je třeba účet ReadyCLOUD. Pokud účet ReadyCLOUD nemáte, <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/clien/index.html#page=access\">klikněte sem</a> a poté klikněte na položky <b>Přihlásit > Vytvořit účet</b>. </p><p><b>Nastavení služby ReadyCLOUD</b></p><p><ol><li>Připojte úložné zařízení USB k portu USB routeru.</li><li>Do polí níže zadejte uživatelské jméno a heslo k účtu ReadyCLOUD a klikněte na tlačítko <b>Registrovat</b>. Router a zařízení USB jsou registrovány ve službě ReadyCLOUD.</li><li> Na webu <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com\">http://readycloud.netgear.com</a> klikněte na tlačítko Přihlásit, zadejte uživatelské jméno a heslo k účtu ReadyCLOUD a klikněte na tlačítko <b>Přihlásit</b>.</li></ol></p><p>      Chcete-li vytvořit zabezpečené připojení mezi počítačem nebo mobilním zařízením a úložným zařízením USB routeru, můžete také využít aplikaci ReadyCLOUD.<br>      <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/client/cloud_download.html\">Kliknutím sem</a> stáhněte aplikaci ReadyCLOUD.</p>"
-ready_share_info1="Funkce ReadySHARE Cloud poskytuje vzdálený přístup prostřednictvím Internetu k úložnému zařízení USB, které je připojeno k portu USB routeru."
-how_setup_ready_share="Nastavení funkce ReadySHARE Cloud"
-ready_share_step1="Krok 1: Potřebujete účet ReadySHARE Cloud. Pokud jej nemáte, můžete jej vytvořit <a class='linktype' target='_blank' href='https://readyshare.netgear.com/site/index.jsp?pid=4&src=device'>po klepnutí sem</a>."
-ready_share_step2="Krok 2: Na této stránce zadejte své uživatelské jméno ReadySHARE Cloud a heslo, čímž zaregistrujete router a zařízení USB, které je k němu připojeno, k vašemu účtu."
-ready_share_step3="Krok 3: Přihlaste se zpět na stránku <a class='linktype' target='_blank' href='http://readyshare.netgear.com/'>http://readyshare.netgear.com/</a> pomocí vašeho účtu. Mělo by se zobrazit zařízení USB, které je připojeno k vašemu routeru."
-ready_share_set_note="<b>Poznámka:</b> Bez tohoto klienta můžete procházet obsah zařízení USB, ale nemůžete otevřít či měnit soubory."
-ready_share_start="Zaregistrujte router a USB zařízení ve službě ReadyCLOUD"
-ready_share_get_account="Pokud nemáte účet ReadyCLOUD, <a class='linktype' target='_blank' href='http://readycloud.netgear.com/clien/index.html#page=access'>klikněte sem</a> a můžete si jej vytvořit."
-username="Uživatelské jméno"
-key_passphrase="Heslo"
-register="Registrovat"
-register_note="<b>Poznámka:</b> Router bude udržovat nepřetržité připojení ke službě ReadyCLOUD, dokud registraci nezrušíte."
-help_center="Centrum nápovědy"
-help_show_hide="Zobrazit/skrýt centrum nápovědy"
-
-resister_user="Tento router je zaregistrován na následujícího uživatele služby ReadyCLOUD:"
-access_storage_method="Nyní se můžete přihlásit na adrese <a class='linktype' target='_blank' href='http://readycloud.netgear.com'>http://readycloud.netgear.com</a> prostřednictvím svého účtu ReadyCLOUD a získat přístup ke svému USB zařízení z libovolného místa."
-unregister_info="Chcete-li router zaregistrovat s jiným účtem ReadyCLOUD, klikněte na možnost <B>Zrušit registraci</B>."
-unregister="Zrušit registraci"
-
-result_register_ok="Registrace byla úspěšně dokončena."
-result_register_fail="Registrace se nezdařila. Zkontrolujte uživatelské jméno a heslo a zkuste to znovu."
-result_unreg_ok="Zrušení registrace bylo úspěšně dokončeno."
-result_unreg_fail="Zrušení registrace se nezdařilo."
-
 //WIZ_sel_3g_adsl.htm
 bh_connection_mode="Choosing Connection Mode"
 

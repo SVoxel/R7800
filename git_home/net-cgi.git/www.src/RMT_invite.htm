@@ -1,0 +1,241 @@
+<% http_header("style/form.css", "/funcs.js", "language/English.js") %>
+<% body_header("_remote_share", "RMT_invite.htm", "readycloud_register") %>
+<div class="page_title">$remote_share_head</div>
+
+<input type="hidden" name="change_wan_pppoe_demand" value="0">
+<input type="hidden" name="change_wan_pptp_demand" value="0">
+<input type="hidden" name="change_wan_mulpppoe_demand" value="0">
+<input type="hidden" name="change_wan_l2tp_demand" value="0">
+
+<script>
+<% save_timestamp("readycloud_register", "readycloud_unregister") %>
+var ts = "<% cfg_get("readycloud_register") %>";
+var internet_type = "<% cfg_get("internet_type") %>";
+var internet_ppp_type = "<% cfg_get("internet_ppp_type") %>";
+var wan_pppoe_demand = "<% cfg_get("wan_pppoe_demand") %>";
+var wan_pptp_demand = "<% cfg_get("wan_pptp_demand") %>";
+var wan_mulpppoe_demand = "<% cfg_get("wan_mulpppoe_demand") %>";
+var wan_l2tp_demand = "<% cfg_get("wan_l2tp_demand") %>";
+var get_wanip = "<% wan_ip() %>";
+var account = "<% cfg_get("readycloud_registration_owner") %>";
+var master = "<% cfg_get("http_loginname") %>";
+var hid_passwd = new Array();
+var action = "<% cat_file("/tmp/readycloud_action") %>";
+var status = "<% readycloud_status() %>";
+var form = document.forms[0];
+var is_first = true;
+
+function loadvalue() {
+	if(action == "unregister") {
+		var fail = "unregister";
+		var success = "register";
+		var wait_msg = "$wizard_pls_wait";
+		var fail_msg = "$result_unreg_fail";
+		var success_msg = "$result_unreg_ok";
+	}
+	else {
+		var fail = "register";
+		var success = "unregister";
+		var wait_msg = "$wizard_pls_wait";
+		var fail_msg = "$result_register_fail";
+		var success_msg = "$result_register_ok";
+	}
+	if(account != "" && !(status == "running" && action == "unregister")) {
+		document.getElementById("registered-user").innerHTML = account;
+		control_panels(success);
+	}
+	else {
+		if(action == "") {
+			control_panels("register");
+		}
+		else if(status == "no_binary") {
+			control_panels("register");
+			delay_alert(fail_msg);
+		}
+		else if(status == "timeout") {
+			control_panels(fail);
+			delay_alert(fail_msg);
+		}
+		else if(status == "fail") {
+			control_panels(fail);
+			delay_alert(fail_msg);
+		}
+		else if(status == "running") {
+			document.getElementById("wait-msg").innerHTML = wait_msg;
+			control_panels("running");
+		}
+		else if(status == "success") {
+			control_panels(success);
+		}
+		else {
+			control_panels("register");
+		}
+	}
+}
+
+function delay_alert(msg)
+{
+	setTimeout(function() {
+		alert(msg);
+	}, 100);
+}
+
+function register_check() {
+	if (internet_type == "0") {
+		if (internet_ppp_type == "0" && wan_pppoe_demand == "1") {
+			if (confirm(bh_ppp_readycloud_query) == false)
+				return false;
+			else
+				form.change_wan_pppoe_demand.value = "1";
+		} else if (internet_ppp_type == "1" && wan_pptp_demand == "1") {
+			if (confirm(bh_ppp_readycloud_query) == false)
+				return false;
+			else
+				form.change_wan_pptp_demand.value = "1";
+		} else if (internet_ppp_type == "3" && wan_mulpppoe_demand == "1") {
+			if (confirm(bh_ppp_readycloud_query) == false)
+				return false;
+			else
+				form.change_wan_mulpppoe_demand.value = "1";
+		} else if (internet_ppp_type == "4" && wan_l2tp_demand == "1") {
+			if (confirm(bh_ppp_readycloud_query) == false)
+				return false;
+			else
+				form.change_wan_l2tp_demand.value = "1";
+		}
+	}
+	if (internet_type == "0" && ((internet_ppp_type == "0" && wan_pppoe_demand == "2") || (internet_ppp_type == "1" &&
+			wan_pptp_demand == "2") || (internet_ppp_type == "3" && wan_mulpppoe_demand == "2") || (internet_ppp_type == "4" &&
+			wan_l2tp_demand == "2"))) {
+		if (get_wanip != "0.0.0.0")
+			alert(bh_ppp_readycloud_warning_1);
+		else {
+			alert(bh_ppp_readycloud_warning_2);
+			return false;
+		}
+	}
+
+	form.submit();
+}
+
+function unregister_apply()
+{
+	form.submit_flag.value = "readycloud_unregister";
+	form.action = "/apply.cgi?/RMT_invite.htm timestamp=" + ts;
+	form.submit();
+}
+
+function control_panels(flag) {
+	if(flag == "register") {
+		document.getElementById("main").style.display = "";
+		document.getElementById("pls_wait_div").style.display = "none";
+		document.getElementById("register-table").style.display = "";
+		document.getElementById("unregister-table").style.display = "none";
+	}
+	else if(flag == "unregister") {
+		document.getElementById("main").style.display = "";
+		document.getElementById("pls_wait_div").style.display = "none";
+		document.getElementById("register-table").style.display = "none";
+		document.getElementById("unregister-table").style.display = "";
+	}
+	else {
+		document.getElementById("main").style.display = "none";
+		document.getElementById("pls_wait_div").style.display = "";
+	}
+}
+
+function hide_text(cf) {
+	var passwd = cf.TXT_remote_password.value.split("");
+	if (passwd.length < hid_passwd.length) {
+		cf.TXT_remote_password.value = "";
+		hid_passwd.length = 0;
+		return;
+	}
+	for (var i = 0; i < passwd.length; i++) {
+		if (passwd[i] != "*") {
+			hid_passwd[i] = passwd[i];
+			passwd[i] = "*";
+		}
+	}
+	cf.TXT_remote_password.value = passwd.join("");
+	cf.TXT_remote_passwd.value = hid_passwd.join("");
+}
+</script>
+
+<div id="main" class="main" style="display:block">
+    <table width="100%" border="0" cellpadding="0" cellspacing="3" id="register-table" style="display:none;">
+        $bluebar
+        <tr><td colspan="2">$ready_cloud_info</td></tr>
+        $bluebar
+        <tr>
+            <td colspan="2">
+                <b><A tabindex=-1 href="javascript:loadhelp('_remote_share','readyshare_enable')">$ready_share_start</A></b><br/>
+                <b>$ready_share_get_account</b><br/>
+            </td>
+        </tr>
+        <tr>
+            <td><b>$username:</b></td>
+            <td><input type="text" value="" name="TXT_remote_login" id="txt_remote_login" maxlength="64" size="28"></td>
+        </tr>
+        <tr>
+            <td><b>$key_passphrase:</b></td>
+            <td>
+                <input type="text" value="" name="TXT_remote_password" id="txt_remote_password" maxlength="64" size="28" onkeyup="hide_text(document.forms[0]);" onmouseout="hide_text(document.forms[0]);">
+                <input type="hidden" value="" name="TXT_remote_passwd" id="txt_remote_passwd">
+            </td>
+        </tr>
+        <tr><td colspan="2"></td></tr>
+        <tr>
+			<td></td>
+            <td>
+                <script>
+					if(master == "admin")
+                    	document.write('<input class="common_bt" type="button" name="Register" id="register" value="$register" onclick="register_check();"> ($register_note)');
+					else
+						document.write('<input class="common1_bt" type="button" name="Register" id="register" value="$register" onclick="register_check();" disabled> ($register_note)');
+                </script>
+            </td>
+        </tr>
+        $bluebar
+        <tr><td colspan="2"></td></tr>
+        <tr><td colspan="2"></td></tr>
+    </table>
+	<table width="100%" border="0" cellpadding="0" cellspacing="3" id="unregister-table" style="display:none;">
+	    $bluebar
+	    <tr>
+	        <td colspan="2">
+	            <p><b>$resister_user
+					<script>
+						document.write(" <font id='registered-user'>" + account + "</font>");
+					</script>
+				</b></p>
+	            <p>$access_storage_method</p>
+	            <p>$unregister_info</p>
+	        </td>
+	    </tr>
+	    <tr><td colspan="2"></td></tr>
+	    <tr><td colspan="2"></td></tr>
+	    <tr>
+	        <td colspan="2" align="center">
+	            <script>
+					if(master == "admin")
+	                	document.write('<input class="common_big_bt" type="button" name="BTN_unreg" value="$unregister" onclick="unregister_apply();">');
+					else
+						document.write('<input class="common_big_gray_bt" type="button" name="BTN_unreg" value="$unregister" onclick="unregister_apply();" disabled>');
+	            </script>
+	        </td>
+	    </tr>
+	    $bluebar
+	    <tr><td colspan="2"></td></tr>
+	    <tr><td colspan="2"></td></tr>
+	</table>
+</div>
+<div id="pls_wait_div" style="display:none; background-color:#fff; width:100%; height:100%;overflow:hidden;font-size:10pt;font-family: Arial;">
+	<div align="center"><br /><br /><b id="wait-msg">$wizard_pls_wait</b><br /><br /></div>
+	<div align="center"><img src="image/wait30.gif" /></div>
+</div>
+<iframe name="refresh_iframe" src="/readycloud_refresh_status.html" allowtransparency="true" width="100%" frameborder="0" style="display:none;"></iframe>
+<% help_box("0", "_remote_share") %>
+</form>
+</body>
+</html>

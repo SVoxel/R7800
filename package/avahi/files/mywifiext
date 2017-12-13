@@ -1,0 +1,18 @@
+<?xml version="1.0" standalone='no'?><!--*-nxml-*-->
+<!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+<service-group>
+ <name replace-wildcards="yes">%h</name>
+  <service>
+   <type>_mywifiext._tcp</type>
+   <port>65353</port>
+   <txt-record>ip=192.168.1.1</txt-record>
+   <txt-record>ver=1</txt-record>
+   <txt-record>mac=00:11:22:33:44:20</txt-record>
+   <txt-record>extvie=0801000100000000</txt-record>
+   <txt-record>mdns_joined=0</txt-record>
+   <txt-record>5G1_bssid=00:11:22:33:44:22</txt-record>
+   <txt-record>5G1_channel=44</txt-record>
+   <txt-record>2G_bssid=00:11:22:33:44:20</txt-record>
+   <txt-record>2G_channel=9</txt-record>
+  </service>
+</service-group>

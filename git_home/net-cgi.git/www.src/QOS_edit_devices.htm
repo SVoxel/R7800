@@ -74,6 +74,7 @@ function loadvalue()
 	cf.icon_tag[parseInt(devtype) -1].selected = true;
 }
 
+$$(window).unload(function leavepage(){top.back_flag=1;});
 function select_icon()
 {
 	var icon_img=document.getElementById("icon_img");

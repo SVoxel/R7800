@@ -7,6 +7,7 @@
 
 enum acl_mode
 {
+    SMB_ACL_LIST,
     SMB_ACL_GET,
     SMB_ACL_SET,
     SMB_ACL_DELETE,
@@ -20,17 +21,20 @@ enum acl_mode
 int main(int argc, const char *argv[])
 {
     int opt;
-    int flags;
+    int flags = 0;
     int debug = 0;
     int numeric = 0;
-    enum acl_mode mode = SMB_ACL_GET;
-    static char *the_acl = NULL;
+    int stat_and_retry = 0;
+    int full_time_names = 0;
+    enum acl_mode mode = SMB_ACL_LIST;
+    static const char *the_acl = NULL;
     int ret;
     char *p;
-    char *debugstr;
+    const char *debugstr;
     char path[1024];
     char value[1024];
     poptContext pc;
+    struct stat st;
     struct poptOption long_options[] =
         {
             POPT_AUTOHELP
@@ -41,6 +45,11 @@ int main(int argc, const char *argv[])
             {
                 "debug", 'd', POPT_ARG_INT, &debug,
                 0, "Set debug level (0-100)"
+            },
+            {
+                "full_time_names", 'f', POPT_ARG_NONE, &full_time_names,
+                1,
+                "Use new style xattr names, which include CREATE_TIME"
             },
             {
                 "delete", 'D', POPT_ARG_STRING, NULL,
@@ -69,6 +78,10 @@ int main(int argc, const char *argv[])
             {
                 "get", 'g', POPT_ARG_STRING, NULL,
                 'g', "Get a specific acl attribute", "ACL"
+            },
+            {
+                "stat_and_retry", 'R', POPT_ARG_NONE, &stat_and_retry,
+                1, "After 'get' do 'stat' and another 'get'"
             },
             {
                 NULL
@@ -126,39 +139,83 @@ int main(int argc, const char *argv[])
         return 1;
     }
     
-    strcpy(path, poptGetArg(pc));
+    strncpy(path, poptGetArg(pc), sizeof(path));
+    path[sizeof(path)-1] = '\0';
     
     if (smbc_init(get_auth_data_fn, debug) != 0)
     {
         printf("Could not initialize smbc_ library\n");
         return 1;
     }
+
+    if (full_time_names) {
+        SMBCCTX *context = smbc_set_context(NULL);
+        smbc_setOptionFullTimeNames(context, 1);
+    }
     
     /* Perform requested action */
     
     switch(mode)
     {
-    case SMB_ACL_GET:
-        if (the_acl == NULL)
-        {
-            if (numeric)
-            {
-                the_acl = "system.nt_sec_desc.*";
-            }
-            else
-            {
-                the_acl = "system.nt_sec_desc.*+";
-            }
-        }
-        ret = smbc_getxattr(path, the_acl, value, sizeof(value));
+    case SMB_ACL_LIST:
+        ret = smbc_listxattr(path, value, sizeof(value)-2);
         if (ret < 0)
         {
-            printf("Could not get attributes for [%s] %d: %s\n",
+            printf("Could not get attribute list for [%s] %d: %s\n",
                    path, errno, strerror(errno));
             return 1;
         }
+
+        /*
+         * The list of attributes has a series of null-terminated strings.
+         * The list of strings terminates with an extra null byte, thus two in
+         * a row.  Ensure that our buffer, which is conceivably shorter than
+         * the list of attributes, actually ends with two null bytes in a row.
+         */
+        value[sizeof(value) - 2] = '\0';
+        value[sizeof(value) - 1] = '\0';
+        printf("Supported attributes:\n");
+        for (p = value; *p; p += strlen(p) + 1)
+        {
+            printf("\t%s\n", p);
+        }
+        break;
+
+    case SMB_ACL_GET:
+        do
+        {
+            if (the_acl == NULL)
+            {
+                if (numeric)
+                {
+                    the_acl = "system.*";
+                }
+                else
+                {
+                    the_acl = "system.*+";
+                }
+            }
+            ret = smbc_getxattr(path, the_acl, value, sizeof(value));
+            if (ret < 0)
+            {
+                printf("Could not get attributes for [%s] %d: %s\n",
+                       path, errno, strerror(errno));
+                return 1;
+            }
         
-        printf("Attributes for [%s] are:\n%s\n", path, value);
+            printf("Attributes for [%s] are:\n%s\n", path, value);
+
+            if (stat_and_retry)
+            {
+                if (smbc_stat(path, &st) < 0)
+                {
+                    perror("smbc_stat");
+                    return 1;
+                }
+            }
+
+            --stat_and_retry;
+        } while (stat_and_retry >= 0);
         break;
 
     case SMB_ACL_ADD:

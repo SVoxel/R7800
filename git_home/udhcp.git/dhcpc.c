@@ -816,7 +816,33 @@ int main(int argc, char *argv[])
                                                }
                                         }
 #endif
+#ifdef SUPPORT_OPTION_43
 
+                    if((temp=get_option(&packet,DHCP_VENDOR_SPECIFIC))){
+                        char *temp_align=(char*)malloc(sizeof(char)*33);
+                        memset(temp_align,0,(sizeof(char)*33));
+                        memcpy(temp_align,temp,32);
+                        char vie_md5[32+1];
+                        int vie_len;
+                        unsigned char *vie;
+                        vie=(char*)malloc(sizeof(char)*(256+12));
+                        memset(vie,0,(sizeof(char)*(256+12)));
+
+                        strcat(vie,client_config.hostname);//the first two byte is code and len
+                        vie_len=strlen(vie)+6+1+1+1;
+                        memcpy(vie+strlen(vie),client_config.clientid,6+1+1+1);//the first 3 byte is code and len and type.mac can be 0x00 means \0,so use this
+                        md5(vie,vie_md5,vie_len);
+                 
+                        vie_md5[32]='\0';
+                        if(!strcmp(temp_align,vie_md5)){
+                            //do something
+                        }
+
+                        free(temp_align);
+                        free(vie);
+                    }                    
+
+#endif
 					/* enter bound state */
 					t1 = lease / 2;
 					

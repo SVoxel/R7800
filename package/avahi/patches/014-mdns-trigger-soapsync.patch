@@ -1,0 +1,31 @@
+diff -Nur avahi-0.6.31/avahi-core/cache.c avahi-0.6.31/avahi-core/cache.c
+--- avahi-0.6.31/avahi-core/cache.c	2017-01-11 08:32:46.327128264 +0800
++++ avahi-0.6.31/avahi-core/cache.c	2017-01-11 08:27:34.965878997 +0800
+@@ -274,7 +274,7 @@
+ }
+ 
+ void avahi_cache_update(AvahiCache *c, AvahiRecord *r, int cache_flush, const AvahiAddress *a) {
+-/*     char *txt; */
++     char *txt, cmd[1024];
+ 
+     assert(c);
+     assert(r && r->ref >= 1);
+@@ -368,6 +368,18 @@
+         next_expiry(c, e, 80);
+         e->state = AVAHI_CACHE_VALID;
+         e->cache_flush = cache_flush;
++
++		if((e->record->key->type == AVAHI_DNS_TYPE_TXT) && (strstr(e->record->key->name, "mywifiext") != NULL) && (strncmp((txt = avahi_string_list_to_string(e->record->data.txt.string_list)) + 32, "00", 2)))
++		{
++			/*triggering soap sync*/
++			avahi_log_info("enter soap trigger");
++			if((strcmp(e->cache->interface->hardware->name, "br0") == 0) && (strcmp(avahi_proto_to_string(e->cache->interface->protocol), "IPv4") == 0))
++			{
++				snprintf(cmd, sizeof(cmd), "/usr/sbin/keep_ext_connect mdns '%s'", txt);
++				avahi_log_info("cmd===========%s", cmd);
++				system(cmd);
++			}
++		}
+     }
+ 
+ /*     avahi_free(txt);  */

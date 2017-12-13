@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include/samba-4.0
+
+Name: smbclient
+Description: A SMB library interface
+Version: 0.2.3
+Libs:  -L${libdir} -lsmbclient
+Cflags: -I${includedir}
+URL: http://www.samba.org/

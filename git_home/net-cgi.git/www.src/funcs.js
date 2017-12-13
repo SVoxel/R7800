@@ -3363,3 +3363,13 @@ function setHeight_for_IE6()
 String.prototype.replaceXSSItem = function() {
 	return this.replace(/&#92;/g, "\\").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#40;/g,"(").replace(/&#41;/g,")").replace(/&#34;/g,'\"').replace(/&#39;/g,"'").replace(/&#35;/g,"#").replace(/&#38;/g,"&");
 }
+
+function back_reload_page(page)
+{
+       console.log("back_flag=%s", top.back_flag);
+       if(top.back_flag == 1)
+       {
+               location.href = page;
+               top.back_flag = 0;
+       }
+}

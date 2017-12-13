@@ -210,7 +210,26 @@ int add_simple_option(unsigned char *optionptr, unsigned char code, u_int32_t da
 	memcpy(option + 2, &aligned, length);
 	return add_option_string(optionptr, option);
 }
-
+#ifdef SUPPORT_OPTION_43
+/*This function is write for vie function for add option 43.if it no longer used ,delete it*/
+int add_vie_option(unsigned char *optionptr, unsigned char code, char* data)
+{
+	char length = 0;
+	int i;
+	unsigned char option[2 + 32];
+    length=strlen(data);
+		
+	if (!length) {
+		DEBUG(LOG_ERR, "Could not add option 0x%02x", code);
+		return 0;
+	}
+	
+	option[OPT_CODE] = code;
+	option[OPT_LEN] = length;
+	memcpy(option + 2,data , length);
+	return add_option_string(optionptr, option);
+}
+#endif
 
 /* find option 'code' in opt_list */
 struct option_set *find_option(struct option_set *opt_list, char code)

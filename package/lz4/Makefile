@@ -34,7 +34,8 @@ define Package/liblz4/description
   even faster decoder. This package provides the liblz4 shared library.
 endef
 
-TARGET_CFLAGS += $(FPIC) -DLZ4_FORCE_MEMORY_ACCESS=1 -DXXH_FORCE_MEMORY_ACCESS=1 -fhonour-copts -O3
+TARGET_CFLAGS += $(FPIC) -DLZ4_FORCE_MEMORY_ACCESS=1 -DXXH_FORCE_MEMORY_ACCESS=1 \
+	-fhonour-copts -O3 -ffunction-sections -fdata-sections
 
 define Build/Compile
 	$(MAKE) -C "$(PKG_BUILD_DIR)/lib" $(MAKE_INSTALL_FLAGS) \

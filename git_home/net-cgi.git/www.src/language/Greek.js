@@ -238,34 +238,6 @@ bh_wanlan_conflict_info="Για να αποφύγετε διένεξη με τη
 bh_continue_mark="Συνέχεια"
 bh_same_server_wan_ip="Η διεύθυνση IP δεν πρέπει να είναι ίδια με τη διεύθυνση διακομιστή!"
 
-//readySHARE remote strings
-remote_share_head="ReadyCLOUD"
-ready_cloud_info="<p>Το ReadyCLOUD σάς παρέχει απομακρυσμένη πρόσβαση μέσω Internet σε μια συσκευή αποθήκευσης USB που είναι συνδεδεμένη με τη θύρα USB του δρομολογητή. Για να χρησιμοποιήσετε το ReadyCLOUD, πρέπει να διαθέτετε λογαριασμό ReadyCLOUD. Εάν δεν διαθέτετε λογαριασμό ReadyCLOUD, <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/clien/index.html#page=access\">κάντε κλικ εδώ</a> και κατόπιν κάντε κλικ στις επιλογές <b>Είσοδος > Δημιουργία λογαριασμού</b>. </p><p><b>Ρύθμιση του ReadyCLOUD</b></p><p><ol><li>Συνδέστε μια συσκευή αποθήκευσης USB στη θύρα USB του δρομολογητή.</li><li>Εισαγάγετε το όνομα χρήστη και τον κωδικό πρόσβασης για το ReadyCLOUD στα παρακάτω πεδία και κάντε κλικ στο κουμπί <b>Εγγραφή</b>. Ο δρομολογητής και η συσκευή USB εγγράφονται με το ReadyCLOUD.</li><li> Επισκεφτείτε τη διεύθυνση <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com\">http://readycloud.netgear.com</a>, κάντε κλικ στην επιλογή Είσοδος, εισαγάγετε το όνομα χρήστη και τον κωδικό πρόσβασης για το ReadyCLOUD και κάντε κλικ στο κουμπί <b>Είσοδος</b>.</li></ol></p><p>      Μπορείτε επίσης να χρησιμοποιήσετε την εφαρμογή ReadyCLOUD για να δημιουργήσετε μια ασφαλή σύνδεση μεταξύ του υπολογιστή ή της φορητής συσκευής σας και της συσκευής αποθήκευσης USB του δρομολογητή.<br>      <a class=\"linktype\" target=\"_blank\" href=\"http://readycloud.netgear.com/client/cloud_download.html\">Κάντε κλικ εδώ</a> για λήψη της εφαρμογής ReadyCLOUD.</p>"
-ready_share_info1="Η λειτουργία ReadySHARE Cloud σάς παρέχει απομακρυσμένη πρόσβαση στο Διαδίκτυο μέσω μιας συσκευής αποθήκευσης USB που είναι συνδεδεμένη στη θύρα USB του δρομολογητή."
-how_setup_ready_share="Τρόπος ρύθμισης λειτουργίας ReadySHARE Cloud"
-ready_share_step1="Βήμα 1: Πρέπει να έχετε λογαριασμό ReadySHARE Cloud. Αν δεν έχετε λογαριασμό,<a class='linktype' target='_blank' href='https://readyshare.netgear.com/site/index.jsp?pid=4&src=device'>κάντε κλικ εδώ</a> για να αποκτήσετε."
-ready_share_step2="Βήμα 2: Σε αυτήν τη σελίδα, πληκτρολογήστε το όνομα χρήστη και τον κωδικό πρόσβασης του λογαριασμού ReadySHARE Cloud, προκειμένου να εγγράψετε το δρομολογητή σας και τη συσκευή USB που είναι συνδεδεμένη σε αυτόν με το λογαριασμό σας."
-ready_share_step3="Βήμα 3: Συνδεθείτε πάλι στο <a class='linktype' target='_blank' href='http://readyshare.netgear.com/'>http://readyshare.netgear.com/</a> με το λογαριασμό σας. Θα πρέπει να βλέπετε τη συσκευή USB που είναι συνδεδεμένη στο δρομολογητή σας."
-ready_share_set_note="<b>Σημείωση:</b> Χωρίς αυτόν τον πελάτη, μπορείτε να πραγματοποιήσετε αναζήτηση στα περιεχόμενα της συσκευής USB, αλλά δεν μπορείτε να ανοίξετε αρχεία ή να πραγματοποιήσετε αλλαγές σε αυτά."
-ready_share_start="Αντιστοιχίστε το δρομολογητή και τη συσκευή USB με το λογαριασμό ReadyCLOUD"
-ready_share_get_account="Αν δεν διαθέτετε λογαριασμό ReadyCLOUD, <a class='linktype' target='_blank' href='http://readycloud.netgear.com/clien/index.html#page=access'>κάντε κλικ εδώ</a> για να λάβετε έναν"
-username="Όνομα χρήστη"
-key_passphrase="Κωδικός πρόσβασης"
-register="Εγγραφή"
-register_note="<b>Σημείωση:</b> Ο δρομολογητής διατηρεί συνεχή σύνδεση με το ReadyCLOUD μέχρι την κατάργηση της εγγραφής."
-help_center="Κέντρο βοήθειας"
-help_show_hide="Εμφάνιση/Απόκρυψη κέντρου βοήθειας"
-
-resister_user="Αυτός ο δρομολογητής έχει αντιστοιχιστεί με τον εξής χρήστη του ReadyCLOUD:"
-access_storage_method="Τώρα μπορείτε να συνδεθείτε στη διεύθυνση <a class='linktype' target='_blank' href='http://readycloud.netgear.com'>http://readycloud.netgear.com</a> με το λογαριασμό ReadyCLOUD, για να αποκτήσετε πρόσβαση στη συσκευή USB από οπουδήποτε."
-unregister_info="Κάντε κλικ στην επιλογή <B>Κατάργηση αντιστοίχισης</B>, για να αντιστοιχίσετε το συγκεκριμένο δρομολογητή με διαφορετικό λογαριασμό ReadyCLOUD"
-unregister="Κατάργηση εγγραφής"
-
-result_register_ok="Η εγγραφή ολοκληρώθηκε με επιτυχία"
-result_register_fail="Αποτυχία εγγραφής. Ελέγξτε το όνομα χρήστη και τον κωδικό πρόσβασης και δοκιμάστε ξανά."
-result_unreg_ok="Η κατάργηση της εγγραφής ολοκληρώθηκε με επιτυχία"
-result_unreg_fail="Η κατάργηση εγγραφής απέτυχε"
-
 //WIZ_sel_3g_adsl.htm
 bh_connection_mode="Choosing Connection Mode"
 

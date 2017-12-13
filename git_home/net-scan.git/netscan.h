@@ -5,6 +5,12 @@
 #include <sys/time.h>
 #include <sys/signal.h>
 #include <sys/sysinfo.h>
+#include <sys/wait.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/if_ether.h>
+#include <net/ethernet.h>
+#include <net/if_arp.h>
 #include <arpa/inet.h>
 #include <net/if.h>
 #include <netinet/ether.h>
@@ -101,3 +107,9 @@ extern char *config_get(char *name);
 
 #endif
 
+//#define DEBUG_SWITCH 1
+#ifdef DEBUG_SWITCH
+#define DEBUGP(fmt,args...) fprintf(stderr, fmt, ## args)
+#else
+#define DEBUGP(fmt,args...) /* do nothing*/
+#endif

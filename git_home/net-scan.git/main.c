@@ -30,6 +30,7 @@
 #include "netscan.h"
 
 static int sigval;
+time_t refresh_time;
 
 void signal_pending(int sig)
 {
@@ -39,15 +40,27 @@ void signal_pending(int sig)
 void do_signal(int arp_sock, struct sockaddr *me)
 {
 	struct itimerval tv;
+	time_t now;
+	now = time(NULL);
+
 	if (sigval == 0)
 		return;
-
+	if (sigval == SIGUSR1 && now > refresh_time && now - refresh_time < 8) {
+		DEBUGP("refresh too quickly, not to send arp packets, last time:%d, now:%d\n", refresh_time, now);
+		sigval = 0;
+		return;
+	}
 	if (sigval == SIGUSR1) {
 		/* To fix bug 22146, call reset_arp_table to set active status of all nodes in the arp_tbl to 0 in the parent process */
 		reset_arp_table();
 		scan_arp_table(arp_sock, me);
 	} else if (sigval == SIGALRM) {
 		show_arp_table();
+	} else if (sigval == SIGCHLD) {
+		int status;
+		int pid = waitpid(-1, &status, WNOHANG);
+		if(WIFEXITED(status))
+			DEBUGP("[%s][%d]The child %d exit with code %d\n", __FILE__, __LINE__, pid, WEXITSTATUS(status));
 	}
 
 	sigval = 0;
@@ -79,6 +92,7 @@ int main(int argc, char **argv)
 	sa.sa_handler = signal_pending;
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGALRM, &sa, NULL);
+	sigaction(SIGCHLD, &sa, NULL);
 	
 	if (bios_sock > arp_sock)
 		max_sock = bios_sock + 1;

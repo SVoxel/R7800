@@ -48,6 +48,7 @@ define Package/wlan-common/install
 	$(INSTALL_DIR) $(1)/lib/wifi/
 	cp -af $(PKG_BUILD_DIR)/lib/wifi/* $(1)/lib/wifi
 	install -d -m0755 $(1)/etc/config
+	install -m0755 ./files/qca11k  $(1)/sbin/
 endef
 
 $(eval $(call BuildPackage,wlan-common))

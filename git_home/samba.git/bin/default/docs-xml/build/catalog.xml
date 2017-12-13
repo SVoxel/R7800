@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE catalog PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN" "http://www.oasis-open.org/committees/entity/release/1.0/catalog.dtd">
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+
+<!--  XML Catalog file for SAMBA. -->
+
+    <rewriteURI
+			uriStartString="http://www.samba.org/samba/DTD/"
+			rewritePrefix="file:///home3/dni/haiyan.zhuang/r7800-test.git/build_dir/target-arm_v7-a_uClibc-0.9.33.2_eabi/samba-4.6.4/docs-xml/build/DTD/"/>
+
+    <rewriteURI
+			uriStartString="http://www.gnu.org/licenses/"
+			rewritePrefix="file:///home3/dni/haiyan.zhuang/r7800-test.git/build_dir/target-arm_v7-a_uClibc-0.9.33.2_eabi/samba-4.6.4/docs-xml/Samba3-ByExample/"/>
+    <rewriteURI
+			uriStartString="http://www.samba.org/samba/smbdotconf/"
+			rewritePrefix="file:///home3/dni/haiyan.zhuang/r7800-test.git/build_dir/target-arm_v7-a_uClibc-0.9.33.2_eabi/samba-4.6.4/bin/default/docs-xml/smbdotconf/"/>
+</catalog>

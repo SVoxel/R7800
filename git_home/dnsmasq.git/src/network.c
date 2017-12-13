@@ -289,11 +289,77 @@ static int create_ipv6_listener(struct listener **link, int port)
 }
 #endif
 
+#if defined(HAVE_IPV6)
+static int create_raw_ipv6_listener(struct listener **link, int port)
+{
+  if(config_match("ap_mode", "0"))
+	  return 0;
+
+  struct sockaddr_ll sock;
+  struct listener *l;
+  int tcpfd, fd, opt = 1;
+  static const struct sock_filter filter_instr[] = {
+		/* jump to ipv6 byte (protocol) */
+		BPF_STMT(BPF_LD|BPF_B|BPF_ABS, 20),
+		/* jump to L2 if it is IPPROTO_UDP, else to L4 */
+		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, IPPROTO_UDP, 0, 3),
+		/* L2: jump to UDP dport */
+		BPF_STMT(BPF_LD|BPF_B|BPF_ABS, 57),
+		/* jump to L3 if it si 53 port, else to L4 */
+		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, 53, 0, 1),
+		/* L3: accept packet */
+		BPF_STMT(BPF_RET|BPF_K, 0xffffffff),
+		/* L4: discard packet */
+		BPF_STMT(BPF_RET|BPF_K, 0),
+	};
+  static const struct sock_fprog filter_prog = {
+		.len = sizeof(filter_instr) / sizeof(filter_instr[0]),
+		/* casting const away: */
+		.filter = (struct sock_filter *) filter_instr,
+  };
+
+  if ((fd = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_IPV6))) == -1) {
+	fprintf(stderr, "socket call failed!\n");
+    return (errno == EPROTONOSUPPORT ||
+	    errno == EAFNOSUPPORT ||
+	    errno == EINVAL);
+  }
+
+  sock.sll_family = AF_PACKET;
+  sock.sll_protocol = htons(ETH_P_IPV6);
+  sock.sll_ifindex = (int)if_nametoindex("br0");
+
+  if(bind(fd, (struct sockaddr *) &sock, sizeof(sock)) < 0){
+    fprintf(stderr," bind calll failed\n");   
+	return -1;
+  }
+
+  if(port == 53) {
+    if (setsockopt(fd, SOL_SOCKET, SO_ATTACH_FILTER, &filter_prog,sizeof(filter_prog)) == -1)
+	{
+      fprintf(stderr," Attached filter to raw socket fd\n");   
+      return -1;
+    }
+  }
+
+
+  l = safe_malloc(sizeof(struct listener));
+  l->fd = fd;
+  l->tcpfd = -1;
+  l->tftpfd = -1;
+  l->family = AF_PACKET;
+  l->next = NULL;
+  *link = l;
+  
+  return 1;
+}
+#endif
+
 struct listener *create_wildcard_listeners(int port, int have_tftp)
 {
   union mysockaddr addr;
   int opt = 1;
-  struct listener *l, *l6 = NULL;
+  struct listener *l, *l6 = NULL, *ll6 = NULL;
   int tcpfd, fd, tftpfd = -1;
 
   memset(&addr, 0, sizeof(addr));
@@ -313,7 +379,8 @@ struct listener *create_wildcard_listeners(int port, int have_tftp)
       listen(tcpfd, 5) == -1 ||
       !fix_fd(tcpfd) ||
 #ifdef HAVE_IPV6
-      !create_ipv6_listener(&l6, port) ||
+	 !create_ipv6_listener(&l6, port) ||
+	 create_raw_ipv6_listener(&ll6, port) == -1 ||
 #endif
       setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1 ||
       !fix_fd(fd) ||
@@ -354,6 +421,8 @@ struct listener *create_wildcard_listeners(int port, int have_tftp)
   l->tcpfd = tcpfd;
   l->tftpfd = tftpfd;
   l->next = l6;
+  if(config_match("ap_mode", "1"))
+	 l6->next = ll6;
 
   return l;
 }

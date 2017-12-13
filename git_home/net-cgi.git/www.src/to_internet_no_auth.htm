@@ -7,11 +7,15 @@
 <script>
 var have_click_take_me_to_internet = "<% cfg_get("have_click_take_me_to_internet") %>";
 var ts = "<% hijack_get_timestamp("hijack_success") %>";
+var click_flag = "<% cfg_get("click_flag") %>";
 function loadvalue()
 {
 var cf=document.forms[0];
 
-cf.action="/apply.cgi?/BRS_netgear_success.html timestamp=" + ts;
+if(click_flag == "1")
+	cf.action="/apply.cgi?/index.htm timestamp=" + ts;
+else
+	cf.action="/apply.cgi?/BRS_netgear_success.html timestamp=" + ts;
 cf.submit_flag.value = "hijack_success";
 		
 if(have_click_take_me_to_internet != "1" )

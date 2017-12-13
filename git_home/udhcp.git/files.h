@@ -12,6 +12,7 @@ struct config_keyword {
 
 int read_config(char *file);
 void write_leases(void);
+void write_vie_lease(char *ip,char *mac,char *hostname);
 void read_leases(char *file);
 
 #endif

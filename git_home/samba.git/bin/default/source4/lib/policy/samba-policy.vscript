@@ -1,0 +1,4 @@
+SAMBA_POLICY_0.0.1 {
+	global:
+		*;
+};
