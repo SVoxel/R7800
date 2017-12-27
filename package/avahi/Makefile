@@ -394,6 +394,7 @@ define Package/avahi-daemon/install
 	$(INSTALL_BIN) ./files/format_record $(1)/usr/sbin/format_record
 	$(INSTALL_DIR) $(1)/usr/config/avahi/services
 	$(INSTALL_DATA) ./files/adisk.service $(1)/usr/config/avahi/services/adisk.service
+	$(INSTALL_DATA) ./files/smbd.service $(1)/etc/avahi/services/smbd.service
 endef
 
 Package/avahi-dbus-daemon/install=$(Package/avahi-daemon/install)

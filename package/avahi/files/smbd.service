@@ -3,8 +3,12 @@
 <service-group>
   <name replace-wildcards="yes">%h</name>
   <service>
-    <type>_http._tcp</type>
-    <port>80</port>
-    <txt-record>path=/</txt-record>
+    <type>_smb._tcp</type>
+    <port>445</port>
+  </service>
+  <service>
+    <type>_device-info._tcp</type>
+    <port>0</port>
+    <txt-record>model=Xserve</txt-record>
   </service>
 </service-group>
