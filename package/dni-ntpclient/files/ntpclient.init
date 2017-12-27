@@ -2,6 +2,7 @@
 START=30
 
 start() {
+	/bin/date 122001002017
 	/usr/sbin/ntpclient
 }
 
