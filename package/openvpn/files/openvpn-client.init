@@ -46,6 +46,12 @@ start() {
 		exit 1
 	fi
 
+	# Sleep before starting if delay is set in NVRAM (to allow NTP set date/time)
+	DELAY=$($CONFIG get vpn_client_delay)
+	if [ ! "$DELAY" = "" ]; then
+		sleep $DELAY
+	fi
+
 	# Start OpenVPN client
 	/usr/sbin/taskset -c 1 $PROG --writepid $PID_FILE --cd $OPENVPN_CONF_DIR --log-append $LOG_FILE --config $OVPN_CLIENT_CONF --script-security 2 --up /etc/openvpn/ovpnclient-up.sh --down /etc/openvpn/ovpnclient-down.sh --daemon
 	echo "Please wait..."
