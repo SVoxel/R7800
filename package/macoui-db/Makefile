@@ -9,7 +9,7 @@ PKG_NAME:=macoui-db
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=ssh://qca-git01.qualcomm.com:29418/streamboost/macoui-db
 PKG_BRANCH:=banana
-PKG_REV:=b8be08c
+PKG_REV:=4db3611
 
 PKG_REV_DATE_RES=$(shell TMPDIR=`mktemp -d /tmp/$(PKG_NAME).XXXXX` && \
 			cd $${TMPDIR} && \
@@ -18,9 +18,9 @@ PKG_REV_DATE_RES=$(shell TMPDIR=`mktemp -d /tmp/$(PKG_NAME).XXXXX` && \
 			git log --format="%ci" FETCH_HEAD -1 | \
 				sed 's/-\|:\| //g' | cut -b -14 && \
 			rm -rf $${TMPDIR})
-PKG_REV_DATE:=20160607112939
+PKG_REV_DATE:=20141230102119
 
-PKG_VERSION:=20160607112939-cloud-gb8be08c-generic
+PKG_VERSION:=20141230102119-g4db3611-generic
 PKG_VERSION_SAVED:=$(PKG_VERSION)
 PKG_RELEASE:=1
 
@@ -32,7 +32,7 @@ PKG_SOURCE_MIRROR:=none
 include $(INCLUDE_DIR)/local-development.mk
 #check if we used a localversion then let's update PKG_VERSION if we did
 ifneq ($(PKG_VERSION),$(PKG_VERSION_SAVED))
-PKG_VERSION:=20160607112939-cloud-gb8be08c-generic
+PKG_VERSION:=20141230102119-g4db3611-generic
 endif
 
 include $(INCLUDE_DIR)/package-version-override.mk
