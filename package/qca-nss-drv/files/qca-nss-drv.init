@@ -5,11 +5,18 @@
 START=70
 
 start() {
-
-	irq_nss_rps=`grep nss /proc/interrupts | sed '4,$d' | cut -d ':' -f 1 | tail -n1 | tr -d ' '`
-	[ -n "$irq_nss_rps" ] && echo 2 > /proc/irq/$irq_nss_rps/smp_affinity
+        # Update affinity for NSS RPS
+	irq_nss_rps=`/bin/grep 'nss' /proc/interrupts | /bin/sed '4,$d' | /usr/bin/cut -d ':' -f 1 | /usr/bin/tail -n1 | /usr/bin/tr -d ' '`
+	[ -n "$irq_nss_rps" ] && /bin/echo 2 > /proc/irq/$irq_nss_rps/smp_affinity
 
 	# Enable NSS RPS
-	sysctl -w dev.nss.general.rps=1 >/dev/null 2>/dev/null
+	/sbin/sysctl -w dev.nss.general.rps=1 >/dev/null 2>/dev/null
 
+	# Update affinity for wifi0
+	irq_wifi0=`/bin/grep 'wifi0' /proc/interrupts | /usr/bin/cut -d: -f1 | /usr/bin/tail -n1 | /usr/bin/tr -d ' '`
+	[ -n "$irq_wifi0" ] && /bin/echo 2 > /proc/irq/$irq_wifi0/smp_affinity
+
+	# Update affinity for wifi1
+	irq_wifi1=`/bin/grep 'wifi1' /proc/interrupts | /usr/bin/cut -d: -f1 | /usr/bin/tail -n1 | /usr/bin/tr -d ' '`
+	[ -n "$irq_wifi1" ] && /bin/echo 1 > /proc/irq/$irq_wifi1/smp_affinity
 }
