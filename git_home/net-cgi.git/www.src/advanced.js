@@ -175,7 +175,7 @@ function clickSubMenu(current_div, change_id)
 var array_name = ["wds_items", "ap_items", "bridge_items", "extender_items", "mapt_items", "devmode_items"];
 var enable_flags = ["enabled_wds", "enable_ap_flag", "enable_bridge_flag", "enable_extender_flag", "enable_mapt", "device_mode"];
 var wds_items = [ "internet", "wan", "block_site", "block_services", "forwarding_triggering","qos","vpn", "dns", "static", "remote", "upnp", "traffic", "wl_bridge", "guest", "email", "schedule", "log"]; 
-var ap_items = [ "internet", "wan", "block_site", "block_services", "forwarding_triggering","qos","vpn", "remote", "upnp", "traffic", "wl_bridge", "lan", "ipv6", "parental", "access_control", "usb_set", "devname"];
+var ap_items = [ "internet", "wan", "block_site", "block_services", "forwarding_triggering","qos","vpn", "remote", "upnp", "traffic", "wl_bridge", "lan", "ipv6", "parental", "usb_set", "devname"];
 var extender_items = [ "internet", "wan", "block_site", "block_services", "forwarding_triggering","vpn",  "remote", "upnp", "traffic", "wl_bridge", "lan", "ipv6", "led", "fbwifi"];
 var bridge_items = ["internet", "wan", "block_site", "block_services", "forwarding_triggering","qos","vpn", "dns", "static", "remote", "upnp", "traffic", "wireless", "guest", "lan", "parental","access_control",  "email", "schedule", "wds", "ipv6", "wlap"];
 var mapt_items= [ "internet" ];

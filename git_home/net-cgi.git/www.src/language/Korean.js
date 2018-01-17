@@ -184,7 +184,7 @@ bh_connect_success_1="인터넷에 성공적으로 연결되었습니다."
 
 bh_connect_success_2="이 공유기는 다음과 같은 공유 무선 네트워크 이름(SSID)이 사전 설정되어 있습니다."
 
-bh_network_key="네트워크 키(암호)"
+bh_network_key="네트워크 키(암호)."
 
 bh_rollover_help_text="공유기에는 원치 않는 액세스로부터 네트워크를 보호하기 위해 WPA2-PSK 무선 보안이 사전 설정되어 있습니다. 무선 네트워크에 연결하려면 네트워크 키(암호)를 입력해야 합니다. 이 사전 설정은 제품 번호처럼 이 장치에만 해당되는 고유한 설정입니다.  이 설정을 변경하려면 나중에 공유기 웹 GUI의 무선 설정 화면에서 변경할 수 있습니다."
 
@@ -196,7 +196,7 @@ bh_wirless_name="무선 네트워크 이름(SSID)"
 
 bh_wireless="무선"
 
-bh_wpa_wpa2_passpharse="네트워크 키(암호)"
+bh_wpa_wpa2_passpharse="네트워크 키(암호):"
 
 bh_save_settings="Save router settings"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="새 NETGEAR 공유기를 액세스 포인트 모드로 설정하
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="이 공유기의 무선 설정이 변경되었습니다. 다음의 무선 네트워크 이름(SSID) 및 네트워크 키(암호)를 사용하여 장치를 공유기에 다시 연결한 다음 아래의 <b>마침</b> 버튼을 클릭하여 설치를 완료하십시오."
 bh_wl_ssid_name="2.4GHz 무선 네트워크 이름(SSID):"
-bh_wl_password="무선 네트워크 키(암호)"
+bh_wl_password="무선 네트워크 키(암호):"
 bh_wl_password_2="2.4GHz 무선 네트워크 암호(네트워크 키): "
 bh_wla_ssid_name="5GHz 무선 네트워크 이름(SSID): "
 bh_wla_password_2="5GHz 무선 네트워크 암호(네트워크 키): "
@@ -605,3 +605,4 @@ bh_router_admin="공유기 관리자 설정:"
 bh_admin_user_name="관리자 사용자 이름:"
 bh_new_admin_passwd="새 관리자 암호:"
 bh_passwd_not_blank="암호는 공백으로 둘 수 없습니다!"
+finish_mark="마침"

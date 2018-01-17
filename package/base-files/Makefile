@@ -43,7 +43,6 @@ define Package/base-files/conffiles
 /etc/rc.local
 /etc/sysupgrade.conf
 /etc/config/
-/etc/crontabs/
 $(call $(TARGET)/conffiles)
 endef
 
@@ -106,7 +105,6 @@ define Package/base-files/install
 
 	mkdir -p $(1)/CONTROL
 	mkdir -p $(1)/dev
-	mkdir -p $(1)/etc/crontabs
 	mkdir -p $(1)/etc/rc.d
 	mkdir -p $(1)/overlay
 	mkdir -p $(1)/lib/firmware

@@ -23,7 +23,7 @@ $bluebar
 <script>
 var master="<% cfg_get("http_loginname") %>";
 if( master == "admin" )
-	document.write('<TD nowrap colspan=2 align=center><input class="short_common_bt" type="button" name="save" id="save" value="$yes_mark" onclick="click_yesfactory();"><input class="short_common_bt" type="button" name="no" id="no" value="$no_mark" onclick="location.href=\'BAK_backup.htm\'"></TD>');
+	document.write('<TD nowrap colspan=2 align=center><input class="short_common_bt" type="button" name="save" id="save" value="$yes_mark" onclick="click_yesfactory();">&nbsp;&nbsp;<input class="short_common_bt" type="button" name="no" id="no" value="$no_mark" onclick="location.href=\'BAK_backup.htm\'"></TD>');
 else
 	document.write('<TD nowrap colspan=2 align=center><input class="short_common1_bt" type="button" name="save" id="save" value="$yes_mark" disabled><input class="short_common1_bt" type="button" id="no" name="no" value="$no_mark" disabled></TD>');
 	

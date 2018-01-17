@@ -1,2 +1,0 @@
-# m h  dom mon dow   command
-  0 *  *   *   *     logrotate /etc/logrotate.conf -s /var/log/logrotate.status

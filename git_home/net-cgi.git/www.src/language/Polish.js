@@ -184,7 +184,7 @@ bh_connect_success_1="Udało się połączyć z Internetem."
 
 bh_connect_success_2="Ten router ma wstępnie ustawioną, unikalną nazwę sieci (SSID) i "
 
-bh_network_key="klucz sieci (hasło)"
+bh_network_key="klucz sieci (hasło)."
 
 bh_rollover_help_text="Twój router został wstępnie skonfigurowany wraz z zabezpieczeniem komunikacji bezprzewodowej WPA2-PSK, które zabezpiecza Twoją sieć przed włamaniem. Aby wejść do sieci bezprzewodowej należy najpierw wprowadzić słowo-klucz (hasło). Opisane ustawienia wstępne są unikatowe dla urządzenia, podobnie jak numer seryjny.  Aby je zmienić, należy przejść do ekranu Ustawienia komunikacji bezprzewodowej sieciowego graficznego interfejsu użytkownika routera."
 
@@ -196,7 +196,7 @@ bh_wirless_name="Nazwa sieci bezprzewodowej (SSID)"
 
 bh_wireless="Sieć bezprzewodowa"
 
-bh_wpa_wpa2_passpharse="Klucz sieci (hasło)"
+bh_wpa_wpa2_passpharse="Klucz sieci (hasło):"
 
 bh_save_settings="Save router settings"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="Nowy router NETGEAR zostanie przestawiony w tryb punktu dostępo
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="Ustawienia łączności bezprzewodowej w tym routerze uległy zmianie. Połącz urządzenie WiFi z routerem za pomocą następującego identyfikatora SSID i hasła, a następnie kliknij przycisk <b>Zakończ</b>, aby zakończyć instalację."
 bh_wl_ssid_name="Nazwa sieci bezprzewodowej w paśmie 2,4 GHz (identyfikator SSID): "
-bh_wl_password="Klucz sieci bezprzewodowej (hasło)"
+bh_wl_password="Klucz sieci bezprzewodowej (hasło):"
 bh_wl_password_2="Hasło sieci bezprzewodowej w paśmie 2,4 Ghz (klucz sieciowy): "
 bh_wla_ssid_name="Nazwa sieci bezprzewodowej w paśmie 5GHz (identyfikator SSID): "
 bh_wla_password_2="Hasło sieci bezprzewodowej w paśmie 5 Ghz (klucz sieciowy): "
@@ -605,3 +605,4 @@ bh_router_admin="Ustawienia administratora routera:"
 bh_admin_user_name="Nazwa użytkownika administratora:"
 bh_new_admin_passwd="Nowe hasło administratora:"
 bh_passwd_not_blank="Hasło nie może być wartością pustą!"
+finish_mark="Zakończ"

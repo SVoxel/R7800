@@ -184,7 +184,7 @@ bh_connect_success_1="You are successfully connected to the Internet."
 
 bh_connect_success_2="This router is preset with the following unique wireless network name (SSID) and "
 
-bh_network_key="network key (password)"
+bh_network_key="network key (password)."
 
 bh_rollover_help_text="Your router is preset with WPA2-PSK wireless security to protect your network from unwanted access. To join the wireless network, you must enter the network key (password). These preset settings are unique to this device, like a serial number.  If you want to change them, you can do so later in the Wireless Settings screen on the router web GUI."
 
@@ -196,7 +196,7 @@ bh_wirless_name="Wireless Network Name (SSID)"
 
 bh_wireless="Wireless"
 
-bh_wpa_wpa2_passpharse="Network Key (Password)"
+bh_wpa_wpa2_passpharse="Network Key (Password):"
 
 bh_save_settings="Save router settings"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="Your new NETGEAR router is about to be set up to access point mo
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="This router's wireless settings have been changed. Use the following wireless network name (SSID) and network key (password) to reconnect your device to the router, then click the <b>Finish</b> button below to complete the installation."
 bh_wl_ssid_name="2.4GHz Wireless Network Name (SSID): "
-bh_wl_password="Wireless Network Key (Password)"
+bh_wl_password="Wireless Network Key (Password):"
 bh_wl_password_2="2.4GHz Wireless Network Password (Network Key): "
 bh_wla_ssid_name="5GHz Wireless Network Name (SSID): "
 bh_wla_password_2="5GHz Wireless Network Password (Network Key): "
@@ -605,3 +605,4 @@ bh_router_admin="Router Admin Settings:"
 bh_admin_user_name="Admin User Name:"
 bh_new_admin_passwd="New Admin Password:"
 bh_passwd_not_blank="Password cannot be blank."
+finish_mark="Finish"

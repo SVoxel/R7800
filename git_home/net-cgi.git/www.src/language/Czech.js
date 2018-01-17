@@ -184,7 +184,7 @@ bh_connect_success_1="Připojení k internetu bylo úspěšné."
 
 bh_connect_success_2="Tento router má z výroby přednastaven následující jedinečný síťový název (SSID) a "
 
-bh_network_key="síťový klíč (heslo)"
+bh_network_key="síťový klíč (heslo)."
 
 bh_rollover_help_text="Váš router má z výroby přednastaveno bezdrátové zabezpečení WPA2-PSK, které chrání vaši síť před neoprávněným přístupem. Chcete-li se připojit k bezdrátové síti, musíte zadat síťový klíč (heslo). Tato z výroby přednastavená nastavení jsou jedinečná pro dané zařízení, podobně jako výrobní číslo.  Pokud je chcete změnit, můžete to provést později na obrazovce Nast. bezdrát. připojení ve webovém rozhraní modemu."
 
@@ -196,7 +196,7 @@ bh_wirless_name="Název bezdrátové sítě (SSID)"
 
 bh_wireless="Bezdrátová"
 
-bh_wpa_wpa2_passpharse="Síťový klíč (heslo)"
+bh_wpa_wpa2_passpharse="Síťový klíč (heslo):"
 
 bh_save_settings="Save router settings"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="Chystáte se nastavit nový router NETGEAR do režimu přístupo
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="Nastavení bezdrátové sítě routeru byla změněna. S využitím následujícího názvu (SSID) a hesla (síťového klíče) připojte zařízení k routeru a poté kliknutím na tlačítko<b>Konec</b> níže instalaci dokončete."
 bh_wl_ssid_name="Název bezdrátové sítě 2,4 GHz (SSID):"
-bh_wl_password="Klíč bezdrátové sítě (heslo)"
+bh_wl_password="Klíč bezdrátové sítě (heslo):"
 bh_wl_password_2="Heslo bezdrátové sítě 2,4 GHz (síťový klíč): "
 bh_wla_ssid_name="Název bezdrátové sítě 5 GHz (SSID):"
 bh_wla_password_2="Heslo bezdrátové sítě 5 GHz (síťový klíč): "
@@ -605,3 +605,4 @@ bh_router_admin="Nastavení správce routeru:"
 bh_admin_user_name="Uživatelské jméno správce:"
 bh_new_admin_passwd="Nové heslo správce:"
 bh_passwd_not_blank="Heslo nemůže zůstat prázdné."
+finish_mark="Dokončit"

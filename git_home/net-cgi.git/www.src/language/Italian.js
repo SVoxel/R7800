@@ -184,7 +184,7 @@ bh_connect_success_1="Connessione a Internet eseguita correttamente."
 
 bh_connect_success_2="Questo router è preimpostato con il seguente SSID (nome rete wireless) e "
 
-bh_network_key="chiave di rete (password) univoci"
+bh_network_key="chiave di rete (password) univoci."
 
 bh_rollover_help_text="Il router è preimpostato con la sicurezza wireless WPA2-PSK per proteggere la rete dagli accessi indesiderati. Per accedere alla rete wireless, è necessario inserire la chiave di rete (password). Queste impostazioni predefinite sono univoche del dispositivo, come un numero di serie.  Per modificarle, è possibile accedere in un secondo momento alla schermata Impostazioni wireless nell'interfaccia grafica Web del router."
 
@@ -196,7 +196,7 @@ bh_wirless_name="Nome rete wireless (SSID)"
 
 bh_wireless="Wireless"
 
-bh_wpa_wpa2_passpharse="Chiave di rete (Password)"
+bh_wpa_wpa2_passpharse="Chiave di rete (Password):"
 
 bh_save_settings="Save router settings"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="Il nuovo router NETGEAR sta per essere impostato nella modalità
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="Le impostazioni wireless del router sono state modificate. Utilizzare i seguenti nomi di rete wireless (SSID) e la chiave di rete (password) per ricollegare il dispositivo al router, quindi fare clic sul pulsante <b>Fine</b> per completare l'installazione."
 bh_wl_ssid_name="Nome di rete wireless (SSID) da 2,4 GHz: "
-bh_wl_password="Chiave di rete wireless (password)"
+bh_wl_password="Chiave di rete wireless (password):"
 bh_wl_password_2="Password di rete wireless (chiave di rete) da 2,4 GHz: "
 bh_wla_ssid_name="Nome di rete wireless (SSID) da 5GHz: "
 bh_wla_password_2="Password di rete wireless (chiave di rete) da 5GHz: "
@@ -605,3 +605,4 @@ bh_router_admin="Impostazioni amministratore router:"
 bh_admin_user_name="Nome utente amministratore:"
 bh_new_admin_passwd="Nuova password amministratore:"
 bh_passwd_not_blank="È necessario specificare la password."
+finish_mark="Fine"

@@ -3,9 +3,9 @@
 
 START=99
 start() {
-	[ -f /etc/sysctl.conf ] && sysctl -p >&-
+	[ -f /etc/sysctl.conf ] && /sbin/sysctl -p >&-
 	[ -d /etc/sysctl.d ] && \
 		for i in /etc/sysctl.d/*.conf; do
-			sysctl -p $i >&-
+			/sbin/sysctl -p $i >&-
 		done
 }

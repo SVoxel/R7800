@@ -184,7 +184,7 @@ bh_connect_success_1="A csatlakozás az internethez sikeresen megtörtént."
 
 bh_connect_success_2="Ez az útválasztó a következő előre megadott beállításokkal rendelkezik: egyedi vezeték nélküli hálózati név (SSID) és "
 
-bh_network_key="hálózati kulcs (jelszó)"
+bh_network_key="hálózati kulcs (jelszó)."
 
 bh_rollover_help_text="Az útválasztó WPA2-PSK vezeték nélküli biztonsággal van eleve ellátva a hálózat illetéktelen hozzáférés elleni védelme érdekében. Vezeték nélküli hálózatra való csatlakozáshoz hálózati kulcsot (jelszót) kell megadnia. Az előzetesen megadott beállítások a készülék egyedi adatai, akár a gyári szám.  Ha szeretné ezeket módosítani, később megteheti ezt az útválasztó webes felhasználói felületének Vezeték nélküli beállítások képernyőjén."
 
@@ -196,7 +196,7 @@ bh_wirless_name="Vezeték nélküli hálózat neve (SSID)"
 
 bh_wireless="Vezeték nélküli"
 
-bh_wpa_wpa2_passpharse="Hálózati kulcs (jelszó)"
+bh_wpa_wpa2_passpharse="Hálózati kulcs (jelszó):"
 
 bh_save_settings="Save router settings"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="Az új NETGEAR routert hozzáférési pont módban készül tele
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="Ennek a routernek a vezeték nélküli beállításai módosításra kerültek. Használja az alábbi vezeték nélküli hálózatnevet (SSID) és hálózati kulcsot (jelszó) az eszköz újracsatlakoztatásához a routerhez, majd a telepítés befejezéséhez kattintson az alábbi <b>Befejezés</b> gombra."
 bh_wl_ssid_name="2,4 GHz-es vezeték nélküli hálózat neve (SSID):"
-bh_wl_password="Vezeték nélküli hálózati kulcs (jelszó)"
+bh_wl_password="Vezeték nélküli hálózati kulcs (jelszó):"
 bh_wl_password_2="2,4 GHz-es vezeték nélküli hálózat jelszava (Hálózati kulcs): "
 bh_wla_ssid_name="5GHz-es vezeték nélküli hálózat neve (SSID):"
 bh_wla_password_2="5GHz-es vezeték nélküli hálózat jelszava (Hálózati kulcs): "
@@ -605,3 +605,4 @@ bh_router_admin="Router rendszergazdai beállításai:"
 bh_admin_user_name="Rendszergazda felhasználóneve:"
 bh_new_admin_passwd="Új rendszergazdai jelszó"
 bh_passwd_not_blank="A jelszó nem lehet üres."
+finish_mark="Befejezés"

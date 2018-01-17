@@ -116,12 +116,70 @@ $$(document).ready(function(){
 		var sum = originner[i][0].length + originner[i][2].length;
 		//alert("["+originner[i][0]+"]["+originner[i][2]+"]");
 		if(maxlen < sum)// get the max string's length
-			maxlen = sum;
+		{
+		    maxlen = sum;
 		}
 		if(enable_ap_flag == "1" || enable_bridge_flag == "1")
 			scroll();
 	}
-);
+	if($$("#wait_ping").length > 0)
+	       window.intervalID = setInterval("generate_dots();$$('#wait_ping').html('Detecting'+(dots.join('')));$$('#devNum').html('Detecting devices'+(dots.join('')));", 150);
+        else
+	       window.intervalID = setInterval("generate_dots();$$('#devNum').html('Detecting devices'+(dots.join('')));", 150);
+	setTimeout("get_ping_and_devices();", 4000);
+});
+var dots = new Array();
+dots.length = 6;
+dots.fill("&nbsp;");
+function generate_dots()
+{
+	var t = dots.indexOf("&nbsp;");
+	if(t == -1) {
+		dots.fill("&nbsp;");
+	}
+	else {
+		dots[t] = '.';
+	}
+}
+
+var tried = 0;
+function get_ping_and_devices()
+{
+	tried ++;
+	$$.ajax({
+		url: "basic_home_result.txt",
+		type: "GET",
+		dataType: "text",
+		success: function(data){
+			var each = data.split(";");
+			if(each[0] != "Success") {
+				if(tried > 1) {
+					var errIcon = "<div id=\"internet\" class=\"basic_icon_error\" onclick=\"click_action(\'no_internet\');\">"
+					errIcon += "<div id=\"icon_error\"></div>"
+					errIcon += "<div class=\"icon_name\">$internet</div>"
+					errIcon += "<div id=\"internet_stat\" class=\"icon_status\"><span><b>$error_mark</b> <a>$not_connected</a></span></div>"
+					errIcon += "</div>";
+					clearInterval(intervalID);
+					if($$("#wait_ping").length > 0) {
+						$$("#form_content>div").eq(0).remove();
+						$$("#form_content").prepend(errIcon);
+					}
+					$$("#devNum").html('$num_devs:<b>'+each[1]+'</b>');
+				}
+				else {
+					setTimeout("get_ping_and_devices();", 500);
+				}
+			}
+			else {
+				clearInterval(intervalID);
+				if($$("#wait_ping").length > 0) {
+					$$("#wait_ping").html("$good_mark");
+				}
+				$$("#devNum").html('$num_devs:<b>'+each[1]+'</b>');
+			}
+		}
+	});
+}
 
 function splitHtml(str)
 {
@@ -240,7 +298,7 @@ function scrollPassword() {
 		else
 			document.write('<div class="icon_name" onclick="click_action(\'attached\');">$attach_device</div>');
 		</script>
-		<div id="attached_stat" class="icon_status"><span><div onclick="click_action('attached');">$num_devs:<b><% basic_device_num() %></b></div></span></div>
+		<div id="attached_stat" class="icon_status"><span><div onclick="click_action('attached');" id="devNum">$num_devs:<b id="wait_scan"><% basic_device_num() %></b></div></span></div>
 	</div>
 	<div id="parental" class="basic_icon" onclick="click_action('parental');">
 		<div class="icon_name">$parental_control</div>

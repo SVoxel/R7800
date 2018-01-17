@@ -1,6 +1,6 @@
 #
 # Copyright (C) 2008-2014 OpenWrt.org
-# Copyright (C) 2016 LEDE project
+# Copyright (C) 2018 LEDE project
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -9,11 +9,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=uci
-PKG_VERSION:=2017-09-29-5ad59ad4
+PKG_VERSION:=2018-01-01-5beb95da
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_MD5SUM:=7beea008013e9a83a00c474f902b78b6
+PKG_MD5SUM:=d5773a1350cfd65166fad2a73831547e
 
 PKG_LICENSE:=LGPL-2.1
 PKG_LICENSE_FILES:=

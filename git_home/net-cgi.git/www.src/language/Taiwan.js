@@ -184,7 +184,7 @@ bh_connect_success_1="您已成功連線至網際網路。"
 
 bh_connect_success_2="此路由器已預設下列唯一的無線網路名稱 (SSID) 和"
 
-bh_network_key="網路金鑰（密碼）"
+bh_network_key="網路金鑰（密碼）。"
 
 bh_rollover_help_text="您的路由器已預設 WPA2-PSK 無線安全性設定，以防您的網路遭受未經授權的存取。要加入該無線網路，您必須輸入網路金鑰（密碼）。這些預設設定對於此裝置是唯一的，就像序號一樣。如需變更，可稍後在路由器網頁圖形介面的「無線設定」畫面中進行變更。"
 
@@ -196,7 +196,7 @@ bh_wirless_name="SSID"
 
 bh_wireless="無線"
 
-bh_wpa_wpa2_passpharse="網路金鑰（密碼）"
+bh_wpa_wpa2_passpharse="網路金鑰（密碼）:"
 
 bh_save_settings="保持路由器設定"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="您的新 NETGEAR 路由器即將設為「存取點模式」。 
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="此路由器的無線設定已變更。 使用下列無線網路名稱 (SSID) 和網路金鑰（密碼），將您的裝置重新連線至路由器，然後按一下下方的<b>完成</b>按鈕即可完成安裝。"
 bh_wl_ssid_name="2.4GHz 無線網路名稱 (SSID)："
-bh_wl_password="無線網路金鑰（密碼）"
+bh_wl_password="無線網路金鑰（密碼）:"
 bh_wl_password_2="2.4GHz 無線網路密碼（網路金鑰）："
 bh_wla_ssid_name="5GHz 無線網路名稱 (SSID)："
 bh_wla_password_2="5GHz 無線網路密碼（網路金鑰）："
@@ -605,3 +605,4 @@ bh_router_admin="路由器管理設定："
 bh_admin_user_name="管理使用者名稱："
 bh_new_admin_passwd="新管理密碼："
 bh_passwd_not_blank="密碼不能為空白。"
+finish_mark="完成"

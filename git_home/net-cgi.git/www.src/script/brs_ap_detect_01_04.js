@@ -8,7 +8,7 @@ function initPage()
 	}
 	
 	var btn = document.getElementById("btn_div");	
-	var btn_text = document.createTextNode("Finish");
+	var btn_text = document.createTextNode(finish_mark);
 	btn.appendChild(btn_text);
 
 	setTimeout("show_content_div()",25000);	

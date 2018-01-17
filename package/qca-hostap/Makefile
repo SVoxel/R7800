@@ -239,7 +239,7 @@ TARGET_LDFLAGS += \
 	$(CP) $(PKG_BUILD_DIR)/wpa_supplicant/wpa_cli $(1)/usr/sbin/
 
 	$(INSTALL_DIR) $(1)/etc/hotplug.d/button
-	$(INSTALL_DATA) ./files/wps-supplicant-hotplug.sh \
+	$(INSTALL_BIN) ./files/wps-supplicant-hotplug.sh \
 			$(1)/etc/hotplug.d/button/52-wps-supplicant
 
 	$(INSTALL_DIR) $(1)/lib/wifi

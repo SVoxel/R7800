@@ -184,7 +184,7 @@ bh_connect_success_1="V-aţi conectat cu succes la Internet."
 
 bh_connect_success_2="Acest router este presetat cu următorul nume unic de reţea wireless (SSID) şi "
 
-bh_network_key="următoarea cheie de reţea (parolă)"
+bh_network_key="următoarea cheie de reţea (parolă)."
 
 bh_rollover_help_text="Routerul dvs. este presetat cu securitate wireless WPA2-PSK pentru a proteja reţeaua împotriva accesului nedorit. Pentru a accesa reţeaua wireless, trebuie să introduceţi cheia de reţea (parola). Aceste setări sunt unice pentru dispozitiv, ca un număr de serie.  Dacă doriţi să le modificaţi, o puteţi face mai târziu în ecranul Setări wireless din interfaţa grafică a routerului."
 
@@ -196,7 +196,7 @@ bh_wirless_name="Nume reţea wireless (SSID)"
 
 bh_wireless="Wireless"
 
-bh_wpa_wpa2_passpharse="Cheie de reţea (parolă)"
+bh_wpa_wpa2_passpharse="Cheie de reţea (parolă):"
 
 bh_save_settings="Save router settings"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="Noul dvs. router NETGEAR este pe cale de a fi configurat în mod
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="Setările wireless ale acestui router au fost modificate. Utilizaţi următorul nume de reţea wireless (SSID) şi următoarea cheie de reţea (parolă) pentru reconectarea dispozitivului la rpouter şi apoi clic pe butonul <b>Finalizare</b><b> </b>de mai jos pentru a finaliza instalarea."
 bh_wl_ssid_name="Nume de reţea wireless de 2,4 GHz (SSID): "
-bh_wl_password="Cheie de reţea (Parolă )"
+bh_wl_password="Cheie de reţea (Parolă ):"
 bh_wl_password_2="Parolă de reţea wireless de 2,4 GHz (Cheie de reţea): "
 bh_wla_ssid_name="Nume de reţea wireless de 5 GHz (SSID): "
 bh_wla_password_2="Parolă de reţea wireless de 5 GHz (Cheie de reţea): "
@@ -605,3 +605,4 @@ bh_router_admin="Setări admin router:"
 bh_admin_user_name="Nume utilizator admin:"
 bh_new_admin_passwd="Parolă nouă admin:"
 bh_passwd_not_blank="Parola nu poate fi necompletatã."
+finish_mark="Finalizare"

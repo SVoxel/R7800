@@ -196,7 +196,7 @@ bh_wirless_name="Naam draadloos netwerk (SSID)"
 
 bh_wireless="Draadloos"
 
-bh_wpa_wpa2_passpharse="Netwerksleutel (wachtwoord)"
+bh_wpa_wpa2_passpharse="Netwerksleutel (wachtwoord):"
 
 bh_save_settings="Save router settings"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="Uw nieuwe NETGEAR-router wordt geconfigureerd in de access point
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="De draadloze instellingen van deze router zijn gewijzigd. Gebruik de volgende naam (SSID) voor het draadloze netwerk en de volgende netwerksleutel (wachtwoord) om uw apparaat opnieuw te verbinden met de router en klik vervolgens op de knop<b>Voltooien</b> hieronder om de installatie te voltooien."
 bh_wl_ssid_name="Naam (SSID) van draadloos 2,4GHz-netwerk: "
-bh_wl_password="Sleutel voor draadloos netwerk (wachtwoord)"
+bh_wl_password="Sleutel voor draadloos netwerk (wachtwoord):"
 bh_wl_password_2="Wachtwoord (netwerksleutel) van draadloos 2,4GHz-netwerk: "
 bh_wla_ssid_name="Naam (SSID) van draadloos 5GHz-netwerk: "
 bh_wla_password_2="Wachtwoord (netwerksleutel) van draadloos 5GHz-netwerk: "
@@ -605,3 +605,4 @@ bh_router_admin="Routerbeheerinstellingen"
 bh_admin_user_name="Beheerdersgebruikersnaam"
 bh_new_admin_passwd="Nieuw beheerderswachtwoord:"
 bh_passwd_not_blank="Wachtwoord mag niet leeg zijn."
+finish_mark="Voltooien"

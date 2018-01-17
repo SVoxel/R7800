@@ -184,7 +184,7 @@ bh_connect_success_1="Olet muodostanut langattoman Internet-yhteyden."
 
 bh_connect_success_2="Tälle reitittimelle on määritetty valmiiksi seuraava yksilöllinen langattoman verkon nimi (SSID) ja "
 
-bh_network_key="verkkoavain (salasana)"
+bh_network_key="verkkoavain (salasana)."
 
 bh_rollover_help_text="Reitittimeen on määritetty valmiiksi WPA2-PSK-salaus langattoman yhteyden suojaamiseksi luvattomilta käyttäjiltä. Yhteyden muodostaminen langattomaan verkkoon vaatii verkkoavaimen (salasanan). Valmiiksi määritetyt asetukset ovat yksilölliset tälle laitteelle sarjanumeron tapaan.  Halutessasi voit muuttaa asetuksia myöhemmin Langattomat asetukset -näytössä reitittimen Web-käyttöliittymässä. "
 
@@ -196,7 +196,7 @@ bh_wirless_name="Langattoman verkon nimi (SSID)"
 
 bh_wireless="Langaton"
 
-bh_wpa_wpa2_passpharse="Verkkoavain (salasana)"
+bh_wpa_wpa2_passpharse="Verkkoavain (salasana):"
 
 bh_save_settings="Save router settings"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="Uusi NETGEAR-reitittimesi määritetään tukiasematilaan. Verko
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="Tämän reitittimen langattomia asetuksia on muutettu. Käytä seuraavaa langattoman verkon nimeä (SSID) ja verkkoavainta (salasana), kun muodostat uudelleen yhteyden laitteesta reitittimeen. Viimeistele sitten asennus napsauttamalla <b>Valmis</b>-painiketta."
 bh_wl_ssid_name="2,4 GHz:n langattoman verkon nimi (SSID): "
-bh_wl_password="Langaton verkkoavain (salasana)"
+bh_wl_password="Langaton verkkoavain (salasana):"
 bh_wl_password_2="2,4 GHz:n langattoman verkon salasana (verkkoavain): "
 bh_wla_ssid_name="5 GHz:n langattoman verkon nimi (SSID): "
 bh_wla_password_2="5 GHz:n langattoman verkon salasana (verkkoavain): "
@@ -605,3 +605,4 @@ bh_router_admin="Reitittimen järjestelmänvalvojan asetukset:"
 bh_admin_user_name="Järjestelmänvalvojan käyttäjätunnus:"
 bh_new_admin_passwd="Uusi järjestelmänvalvojan salasana:"
 bh_passwd_not_blank="Salasana ei voi olla tyhjä."
+finish_mark="Valmis"

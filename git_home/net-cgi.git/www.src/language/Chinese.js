@@ -184,7 +184,7 @@ bh_connect_success_1="您已成功连接至因特网。"
 
 bh_connect_success_2="该路由器已预设以下唯一的无线网络标识（SSID）和"
 
-bh_network_key="网络密钥（密码）"
+bh_network_key="网络密钥（密码）。"
 
 bh_rollover_help_text="您的路由器已预设WPA2-PSK无线安全设置，以防您的网络遭受未经授权的访问。要加入该无线网络，您必须输入网络密钥（密码）。这些预设设置对于该设备是唯一的，就像序列号一样。如需更改它们，可稍后在路由器配置界面的“无线设置”屏幕中进行更改。"
 
@@ -196,7 +196,7 @@ bh_wirless_name="无线网络标识(SSID)"
 
 bh_wireless="无线"
 
-bh_wpa_wpa2_passpharse="网络密钥（密码）"
+bh_wpa_wpa2_passpharse="网络密钥（密码）:"
 
 bh_save_settings="保持设置"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="您的新 NETGEAR 路由器即将设置为接入点模式。 您
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="此路由器的无线设置已经更改。 使用以下无线网络名称 (SSID) 和网络密钥（密码）将您的设备重新连接到该路由器，然后单击下面的<b>完成</b>按钮来完成安装。"
 bh_wl_ssid_name="2.4GHz 无线网络名称 (SSID)："
-bh_wl_password="无线网络密钥（密码）"
+bh_wl_password="无线网络密钥（密码）:"
 bh_wl_password_2="2.4GHz 无线网络密码（网络密钥）："
 bh_wla_ssid_name="5GHz 无线网络名称 (SSID)："
 bh_wla_password_2="5GHz 无线网络密码（网络密钥）："
@@ -605,3 +605,4 @@ bh_router_admin="路由器管理员设置："
 bh_admin_user_name="管理员用户名："
 bh_new_admin_passwd="新管理员密码："
 bh_passwd_not_blank="密码不能为空。"
+finish_mark="完成"

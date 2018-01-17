@@ -184,7 +184,7 @@ bh_connect_success_1="Du är ansluten till Internet."
 
 bh_connect_success_2="Den här routern är förinställd med följande unika namn på trådlöst nätverk (SSID) och "
 
-bh_network_key="nätverksnyckel (lösenord)"
+bh_network_key="nätverksnyckel (lösenord)."
 
 bh_rollover_help_text="Din router är förinställd med den trådlösa säkerhetsstandarden WPA2-PSK för att skydda ditt nätverk från oönskad användning. Om du vill ansluta till det trådlösa nätverket måste du ange nätverksnyckeln (lösenordet). De här förinställningarna är unika för enheten, precis som ett serienummer.  Om du vill ändra dem kan du göra det senare på sidan Trådlösa inställningar på routerns webbaserade användargränssnitt."
 
@@ -196,7 +196,7 @@ bh_wirless_name="Namn på trådlöst nätverk (SSID)"
 
 bh_wireless="Trådlöst"
 
-bh_wpa_wpa2_passpharse="Nätverksnyckel (lösenord)"
+bh_wpa_wpa2_passpharse="Nätverksnyckel (lösenord):"
 
 bh_save_settings="Save router settings"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="Din nya NETGEAR-router konfigureras nu för accesspunktläge. De
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="De trådlösa inställningarna för den här routern har ändrats. Återanslut enheten till routern med följande namn (SSID) och nätverksnyckel (lösenord) för det trådlösa nätverket, och slutför installationen genom att klicka på knappen<b>Slutför</b> nedan."
 bh_wl_ssid_name="Namn på det trådlösa 2,4 GHz-nätverket (SSID):"
-bh_wl_password="Trådlös nätverksnyckel (lösenord)"
+bh_wl_password="Trådlös nätverksnyckel (lösenord):"
 bh_wl_password_2="Lösenord till det trådlösa 2,4 GHz-nätverket (nätverksnyckel): "
 bh_wla_ssid_name="Namn på det trådlösa 5GHz-nätverket (SSID):"
 bh_wla_password_2="Lösenord till det trådlösa 5GHz-nätverket (nätverksnyckel): "
@@ -605,3 +605,4 @@ bh_router_admin="Inställningar för routeradmin:"
 bh_admin_user_name="Administratörsanvändarnamn:"
 bh_new_admin_passwd="Nytt adminlösenord:"
 bh_passwd_not_blank="Fältet för lösenord får inte vara tomt."
+finish_mark="Slutför"

@@ -121,21 +121,19 @@ function checkpasswd(cf)
 			<div id="security">
 			<table cellpadding="2" cellspacing="0" border="0">
 			<TR>
-				<TD nowrap><script>document.write(bh_pppoe_login_name);</script></TD>
+				<TD nowrap><script>document.write(bh_pppoe_login_name+":");</script></TD>
 				<TD nowrap><% cfg_get("http_loginname") %></TD>
 			</TR>
 			<TR>
-				<TD nowrap><script>document.write(bh_new_password);</script></TD>
+				<TD nowrap><script>document.write(bh_new_password+":");</script></TD>
 				<TD nowrap><input type="password" autocomplete="off" size="20" name="sysNewPasswd" id="sys_new_passwd" onFocus="this.select();" ></TD>
 			</TR>
 			<TR>
-				<TD nowrap><script>document.write(bh_passwd_repas);</script></TD>
+				<TD nowrap><script>document.write(bh_passwd_repas+":");</script></TD>
 				<TD nowrap><input type="password" autocomplete="off" size="20" name="sysConfirmPasswd" id="sys_confirm_passwd" onFocus="this.select();" ></TD>
 			</TR>
-			</table>
-			<table cellpadding="2" cellspacing="0" border="0">
 			<TR>
-				<TD nowrap><script>document.write(bh_security_question_1+"*:");</script></TD>
+				<TD nowrap align="right"><script>document.write(bh_security_question_1+"*:");</script></TD>
 				<TD nowrap align="left">
 					<select  name="question1" id="question1" size=1 >
 						<option value="0" selected><script>document.write(bh_select_a_question);</script></option>

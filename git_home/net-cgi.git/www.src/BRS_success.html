@@ -168,7 +168,7 @@ function location_to_OS()
 			<div class="left_div"><script>document.write(bh_admin_user_name)</script></div>
 			<div class="right_div"><% cfg_get("http_username") %></div>
 			<div class="left_div"><script>document.write(bh_new_admin_passwd)</script></div>
-			<div class="right_div"><% cfg_get("http_passwd") %></div>
+			<div class="right_div"><% cfg_sed_xss("http_passwd") %></div>
 		</div>
 
 	</div>

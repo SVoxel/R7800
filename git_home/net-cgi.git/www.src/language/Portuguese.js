@@ -184,7 +184,7 @@ bh_connect_success_1="A conexão com a Internet foi realizada com êxito."
 
 bh_connect_success_2="Este roteador está predefinido com o seguinte nome de rede sem fio exclusivo (SSID) e "
 
-bh_network_key="chave de rede (senha)"
+bh_network_key="chave de rede (senha)."
 
 bh_rollover_help_text="Seu roteador está predefinido com a segurança sem fio WPA2-PSK para proteger a rede contra acesso não autorizado. Para ingressar em uma rede sem fio, insira a chave de rede (senha). As configurações predefinidas são exclusivas para este dispositivo, como um número de série.  Caso queira alterá-las, vá até a tela Wireless Settings (Configurações sem fio) na interface gráfica de usuário da Web do roteador."
 
@@ -196,7 +196,7 @@ bh_wirless_name="Nome da rede sem fio (SSID)"
 
 bh_wireless="Sem fio"
 
-bh_wpa_wpa2_passpharse="Chave de rede (senha)"
+bh_wpa_wpa2_passpharse="Chave de rede (senha):"
 
 bh_save_settings="Save router settings"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="O seu novo router NETGEAR está prestes a ser configurado para o
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="As definições sem fios deste router foram alteradas. Utilize o seguinte nome de rede sem fios (SSID) e chave de rede (palavra-passe) para ligar novamente o dispositivo ao router e, em seguida, clique no botão <b>Concluir</b> abaixo para concluir a instalação."
 bh_wl_ssid_name="Nome da rede sem fios 2,4 GHz (SSID): "
-bh_wl_password="Chave de rede sem fios (Palavra-passe)"
+bh_wl_password="Chave de rede sem fios (Palavra-passe):"
 bh_wl_password_2="Palavra-passe da rede sem fios 2,4 GHz (Chave de rede): "
 bh_wla_ssid_name="Nome da rede sem fios 5 GHz (SSID): "
 bh_wla_password_2="Palavra-passe da rede sem fios 5 GHz (Chave de rede): "
@@ -605,3 +605,4 @@ bh_router_admin="Definições de administrador do router:"
 bh_admin_user_name="Nome de utilizador do administrador:"
 bh_new_admin_passwd="Nova palavra-passe do administrador:"
 bh_passwd_not_blank="A senha não pode ficar em branco."
+finish_mark="Concluir"

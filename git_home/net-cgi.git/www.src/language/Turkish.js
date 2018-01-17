@@ -184,7 +184,7 @@ bh_connect_success_1="İnternet'e başarıyla bağlandınız."
 
 bh_connect_success_2="Bu yönlendirici, aşağıdaki benzersiz kablosuz ağ adı (SSID) ve ... ile önceden ayarlanmıştır "
 
-bh_network_key="ağ anahtarı (parola)"
+bh_network_key="ağ anahtarı (parola)."
 
 bh_rollover_help_text="Yönlendiriciniz, ağınızı istenmeyen erişimlere karşı korumak için WPA2-PSK kablosuz güvenliği ile önceden ayarlanmıştır. Kablosuz ağa katılmak için, ağ anahtarını (parola) girmeniz gerekir. Bu önceden yapılmış ayarlar, seri numarası gibi bu aygıta özgüdür.  Bunları değiştirmek isterseniz, bunu yönlendirici web GUI'sindeki Kablosuz Ayarları ekranında daha sonra yapabilirsiniz."
 
@@ -196,7 +196,7 @@ bh_wirless_name="Kablosuz Ağ Adı (SSID)"
 
 bh_wireless="Kablosuz"
 
-bh_wpa_wpa2_passpharse="Ağ Anahtarı (Parola)"
+bh_wpa_wpa2_passpharse="Ağ Anahtarı (Parola):"
 
 bh_save_settings="Save router settings"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="Yeni NETGEAR router'ınız kısa süre içinde erişim noktası 
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="Bu router'ın kablosuz ayarları değiştirildi. Aygıtınızı router'a yeniden bağlamak için aşağıdaki kablosuz ağ adını (SSID) ve ağ anahtarını (parola) kullanın, ardından <b>Son</b> düğmesine tıklayarak kurulumu tamamlayın."
 bh_wl_ssid_name="2,4 GHz Kablosuz Ağ Adı (SSID): "
-bh_wl_password="Kablosuz Ağ Anahtarı (Parola)"
+bh_wl_password="Kablosuz Ağ Anahtarı (Parola):"
 bh_wl_password_2="2,4 GHz Kablosuz Ağ Parolası (Ağ Anahtarı): "
 bh_wla_ssid_name="5 GHz Kablosuz Ağ Adı (SSID): "
 bh_wla_password_2="5 GHz Kablosuz Ağ Parolası (Ağ Anahtarı): "
@@ -605,3 +605,4 @@ bh_router_admin="Router Yönetici Ayarları:"
 bh_admin_user_name="Yönetici Kullanıcı Adı:"
 bh_new_admin_passwd="Yeni Yönetici Parolası:"
 bh_passwd_not_blank="Parola boş olamaz."
+finish_mark="Son"

@@ -184,7 +184,7 @@ bh_connect_success_1="Internetna povezava je vzpostavljena."
 
 bh_connect_success_2="Za ta usmerjevalnik je bilo vnaprej nastavljeno enolično ime brezžičnega omrežja (SSID) in "
 
-bh_network_key="omrežni ključ (geslo)"
+bh_network_key="omrežni ključ (geslo)."
 
 bh_rollover_help_text="Za usmerjevalnik je bila vnaprej nastavljena brezžična zaščita WPA2-PSK, ki omrežje ščiti pred neželenim dostopom. Če se želite pridružiti brezžičnem omrežju, morate nastaviti omrežni ključ (geslo). Te prednastavitve so enolične za to napravo, podobno kot serijska številka.  Če jih želite spremeniti, lahko to storite pozneje na zaslonu Brezžične nastavitve ali v uporabniškem vmesniku usmerjevalnika."
 
@@ -196,7 +196,7 @@ bh_wirless_name="Ime brezžičnega omrežja (SSID)"
 
 bh_wireless="Brezžično"
 
-bh_wpa_wpa2_passpharse="Omrežni ključ (geslo)"
+bh_wpa_wpa2_passpharse="Omrežni ključ (geslo):"
 
 bh_save_settings="Save router settings"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="Novi usmerjevalnik NETGEAR bo nastavljen v načinu dostopovne to
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="Brezžične nastavitve tega usmerjevalnika so spremenjene. Uporabite naslednje ime brezžičnega omrežja (SSID) in omrežni ključ (geslom), da napravo znova povežite z usmerjevalnikom, ter kliknite gumb <b>Končaj</b> spodaj, da dokončate namestitev."
 bh_wl_ssid_name="Ime brezžičnega omrežja 2,4 GHz (SSID): "
-bh_wl_password="Ključ brezžičnega omrežja (geslo)"
+bh_wl_password="Ključ brezžičnega omrežja (geslo):"
 bh_wl_password_2="Geslo brezžičnega omrežja 2,4 GHz (omrežni ključ): "
 bh_wla_ssid_name="Ime brezžičnega omrežja 5 GHz (SSID): "
 bh_wla_password_2="Geslo brezžičnega omrežja 5 GHz (omrežni ključ): "
@@ -605,3 +605,4 @@ bh_router_admin="Skrbniške nastavitve usmerjevalnika:"
 bh_admin_user_name="Skrbniško uporabniško ime:"
 bh_new_admin_passwd="Novo skrbniško geslo:"
 bh_passwd_not_blank="Geslo ne sme biti prazno."
+finish_mark="Končaj"

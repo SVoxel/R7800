@@ -53,6 +53,12 @@ delete_self() {
 
 
 boot() {
-	add_to_cron "streamboost auto_upload; streamboost auto_update && streamboost restart"
-	delete_self
+## QCA orignal code start
+#	add_to_cron "streamboost auto_upload; streamboost auto_update && streamboost restart"
+#	delete_self
+## QCA orignal code end
+
+## Because DNI has /sbin/cmdsched to manage sched task such as website
+## block, wifi,so we also use /sbin/cmdsched to manage SB auto update 
+	echo "DNI streamboost auto_update"
 }

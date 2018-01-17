@@ -44,9 +44,9 @@ $bluebar
 	<TD nowrap>
 	<script language="javascript" type="text/javascript">
 	if(get_browser() == "IE")
-		document.write('<input name="mtenRestoreCfg" type="file" size="32" id="restore_cfg" maxlength="1024" class="type-file-file" onchange="this.form.upfile.value=this.value.substr(this.value.lastIndexOf(\'\\\')+1);" contentEditable=false onkeydown="return false;" onbeforeeditfocus="return false;" onpaste="return false;" onmouseover="this.style.cursor=\'pointer\';" />');
+		document.write('<input name="mtenRestoreCfg" type="file" size="32" id="restore_cfg" maxlength="1024" class="type-file-file" onchange="this.form.upfile.value=this.value.substr(this.value.lastIndexOf(\'\\\\\')+1);" contentEditable=false onkeydown="return false;" onbeforeeditfocus="return false;" onpaste="return false;" onmouseover="this.style.cursor=\'pointer\';" />');
 	else
-		document.write('<input name="mtenRestoreCfg" type="file" size="32" id="restore_cfg" maxlength="1024" class="type-file-file-other" onchange="this.form.upfile.value=this.value.substr(this.value.lastIndexOf(\'\\\')+1);" contentEditable=false onkeydown="return false;" onbeforeeditfocus="return false;" onpaste="return false;" onmouseover="this.style.cursor=\'pointer\';" />');
+		document.write('<input name="mtenRestoreCfg" type="file" size="32" id="restore_cfg" maxlength="1024" class="type-file-file-other" onchange="this.form.upfile.value=this.value.substr(this.value.lastIndexOf(\'\\\\\')+1);" contentEditable=false onkeydown="return false;" onbeforeeditfocus="return false;" onpaste="return false;" onmouseover="this.style.cursor=\'pointer\';" />');
 	</script>
 	<input type="text" name="upfile" size="20" maxlength="1024" readonly />&nbsp;
 	<input type="button" value="$browse_mark"  id="browse" name="Browse" class="middle_common_bt" onclick="if(IE_version()!=6){this.form.restore_cfg.click();}" onmouseover="this.style.cursor='pointer';" />

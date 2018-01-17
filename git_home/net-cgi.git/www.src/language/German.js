@@ -184,7 +184,7 @@ bh_connect_success_1="Sie sind jetzt mit dem Internet verbunden."
 
 bh_connect_success_2="Für den Router wurde folgender eindeutiger Netzwerkname (SSID) und "
 
-bh_network_key="Netzwerkschlüssel (Passwort) voreingestellt"
+bh_network_key="Netzwerkschlüssel (Passwort) voreingestellt."
 
 bh_rollover_help_text="Damit Ihr Netzwerk vor unerwünschtem Zugriff geschützt ist, wurde der Router bereits mit WPA2-PSK-Sicherheit vorkonfiguriert. Um eine Verbindung mit dem drahtlosen Netzwerk herzustellen, geben Sie den Netzwerkschlüssel (Passwort) ein. Diese Voreinstellungen sind bei diesem Gerät individuell, wie z. B. eine Seriennummer.  Sie können die Einstellungen später in der Benutzeroberfläche des Routers auf dem Bildschirm WLAN-Konfiguration ändern."
 
@@ -196,7 +196,7 @@ bh_wirless_name="Wireless-Netzwerkname (SSID)"
 
 bh_wireless="WLAN"
 
-bh_wpa_wpa2_passpharse="Netzwerkschlüssel (Passwort)"
+bh_wpa_wpa2_passpharse="Netzwerkschlüssel (Passwort):"
 
 bh_save_settings="Save router settings"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="Ihr neuer NETGEAR-Router wird gleich im Access Point-Modus einge
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="Die WLAN-Konfiguration dieses Routers wurden geändert. Verwenden Sie den folgenden WLAN-Netzwerknamen (SSID) und den Netzwerkschlüssel (Passwort), um die Verbindung Ihres Geräts mit dem Router wieder herzustellen, und klicken Sie unten auf die Schaltfläche <b>Fertig stellen</b>, um die Installation abzuschließen."
 bh_wl_ssid_name="2,4 GHz-WLAN-Netzwerkname (SSID):"
-bh_wl_password="WLAN-Netzwerkschlüssel (Passwort)"
+bh_wl_password="WLAN-Netzwerkschlüssel (Passwort):"
 bh_wl_password_2="2,4 GHz-WLAN-Netzwerkpasswort (Netzwerkschlüssel):"
 bh_wla_ssid_name="5 GHz-WLAN-Netzwerkname (SSID):"
 bh_wla_password_2="5 GHz-WLAN-Netzwerkpasswort (Netzwerkschlüssel):"
@@ -605,3 +605,4 @@ bh_router_admin="Router-Administratoreinstellungen:"
 bh_admin_user_name="Administrator Benutzername:"
 bh_new_admin_passwd="Neues Administrator-Passwort:"
 bh_passwd_not_blank="Passwort darf nicht leer sein!"
+finish_mark="Fertig stellen"

@@ -184,7 +184,7 @@ bh_connect_success_1="Úspešne ste sa pripojili k internetu."
 
 bh_connect_success_2="Tento smerovač je prednastavený s nasledujúcim jedinečným identifikátorom bezdrôtovej siete (SSID) a "
 
-bh_network_key="sieťovým kľúčom (heslom)"
+bh_network_key="sieťovým kľúčom (heslom)."
 
 bh_rollover_help_text="Váš smerovač je prednastavený s funkciou zabezpečenia bezdrôtovej siete šifrovaním WPA2-PSK, ktoré vašu sieť chráni pred nepovoleným prístupom. Ak sa chcete pripojiť k tejto bezdrôtovej sieti, musíte zadať sieťový kľúč (heslo). Tieto predkonfigurované nastavenia sú jedinečné pre toto zariadenie, podobne ako sériové číslo.  Ak ich chcete zmeniť, môžete tak urobiť neskôr na obrazovke bezdrôtových nastavení v rámci webového grafického rozhrania smerovača."
 
@@ -196,7 +196,7 @@ bh_wirless_name="Názov bezdrôtovej siete (SSID)"
 
 bh_wireless="Bezdrôtové"
 
-bh_wpa_wpa2_passpharse="Sieťový kľúč (heslo)"
+bh_wpa_wpa2_passpharse="Sieťový kľúč (heslo):"
 
 bh_save_settings="Save router settings"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="Váš nový smerovač NETGEAR bude nastavený do režimu prístu
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="Nastavenia bezdrôtovej siete tohto smerovača sa zmenili. Použite nasledujúci názov bezdrôtovej siete (SSID) a sieťový kľúč (heslo) na opätovne pripojenie vášho zariadenia k smerovaču, potom kliknutím na položku <b>Dokončiť</b> ukončite inštaláciu."
 bh_wl_ssid_name="Názov bezdrôtovej siete 2,4 GHz (SSID): "
-bh_wl_password="Kľúč bezdrôtovej siete (heslo)"
+bh_wl_password="Kľúč bezdrôtovej siete (heslo):"
 bh_wl_password_2="Heslo bezdrôtovej siete 2,4 GHz (sieťový kľúč): "
 bh_wla_ssid_name="Názov bezdrôtovej siete 5 GHz (SSID): "
 bh_wla_password_2="Heslo bezdrôtovej siete 5 GHz (sieťový kľúč): "
@@ -605,3 +605,4 @@ bh_router_admin="Nastavenia správcu smerovača:"
 bh_admin_user_name="Používateľské meno správcu:"
 bh_new_admin_passwd="Nové heslo správcu"
 bh_passwd_not_blank="Heslo nesmie byť prázdne."
+finish_mark="Dokončiť"

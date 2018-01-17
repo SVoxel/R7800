@@ -47,7 +47,7 @@ start () {
 		sleep 1
 	fi
 
-	crond -c $CRONTABS -T "$($CONFIG get time_zone)"
+	/usr/sbin/crond -c $CRONTABS -T "$($CONFIG get time_zone)"
 }
 
 stop() {
@@ -65,4 +65,3 @@ boot () {
 	ln -s $CRONTABS ${CRON_SPOOL}/crontabs
 	start
 }
-

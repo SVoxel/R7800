@@ -196,7 +196,7 @@ bh_wirless_name="Nombre de red inalámbrica (SSID)"
 
 bh_wireless="Conexión inalámbrica"
 
-bh_wpa_wpa2_passpharse="Clave de red (contraseña)"
+bh_wpa_wpa2_passpharse="Clave de red (contraseña):"
 
 bh_save_settings="Save router settings"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="El nuevo router NETGEAR está a punto de ser configurado en el m
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="Ha modificado la configuración inalámbrica del router. Utilice el siguiente nombre de la red inalámbrica (SSID) y clave de red (contraseña) para volver a conectar el dispositivo al router y, a continuación, haga clic en el botón <b>Finalizar</b> para completar la instalación."
 bh_wl_ssid_name="Nombre de la red inalámbrica (SSID) de 2,4 GHz:"
-bh_wl_password="Clave de red inalámbrica (contraseña)"
+bh_wl_password="Clave de red inalámbrica (contraseña):"
 bh_wl_password_2="Contraseña de la red inalámbrica (Clave de red) de 2,4 GHz:"
 bh_wla_ssid_name="Nombre de la red inalámbrica (SSID) de 5GHz:"
 bh_wla_password_2="Contraseña de la red inalámbrica (Clave de red) de 5GHz:"
@@ -605,3 +605,4 @@ bh_router_admin="Configuración del administrador del router:"
 bh_admin_user_name="Nombre de usuario del administrador:"
 bh_new_admin_passwd="Nueva contraseña de administración:"
 bh_passwd_not_blank="La contraseña no puede dejarse en blanco."
+finish_mark="Finalizar"

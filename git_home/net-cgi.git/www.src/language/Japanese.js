@@ -184,7 +184,7 @@ bh_connect_success_1="インターネットに接続しました。"
 
 bh_connect_success_2="このルーターは次のワイヤレスネットワーク名 (SSID) であらかじめ設定されており、 "
 
-bh_network_key="ネットワークキー (パスワード)"
+bh_network_key="ネットワークキー (パスワード)。"
 
 bh_rollover_help_text="ご利用のルーターには、不正なアクセスからネットワークを保護するためのWPA2-PSKワイヤレスセキュリティが設定されています。 このワイヤレスネットワークに接続するには、ネットワークキー (パスワード) が必要になります。 初期設定のネットワークキー（パスワード）は、シリアルナンバーのようにこのルーター固有のものです。  変更したい場合は、ルーター管理画面のワイヤレス設定画面で行えます。"
 
@@ -196,7 +196,7 @@ bh_wirless_name="ワイヤレスネットワーク名 (SSID)"
 
 bh_wireless="ワイヤレス"
 
-bh_wpa_wpa2_passpharse="ネットワークキー (パスワード)"
+bh_wpa_wpa2_passpharse="ネットワークキー (パスワード):"
 
 bh_save_settings="ルーター設定を保存"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="新しい NETGEAR ルーターでアクセスポイントモー�
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="このルーターの無線 LAN 設定が変更されました。次の無線LANネットワーク名 (SSID) とネットワークキー（パスワード）を使って機器をルーターに接続します、下記の <b>完了</b> ボタンをクリックしてインストールを完了します。"
 bh_wl_ssid_name="2.4GHz 無線LANネットワーク名 (SSID)："
-bh_wl_password="ワイヤレスネットワークキー（パスワード）"
+bh_wl_password="ワイヤレスネットワークキー（パスワード）:"
 bh_wl_password_2="2.4GHz 無線LANネットワークパスワード （ネットワークキー）："
 bh_wla_ssid_name="5GHz 無線LANネットワーク名 (SSID)："
 bh_wla_password_2="5GHz 無線LANネットワークパスワード（ネットワークキー）："
@@ -605,3 +605,4 @@ bh_router_admin="ルーター管理者設定："
 bh_admin_user_name="管理者ユーザー名："
 bh_new_admin_passwd="新しい管理者パスワード："
 bh_passwd_not_blank="パスワードは空欄にできません。"
+finish_mark="完了"

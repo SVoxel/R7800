@@ -196,7 +196,7 @@ bh_wirless_name="Nom du réseau sans fil (SSID)"
 
 bh_wireless="Sans fil"
 
-bh_wpa_wpa2_passpharse="Clé réseau (mot de passe)"
+bh_wpa_wpa2_passpharse="Clé réseau (mot de passe):"
 
 bh_save_settings="Save router settings"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="Votre nouveau routeur NETGEAR est sur le point d'être défini e
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="Les paramètres sans fil de ce routeur ont été modifiés. Utilisez le nom de réseau (SSID) et la clé réseau (mot de passe) pour reconnecter votre appareil au routeur, puis cliquez sur le bouton <b>Terminer</b> ci-dessous pour terminer l'installation."
 bh_wl_ssid_name="Nom (SSID) du réseau sans fil 2,4 GHz : "
-bh_wl_password="Clé réseau sans fil (mot de passe)"
+bh_wl_password="Clé réseau sans fil (mot de passe):"
 bh_wl_password_2="Mot de passe (clé réseau) du réseau sans fil 2,4 GHz : "
 bh_wla_ssid_name="Nom (SSID) du réseau sans fil 5 GHz : "
 bh_wla_password_2="Mot de passe (clé réseau) du réseau sans fil 5 GHz : "
@@ -605,3 +605,4 @@ bh_router_admin="Paramètres administrateur du routeur :"
 bh_admin_user_name="Nom d'utilisateur administrateur :"
 bh_new_admin_passwd="Nouveau mot de passe administrateur :"
 bh_passwd_not_blank="Le mot de passe ne peut être vide!"
+finish_mark="Terminer"

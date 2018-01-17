@@ -184,7 +184,7 @@ bh_connect_success_1="Du er tilkoblet Internett."
 
 bh_connect_success_2="Denne ruteren er forhåndsinnstilt med følgende unike navn på trådløst nettverk (SSID) og "
 
-bh_network_key="nettverksnøkkel (passord)"
+bh_network_key="nettverksnøkkel (passord)."
 
 bh_rollover_help_text="Ruteren er forhåndsinnstilt med WPA2-PSK trådløs sikkerhet for å beskytte nettverket ditt mot uønsket tilgang. For å koble til det trådløse nettverket må du angi nettverksnøkkelen (passord). Disse forhåndsinnstillingene er unike for denne enheten, som et serienummer.  Hvis du vil endre dem, kan du gjøre det senere på skjermbildet Wireless Settings (Trådløsinnstillinger) på ruterens webgrensesnitt."
 
@@ -196,7 +196,7 @@ bh_wirless_name="Navn på trådløst nettverk (SSID)"
 
 bh_wireless="Trådløs"
 
-bh_wpa_wpa2_passpharse="Nettverksnøkkel (passord)"
+bh_wpa_wpa2_passpharse="Nettverksnøkkel (passord):"
 
 bh_save_settings="Save router settings"
 
@@ -443,7 +443,7 @@ bh_ap_note_str="Den nye NETGEAR-ruteren er i ferd med å bli konfigurert i tilga
 //BRS_ap_detect_01_04.html
 bh_wl_setting_finish="Trådløsinnstillingene for denne ruteren har blitt endret. Bruk følgende nettverksnavn (SSID) og nettverksnøkkel (passord) til å koble enheten til ruteren igjen, og klikk deretter på knappen <b>Fullfør</b> nedenfor for å fullføre installasjonen."
 bh_wl_ssid_name="Navn på 2,4GHz trådløst nettverk (SSID): "
-bh_wl_password="Nøkkel til trådløst nettverk (passord)"
+bh_wl_password="Nøkkel til trådløst nettverk (passord):"
 bh_wl_password_2="Passord (nettverksnøkkel) til 2,4GHz trådløst nettverk: "
 bh_wla_ssid_name="Navn på 5GHz trådløst nettverk (SSID): "
 bh_wla_password_2="Passord (nettverksnøkkel) til 5GHz trådløst nettverk: "
@@ -605,3 +605,4 @@ bh_router_admin="Admininnstilinger for ruter:"
 bh_admin_user_name="Adminbrukernavn:"
 bh_new_admin_passwd="Nytt adminpassord:"
 bh_passwd_not_blank="Passordet kan ikke være tomt."
+finish_mark="Fullfør"

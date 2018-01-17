@@ -327,7 +327,7 @@ function click_action(id)
                 if( id == "home")
                 {
                         basic_menu_color_change('home');
-                        goto_formframe('basic_wait.htm');
+                        goto_formframe('basic_home.htm');
                 }
 		else if( id == "internet" && top.enabled_wds == 0 && top.enable_ap_flag != 1 && top.broadband_mode != "MyDetc" && top.enable_bridge_flag == 0 && top.enable_extender_flag != "1" && top.enable_mapt !=1 && top.device_mode != "1")
 		{
