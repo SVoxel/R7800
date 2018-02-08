@@ -20,3 +20,5 @@ else
 	iptables -A ppp0_fwd -o tun0 -j net2loc
 fi
 iptables -I loc2net 5 -s $tun_subnet/$mask -j ACCEPT
+
+config set vpn_tun_ip_for_gui=$tun_subnet

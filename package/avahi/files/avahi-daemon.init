@@ -10,6 +10,14 @@ RUN_D=/var/run/$BIN
 start() {
 	[ -f $DEFAULT ] && . $DEFAULT
 	mkdir -p $RUN_D
+	if [ ! -d /tmp/avahi/services ]; then
+		mkdir -p /tmp/avahi/services
+	fi
+	for i in /usr/config/avahi/services/*; do
+		if [ ! "`basename $i`" == "adisk.service" ]; then
+			cp -f $i /etc/avahi/services
+		fi
+	done
 	$BIN $OPTIONS  &
 	/usr/share/udhcpd/hyt_result_maintain &
 }

@@ -1466,10 +1466,11 @@ CONFIG_PACKAGE_qsdk-wifi-script=y
 CONFIG_QSDK_WIFI_SCRIPT_GIT_REPOSITORY="qsdk-wifi-script.git"
 CONFIG_QSDK_WIFI_SCRIPT_GIT_URL="ssh://dniserver/scm/dnigit/common/apps/qsdk-wifi-script.git"
 CONFIG_QSDK_WIFI_SCRIPT_GIT_TREEISH="f8b279b94ecadca7786f246c63fcfa518e6392e8"
-# CONFIG_PACKAGE_samba is mot set
+# CONFIG_PACKAGE_samba is not set
 CONFIG_PACKAGE_samba36-server=y
 CONFIG_PACKAGE_samba-scripts=y
 CONFIG_PACKAGE_SAMBA_MAX_DEBUG_LEVEL=10000
+CONFIG_PACKAGE_soapclient=y
 # CONFIG_PACKAGE_ss is not set
 CONFIG_PACKAGE_tc=y
 CONFIG_PACKAGE_tcpdump=y
@@ -1550,8 +1551,8 @@ CONFIG_OPENSSL_WITH_EC=y
 #
 CONFIG_PACKAGE_hiredis=y
 CONFIG_PACKAGE_libsqlite3=y
-CONFIG_PACKAGE_alsa-lib=y
-CONFIG_PACKAGE_confuse=y
+# CONFIG_PACKAGE_alsa-lib is not set
+# CONFIG_PACKAGE_confuse is not set
 
 #
 # Configuration
@@ -1560,7 +1561,7 @@ CONFIG_DNI_GREEN_DOWNLOAD=y
 CONFIG_PACKAGE_fcgi=y
 # CONFIG_PACKAGE_fcgixx is not set
 CONFIG_PACKAGE_jansson=y
-CONFIG_PACKAGE_libantlr3c=y
+# CONFIG_PACKAGE_libantlr3c is not set
 CONFIG_PACKAGE_libavahi=y
 CONFIG_PACKAGE_libavahi-client=y
 CONFIG_PACKAGE_libavahi-dbus-support=y
@@ -1623,8 +1624,8 @@ CONFIG_PACKAGE_libevent2-pthreads=y
 CONFIG_PACKAGE_libexif=y
 CONFIG_PACKAGE_libexpat=y
 # CONFIG_PACKAGE_libffmpeg-custom is not set
-CONFIG_PACKAGE_libffmpeg-full=y
-# CONFIG_PACKAGE_libffmpeg-mini is not set
+# CONFIG_PACKAGE_libffmpeg-full is not set
+CONFIG_PACKAGE_libffmpeg-mini=y
 CONFIG_PACKAGE_libflac=y
 CONFIG_PACKAGE_libgcrypt=y
 CONFIG_PACKAGE_libgdbm=y
@@ -1653,7 +1654,7 @@ CONFIG_PACKAGE_libsodium=y
 #
 # CONFIG_PCAP_HAS_USB is not set
 CONFIG_PACKAGE_libpcre=y
-CONFIG_PACKAGE_libplist=y
+# CONFIG_PACKAGE_libplist is not set
 # CONFIG_PACKAGE_libplistcxx is not set
 # CONFIG_PACKAGE_libpng is not set
 CONFIG_PACKAGE_libpopt=y
@@ -1664,11 +1665,11 @@ CONFIG_PACKAGE_libuci-lua=y
 CONFIG_PACKAGE_libunistring=y
 CONFIG_PACKAGE_libusb-1.0=y
 CONFIG_PACKAGE_libusb-compat=y
-CONFIG_PACKAGE_libvorbis=y
+# CONFIG_PACKAGE_libvorbis is not set
 CONFIG_PACKAGE_libwxwidgets=y
 CONFIG_PACKAGE_libxml2=y
 # CONFIG_PACKAGE_linux-atm is not set
-CONFIG_PACKAGE_mxml=y
+# CONFIG_PACKAGE_mxml is not set
 # CONFIG_PACKAGE_taglib is not set
 # CONFIG_PACKAGE_taglibc is not set
 CONFIG_PACKAGE_terminfo=y
@@ -2742,6 +2743,8 @@ CONFIG_PACKAGE_streamboost-misc=y
 #
 CONFIG_PACKAGE_sbsaved=y
 # CONFIG_PACKAGE_irqbalance is not set
+CONFIG_PACKAGE_haveged=y
+CONFIG_PACKAGE_libhavege=y
 
 #
 # overwrite package version
@@ -2776,7 +2779,7 @@ CONFIG_PACKAGE_zz-dni-streamboost=y
 #
 # Sound
 #
-CONFIG_PACKAGE_forked-daapd=y
+# CONFIG_PACKAGE_forked-daapd is not set
 
 #
 # Languages

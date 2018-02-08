@@ -4655,7 +4655,7 @@ static int ata_sg_setup(struct ata_queued_cmd *qc)
 	unsigned int n_elem;
 	u8 cmd = qc->tf.command;
 
-	if (ATA_CMD_READ == cmd || ATA_CMD_READ_EXT == cmd || ATA_CMD_WRITE == cmd || ATA_CMD_WRITE_EXT == cmd)
+	if (ATA_CMD_READ == cmd || ATA_CMD_READ_EXT == cmd || ATA_CMD_WRITE == cmd || ATA_CMD_WRITE_EXT == cmd || ATA_CMD_FPDMA_READ == cmd || ATA_CMD_FPDMA_WRITE == cmd)
 		detect_sata_data();
 
 	VPRINTK("ENTER, ata%u\n", ap->print_id);

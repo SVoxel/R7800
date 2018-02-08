@@ -14,6 +14,7 @@ app_pid_file=/var/run/$appname.pid
 app_info_file=/tmp/$appname.info
 app_tgz_file=/tmp/$appname.tar.gz
 app_update_url="ftp://updates1.netgear.com/sw-apps/$appname/$modelname/"
+app_update_https_url="https://http.fw.updates1.netgear.com/sw-apps/$appname/$modelname/"
 #app_update_url="-u user:passwd ftp://172.16.83.218/tmp/$modelname/"
 
 app_updated_file="/tmp/.$appname.updated"
@@ -175,10 +176,16 @@ update()
 	[ -f $app_pid_file ] && { oc echo "[$appname] no update, others running now !"; return 1; }
 	echo "$$" > $app_pid_file
 
-	oc echo "[$appname] start to get info from update-sever : $app_update_url"
 	retry=0
 	while [ 1 ]; do
+		oc echo "[$appname] start to get info from update-sever : $app_update_https_url"
+		curl -L -k $app_update_https_url 2>/dev/null |grep kwilt> $app_info_file
+		url_way="https" 
+		[ -s $app_info_file ] && break
+
+		oc echo "[$appname] start to get info from update-sever : $app_update_url"
 		curl -l $app_update_url 2>/dev/null | filter_app_info > $app_info_file
+		url_way="ftp"
 		[ -s $app_info_file ] && break
 
 		oc echo "[$appname] retry=$retry, fail to get update-server info."
@@ -187,7 +194,13 @@ update()
 		retry=$(($retry + 1)) && sleep $(get_dynamic_sleep_time $retry)
 	done
 
-	fullversion="$(get_fullversion $app_info_file)"
+	if [ "$url_way" == "ftp" ];then
+		fullversion="$(get_fullversion $app_info_file)"
+	else
+		sed -i "s/\/A/\\n/g" $app_info_file
+		sed -i "s/<//g" $app_info_file
+		fullversion=`cat $app_info_file |grep kwilt  |awk -F '>' '{print $NF}' |tail -1`
+	fi
 	if [ -z "$fullversion" ]; then
 		try_to_run_local_version_and_exit "1" "bug in update-server"
 		exit_update "2" "[$appname] bug in local versoin & update-server !"
@@ -195,11 +208,14 @@ update()
 
 	localversion=$(get_app_local_version)
 	app_version_allowed "$localversion" && newer_app "$localversion" "$fullversion" && \
-		run_local_version_and_exit "0" "no newer version !"
+	run_local_version_and_exit "0" "no newer version !"
 
-	oc echo "[$appname] start to download image : $app_update_url$fullversion"
 	retry=0
 	while [ 1 ]; do
+		oc echo "[$appname] start to download image : $app_update_https_url$fullversion"
+		curl -L -k $app_update_https_url$fullversion -o $app_tgz_file 2>/dev/null && break
+
+		oc echo "[$appname] start to download image : $app_update_url$fullversion"
 		curl $app_update_url$fullversion -o $app_tgz_file 2>/dev/null && break
 
 		oc echo "[$appname] retry=$retry, fail to download image."
@@ -212,7 +228,7 @@ update()
 	mkdir /hipplay
 	tar xfz $app_tgz_file -C /hipplay
 	set_app_local_version "$fullversion"
-	oc echo "[$appname] install image \"$app_update_url$fullversion\" to R/W filesystem successfully."
+	oc echo "[$appname] install image \"$fullversion\" to R/W filesystem successfully."
 
 	run_local_version_and_exit "0" "the newly installed."
 }

@@ -470,7 +470,7 @@ function check_mulpppoe_session1(cf,check)
 			alert("$invalid_primary_dns");
 			return false;
 		}
-		if(cf.pppoe_dnsaddr2.value!="" && cf.pppoe_dnsaddr2.value!="0.0.0.0" )
+		if(cf.pppoe_dnsaddr2.value!="")
 			if(checkipaddr(cf.pppoe_dnsaddr2.value)==false)
 			{
 				alert("$invalid_second_dns");
@@ -578,7 +578,7 @@ function check_mulpppoe_session2(cf,check)
                        	alert("$invalid_primary_dns");
                        	return false;
                	}
-               	if(cf.pppoe2_dnsaddr2.value!="" && cf.pppoe2_dnsaddr2.value!="0.0.0.0" )
+               	if(cf.pppoe2_dnsaddr2.value!="")
                        	if(checkipaddr(cf.pppoe2_dnsaddr2.value)==false)
                        	{
                               	alert("$invalid_second_dns");
@@ -689,7 +689,7 @@ function check_mulpppoe(cf,check)
 			alert("$invalid_primary_dns");
 			return false;
 		}
-		if(cf.pppoe_dnsaddr2.value!="" && cf.pppoe_dnsaddr2.value!="0.0.0.0" )
+		if(cf.pppoe_dnsaddr2.value!="")
 			if(checkipaddr(cf.pppoe_dnsaddr2.value)==false)
 			{
 				alert("$invalid_second_dns");
@@ -770,7 +770,7 @@ function check_mulpppoe(cf,check)
                           	alert("$invalid_primary_dns");
                           	return false;
                   	}
-                  	if(cf.pppoe2_dnsaddr2.value!="" && cf.pppoe2_dnsaddr2.value!="0.0.0.0" )
+                  	if(cf.pppoe2_dnsaddr2.value!="")
                           	if(checkipaddr(cf.pppoe2_dnsaddr2.value)==false)
                           	{
                                   	alert("$invalid_second_dns");

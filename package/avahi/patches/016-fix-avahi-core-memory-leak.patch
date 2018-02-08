@@ -1,0 +1,15 @@
+diff -Nur avahi-0.6.31.org/avahi-core/cache.c avahi-0.6.31/avahi-core/cache.c
+--- avahi-0.6.31.org/avahi-core/cache.c	2017-12-08 19:58:41.368025717 +0800
++++ avahi-0.6.31/avahi-core/cache.c	2017-12-08 20:00:03.072027266 +0800
+@@ -386,10 +386,10 @@
+                     system(cmd);
+                 }
+             }
++            avahi_free(txt); 
+ 		}
+     }
+ 
+-/*     avahi_free(txt);  */
+ }
+ 
+ struct dump_data {

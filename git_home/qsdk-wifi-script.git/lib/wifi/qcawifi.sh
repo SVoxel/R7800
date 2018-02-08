@@ -2167,15 +2167,6 @@ post_qcawifi() {
                 wlanconfig ath1 vendorie add len 11 oui 00146c pcap_data 0801020110000000 ftype_map 18
                 wlanconfig ath0 vendorie add len 11 oui 00146c pcap_data 0801020110000000 ftype_map 18
             fi
-            # export record from /tmp/mdns_record and format it to /tmp/mdns_result_tmp
-			{
-				pidlist=`ps | grep 'mdnsrecord' | cut -b1-5`
-				for j in $pidlist
-				do
-					kill -9 $j
-				done
-				/usr/sbin/mdnsrecord &
-			}
 			pidlist=`ps | grep 'hyt_result_maintain' | cut -b1-5`
 			[ "x$pidlist" != "x" ] || /usr/share/udhcpd/hyt_result_maintain &
 

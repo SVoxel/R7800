@@ -35,7 +35,9 @@ then
 	if [ $count = 4 ]; then
 		count1=0
 		cat  /tmp/hyt_result > /tmp/mdns_table
-		cat /tmp/mdns_result_tmp >> /tmp/mdns_table 
+		if [ -f /tmp/mdns_result_tmp ]; then
+			cat /tmp/mdns_result_tmp >> /tmp/mdns_table 
+		fi
 		sort /tmp/mdns_table | uniq > $lease_file_tmp
 		rm -rf /tmp/mdns_table 2>/dev/null
 		count=0

@@ -37,7 +37,8 @@ PKG_CONFIG_DEPENDS:= \
 
 include $(INCLUDE_DIR)/package.mk
 
-TARGET_CFLAGS:=-O3 -pipe -mcpu=cortex-a15 -mfpu=neon-vfpv4 -mtune=cortex-a15 -mfloat-abi=softfp -fhonour-copts $(FPIC)
+TARGET_CFLAGS:=-O3 -pipe -mcpu=cortex-a15 -mfpu=neon-vfpv4 -funsafe-math-optimizations -mtune=cortex-a15 -mfloat-abi=softfp $(FPIC) -ffunction-sections -fdata-sections
+TARGET_LDFLAGS += -Wl,--gc-sections
 
 ifneq ($(CONFIG_CCACHE),)
 HOSTCC=$(HOSTCC_NOCACHE)
@@ -129,8 +130,8 @@ else
   OPENSSL_OPTIONS+=no-sse2
   ifeq ($(CONFIG_mips)$(CONFIG_mipsel),y)
     OPENSSL_TARGET:=linux-mips-openwrt
-#  else ifeq ($(CONFIG_arm)$(CONFIG_armeb),y)
-#    OPENSSL_TARGET:=linux-armv4-openwrt
+  else ifeq ($(CONFIG_arm)$(CONFIG_armeb),y)
+    OPENSSL_TARGET:=linux-armv4-openwrt
   else
     OPENSSL_TARGET:=linux-generic-openwrt
     OPENSSL_OPTIONS+=no-perlasm
@@ -148,6 +149,7 @@ define Build/Configure
 		./Configure $(OPENSSL_TARGET) \
 			--prefix=/usr \
 			--openssldir=/etc/ssl \
+			-D__ARM_MAX_ARCH__=7 \
 			$(TARGET_CPPFLAGS) \
 			$(TARGET_LDFLAGS) -ldl \
 			-DNDEBUG \

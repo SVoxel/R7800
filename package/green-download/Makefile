@@ -20,6 +20,8 @@ define Package/greendownload
 	TITLE:=Green Download core manager
 endef
 
+TARGET_CFLAGS += -DSUPPORT_ENCRYPT
+
 define Package/greendownload/config
         menu "Configurations"
                 depends on PACKAGE_greendownload

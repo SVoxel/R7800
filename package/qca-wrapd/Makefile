@@ -58,7 +58,7 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DATA) ./files/wrap-vma.conf $(1)/etc/ath
 
 	$(INSTALL_DIR) $(1)/lib/wifi
-	$(INSTALL_DATA) ./files/qwrap.sh $(1)/lib/wifi
+	$(INSTALL_BIN) ./files/qwrap.sh $(1)/lib/wifi
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+https_url="https://http.fw.updates1.netgear.com/sw-apps/ready-genie-cloud/r7800"
+ftp_url="ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800"
 version=`cat /cloud_version`
 cloud_url=http://www.voxel-firmware.com/Downloads/Voxel/R7800-Voxel-firmware/ReadyCLOUD/readygeniecloud-r7800new2-20170914-01.tar.gz
 config=/bin/config
@@ -102,30 +104,56 @@ update() {
 	[ -f $PID_file ] && return 1
 	install_local
 	echo "$$" > $PID_file
-	echo "start to get info from ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/"
 	retry_count=0
 	while [ 1 ]; do
-		curl ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/ 2>/dev/null | grep readygeniecloud-r7800new2-*-.*.tar.gz > /tmp/cloud_info
+		echo "start to get info from $https_url"
+		curl -L -k $https_url/ 2>/dev/null | grep readygeniecloud-r7800new2-*-.*.tar.gz > /tmp/cloud_info
+		url_way="https"
 		[ -s /tmp/cloud_info ] && break
-		echo "cannot access ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/ or don't find readygeniecloud tarball with version $version"
+		echo "cannot $https_url/ or don't find readygeniecloud tarball with version $version"
+
+		echo "start to get info from $ftp_url"
+		curl $ftp_url/ 2>/dev/null | grep readygeniecloud-r7800new2-*-.*.tar.gz > /tmp/cloud_info
+		url_way="ftp"
+		[ -s /tmp/cloud_info ] && break
+		echo "cannot access $ftp_url/ or don't find readygeniecloud tarball with version $version"
 		dynamic_sleep
 	done
-	fullversion=`tail -1 /tmp/cloud_info | awk '{print $9}'`
-	if [ -f /opt/version -a "x$(cat /opt/version)" = "x$fullversion" ]; then
-		/bin/rm -f /tmp/cloud_info
-		touch /tmp/.cloud_updated
-		/bin/rm -f $PID_file
-		echo "the readygeniecloud on update server is same as on R/W filesystem"
-		start
-		return 1
+	if [ "$url_way" == "ftp" ];then
+		fullversion=`tail -1 /tmp/cloud_info | awk '{print $9}'`
+		if [ -f /opt/version -a "x$(cat /opt/version)" = "x$fullversion" ]; then
+			/bin/rm -f /tmp/cloud_info
+			touch /tmp/.cloud_updated
+			/bin/rm -f $PID_file
+			echo "the readygeniecloud on update server is same as on R/W filesystem"
+			start
+			return 1
+		fi
+		size=`tail -1 /tmp/cloud_info | awk '{print $5}'`
+	else
+		sed -i "s/\/A/\\n/g" /tmp/cloud_info
+		sed -i "s/<//g" /tmp/cloud_info
+		fullversion=`cat /tmp/cloud_info |grep readygeniecloud-r7800new2 |awk -F '>' '{print $NF}' |tail -1`
+		if [ -f /opt/version -a "x$(cat /opt/version)" = "x$fullversion" ]; then
+			/bin/rm -f /tmp/cloud_info
+			touch /tmp/.cloud_updated
+			/bin/rm -f $PID_file
+			echo "the readygeniecloud on update server is same as on R/W filesystem"
+			start
+			return 1
+		fi
+		size=`cat /tmp/cloud_info |grep $fullversion |awk '{print $4}'`
 	fi
-	size=`tail -1 /tmp/cloud_info | awk '{print $5}'`
-	echo "start to download ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/$fullversion"
+	echo "start to download sw-apps/ready-genie-cloud/r7800/$fullversion"
 	retry_count=0
 	while [ 1 ]; do
-		curl ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/$fullversion -o /tmp/cloud.tar.gz 2>/dev/null
+		curl -L -k $https_url/$fullversion -o /tmp/cloud.tar.gz 2>/dev/null
 		[ "$(wc -c /tmp/cloud.tar.gz | awk '{print $1}')" = "$size" ] && break
-		echo "fail to download ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/readygeniecloud-r7800-$fullversion"
+		echo "fail to download readygeniecloud-r7800-$fullversion"
+
+		curl $ftp_url/$fullversion -o /tmp/cloud.tar.gz 2>/dev/null
+		[ "$(wc -c /tmp/cloud.tar.gz | awk '{print $1}')" = "$size" ] && break
+		echo "fail to download $ftp_url/readygeniecloud-r7800-$fullversion"
 		dynamic_sleep
 	done
 	uninstall
