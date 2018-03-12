@@ -4,7 +4,7 @@ html, body{ margin: 0; border:none; background-color:transparent; font-family:Ar
 #header_top{ height:77px; width:940px; margin:0 0; overflow:hidden; }
 /*bug 22044*/
 #header_top .top_name{ height:77px; width:730px; float:left; margin:0; overflow:hidden; }
-#header_top .title_div{ height:43px; width:533px; margin: 6px 0; overflow:hidden; background: url(../image/tops.gif) no-repeat 0px -76px }
+#header_top .title_div{ height:43px; width:533px; margin: 6px 0; overflow:hidden; background: url(../image/tops.png) no-repeat 0px -76px }
 #header_top .title_div img{ position: absolute; left : 0px; top: 7px;}
 #header_top .router_name_div{ height:25px; width:500px; margin:0; overflow:hidden; font-family: Arial; font-size: 18px;	font-weight: Bold; color: #000000; }
 #header_top .router_centria_div{ height:34px; color:#ffffff; font-family:Arial; }

@@ -49,11 +49,15 @@ if [ "x$fs_type" = "x" ]; then
 fi
 echo This partition type is $fs_type !
 
-partition_label=$(vol_id /dev/$1 | grep ID_FS_LABEL_SAFE | awk -F= '{print $2}')
-if [ -z "$partition_label" ]; then
-	diskname=$1
-else 
-	diskname=$partition_label
+diskname=$(vol_id /dev/$1 | grep ID_FS_LABEL_SAFE | awk -F= '{print $2}')
+if [ ! -z "$diskname" ]; then
+	if [ -e /mnt/$diskname ]; then
+		rm -f /mnt/$diskname
+	fi
+
+	if [ -d /mnt/$diskname ]; then
+		rmdir /mnt/$diskname
+	fi
 
 	if [ -e /mnt/$1 ]; then
 		rm -f /mnt/$1
@@ -63,78 +67,64 @@ else
 		rmdir /mnt/$1
 	fi
 
-	ln -sf $diskname /mnt/$1
-
-	if [ -d /mnt/$diskname ]; then
-		rmdir /mnt/$diskname
-	fi
-
-	if [ -d /mnt/$diskname ]; then
-		diskname=$1
-		rm -f /mnt/$1
-	fi
-
-	if [ -f /root/.nolabel ]; then
-		diskname=$1
-		rm -f /mnt/$1
-	fi
+	ln -sf /mnt/$1 /mnt/$diskname 
 fi
 
 partition_tb=$(parted -s /dev/`echo $1 | sed 's/[0-9]//g'` print | grep "Partition Table" | awk '{print $3}')
 if [ "x$(parted -s /dev/`echo $1 | sed 's/[0-9]//g'` print noshare | grep $1)" = "x" -o "x$partition_tb" = "xloop" ]; then
-	mkdir /mnt/$diskname
+	mkdir /mnt/$1
 	case "$fs_type" in
 		"ntfs")
-			mount -t ufsd -o nls=utf8,rw,nodev,noatime,uid=0,gid=0,fmask=0,dmask=0 --force /dev/$1 /mnt/$diskname
+			mount -t ufsd -o nls=utf8,rw,nodev,noatime,uid=0,gid=0,fmask=0,dmask=0 --force /dev/$1 /mnt/$1
 		;;
 		"ext4")
-			mount -t ext4 -o nodev,barrier=1,data=writeback /dev/$1 /mnt/$diskname
+			mount -t ext4 -o nodev,barrier=1,data=writeback /dev/$1 /mnt/$1
 		;;
 		"ext3")
-			mount -t ext3 -o nodev,barrier=1,data=writeback /dev/$1 /mnt/$diskname
+			mount -t ext3 -o nodev,barrier=1,data=writeback /dev/$1 /mnt/$1
 			if [ $? -ne 0 ]; then
-				mount -t ext4 -o nodev,barrier=1,data=writeback /dev/$1 /mnt/$diskname
+				mount -t ext4 -o nodev,barrier=1,data=writeback /dev/$1 /mnt/$1
 			fi
 		;;
 		"ext2")
-			mount -t ext2 -o nodev,noatime  /dev/$1 /mnt/$diskname
+			mount -t ext2 -o nodev,noatime  /dev/$1 /mnt/$1
 		;;
 		"hfs")
-			mount -t hfs -o nodev,noatime /dev/$1 /mnt/$diskname
+			mount -t hfs -o nodev,noatime /dev/$1 /mnt/$1
 		;;
 		"hfsplus")
-			mount -t hfsplus -o nodev --force /dev/$1 /mnt/$diskname
+			mount -t hfsplus -o nodev --force /dev/$1 /mnt/$1
 		;;
 		"vfat")
-			mount -o usefree,utf8=yes,fmask=0000,dmask=0000 /dev/$1 /mnt/$diskname
+			mount -o usefree,utf8=yes,fmask=0000,dmask=0000 /dev/$1 /mnt/$1
 		;;
 		*)
-		mount  /dev/$1 /mnt/$diskname
+		mount  /dev/$1 /mnt/$1
 		if [ $? -ne 0 ]; then
-			rmdir /mnt/$diskname
+			rmdir /mnt/$1
 		else
-			echo "mount /mnt/$diskname success"
+			echo "mount /mnt/$1 success"
 		fi
 		return
 		;;
 	esac
 fi
 
-if [ -x /mnt/$diskname/autorun/scripts/post-mount.sh ]; then
-	/mnt/$diskname/autorun/scripts/post-mount.sh $diskname &
+if [ -x /mnt/$1/autorun/scripts/post-mount.sh ]; then
+	/mnt/$1/autorun/scripts/post-mount.sh $1 &
 fi
 
 # Trick with OpenVPN client config files stored in /openvpn-client folder on the USB
-if [ -d /mnt/$diskname/openvpn-client ]; then
+if [ -d /mnt/$1/openvpn-client ]; then
 	/etc/init.d/openvpn-client stop
 	if [ -d /etc/openvpn/config/client ]; then
 		rm -rf /etc/openvpn/config/client
 	fi
 
-	if [ ! -f /mnt/$diskname/openvpn-client/disable ]; then
+	if [ ! -f /mnt/$1/openvpn-client/disable ]; then
 		mkdir /etc/openvpn/config
 		mkdir /etc/openvpn/config/client
-		cp -r /mnt/$diskname/openvpn-client/* /etc/openvpn/config/client
+		cp -r /mnt/$1/openvpn-client/* /etc/openvpn/config/client
 		chmod 0644 /etc/openvpn/client/*
 		/etc/init.d/openvpn-client start
 	fi

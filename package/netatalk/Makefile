@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2009-2010 OpenWrt.org
+# Copyright (C) 2009-2017 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,11 +8,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=netatalk
-PKG_VERSION:=2.2.1
-PKG_RELEASE:=3
+PKG_VERSION:=2.2.6
+PKG_RELEASE:=1
 PKG_SOURCE:=netatalk-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=@SF/netatalk/
-#PKG_MD5SUM:=df4897c686a2792847a6739d6fa4cc67
+PKG_MD5SUM:=cd8ca5be7ebb0ac42d5576f401a8a8ba
 include $(INCLUDE_DIR)/package.mk
 
 define Package/netatalk
@@ -29,7 +29,9 @@ define Package/netatalk/decription
   Protocol Suite.
 endef
 
+TARGET_CFLAGS += -std=gnu99 -DNO_QUOTA_SUPPORT -ffunction-sections -fdata-sections
 EXTRA_CFLAGS += -I$(STAGING_DIR)/usr/include
+TARGET_LDFLAGS += -Wl,--gc-sections
 
 CONFIGURE_ARGS += \
 	--disable-afs \
@@ -48,6 +50,7 @@ CONFIGURE_ARGS += \
 	--libexecdir="$(STAGING_DIR)/usr/lib" \
 	--with-ssl-dir="$(STAGING_DIR)/usr" \
 	--with-uams-path="/usr/lib/uams" \
+	--without-acls \
 	--disable-admin-group \
 	--disable-srvloc \
 

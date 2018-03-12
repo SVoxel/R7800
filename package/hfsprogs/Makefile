@@ -25,6 +25,9 @@ PKG_LICENSE:=APSL 2.0
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
 
+TARGET_CFLAGS += -ffunction-sections -fdata-sections
+TARGET_LDFLAGS += -Wl,--gc-sections
+
 define Package/hfsprogs/Default
   SECTION:=utils
   CATEGORY:=Utilities

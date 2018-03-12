@@ -84,16 +84,16 @@ A {COLOR: #646466; TEXT-DECORATION: none}
 .label_click b, .label_unclick b { line-height: 30px }
 .label_click{width: auto; height: 30px; float:left; text-align: center; font-family: Arial; font-size: 17px; font-weight: Bold; margin-right: 3px; }
 .label_unclick{ width: auto; height: 30px; float:left; text-align: center; font-family: Arial; font-size: 17px; font-weight: Bold; cursor:pointer; margin-right: 3px; }
-.label_click .label_left { width: 15px; height: 30px; background: url(../image/tops.gif) no-repeat 0 -23px; float: left; position: relative }
-.label_click .label_leftw { width: 30px; height: 30px; background: url(../image/tops.gif) no-repeat 0 -23px; float: left; position: relative }
+.label_click .label_left { width: 15px; height: 30px; background: url(../image/tops.png) no-repeat 0 -23px; float: left; position: relative }
+.label_click .label_leftw { width: 30px; height: 30px; background: url(../image/tops.png) no-repeat 0 -23px; float: left; position: relative }
 .label_click .label_middle { width: auto; height: 30px; background: url(../image/qos_click_part.gif) repeat-x; float: left; position: relative }
-.label_click .label_rightw { width: 30px; height: 30px; background: url(../image/tops.gif) no-repeat -210px -23px;  float: left; position: relative }
-.label_click .label_right { width: 15px; height: 30px; background: url(../image/tops.gif) no-repeat -210px -23px;  float: left; position: relative }
-.label_unclick .label_left { width: 15px; height: 30px; background: url(../image/tops.gif) no-repeat -225px -23px; float: left; position: relative }
-.label_unclick .label_leftw { width: 30px; height: 30px; background: url(../image/tops.gif) no-repeat -225px -23px; float: left; position: relative }
+.label_click .label_rightw { width: 30px; height: 30px; background: url(../image/tops.png) no-repeat -210px -23px;  float: left; position: relative }
+.label_click .label_right { width: 15px; height: 30px; background: url(../image/tops.png) no-repeat -210px -23px;  float: left; position: relative }
+.label_unclick .label_left { width: 15px; height: 30px; background: url(../image/tops.png) no-repeat -225px -23px; float: left; position: relative }
+.label_unclick .label_leftw { width: 30px; height: 30px; background: url(../image/tops.png) no-repeat -225px -23px; float: left; position: relative }
 .label_unclick .label_middle { width: auto; height: 30px; background: url(../image/qos_unclick_part.gif) repeat-x; float: left; position: relative }
-.label_unclick .label_right { width: 15px; height: 30px; background: url(../image/tops.gif) no-repeat -435px -23px;  float: left; position: relative }
-.label_unclick .label_rightw { width: 30px; height: 30px; background: url(../image/tops.gif) no-repeat -435px -23px;  float: left; position: relative }
+.label_unclick .label_right { width: 15px; height: 30px; background: url(../image/tops.png) no-repeat -435px -23px;  float: left; position: relative }
+.label_unclick .label_rightw { width: 30px; height: 30px; background: url(../image/tops.png) no-repeat -435px -23px;  float: left; position: relative }
 
 .qos_link a{color: #5bb6e5;  text-decoration: none}
 .icon {color:#4A708B;}

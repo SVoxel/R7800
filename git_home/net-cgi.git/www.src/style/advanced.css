@@ -86,7 +86,7 @@ dl{ margin: 0px; padding: 5px 0 8px 0; float: left; position: relative }
 #footer #search .search_button_long{background: Transparent url(../image/menus.gif ) no-repeat -104px -192px; border: none; width:95px; height:22px; font: bold 14px arial ; color: #ffffff; cursor: pointer; }
 
 /* LGO_logout.htm goodby.htm multi_login.htm*/
-#logo{ width: 533px; height: 43px; background: url(../image/tops.gif) no-repeat 0px -76px; position: absolute; left : 0px; top: 0px;}
+#logo{ width: 533px; height: 43px; background: url(../image/tops.png) no-repeat 0px -76px; position: absolute; left : 0px; top: 0px;}
 #router_name{position:absolute; left: 0px; top: 40px; font-family: Arial; font-size: 18px; font-weight: Bold; color: #000000; text-align: left; }
 #centria-router-name{position:absolute; left: 88px; top: 42px; font-family: Arial; color: #000000; text-align: left; }
 #router-centria{ position:absolute; left: 0px; top: 42px; font-family:Arial; color: #000000; text-align: left; }

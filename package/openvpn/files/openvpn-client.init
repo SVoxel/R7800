@@ -9,6 +9,8 @@ AP_MODE=$($CONFIG get ap_mode)
 BRIDGE_MODE=$($CONFIG get bridge_mode)
 EXTENDER_MODE=$($CONFIG get extender_mode)
 OPENVPN_CONF_DIR=/etc/openvpn/config/client
+CHECK_HOST=www.google.com
+OPT_ARGS="--fast-io --sndbuf 393216 --rcvbuf 393216 --tun-mtu 1500 --mssfix 1460"
 
 start() {
 	# Check existence of /etc/openvpn/config/client/*.ovpn file
@@ -52,10 +54,22 @@ start() {
 		sleep $DELAY
 	fi
 
-	# Start OpenVPN client
-	/usr/sbin/taskset -c 1 $PROG --writepid $PID_FILE --cd $OPENVPN_CONF_DIR --log-append $LOG_FILE --config $OVPN_CLIENT_CONF --script-security 2 --up /etc/openvpn/ovpnclient-up.sh --down /etc/openvpn/ovpnclient-down.sh --daemon
+	# Check if DNS is already working
+	count=0
+	while [ $count -le 20 ]; do
+		ping -q -c 3 $CHECK_HOST
+		if [ $? -eq 0 ]; then
+			break
+		fi
+		sleep 15
+		count=$(($count+1))
+	done
+
+	# Start OpenVPN client (assigned to CPU1)
+	/usr/sbin/taskset -c 1 $PROG $OPT_ARGS --writepid $PID_FILE --cd $OPENVPN_CONF_DIR --log-append $LOG_FILE --config $OVPN_CLIENT_CONF --script-security 2 --up /etc/openvpn/ovpnclient-up.sh --down /etc/openvpn/ovpnclient-down.sh --daemon --push "sndbuf 393216" --push "rcvbuf 393216"
 	echo "Please wait..."
-	sleep 20
+	sleep 15
+
 	ifconfig | grep -q tun0
 	if [ $? -ne 0 ]; then
 		echo "Error: OpenVPN client start failed." | tee -a $LOG_FILE
@@ -67,6 +81,16 @@ start() {
 		exit 1
 	fi
 
+	# Boost CPU1
+	echo "1725000" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
+
+        # Update affinity for NSS RPS
+	irq_nss_rps=`/bin/grep 'nss' /proc/interrupts | /bin/sed '4,$d' | /usr/bin/cut -d ':' -f 1 | /usr/bin/tail -n1 | /usr/bin/tr -d ' '`
+	[ -n "$irq_nss_rps" ] && /bin/echo 1 > /proc/irq/$irq_nss_rps/smp_affinity
+
+	# Enable NSS RPS
+	/sbin/sysctl -w dev.nss.general.rps=1 >/dev/null 2>/dev/null
+
 	# Restart firewall	
 	net-wall rule
 	net-wall start
@@ -77,6 +101,16 @@ stop() {
 		kill `cat $PID_FILE` 
 		rm -f $PID_FILE
 	fi
+
+	# Restore CPU1 min frequency
+	echo "1400000" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
+
+        # Update affinity for NSS RPS
+	irq_nss_rps=`/bin/grep 'nss' /proc/interrupts | /bin/sed '4,$d' | /usr/bin/cut -d ':' -f 1 | /usr/bin/tail -n1 | /usr/bin/tr -d ' '`
+	[ -n "$irq_nss_rps" ] && /bin/echo 2 > /proc/irq/$irq_nss_rps/smp_affinity
+
+	# Enable NSS RPS
+	/sbin/sysctl -w dev.nss.general.rps=1 >/dev/null 2>/dev/null
 
 	# Restart firewall	
 	net-wall rule

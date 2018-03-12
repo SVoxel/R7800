@@ -20,8 +20,10 @@ start() {
 	# Check if NETGEAR Downloader enabled or not router mode (disable/enable button)
 	if [ "$GREEN_DWNLDR_ENABLED" == "0" ] && [ "$AP_MODE" == "0" ] && [ "$BRIDGE_MODE" == "0" ] && [ "$EXTENDER_MODE" == "0" ] && [ "$TRANSMISSION_DISABLED" != "1" ]; then
 		cp -p -f /www/GREEN_bt_basic_blue.htm /tmp/www/GREEN_bt_basic.htm
+		cp -p -f /www/GREEN_http_basic_blue.htm /tmp/www/GREEN_http_basic.htm
 	else
 		cp -p -f /www/GREEN_bt_basic_grey.htm /tmp/www/GREEN_bt_basic.htm
+		cp -p -f /www/GREEN_http_basic_grey.htm /tmp/www/GREEN_http_basic.htm
 	fi
 
 	# Check if NETGEAR Downloader enabled
@@ -67,6 +69,7 @@ start() {
 stop() {
 	# Disable button
 	cp -p -f /www/GREEN_bt_basic_grey.htm /tmp/www/GREEN_bt_basic.htm
+	cp -p -f /www/GREEN_http_basic_grey.htm /tmp/www/GREEN_http_basic.htm
 
 	# Killall transmission-daemon
 	killall -9 transmission-daemon

@@ -1,17 +1,15 @@
---- a/options.h
-+++ b/options.h
-@@ -52,10 +52,14 @@
- several kB in binary size however will make the symmetrical ciphers and hashes
- slower, perhaps by 50%. Recommended for small systems that aren't doing
- much traffic. */
-+#if 0
- #define DROPBEAR_SMALL_CODE
-+#endif
+--- a/default_options.h	2018-02-27 17:25:10.000000000 +0300
++++ b/default_options.h	2018-02-28 10:38:01.227505500 +0300
+@@ -44,10 +44,10 @@
+  * several kB in binary size however will make the symmetrical ciphers and hashes
+  * slower, perhaps by 50%. Recommended for small systems that aren't doing
+  * much traffic. */
+-#define DROPBEAR_SMALL_CODE 1
++#define DROPBEAR_SMALL_CODE 0
  
  /* Enable X11 Forwarding - server only */
-+#if 0
- #define ENABLE_X11FWD
-+#endif
+-#define DROPBEAR_X11FWD 1
++#define DROPBEAR_X11FWD 0
  
  /* Enable TCP Fowarding */
  /* 'Local' is "-L" style (client listening port forwarded via server)
