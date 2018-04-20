@@ -1,6 +1,7 @@
 #!/bin/sh /etc/rc.common
 START=99
 
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
 CONFIG=/bin/config
 PROG=/usr/sbin/openvpn
 PID_FILE=/var/run/openvpn-client.pid
@@ -10,7 +11,7 @@ BRIDGE_MODE=$($CONFIG get bridge_mode)
 EXTENDER_MODE=$($CONFIG get extender_mode)
 OPENVPN_CONF_DIR=/etc/openvpn/config/client
 CHECK_HOST=www.google.com
-OPT_ARGS="--fast-io --sndbuf 393216 --rcvbuf 393216 --tun-mtu 1500 --mssfix 1460"
+OPT_ARGS="--fast-io --nice -20 --auth-nocache --sndbuf 393216 --rcvbuf 393216 --tun-mtu 1500 --mssfix 1460"
 
 start() {
 	# Check existence of /etc/openvpn/config/client/*.ovpn file
@@ -37,7 +38,7 @@ start() {
 	# Check if OpenVPN server is enabled
 	if [ "$($CONFIG get vpn_enable)" = "1" ]; then
 		echo "Error: OpenVPN server is enabled. Disable it to start OpenVPN client." | tee -a $LOG_FILE
-		/sbin/ledcontrol -n wan -c red -s on
+		ledcontrol -n wan -c red -s on
 		exit 1
 	fi
 
@@ -66,14 +67,14 @@ start() {
 	done
 
 	# Start OpenVPN client (assigned to CPU1)
-	/usr/sbin/taskset -c 1 $PROG $OPT_ARGS --writepid $PID_FILE --cd $OPENVPN_CONF_DIR --log-append $LOG_FILE --config $OVPN_CLIENT_CONF --script-security 2 --up /etc/openvpn/ovpnclient-up.sh --down /etc/openvpn/ovpnclient-down.sh --daemon --push "sndbuf 393216" --push "rcvbuf 393216"
+	taskset -c 1 $PROG $OPT_ARGS --writepid $PID_FILE --cd $OPENVPN_CONF_DIR --log-append $LOG_FILE --config $OVPN_CLIENT_CONF --script-security 2 --up /etc/openvpn/ovpnclient-up.sh --down /etc/openvpn/ovpnclient-down.sh --daemon --push "sndbuf 393216" --push "rcvbuf 393216"
 	echo "Please wait..."
 	sleep 15
 
 	ifconfig | grep -q tun0
 	if [ $? -ne 0 ]; then
 		echo "Error: OpenVPN client start failed." | tee -a $LOG_FILE
-		/sbin/ledcontrol -n wan -c red -s on
+		ledcontrol -n wan -c red -s on
 		if [ -f $PID_FILE ]; then
 			kill `cat $PID_FILE` 
 			rm -f $PID_FILE
@@ -81,15 +82,20 @@ start() {
 		exit 1
 	fi
 
-	# Boost CPU1
-	echo "1725000" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
+	# Set CPU power to turbo mode
+	echo "userspace" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+	echo "userspace" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
+	echo "1725000" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_setspeed
+	echo "1725000" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_setspeed
+	echo 0 > /proc/sys/dev/nss/clock/auto_scale
+	echo 800000000 > /proc/sys/dev/nss/clock/current_freq
 
         # Update affinity for NSS RPS
-	irq_nss_rps=`/bin/grep 'nss' /proc/interrupts | /bin/sed '4,$d' | /usr/bin/cut -d ':' -f 1 | /usr/bin/tail -n1 | /usr/bin/tr -d ' '`
-	[ -n "$irq_nss_rps" ] && /bin/echo 1 > /proc/irq/$irq_nss_rps/smp_affinity
+	irq_nss_rps=`grep 'nss' /proc/interrupts | sed '4,$d' | cut -d ':' -f 1 | tail -n1 | tr -d ' '`
+	[ -n "$irq_nss_rps" ] && echo 1 > /proc/irq/$irq_nss_rps/smp_affinity
 
 	# Enable NSS RPS
-	/sbin/sysctl -w dev.nss.general.rps=1 >/dev/null 2>/dev/null
+	sysctl -w dev.nss.general.rps=1 >/dev/null 2>/dev/null
 
 	# Restart firewall	
 	net-wall rule
@@ -102,15 +108,17 @@ stop() {
 		rm -f $PID_FILE
 	fi
 
-	# Restore CPU1 min frequency
-	echo "1400000" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
+	# Restore CPU power to auto mode
+	echo "ondemand" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+	echo "ondemand" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
+	echo 1 > /proc/sys/dev/nss/clock/auto_scale
 
         # Update affinity for NSS RPS
-	irq_nss_rps=`/bin/grep 'nss' /proc/interrupts | /bin/sed '4,$d' | /usr/bin/cut -d ':' -f 1 | /usr/bin/tail -n1 | /usr/bin/tr -d ' '`
-	[ -n "$irq_nss_rps" ] && /bin/echo 2 > /proc/irq/$irq_nss_rps/smp_affinity
+	irq_nss_rps=`grep 'nss' /proc/interrupts | sed '4,$d' | cut -d ':' -f 1 | tail -n1 | tr -d ' '`
+	[ -n "$irq_nss_rps" ] && echo 2 > /proc/irq/$irq_nss_rps/smp_affinity
 
 	# Enable NSS RPS
-	/sbin/sysctl -w dev.nss.general.rps=1 >/dev/null 2>/dev/null
+	sysctl -w dev.nss.general.rps=1 >/dev/null 2>/dev/null
 
 	# Restart firewall	
 	net-wall rule
