@@ -1433,7 +1433,7 @@ CONFIG_PACKAGE_miniupnpd=y
 #
 # Configuration
 #
-CONFIG_MINIUPNPD_GIT_TREEISH="miniupnpd-20070127-dni39"
+CONFIG_MINIUPNPD_GIT_TREEISH="miniupnpd-20070127-dni45"
 CONFIG_MINIUPNPD_FRIENDLYNAME="NETGEAR R7800 Wireless Router"
 CONFIG_MINIUPNPD_MODELNAME="NETGEAR Nighthawk X4S AC2600 Smart WiFi Router"
 CONFIG_MINIUPNPD_MODELNUMBER="R7800"
@@ -1468,7 +1468,7 @@ CONFIG_PACKAGE_qsdk-wifi-script=y
 #
 CONFIG_QSDK_WIFI_SCRIPT_GIT_REPOSITORY="qsdk-wifi-script.git"
 CONFIG_QSDK_WIFI_SCRIPT_GIT_URL="ssh://dniserver/scm/dnigit/common/apps/qsdk-wifi-script.git"
-CONFIG_QSDK_WIFI_SCRIPT_GIT_TREEISH="f8b279b94ecadca7786f246c63fcfa518e6392e8"
+CONFIG_QSDK_WIFI_SCRIPT_GIT_TREEISH="c2764d999b59178d0e974b074f5d7e9c67657197"
 # CONFIG_PACKAGE_samba is not set
 CONFIG_PACKAGE_samba36-server=y
 CONFIG_PACKAGE_samba-scripts=y
@@ -2248,6 +2248,7 @@ CONFIG_PACKAGE_redis-server=y
 #
 CONFIG_PACKAGE_hd-idle=y
 # CONFIG_PACKAGE_lvm2 is not set
+CONFIG_PACKAGE_aws-iot=y
 CONFIG_PACKAGE_datalib=y
 CONFIG_PACKAGE_dbus=y
 # CONFIG_PACKAGE_dbus-utils is not set
@@ -2310,6 +2311,7 @@ CONFIG_PACKAGE_vmstat=y
 # CONFIG_PACKAGE_xfs-mkfs is not set
 CONFIG_PACKAGE_hfsfsck=y
 CONFIG_PACKAGE_dni-libmtd=y
+CONFIG_PACKAGE_at=y
 
 #
 # schedutils
