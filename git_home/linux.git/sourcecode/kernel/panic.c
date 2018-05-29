@@ -80,7 +80,7 @@ static void mtdoops_erase_callback(struct erase_info *done)
  * @mtd: MTD device structure
  * @offset: erase start place
 */
-static int   mtd_erase_block(struct mtd_info *mtd,int offset)
+int mtd_erase_block(struct mtd_info *mtd,int offset)
 {
 	struct erase_info erase;
 	int ret;
@@ -106,6 +106,7 @@ static int   mtd_erase_block(struct mtd_info *mtd,int offset)
 	remove_wait_queue(&wait_q, &wait);
 	return 0;
 }
+EXPORT_SYMBOL(mtd_erase_block);
 #define MAGIC_NUM 120
 int find_position(struct mtd_info  *mtd,int offset,int len)
 {
@@ -123,7 +124,7 @@ int find_position(struct mtd_info  *mtd,int offset,int len)
 }
 
 int log_buf_copy(char *dest, int idx, int len);
-#define PANIC_MSG_LEN 4096
+#define PANIC_MSG_LEN 12288
 #define SKIP_LENGTH 4096
 #define SKIP_BLOCK  131072
 #define START_WRITE 0    
@@ -145,20 +146,55 @@ void skip_log_level(char msg[PANIC_MSG_LEN])
 	}
 
 }
+#define DNI_PAGE_SIZE 2048
+static unsigned long reboot_reason_flags = 0;
+static int dni_ubi_write_for_proc(char *msg)
+{
+
+	struct mtd_info *mtd = NULL;
+	int retbad, len, ret ;
+
+	if(!msg)
+		return -1;
+	mtd = get_mtd_device(NULL, 9);
+
+	if (!mtd){
+		printk("can not get mtd9\n");
+		return -1;
+	}
+	else{
+		retbad = mtd_erase_block(mtd, 0);
+		if( retbad < 0 ){
+			printk( KERN_WARNING "erase failed.\n");
+			return -1;
+		}
+		ret = mtd_write(mtd, 0, DNI_PAGE_SIZE, &len, msg);
+		if( ret < 0 )
+			printk(KERN_WARNING "mtd_write fail\n");
+		return ret;
+	}
+}
+
+static char dni_msg[PANIC_MSG_LEN + 1];
 int save_kernel_msg_to_flash()
 {
+	/*save kernel flag to flash*/
+	char reboot_reason_flags_str[DNI_PAGE_SIZE+1]={0};
+	reboot_reason_flags = reboot_reason_flags | (0x1 << 4);
+	sprintf(reboot_reason_flags_str, "0x%lx", reboot_reason_flags);
+	dni_ubi_write_for_proc(reboot_reason_flags_str);
+
 	struct mtd_info *mtd = NULL;
-	char msg[PANIC_MSG_LEN + 1];
 	int ret, len = 0, idx = 0;
 	int offset, count, retbad, block_count;
-	offset = START_WRITE;
+	offset = START_WRITE + SKIP_BLOCK;
 	mtd = get_mtd_device(NULL, 9);
 	if (!mtd)
 		printk("can not get mtd9\n");
 	else
 	{
 		printk("the name of mtd9 is %s\n", mtd->name);
-		count = START_WRITE / SKIP_BLOCK;
+		count = START_WRITE / SKIP_BLOCK + 1;
 
 		while(1){
 			//flag = find_position(mtd,offset,1);
@@ -200,17 +236,17 @@ int save_kernel_msg_to_flash()
 
 		while (1) {
 
-			ret = log_buf_copy(msg, idx, PANIC_MSG_LEN);
+			ret = log_buf_copy(dni_msg, idx, PANIC_MSG_LEN);
 			if (ret <= 0)
 				break;
 			#if 1
-				skip_log_level(msg);
+				skip_log_level(dni_msg);
 			#else
 
 			#endif
 
 			//personally set a magic number to know if this page has been written
-			msg[0] = MAGIC_NUM;
+			dni_msg[0] = MAGIC_NUM;
 			len = 0;
 
 			//write a block full
@@ -227,7 +263,7 @@ int save_kernel_msg_to_flash()
 			}	
 
 
-			mtd_write(mtd, offset, PANIC_MSG_LEN, &len, msg);
+			mtd_write(mtd, offset, PANIC_MSG_LEN, &len, dni_msg);
 			offset += PANIC_MSG_LEN;
 			idx += ret;
 

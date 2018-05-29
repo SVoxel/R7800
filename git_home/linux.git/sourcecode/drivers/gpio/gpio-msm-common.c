@@ -36,6 +36,9 @@
 #include <mach/gpiomux.h>
 #include <mach/mpm.h>
 #include "gpio-msm-common.h"
+#include <linux/reboot.h>
+#include <linux/mtd/mtd.h>
+
 
 #ifdef CONFIG_GPIO_MSM_V3
 enum msm_tlmm_register {
@@ -766,6 +769,38 @@ static void upg_led_shot(unsigned long val)
 		msm_gpio_set(r7500_gpio_chip, R7500_GPIO_LED_TEST, R7500_LED_ON);
 		upg_led_status = 1;
 		mod_timer(&upg_led_timer, jiffies + UPG_LED_ONTIME);
+	}
+}
+
+#define DNI_PAGE_SIZE 2048
+
+extern int mtd_erase_block(struct mtd_info *mtd,int offset);
+
+static unsigned long reboot_reason_flags = 0;
+static int dni_ubi_write_for_proc(char *msg)
+{
+
+	struct mtd_info *mtd = NULL;
+	int retbad, len, ret ;
+
+	if(!msg)
+		return -1;
+	mtd = get_mtd_device(NULL, 9);
+
+	if (!mtd){
+		printk("can not get mtd9\n");
+		return -1;
+	}
+	else{
+		retbad = mtd_erase_block(mtd, 0);
+		if( retbad < 0 ){
+			printk( KERN_WARNING "erase failed.\n");
+			return -1;
+		}
+		ret = mtd_write(mtd, 0, DNI_PAGE_SIZE, &len, msg);
+		if( ret < 0 )
+			printk(KERN_WARNING "mtd_write fail\n");
+		return ret;
 	}
 }
 
@@ -1547,6 +1582,13 @@ static void reset_gpio_work_func(struct work_struct *work)
 			msm_gpio_set(r7500_gpio_chip, R7500_GPIO_LED_TEST, R7500_LED_OFF);
 
 			printk("Reset-Button  Reboot");
+			char reboot_reason_flags_str[DNI_PAGE_SIZE+1]={0};
+			if(time_before(jiffies, (time_when_press + RESET2DEF_TIMEVAL)))
+				reboot_reason_flags = reboot_reason_flags | (0x1 << 6);
+			else
+				reboot_reason_flags = reboot_reason_flags | (0x1 << 7);
+			sprintf(reboot_reason_flags_str, "0x%lx", reboot_reason_flags);
+			dni_ubi_write_for_proc(reboot_reason_flags_str);
 			kobject_uevent_env(r7500_button_obj, KOBJ_CHANGE,
 					time_before(jiffies, (time_when_press + RESET2DEF_TIMEVAL)) ? envp_reboot : envp_default);
 		}
