@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<% hijack_title() %>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+	<link rel="stylesheet" type="text/css" href="/style/top_style.css" />
+	<link rel="stylesheet" type="text/css" href="/style/form.css" />
+</head>
+<script>
+var ts = "<% cfg_get("vpn_update_cert") %>";
+var isMd5 = "<% cat_file("/tmp/md5vpn") %>";
+isMd5 = (isMd5.trim() === '1')? true: false;
+
+function submit_form() {
+	var cf = document.forms[0];
+	cf.submit();
+}
+</script>
+<body>
+<% form_submit("apply", "start.htm", "vpn_update_cert") %>
+<input type="hidden" name="hid_update_cert" value='1'>
+<div id="page_container">
+	<div id="header">
+		<div id="header_top">
+			<div class="top_name">
+				<div class="title_div"></div>
+				<% cd_less_top_hardware_version() %>
+			</div>
+		</div>
+	</div>
+
+	<div class="wizard_body_container">
+		<div class="wizard_content_div">
+			<div class="wizard_words_div">
+				<div style="font-size:1.3em; text-align:left;">$update_vpn_cert_warning</div>
+				<div style="margin-top:100px; text-align:center;">
+					<script>
+						if(isMd5)
+							document.write('<input class="apply_bt" type="submit" name="update_vpn_cert" id="update_vpn_cert" value="$update_mark">');
+						else
+							document.write('<input class="apply_bt" type="submit" name="update_vpn_cert" id="update_vpn_cert" value="$update_mark">');
+					</script>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="bottom_margin"></div>
+</div>
+</form>
+</body>
+</html>

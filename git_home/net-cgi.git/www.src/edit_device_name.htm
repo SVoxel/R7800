@@ -44,7 +44,7 @@ function check_dev()
 		return false;
 	}
 	
-	if(user_dev_name.length > 16){
+	if(user_dev_name.length > 15){
 		warning.innerHTML="$devname_long";
 		warning.style.display="";
 		return false;
@@ -91,7 +91,7 @@ function submit_devname(){
 <tr><td colspan=3></td></tr>
 <tr><td>$edit_devname :</td>
 <td><div id="devn_error" style="color: red"></div></td>
-<td><input type="text" name="new_devname" value="" size="20" autocomplete="off" maxlength="16" onFocus="this.select();" onKeyPress="return getkey('deviceName', event)" ></td></tr>
+<td><input type="text" name="new_devname" value="" size="20" autocomplete="off" maxlength="15" onFocus="this.select();" onKeyPress="return getkey('deviceName', event)" ></td></tr>
 <tr><td colspan=2>$devname_warning</td><td></td></tr>
 
 </table>

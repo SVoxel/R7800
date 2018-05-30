@@ -21,6 +21,7 @@ document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel1_bt" 
 
 <script>
 var host_name=parent.host_name;
+var con_endis_wla_radio="<% cfg_get("endis_wla_radio") %>";
 var wds_support_wpa = top.wds_support_wpa;
 var gui_region="<% cfg_get("GUI_Region") %>"
 var pr_flag = (( gui_region == "Chinese" && (netgear_region == "" || netgear_region.toUpperCase() == "WW")) || netgear_region.toUpperCase() == "PR") ? 1 : 0
@@ -67,12 +68,15 @@ var dfs_europe_router_flag = parent.dfs_europe_router_flag;
 var dfs_australia_router_flag = parent.dfs_australia_router_flag;
 var dfs_japan_router_flag = parent.dfs_japan_router_flag; //DFS channel supported in Japan
 var dfs_russia_router_flag = parent.dfs_russia_router_flag;
+var dfs_korea_router_flag = parent.dfs_korea_router_flag;
 var wl_disablecoext="<% cfg_get("wl_disablecoext") %>";
 <% show_wlan_variable() %>
 var wla_mode="<% cfg_get("wla_simple_mode") %>";
 var guest_router_flag=top.guest_router_flag;
 var guest_network_user="<% judge_guest_user() %>";
 var enable_ht160 = "<% cfg_get("wla_ht160") %>";
+var smart_connect_flag = parent.smart_connect_flag;
+var get_smart_connect = "<% cfg_get("enable_smart_connect") %>";
 </script>
 <input type="hidden" name="hidden_wlan_mode">
 <input type="hidden" name="hidden_wlan_channel">
@@ -124,6 +128,7 @@ var enable_ht160 = "<% cfg_get("wla_ht160") %>";
 <input type="hidden" name="wla_tx_ctrl">
 <input type="hidden" name="wl_apply_flag" value="0">
 <input type="hidden" name="hid_enable_coexist">
+<input type="hidden" name="hid_enable_smart_connect" value="0">
 <script>
 if(valid_region != 1 && an_router_flag == 1)
 {
@@ -175,6 +180,11 @@ else if(an_router_flag == 1)
 		document.getElementsByName("WRegion")[0].value = wl_get_countryA;
 }
 </script>
+$bluebar
+<TR>
+<TD colspan=2><input type="checkbox" name="enable_smart_connect" id="enable_smart_connect" onchange="handle_samrt_connect()">$enable_smart_conn_tip</TD>
+</TR>
+$bluebar
 <TR> 
 	<TD nowrap colspan=2><A tabindex=-1 href="javascript:loadhelp('_wlan','network')"><B>$wlan_network_mark<script> if( an_router_flag == 1) document.write(" (2.4GHz b/g/n)")</script></B></A></TD>
 </TR>
@@ -845,7 +855,10 @@ function loadvalue()
                 form.ssid_bc.checked = true;
         else
                 form.ssid_bc.checked = false;
-
+	//bug 81877
+	if(con_endis_wla_radio=="0" || endis_wl_radio=="0"){
+		form.enable_smart_connect.disabled="true";
+	}
 	if(valid_region == 1)
 	{
 		if(an_router_flag == 1)
@@ -1038,7 +1051,7 @@ function loadvalue()
 			form.textWpaeRadiusPort_an.value = get_radiusPort_a;
 		}		
 	}
-	if( mode == '1' && bgn_mode1_value == 54 )
+	if( mode == '1' && bgn_mode1_value == 54 && get_smart_connect == "0")
 		document.getElementById("wep_54").style.display="";
 	else
 		document.getElementById("wep_54").style.display="none";
@@ -1073,6 +1086,14 @@ function loadvalue()
 	{
 		grayoutElements("body", "A", "input", "select");
 		disableElements("input", "select");
+	}
+	if(smart_connect_flag == "1") {
+		if(get_smart_connect == "1") {
+			form.enable_smart_connect.checked = true;
+			toggle_an_edit();
+			handle_sync_input();
+			sync_broadcast();
+		}
 	}
 }
 

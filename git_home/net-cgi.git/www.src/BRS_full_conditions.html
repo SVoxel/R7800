@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<% hijack_language() %>
+</head>
+<style>
+#policy {overflow: auto; height:270px; text-align:left;}
+#policy >span:first-of-type {text-align: right; padding-right: 20px;}
+#policy	h1{text-align: center; font-size: 1.2em; color: black; text-decoration: underline}
+#policy	h2{font-size: 1.1em; color: black;}
+#policy	span {display: block; margin-top: 7px; margin-bottom: 7px;}
+#policy	p span span, p span span span {margin-left: 20px;}
+#policy	p span span:first-child, p span:first-of-type {margin-top: 7px;}
+#policy	.grey-bg {background-color: #D3D3D3}
+#policy	.blue-link {color: blue; text-decoration: underline}
+.agree-line {margin-top:10px;}
+.agree-line>div span{margin:10px 20px 10px 20px; line-height:25px;}
+.wizard_buttons_div{margin:auto auto; padding:40px;}
+#new div{margin:10px 0 10px 0;}
+</style>
+<body>
+<% form_submit("apply", "start.htm", "full_conditions") %>
+
+<script>
+document.forms[0].target = "_top";
+function checkAgreement(cf) {
+	cf.submit();
+}
+
+function enable_button() {
+	document.getElementById("next").className = "purple_short_btn";
+	document.getElementById("next").disabled = false;
+}
+</script>
+<input type="hidden" name="hid_agreement" value="0">
+<div class="wizard_content_div">
+	<div class="wizard_words_div" style="padding-top:1%">
+		<div id="policy">
+			<script>
+				document.write(tnc_full_terms.replace(/href='[^']+'/g, "class='blue-link'"));
+			</script>
+		</div>
+		<div style="text-align:center;">
+			<div class="agree-line" id="new">
+				<div><b><script>document.write(tnc_must_agree)</script></b></div>
+			</div>
+		</div>
+	</div>
+	<div style="text-align:center;">
+		<img src="/liteblue.gif" width="80%" height="12">
+	</div>
+	<div id="allBtns_div" class="wizard_buttons_div" align="center" style="padding-bottom:10px;">
+		<script>
+			document.write('<input type="button" name="Next" id="next" class="purple_short_btn" value="'+tnc_agree+'" onclick="checkAgreement(document.forms[0])">');
+		</script>
+	</div>
+</div>
+</form>
+</body>
+</html>

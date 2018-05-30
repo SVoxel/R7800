@@ -17,10 +17,12 @@ function clickUpgrade(form)
 	var FW_checking_div = document.getElementById("FW_checking_div"); 
 	var FW_upg_div = document.getElementById("FW_upg_div");
 	var pls_wait_div = document.getElementById("pls_wait_div");
+	var condition_div = document.getElementById("condition_div");
 
 	page_title_div.style.display = "none";
 	FW_checking_div.style.display = "none";
 	FW_upg_div.style.display = "none";
+	condition_div.style.display = "none";
 	pls_wait_div.style.display = "block";
 
 	form.submit();
@@ -116,4 +118,18 @@ function clickUpgradeLanguage(form)
         return true;
 }
 
+function view_details(target) {
+	if(target == "collect")
+		var url = "collection_details.html?definedLanguage=1";
+	else if(target == "tnc")
+		var url = "simple_tnc_details.html?definedLanguage=1"
+	window.open(url, 'collect_details', 'resizable=1,scrollvars=yes,width=800,height=600,left=400,top=100').focus();
+}
 
+function conditions_apply(cf2) {
+	if(cf2.agree_upg[0].checked == true)
+		cf2.hid_agree_upg.value = "1";
+	if(cf2.agree_col[0].checked == true)
+		cf2.hid_agree_col.value = "1";
+	cf2.submit();
+}

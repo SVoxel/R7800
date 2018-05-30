@@ -1,0 +1,19 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+</head>
+<body bgcolor="#ffffff">
+<script>
+var on_updating = "<% cat_file("/tmp/vpn_on_updating") %>";
+var isMd5 = "<% cat_file("/tmp/md5vpn") %>";
+on_updating = (isMd5.trim() === '1')? '0': on_updating;
+if(on_updating == "1") {
+	setTimeout(function() {
+		this.location.href = "vpn_check_updating.html";
+	}, 5000);
+}
+parent.on_updating = on_updating;
+parent.handle_on_updating();
+</script>
+</body>
+</html>

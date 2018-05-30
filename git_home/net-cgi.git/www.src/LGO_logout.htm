@@ -22,7 +22,7 @@ function loadvalue()
 		{
 			var xmlHttp = createXMLHttpRequest();
 			var url = "LGO_logout.htm?ts=" + new Date().getTime();
-			xmlHttp.open("GET",url,false,"admin","");
+			xmlHttp.open("GET",url,true,"admin","");
 			xmlHttp.send(null);
 			xmlHttp.abort();
 		}

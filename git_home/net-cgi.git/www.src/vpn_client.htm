@@ -1,0 +1,537 @@
+<% http_header("style/form.css", "/funcs.js", "/base64.js") %>
+<% body_header("_vpn_client", "vpn_client.htm", "vpn_client") %>
+<style>
+.vpn_set{
+	width:25%; 
+	float:left;
+	margin-top:20px;
+}
+.vpn_title{
+	
+}
+
+.vpn_input select,
+.vpn_input input{
+	width:90%;
+}
+
+.top20{
+	margin-top:20px;
+}
+
+.grey_color{
+	color:grey;
+}
+
+.blue_color{
+	color:#5293b3;
+}
+
+.enable{
+	float:left;
+	padding-right: 10px;
+}
+
+.status{
+	float: left;
+	
+}
+.status_img{
+	
+}
+
+#connect_status div{
+float:left;
+}
+
+.vpn_status{
+	margin-right:30px;
+}
+
+.vpn_status_name{
+	font-weight:bold;
+	margin-right:10px;
+}
+
+#error_line td{
+	color:red;
+}
+
+.status_img, .status_head, #status_info{float:left;}
+#status_div {width:400px; float:left;}
+.status_img {width: 30px;}
+.status_head, #status_info{width: 250px;}
+
+#connect_line{ height: 100px;}
+#connecting_img {margin-top: 8px; margin-left:-8px;}
+.help_button_sty{font-size:25px;cursor:pointer;width:30px;height:40px;position:fixed; top:20px; right:40px;}
+
+a{
+cursor:pointer;
+}
+</style>
+<script>
+<% save_timestamp("vpn_client", "vpn_client_connect", "vpn_client_disconnect") %>
+var cfg_enable="<% cfg_sed_xss("vpn_client_enabled") %>";
+var cfg_service="<% cfg_sed_xss("vpn_client_ovpn_cfg_provider") %>";
+var cfg_country="<% cfg_sed_xss("vpn_client_ovpn_cfg_country") %>";
+var cfg_city="<% cfg_sed_xss("vpn_client_ovpn_cfg_city") %>";
+var cfg_protocol="<% cfg_sed_xss("vpn_client_ovpn_cfg_protocol") %>";
+var password_empty=<% cfg_get_length("vpn_client_password") %>;
+
+var providers = <% vpn_client_provider_list() %>;
+var vpn_status = <% vpn_client_status() %>
+
+
+function enable_vpn_client()
+{
+	var cf = document.forms[0];	
+	if(cf.enable_vpn.checked)
+	{
+		document.getElementById("fix_button").style.display="none";
+		cf.vpn_server.disabled=false;
+		cf.vpn_protocol.disabled=false;
+		cf.vpn_country.disabled=false;
+		cf.vpn_city.disabled=false;
+		cf.user.disabled=false;
+		cf.password.disabled=false;
+		cf.connect.disabled=false;
+		cf.connect.className  = "apply_bt top20";
+		cf.hidden_enable_vpn.value = "1";
+		document.getElementById("status_div").style.display="";
+	}
+	else
+	{
+		document.getElementById("fix_button").style.display="";
+		cf.vpn_server.disabled=true;
+		cf.vpn_protocol.disabled=true;
+		cf.vpn_country.disabled=true;
+		cf.vpn_city.disabled=true;
+		cf.user.disabled=true;
+		cf.password.disabled=true;
+		cf.connect.disabled=true;
+		cf.connect.className  = "apply1_bt top20";
+		cf.hidden_enable_vpn.value = "0";
+		document.getElementById("status_div").style.display="none";
+	}
+}
+function change_country()
+{
+	var cf = document.forms[0];	
+	var service = cf.vpn_server.selectedIndex;
+	var country = cf.vpn_country.selectedIndex;
+	
+	if(!providers.providerList)
+		return;
+	
+	if(!providers.providerList[service] || !providers.providerList[service].countryList[country])
+		return;
+	
+	
+	var cityList = providers.providerList[service].countryList[country].cityList;
+	
+	if(!cityList)
+		cityList = [];
+	cityList.sort();
+	cf.vpn_city.options.length = cityList.length+1;
+
+	cf.vpn_city.options[0].text = "Any City";
+	cf.vpn_city.options[0].value = "Any City";	
+
+	for(var i=0; i<cityList.length; i++)
+	{
+		cf.vpn_city.options[i+1].text = cityList[i];
+		cf.vpn_city.options[i+1].value = cityList[i];
+	}
+
+	
+	
+}
+function sortBy(filed, rev, type)
+{
+			rev = (rev == "up") ? -1 : 1;
+			return function (a, b) {
+				a = a[filed];
+				b = b[filed];
+				if (type == 'number') {
+					a = parseInt(a);
+					b = parseInt(b);
+				}
+
+				if (a < b) { return rev * -1; }
+				if (a > b) { return rev * 1; }
+				return 1;
+			}			
+}
+
+function change_service()
+{
+	var cf = document.forms[0];	
+	var service = cf.vpn_server.selectedIndex;
+	
+	if(!providers.providerList)
+		return;
+	
+	if(!providers.providerList[service])
+		return;
+	if(cf.vpn_server.value == "IPVanish" )
+		document.getElementById("helpcenter").href = "https://support.ipvanish.com/"; 
+	else if(cf.vpn_server.value == "HideMyAss")
+		document.getElementById("helpcenter").href = "https://support.hidemyass.com/hc/"; 
+	else
+		document.getElementById("helpcenter").href = "https://support.purevpn.com/";
+	var country_list = providers.providerList[service].countryList;
+	
+	if(!country_list)
+		country_list = [];
+	country_list.sort(sortBy("countryName", "down", "string"));
+	cf.vpn_country.options.length = country_list.length;
+	for(var i=0; i<country_list.length; i++)
+	{
+		cf.vpn_country.options[i].text=country_list[i].countryName;
+		cf.vpn_country.options[i].value=country_list[i].countryId;
+	}
+	cf.user.value = providers.providerList[service].username;
+	if (providers.providerList[service].password)
+	{
+		change_to_text(cf.password);
+		cf.password.value = providers.providerList[service].password;
+	}
+	else if(providers.providerList[service].password_empty == 0)
+	{
+		change_to_text(cf.password);
+	}
+	else
+	{
+		change_to_password(cf.password);
+		cf.password.value = "********";
+	}
+
+	change_country();
+
+}
+
+function loadvalue()
+{
+	var cf = document.forms[0];	
+
+	if(cfg_enable == "1")
+	{
+		document.getElementById("fix_button").style.display="none";
+		cf.enable_vpn.checked = true;
+	}
+	else
+	{
+		document.getElementById("fix_button").style.display="";
+		cf.enable_vpn.checked = false;
+	}
+	enable_vpn_client();
+	cf.vpn_protocol.value=cfg_protocol;
+	if(providers.providerList)
+	{
+		cf.vpn_server.options.length = providers.providerList.length;
+	
+		for(var i=0; i<providers.providerList.length; i++)
+		{
+			cf.vpn_server.options[i].text=providers.providerList[i].providerName;
+			cf.vpn_server.options[i].value=providers.providerList[i].providerName;
+		}
+		cf.vpn_server.value = cfg_service;
+		if(cfg_service == "HideMyAss")
+			document.getElementById("helpcenter").href = "https://support.hidemyass.com/hc/"; 
+		else if(cfg_service == "IPVanish" )
+			document.getElementById("helpcenter").href = "https://support.ipvanish.com/";
+		else
+			document.getElementById("helpcenter").href = "https://support.purevpn.com/";
+		if(cf.vpn_server.selectedIndex == -1)
+			cf.vpn_server.selectedIndex = 0;
+		change_service();
+		cf.vpn_country.value = cfg_country;
+		if(cf.vpn_country.selectedIndex == -1)
+			cf.vpn_country.selectedIndex = 0;		
+		change_country();
+		cf.vpn_city.value = cfg_city;
+		if(cf.vpn_city.selectedIndex == -1)
+			cf.vpn_city.selectedIndex = 0;		
+	}
+
+	show_status(vpn_status);
+
+}
+
+
+function checkvpn(cf)
+{
+	var base = new Base64();
+
+	if(cf.vpn_country.selectedIndex >= 0)
+		cf.vpn_country_text.value = cf.vpn_country.options[cf.vpn_country.selectedIndex].text;
+
+	if(cf.password.type == "text")
+	{
+		cf.hidden_pwd_change.value = "1";
+		cf.hidden_pwd.value = base.encode(cf.password.value);
+	}
+
+	return true;
+}
+
+function creat_account()
+{
+	var cf = document.forms[0];	
+	if(cf.vpn_server.value == "IPVanish")
+		window.open('https://signup.ipvanish.com/?link=02-02-01', '_blank');
+	else if(cf.vpn_server.value == "HideMyAss")
+		window.open('https://checkout.hidemyass.com/affiliate.php?ACCOUNT=PRIVAXLT&AFFILIATE=101710&PATH=https%3A%2F%2Fwww.hidemyass.com%2Faffiliate%2Favangate', '_blank');
+	else
+		window.open('https://billing.purevpn.com/aff.php?aff=32974', '_blank');
+
+}
+
+function show_logs()
+{
+	if(parent.type == "basic")
+		goto_formframe("FW_log.htm");
+	else if(parent.type == "advanced")
+	{
+		parent.open_or_close_sub('admin');
+		parent.click_adv_action('log');
+	}
+}
+
+function check_connect()
+{
+	var cf = document.forms[0];
+
+
+	return checkvpn(cf);
+	
+}
+
+function show_status( vpn_status)
+{
+		var cf = document.forms[0];
+		if(vpn_status.state)
+			connect_state = vpn_status.state;
+		else
+			connect_state = "disconnected";		
+		
+		if(connect_state == "connected")
+		{
+			cf.connect.value="$disconnect_mark";
+			cf.submit_flag.value = "vpn_client_disconnect";
+			document.getElementById("connect_status").style.display="";
+			document.getElementById("localip").innerHTML = vpn_status.localip;
+			document.getElementById("publicip").innerHTML = vpn_status.publicip;
+			document.getElementById("country").innerHTML = vpn_status.country;
+			document.getElementById("city").innerHTML = vpn_status.city;
+			document.getElementById("connect_img").style.display="";
+			document.getElementById("disconnect_img").style.display="none";
+			document.getElementById("connecting_img").style.display="none";
+			document.getElementById("status_info").innerHTML="$connected";			
+		}
+		else if(connect_state == "connecting")
+		{
+			cf.connect.value="$cancel_mark";
+			cf.submit_flag.value = "vpn_client_disconnect";
+			document.getElementById("connect_status").style.display="none";
+			document.getElementById("connect_img").style.display="none";
+			document.getElementById("disconnect_img").style.display="none";
+			document.getElementById("connecting_img").style.display="";
+			document.getElementById("status_info").innerHTML="$connecting, $trying "+vpn_status.connecting;
+			if(!providers.providerList)
+				setTimeout("this.location.href='vpn_client.htm';", 6000);
+				
+			setTimeout("ajaxCheckStatus()", 2000);			
+		}
+		else
+		{
+			cf.connect.value="$connect_mark";
+			cf.submit_flag.value = "vpn_client_connect";
+			document.getElementById("connect_status").style.display="none";
+			
+			document.getElementById("connect_img").style.display="none";
+			document.getElementById("disconnect_img").style.display="";
+			document.getElementById("connecting_img").style.display="none";
+			document.getElementById("status_info").innerHTML="$disconnect";
+		}
+	
+	        if(connect_state == "disconnected" && vpn_status.message)
+		{
+			document.getElementById("error_line").innerHTML="<TD nowrap colspan=2>"+vpn_status.message+"</TD>";
+			document.getElementById("error_line").style.display="";
+		}
+		else
+			document.getElementById("error_line").style.display="none";
+
+}
+
+function ajaxCheckStatus()
+{
+	var file="/vpn_client_status.txt";
+	var xmlHttp = createXMLHttpRequest();
+	var result;
+	xmlHttp.onreadystatechange=function()
+	{
+		var cf=document.forms[0];
+		if(xmlHttp.readyState==4 && xmlHttp.status==200)
+		{
+			result=JSON.parse(xmlHttp.responseText);
+			show_status(result);
+		}
+	}
+	xmlHttp.open("GET", file, true);
+	xmlHttp.send();
+}
+
+function change_to_text(obj)
+{
+        if( obj.type == "password" )
+        {
+			obj.outerHTML = '<input type="text" name="password" onKeyUp="save_password(this)" >';
+            //document.forms[0].passwd.select();
+        }
+}
+
+function change_to_password(obj)
+{
+        if( obj.type == "text" )
+        {	
+			obj.outerHTML = '<input type="password" name="password" onFocus="change_to_text(this);" onKeyUp="save_password(this)" >';
+			//document.forms[0].passwd.select();	
+        }
+}
+
+
+function save_password(obj)
+{
+        var cf = document.forms[0];
+        var service = cf.vpn_server.selectedIndex;
+
+        if(!providers.providerList)
+                return;
+
+        if(!providers.providerList[service])
+                return;
+
+	providers.providerList[service]["password"] = obj.value;
+}
+
+function open_help_button(){
+        document.getElementById("help").style.display="block";
+        document.getElementById("black_over_lay").style.display="block";
+}
+
+</script>
+
+<div id="black_over_lay" class="black_overlay">
+</div>
+<input type="hidden" name="hidden_pwd_change" value="0">
+<input type="hidden" name="hidden_pwd" value="">
+<div class="page_title">$vpn_client</div>
+<div class="fix_button" id="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+var master="<% cfg_get("http_loginname") %>";
+if( master == "admin" )
+        document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" value="$cancel_mark" onClick="location.href=\'vpn_client.htm\'">&nbsp;&nbsp;<input class="apply_bt" type="submit" name="Apply" value="$apply_mark" onClick="return checkvpn(document.forms[0]);"></TD></TR>');
+else
+        document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="submit" name="Apply" value="$apply_mark" disabled></TD></TR>');
+</script>
+</TABLE>
+</div>
+<div id="main" class="main_top_button">
+<div class="help_button_sty" style="fill:white" onclick="open_help_button()" onmouseover="this.style.fill='red'" onmouseout="this.style.fill='white'">
+<svg viewbox="0 0 24 24" style="display:block;width:100%;height:100%;"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></svg>
+</div>
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR><TD nowrap><a href="javascript:loadhelp('_openvpn','package_download')" tabindex="-1"><b>$vpn_client_settings</b></a></TD></TR>
+<TR>
+	<TD nowrap colspan=2>
+<div class="enable">
+		<input type="checkbox" name="enable_vpn" onclick="enable_vpn_client()" id="enable_vpn_ch"><label for="enable_vpn_ch"><font id="enable_vpn_text">$vpn_client_enable</font></label>
+		<input type="hidden" name="hidden_enable_vpn" value = "<% cfg_sed_xss("vpn_client_enable") %>">
+	</div>
+
+	<div id="status_div">
+		<div class="status_img">
+		<img id="connect_img" src="/image/vpn_connect.jpg" style="display:none">
+		<img id="disconnect_img" src="/image/vpn_dis_connect.jpg" style="display:none">
+        <div id="connecting_img" class="loader">
+          <svg class="spinner" width="28px" height="28px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+            <circle class="path" fill="none" stroke-width="5" stroke-linecap="round" cx="33" cy="33" r="30"></circle>
+          </svg>
+        </div>  
+		</div>
+	
+		<div class="status_head">
+		Status:
+		</div>
+		<div id="status_info">
+		Disconnected
+		</div>
+	</div >
+	</TD>
+</TR>
+$bluebar
+</TABLE>
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0 id="settings">
+<TR><TD nowrap colspan=2><a href="javascript:loadhelp('_openvpn','package_download')" tabindex="-1"><b>$vpn_settings</b></a></TD></TR>
+<TR id="error_line"><TD nowrap colspan=2>
+<script>if(vpn_status.message) document.write(vpn_status.message);</script>
+</TD>
+</TR>
+<TR ><TD>
+	<div class="vpn_set">
+		<div class="vpn_title">$vpn_server</div>
+		<div class="vpn_input"><select name="vpn_server" onchange="change_service()"></select></div>
+	</div>
+         <div class="vpn_set">
+                <div class="vpn_title">$vpn_protocol</div>
+                <div class="vpn_input"><select name="vpn_protocol">
+                  <option value="TCP">TCP</option>
+                  <option value="UDP" selected="selected">UDP</option>
+                </select></div>
+        </div>
+
+	<div class="vpn_set">
+		<div class="vpn_title">$country_3g</div>
+		<div class="vpn_input"><select name="vpn_country" onchange="change_country()" ></select></div>
+		<input type="hidden" name="vpn_country_text" value="<% cfg_sed_xss("vpn_client_ovpn_cfg_country_text") %>">
+	</div>
+	<div class="vpn_set">
+		<div class="vpn_title">$city</div>
+		<div class="vpn_input"><select name="vpn_city"></select></div>
+	</div>
+</TD></TR>
+<TR ><TD>
+	<div class="vpn_set">
+		<div class="vpn_title">$username</div>
+		<div class="vpn_input"><input type="text" name="user" value="<% cfg_sed_xss("vpn_client_username") %>"></div>
+	</div>
+	<div class="vpn_set">
+		<div class="vpn_title">$ddns_passwd</div>
+		<div class="vpn_input"><input type="text" name="password" onKeyUp="save_password(this)" ></div>
+	</div>		
+</TD></TR>
+<TR id="connect_line"><TD nowrap colspan=2>
+	<input class="apply_bt top20" type="submit" name="connect" value="$connect_mark" onClick="return check_connect(document.forms[0]);">
+</TD></TR>
+<TR><TD nowrap colspan=2><div class="top20"><a onclick="creat_account()" style="color:#49d4da" >$create_an_account</a></div></TD></TR>
+<TR id="connect_status"><TD nowrap colspan=2><div class="top20">
+<div class="vpn_status"><div class="vpn_status_name">Your IP:</div><div id="localip" class="vpn_status_value"><script>if(vpn_status.localip) document.write(vpn_status.localip);</script></div></div>
+<div class="vpn_status"><div class="vpn_status_name">Public IP:</div><div id="publicip" class="vpn_status_value"><script>if(vpn_status.publicip) document.write(vpn_status.publicip);</script></div></div>
+<div class="vpn_status"><div class="vpn_status_name">Country:</div><div id="country" class="vpn_status_value"><script>if(vpn_status.country) document.write(vpn_status.country);</script></div></div>
+<div class="vpn_status"><div class="vpn_status_name">City:</div><div  id="city" class="vpn_status_value"><script>if(vpn_status.city) document.write(vpn_status.city);</script></div></div>
+</div></TD></TR>
+<TR><TD nowrap colspan=2><div class="top20"><a onclick="show_logs()">$show_logs</a></div></TD></TR>
+<TR><TD nowrap colspan=2><div class="top20"><a id="helpcenter" target="_blank" href="https://support.ipvanish.com/">$help_center</a></div></TD></TR>
+
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_vpn_client") %>
+</FORM>
+</BODY>
+</HTML>
+

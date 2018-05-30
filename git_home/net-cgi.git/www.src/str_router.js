@@ -173,7 +173,7 @@ function check_router_add(cf,flag)
 		var each_info=str.split(' ');
 		each_info[0] = each_info[0].replace(/&nbsp;/g, " ");
 		//31091, if input "&nbsp;" as router name, page can't show "&nbsp;", it show " ". 
-		each_info[0] = each_info[0]. replace(/&nbsp;/g, " ").replace(/&#38;/g,"&"); 
+		each_info[0] = each_info[0].replace(/&nbsp;/g, " ").replace(/&#38;/g,"&"); 
 	
 		if(flag == 'edit')
 		{	

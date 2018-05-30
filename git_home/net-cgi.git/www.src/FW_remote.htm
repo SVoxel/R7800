@@ -41,7 +41,13 @@ var remote_iplist="<% cfg_get("remote_iplist") %>";
 var remote_port="<% cfg_sed_xss("remote_port") %>";
 var remote_manage_ip=wan_ip;
 var usb_router_flag=parent.usb_router_flag;
-
+var connection_type = "<% cat_file("/tmp/ipv6_auto_output") %>";
+var ipv6_lan_ip = "<% ipv6_lan_ip() %>";
+var ipv6_type = "<% cfg_get("ipv6_type") %>";
+if(ipv6_type !="dhcp" && ipv6_type!="autoConfig" && ipv6_type != "pppoe" && (ipv6_type!="autoDetect" || ipv6_type == "autoDetect"&& connection_type!="Auto Config" && connection_type!="DHCP") )
+	ipv6_lan_ip = "";
+if(ipv6_type == "fixed")
+	ipv6_lan_ip = "<% cfg_get("ipv6_fixed_lan_ip") %>";
 var old_sysDNSHost=wan_ip;
 var old_endis_ddns="<% cfg_get("endis_ddns") %>";
 if( old_endis_ddns == "1" )
@@ -125,6 +131,14 @@ $bluebar
 	</script>
 	</TD>
 </TR>
+<script>
+if(ipv6_lan_ip != "")
+{
+                document.write("<TR><TD nowrap></TD><TD nowrap>");
+		document.write("https://["+ipv6_lan_ip+"]:443");
+		document.write("</TD><TR>");
+}
+</script>
 $bluebar
 <TR>
 	<TD nowrap colspan=2>

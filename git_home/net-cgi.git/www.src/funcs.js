@@ -1795,7 +1795,7 @@ function getkey(type, e)
 	}
 	else if(type == "deviceName")
 	{
-		if (((keycode>47) && (keycode<58))||(keycode==45)||((keycode>64) && (keycode<91))||((keycode>96) && (keycode<123)) || (keycode==8)||(keycode==0)) { return true; }
+		if (((keycode>47) && (keycode<58))||(keycode==45)||((keycode>64) && (keycode<91))||((keycode>96) && (keycode<123)) || (keycode==8)||(keycode==0 || keycode==95)) { return true; }
 		else return false;
 	}
         else if(type == "mediaServerName")// not / * ? " <> \ :
@@ -2909,7 +2909,7 @@ function isValidHex(each_char)
 
 function isValidDevName(each_char)
 {
-	if(!( each_char == 45 || (each_char > 47 && each_char < 58) || (each_char > 64 && each_char < 91) || (each_char>96 && each_char<123)))
+	if(!( each_char == 45 || each_char == 95 || (each_char > 47 && each_char < 58) || (each_char > 64 && each_char < 91) || (each_char>96 && each_char<123)))
 		return false;
 }
 

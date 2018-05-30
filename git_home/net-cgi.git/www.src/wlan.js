@@ -164,6 +164,12 @@ function setSecurity(num)
 
 	if(top.guest_router_flag == 1 && wlg1_sectype == 2)
 		opmode_disabled();
+	for(var i=0; i<form.security_type.length; i++) {
+		if(form.security_type[i].checked)
+			sync_user_input(form.security_type[i]);
+	}
+	handle_sync_input();
+	toggle_an_edit();
 }
 
 function opmode_an_disabled()
@@ -255,7 +261,7 @@ function setSecurity_an(num)
 function wl_sectype_change()
 {
         var form=document.forms[0];
-        if(form.opmode.options[0].selected == true && bgn_mode1_value == 54)
+        if(form.opmode.options[0].selected == true && bgn_mode1_value == 54 && form.enable_smart_connect.checked == false)
 	{
                 document.getElementById("wep_54").style.display="";
 	}
@@ -294,6 +300,7 @@ function wpaemode()
         document.getElementById("opmode_all").style.display="";
         document.getElementById("opmode_54").style.display="none";
         wl_sectype_change();
+ 	sync_user_input(form.wpae_mode);
 }
 
 function wpaemode_an()
@@ -597,6 +604,10 @@ function setAChannel(channel)
 	{
 		tmp_array = ht160_array11;
 	}
+	else if(enable_ht160 == "1" && currentMode == 9 && index == 7)
+	{
+		tmp_array = ht160_array7;
+	}
 	else if ( 1 == currentMode || 2 == currentMode || 7 == currentMode )
 	{
 		tmp_array = ht20_array[index];
@@ -622,7 +633,7 @@ function setAChannel(channel)
 			( dfs_australia_router_flag == 1 &&  index == 2 ) ||
 			( dfs_europe_router_flag == 1 &&  index == 4 ) ||
 			( dfs_japan_router_flag && index == 6 ) || index == 10 ) ||
-			( index == 11 ) ||
+			( index == 11 ) || (dfs_korea_router_flag && index == 7) ||
 			( dfs_russia_router_flag && index == 19 ) || index ==12)//India
 		{
 			if(currentMode == 9 && index == 21)//50244
@@ -1357,7 +1368,11 @@ function check_wlan()
 		cf.change_region_flag.value = 1;
 	else
 		cf.change_region_flag.value = 0;
-	
+	if(smart_connect_flag == "1") {
+		if(cf.enable_smart_connect.checked)
+			cf.hid_enable_smart_connect.value = "1";
+	}
+
 	cf.submit();
 	return true;	
 }
@@ -1919,6 +1934,156 @@ function check_wlan_guest(type)
 	cf.submit();
 	return true;
 }
+function handle_samrt_connect() {
+	var cf = document.forms[0];
+
+	handle_sync_input();
+	sync_broadcast();
+
+	if(!cf.enable_smart_connect.checked) {
+		cf.hid_enable_smart_connect.value = "0";
+		toggle_an_edit();
+		return;
+	}
+
+	alert("You currently have different WiFi settings for the 2.4GHz Radio and the 5GHz Radio. Once click Apply button, we will overwrite the settings for the 5GHz Radio with the 2.4GHz Radio settings.");
+
+	cf.ssid_an.value = cf.ssid.value;
+	cf.ssid_bc_an.checked = cf.ssid_bc.checked;
+	cf.hid_enable_smart_connect.value = "1";
+
+	for(var i=0; i<cf.security_type.length; i++) {
+		if(cf.security_type[i].checked) {
+			var wl_id = cf.security_type[i].id;
+		}
+	}
+	for(var i=0; i<cf.security_type_an.length; i++) {
+		if(cf.security_type_an[i].checked) {
+			var wla_id = cf.security_type_an[i].id;
+		}
+	}
+	if(wl_id == "security_wep") {
+		cf[id_mapping(wla_id)].checked = true;
+		cf[id_mapping(wla_id)].onclick();
+		cf.passphrase.value = cf.passphrase_an.value;
+		cf.passphrase.onfocus();
+		cf.passphrase.onkeypress();
+	}
+	else if(wl_id != "security_wpa_enter") {
+		cf[id_mapping(wl_id)].checked = true;
+		cf[id_mapping(wl_id)].onclick();
+		if(wl_id != "security_disable") {
+			cf.passphrase_an.value = cf.passphrase.value;
+			cf.passphrase_an.onfocus();
+			cf.passphrase_an.onkeypress();
+		}
+	}
+	else {
+		var radius_ids = ["radius_ipaddress1", "radius_ipaddress2", "radius_ipaddress3", "radius_ipaddress4", "radius_port", "radius_secret"];
+		for(var i=0; i<radius_ids.length; i++) {
+			cf[id_mapping(radius_ids[i])].value = cf[radius_ids[i]].value;
+		}
+		cf.wpae_mode_an.options[cf.wpae_mode.selectedIndex].selected = true;
+		wpaemode_an();
+	}
+
+	toggle_an_edit();
+}
+
+function sync_broadcast() {
+	var cf = document.forms[0];
+	if(cf.enable_smart_connect.checked) {
+		cf.ssid_bc.addEventListener("click", function() {
+			cf.ssid_bc_an.checked = cf.ssid_bc.checked;
+		})
+	}
+	else {
+		try {
+			cf.ssid_bc.removeListener("click");
+		}
+		catch(e) {}
+	}
+}
+
+function id_mapping(origin) {
+	if(origin.indexOf("security_an_") == 0)
+		return origin.replace("security_an_", "security_");
+	else if(origin.indexOf("security_") == 0)
+		return origin.replace("security_", "security_an_");
+	else if(/^radius\w+_an$$/g.test(origin))
+		return origin.replace(/^(radius\w+)_an$$/g, "$$1");
+	else if(/^radius\w+$$/g.test(origin))
+		return origin.replace(/^(radius\w+)$$/g, "$$1_an");
+	else //ssid, passphrase, wpae_mode, ssid_bc
+		return (origin + "_an");
+}
+
+function sync_user_input(origin) {
+	if(document.forms[0].enable_smart_connect.checked == false)
+		return;
+	var target = document.getElementById(id_mapping(origin.id));
+	if(origin.options != undefined) {
+		target.options[parseInt(origin.selectedIndex)].selected = true;
+		target.onchange();
+	}
+	else if(origin.type == "radio") {
+		target.checked = origin.checked;
+		simulate_behavior(target);
+	}
+	else {
+		target.value = origin.value;
+		simulate_behavior(target);
+	}
+}
+
+function toggle_an_edit() {
+	var cf = document.forms[0];
+	var flag = !!cf.enable_smart_connect.checked;
+	wl_sectype_change();
+	cf.ssid_an.disabled = flag;
+	cf.ssid_bc_an.disabled = flag;
+	for(var i=0; i<cf.security_type_an.length; i++) {
+		cf.security_type_an[i].disabled = flag;
+	}
+	if(!!cf.passphrase_an)
+		cf.passphrase_an.disabled = flag;
+
+	var radius_ids = ["wpae_mode", "radius_ipaddress1", "radius_ipaddress2", "radius_ipaddress3", "radius_ipaddress4", "radius_port", "radius_secret"];
+	for(var i=0; i<radius_ids.length; i++) {
+		if(!!cf[id_mapping(radius_ids[i])])
+			cf[id_mapping(radius_ids[i])].disabled = flag;
+	}
+}
+
+function handle_sync_input() {
+	var cf = document.forms[0];
+	var target = ["ssid", "passphrase", "radius_ipaddress1", "radius_ipaddress2", "radius_ipaddress3", "radius_ipaddress4", "radius_port", "radius_secret"];
+
+	for(var i=0; i<target.length; i++) {
+		if(!!cf[target[i]] && !!cf[id_mapping(target[i])]) {
+			if(cf.enable_smart_connect.checked) {
+				cf[target[i]].addEventListener("input", function() {
+					sync_user_input(this);
+				})
+			}
+			else {
+				try {
+					cf[target[i]].removeListener("input");
+				}
+				catch(e){}
+			}
+		}
+	}
+}
+
+function simulate_behavior(target) {
+	if(typeof target.onfocus == "function")
+		target.onfocus();
+	if(typeof target.onclick == "function")
+		target.onclick();
+	if(typeof target.onkeypress == "function")
+		target.onkeypress();
+}
 
 var ht20_array = new Array(
 	new Array ( "36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)", "100(DFS)", "104(DFS)", "108(DFS)", "112(DFS)", "116(DFS)", "136(DFS)", "140(DFS)" ), //0
@@ -1994,3 +2159,4 @@ var ht80_array = new Array(
 );
 var ht160_array10 = new Array("36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)", "100(DFS)", "104(DFS)", "108(DFS)", "112(DFS)", "116(DFS)", "120(DFS)", "124(DFS)", "128(DFS)", "132(DFS)", "136(DFS)", "140(DFS)", "149", "153", "157", "161");
 var ht160_array11 = new Array("36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)", "149", "153", "157", "161" );
+var ht160_array7 = new Array("36", "40", "44", "48", "52(DFS)", "56(DFS)", "60(DFS)", "64(DFS)", "100(DFS)", "104(DFS)", "108(DFS)", "112(DFS)", "116(DFS)", "120(DFS)","124(DFS)", "128(DFS)");

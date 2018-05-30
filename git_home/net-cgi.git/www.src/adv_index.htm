@@ -128,6 +128,12 @@ function loadvalue()
 {
 	var form = document.forms[0];
 	change_size();
+
+	if(document.location.search.indexOf('vpn_on_updating=1') !== -1) {
+		goto_formframe('vpn_upgrade_process.htm');
+		return;
+	}
+
 	if(lang_select == "Auto" && browser_lang != gui_region)
 	{
 		if(bgn_pr_wds_support_wpa == 1 || an_pr_wds_support_wpa == 1 || dis_lang_crl == "0" )
@@ -244,6 +250,7 @@ function loadvalue()
 		<% advanced_sub_menu("fbwifi", "sub_back", "facebook_head", "advanced_fbwifi")%>
 		<% advanced_sub_menu("priozone", "sub_back", "priority_zone", "advanced_priozone")%>
 		<% advanced_sub_menu("devmode", "sub_back", "dsl_device_mode", "advanced_devmode")%>
+		<% advanced_sub_menu("vpn_client", "sub_back", "vpn_client", "adv_vpn_client")%>
 
 	</dl>	
 	</div>	

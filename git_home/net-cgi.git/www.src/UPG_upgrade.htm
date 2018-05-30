@@ -10,10 +10,15 @@
 <div><img src=/liteblue.gif width=100% height=12></div>
 
 <script>
-<% refresh_timestamp("auto_upgrade_check", "download_confile") %>
+<% refresh_timestamp("auto_upgrade_check", "download_confile","upg_agree_conditions") %>
 <% refresh_timestamp("upload_check_fw") %>
 var ts="<% cfg_get("auto_upgrade_check") %>"
 var ts1="<% cfg_get("upload_check_fw") %>"
+var new_sold_board="<% cfg_get("new_sold_board") %>";
+var agree_auto_up_TC="<% cfg_get("agree_auto_up_TC") %>";
+var agree_collect_TC="<% cfg_get("agree_collect_TC") %>";
+var tnc_request_flag = parent.tnc_request_flag;
+var auto_upgrade_flag = parent.auto_upgrade_flag;
 
 <% cfg_set("hidden_upgrade", "0") %>
 
@@ -25,6 +30,30 @@ function loadvalue()
 
 	cf.action = "/apply.cgi?/UPG_upgrade.htm timestamp=" + ts;
 	cf1.action = "/upgrade_check.cgi?/UPG_version.htm timestamp=" + ts1;
+	
+	var cf2 = document.forms[2];
+
+	if(agree_auto_up_TC == "1")
+		cf2.agree_upg[0].checked = true;
+	else
+		cf2.agree_upg[1].checked = true;
+
+	if(agree_collect_TC == "1")
+		cf2.agree_col[0].checked = true;
+	else
+		cf2.agree_col[1].checked = true;
+	cf2.action = "/apply.cgi?/UPG_upgrade.htm timestamp=" + ts;
+
+	if(tnc_request_flag != 1)
+		document.getElementById("condition_div").style.display = "none";
+	else if(new_sold_board == "1") {
+		var trs = document.getElementsByClassName("coll-tr");
+		while(trs.length != 0) {
+			trs[0].className = "tr_hidden";
+			trs = document.getElementsByClassName("coll-tr");
+		}
+	}
+
 }
 var netgear_module="<% cat_file("/module_name") %>";
 var netgear_region=top.netgear_region;
@@ -57,19 +86,84 @@ $bluebar
 	</td>
 </tr>
 <tr><td nowrap>
+	 <div style="height:25px; overflow:hidden; position:relative;">
 	 <input name="mtenFWUpload" type="file" size="32" id="router_upload" maxlength="1024" class="type-file-file" onchange="this.form.upfile.value=this.value.substr(this.value.lastIndexOf('\\')+1);" contentEditable=false onkeydown="return false;" onbeforeeditfocus="return false;" onpaste="return false;" onmouseover="this.style.cursor='pointer';" />
 	 <input type="text" name="upfile" size="20" maxlength="1024" readonly />&nbsp;&nbsp;&nbsp;
 	 <input type="button" value="$browse_mark"  id="browse" name="Browse" class="middle_common_bt" onclick="if(IE_version()!=6){this.form.router_upload.click();}" onmouseover="this.style.cursor='default';" />
+	 </div>
 </td></tr>
-$bluebar
 <script>
 	if( master == "admin" )
 		document.write('<tr><td nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'UPG_upgrade.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="button" name="Upload" id="Upload" value="$upg_mark" onClick="return clickUpgrade(document.forms[1]);"></td></tr>');
 	else
 		document.write('<tr><td nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="button" name="Upload" id="Upload" value="$upg_mark" disabled></td></tr>');
 </script>
+<tr><td nowrap>&nbsp;</td></tr>
+$bluebar
 </table>
 </form>
+</div>
+
+<style>
+.agree_option div{float:left; margin:2px 20px 2px 10px;}
+.agree_title{margin:2px 0px 2px 5px;}
+.agree_tip{margin:2px 0px 2px 5px;}
+.policy{margin-left:50px;}
+.agree_title a{text-decoration:underline; color:blue;}
+.open_link a{text-decoration:underline; color:blue; font-size:10pt;}
+.open_link span:first-child{margin: 10px 30px 10px 55%;}
+.open_link span:last-child{margin: 10px 30px 10px 0;}
+.tr_hidden{display:none;}
+</style>
+<div id="condition_div" style="display:block; margin-top:50px;">
+<form method="post" action="/apply.cgi/UPG_upgrade.htm" target="formframe">
+<input type="hidden" name="submit_flag" value="upg_agree_conditions">
+<input type="hidden" name="hid_agree_upg" value="0" />
+<input type="hidden" name="hid_agree_col" value="0" />
+<table width="100%" border="0" cellpadding="0" cellspacing="3">
+<script>
+	if( master == "admin" )
+		document.write('<tr><td nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'UPG_upgrade.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onClick="conditions_apply(document.forms[2]);"></td></tr>');
+	else
+		document.write('<tr><td nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="button" name="Apply" id="apply" value="$apply_mark" disabled></td></tr>');
+</script>
+$bluebar
+<tr>
+	<td nowrap><b>$tnc_autoup_title</b></td>
+</tr>
+<tr><td><div class="agree_title">$tnc_autoup_enable</div></td></tr>
+<tr><td nowrap><div class="agree_tip">$tnc_select_one</div></td></tr>
+<tr>
+	<td nowrap>
+		<div class="agree_option">
+			<div><input type="radio" name="agree_upg">$tnc_agree</div>
+			<div><input type="radio" name="agree_upg">$tnc_disagree</div>
+		</div>
+		<div style="clear:both"></div>
+	</td>
+</tr>
+<TR class='coll-tr'><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
+<tr class='coll-tr'>
+	<td nowrap><b>$tnc_collect_title</b></td>
+</tr>
+<tr class='coll-tr'><td><div class="agree_title"><script>document.write("$tnc_collect_enable")</script></div></td></tr>
+<tr class='coll-tr'><td nowrap><div class="agree_tip">$tnc_select_one</div></td></tr>
+<tr class='coll-tr'>
+	<td nowrap>
+		<div class="agree_option">
+			<div><input type="radio" name="agree_col">$tnc_agree</div>
+			<div><input type="radio" name="agree_col">$tnc_disagree</div>
+		</div>
+		<div style="clear:both"></div>
+	</td>
+</tr>
+$bluebar
+</table>
+</form>
+<div class="open_link">
+	<span><a href="https://www.netgear.com/about/privacy-policy/?cid=wmt_netgear_organic" target="_blank">$tnc_policy</a></span>
+	<span><a href="#" onclick="view_details('tnc')">$tnc_tos_title</a></span>
+</div>
 </div>
 
 <div id="pls_wait_div" style="display:none">

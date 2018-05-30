@@ -1,0 +1,110 @@
+<% cfg_set("hijack_language", "1") %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<% hijack_title() %>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+	<link rel="stylesheet" type="text/css" href="/style/top_style.css" />
+	<% hijack_language() %>
+</head>
+<style>
+.lines{padding-bottom:90px;}
+.lines>div+div div{float:left; margin:10px 20px 10px 20px;}
+.lines>div+div div a{line-height:19px;}
+.apply_bt{width: 128px; background: url(../image/buttons.gif) no-repeat top left; height: 22px; color: #f2f2f2; font-family: Arial; font-weight: Bold; font-size: 14px; background-color: transparent; border: none; cursor: pointer; padding-bottom: 2px;}
+.apply1_bt{width: 128px; background: url(../image/buttons1.gif) no-repeat -192px -330px; height: 22px; color: #f2f2f2; font-family: Arial; font-weight: Bold; font-size: 14px; background-color: transparent; border: none; cursor: pointer; padding-bottom: 2px;}
+.top_link{font-size:10pt; float:right; margin: 2% 5% 2% 5%;}
+</style>
+<script>
+var netgear_region = "<% get_firmware_region() %>";
+
+function loadvalue() {
+	if(netgear_region == "US" || netgear_region == "AU") {
+		document.forms[0].ra_enable_2[0].checked = true;
+	}
+	if( "<%cfg_get("dns_hijack") %>" == "1" && "<%cfg_get("hijack_process") %>" != "3" )
+		document.getElementById("privacy_policy").style.display="none";
+	else
+		document.getElementById("privacy_policy").style.display="";
+}
+
+function view_details(target) {
+	if(target == "collect")
+		var url = "collection_details.html";
+	else if(target == "tnc")
+		var url = "simple_tnc_details.html"
+	window.open(url, 'collect_details', 'resizable=1,scrollvars=yes,width=800,height=600,left=400,top=100').focus();
+}
+
+function check_agreement(cf) {
+	if(cf.auto_update_enable_2[0].checked == true)
+		cf.hid_auto_agreement.value = "1";
+	if(cf.ra_enable_2[0].checked == true)
+		cf.hid_collect_agreement.value = "1";
+	cf.submit();
+}
+
+function enable_button() {
+	var cf = document.forms[0];
+	if((cf.auto_update_enable_2[0].checked || cf.auto_update_enable_2[1].checked) && (cf.ra_enable_2[0].checked || cf.ra_enable_2[1].checked)) {
+		cf.Apply.className = "apply_bt";
+		cf.Apply.disabled = false;
+	}
+}
+</script>
+<body onload="loadvalue()">
+<% form_submit("apply", "start.htm", "simple_conditions") %>
+<input type="hidden" name="hid_auto_agreement" value="0">
+<input type="hidden" name="hid_collect_agreement" value="0">
+<div id="page_container">
+	<div id="header">
+		<div id="header_top">
+			<div class="top_name">
+				<div class="title_div"></div>
+				<% cd_less_top_hardware_version() %>
+			</div>
+		</div>
+	</div>
+
+	<div class="wizard_body_container">
+		<div class="wizard_content_div">
+			<div class="wizard_words_div" style="padding-top:1%">
+				<div class="top_link">
+					<a href="#" onclick="view_details('tnc')"><script>document.write(tnc_tos_title)</script></a>
+				</div>
+				<div id="privacy_policy" class="top_link" style="display:none;">
+					<a href="https://www.netgear.com/about/privacy-policy/?cid=wmt_netgear_organic" target="_blank"><script>document.write(tnc_policy)</script></a>
+				</div>
+				<div style="clear:both;"></div>
+				<div class="lines">
+					<div><script>document.write(tnc_autoup_enable)</script></div>
+					<div>
+						<div><input type="radio" name="auto_update_enable_2" onclick="enable_button()" value="Yes"><script>document.write(tnc_agree)</script></div>
+						<div><input type="radio" name="auto_update_enable_2" onclick="enable_button()" value="No"><script>document.write(tnc_disagree)</script></div>
+					</div>
+				</div>
+				<div style="clear:both"></div>
+				<div class="lines">
+					<div><script>document.write(tnc_collect_enable)</script></div>
+					<div>
+						<div><input type="radio" name="ra_enable_2" onclick="enable_button()" value="Yes"><script>document.write(tnc_agree)</script></div>
+						<div><input type="radio" name="ra_enable_2" onclick="enable_button()" value="No"><script>document.write(tnc_disagree)</script></div>
+					</div>
+				</div>
+			</div>
+			<div style="text-align:center;">
+				<img src="/liteblue.gif" width="88%" height="12">
+			</div>
+			<div id="allBtns_div" class="wizard_buttons_div" align="center" style="margin-top:20px;">
+				<script>
+					document.write('<input type="button" name="Apply" id="apply" class="apply1_bt" value="' + apply_mark + '" onclick="check_agreement(document.forms[0])" disabled>');
+				</script>
+			</div>
+		</div>
+	</div>
+	<div class="bottom_margin"></div>
+</div>
+</form>
+</body>
+</html>

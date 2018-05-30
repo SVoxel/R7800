@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>Data Collection Details</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<% hijack_language() %>
+	<style>
+		.delete_bt{width:180px; background: url(../image/buttons.gif) no-repeat -129px 0; height: 22px; color: #f2f2f2; font-family: Arial; font-weight: Bold; font-size: 14px; background-color: transparent; border: none; cursor: pointer; padding-bottom: 2px;}
+		.button_line{text-align:center;}
+		.contents{border: 1px solid; margin: 5px 10px 50px 10px; padding: 5px; 10px 5px 10px;}
+		#policy {overflow: auto; text-align:left; border: 1px solid; margin: 5px 10px 50px 10px; padding: 5px; 10px 5px 10px;}
+		#policy >span:first-of-type{text-align: right; padding-right: 20px;}
+		#policy	h1, .title{text-align: center; font-size: 1.2em; color: black; text-decoration: underline}
+		#policy	h2{font-size: 1.1em; color: black;}
+		#policy	span {display: block; margin-top: 7px; margin-bottom: 7px;}
+		#policy	p span span, p span span span {margin-left: 20px;}
+		#policy	p span span:first-child, p span:first-of-type {margin-top: 7px;}
+		#policy	.grey-bg {background-color: #D3D3D3}
+		#policy	a[href] {color: blue; text-decoration: underline}
+	</style>
+</head>
+<script>
+function click_close() {
+	window.close();
+}
+
+if(top.location.href.indexOf("definedLanguage") != -1) {
+	tnc_full_00 = "$tnc_full_00";
+	tnc_full_01 = "$tnc_full_01";
+	tnc_full_02 = "$tnc_full_02";
+	tnc_full_10 = "$tnc_full_10";
+	tnc_full_11 = "$tnc_full_11";
+	tnc_full_12 = "$tnc_full_12";
+	tnc_full_20 = "$tnc_full_20";
+	tnc_full_21 = "$tnc_full_21";
+	tnc_full_22 = "$tnc_full_22";
+	tnc_full_23 = "$tnc_full_23";
+	tnc_full_30 = "$tnc_full_30";
+	tnc_full_31 = "$tnc_full_31";
+	tnc_full_40 = "$tnc_full_40";
+	tnc_full_terms = "$tnc_full_terms";
+	close_win_mark = "$close_win_mark";
+}
+</script>
+<body>
+	<div id="policy">
+		<script>
+			if("<% cfg_get("new_sold_board") %>" != "1") {
+				document.write("<p class='title'>" + tnc_full_00 + "</p>");
+				document.write("<p>" + tnc_full_01 + "</p>");
+				document.write("<p>" + tnc_full_02 + "</p>");
+				document.write("<p>" + tnc_full_10 + "</p>");
+				document.write("<p>" + tnc_full_11 + "</p>");
+				document.write("<p>" + tnc_full_12 + "</p>");
+				document.write("<p>" + tnc_full_20 + "</p>");
+				document.write("<p>" + tnc_full_21 + "</p>");
+				document.write("<p>" + tnc_full_22 + "</p>");
+				document.write("<p>" + tnc_full_23 + "</p>");
+				document.write("<p>" + tnc_full_30 + "</p>");
+				document.write("<p>" + tnc_full_31 + "</p>");
+				document.write("<p>" + tnc_full_40 + "</p>");
+			}
+			else
+				document.write(tnc_full_terms.replace(/(href='[^']+')/g, "$$1" + " target='_blank'"));
+		</script>
+	</div>
+	<script>
+		document.write('<div class="button_line"><input type="button" class="delete_bt" name="Close" id="close" value="' + close_win_mark + '" onclick="click_close()"></div>');
+	</script>
+</body>
+</html>

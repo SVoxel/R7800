@@ -40,7 +40,7 @@ function loadvalue()
 	else
 		document.forms[7].allow_ipv6_ping.checked = false;
 
-	if("<% cfg_get("debug_11k") %>" == "1")
+	if("<% cfg_get("enable_11k") %>" == "1")
 		document.forms[8].enable_11k.checked = true;
 	else
 		document.forms[8].enable_11k.checked = false;

@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<% hijack_title() %>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style/hijack_style.css" />
+<script language="javascript" type="text/javascript" src="script/brs_hijack.js"></script>
+<% hijack_language() %>
+</head>
+<style>
+.policy{padding-bottom:30px; overflow:auto; height:220px; text-align:left;}
+.agree-line>div span{margin:10px 20px 10px 20px; line-height:25px;}
+</style>
+<body onload="loadvalue()">
+<% form_submit("apply", "start.htm", "collect_conditions") %>
+
+<script>
+document.forms[0].target = "_top";
+var netgear_region = "<% get_firmware_region() %>";
+
+function loadvalue() {
+	if(netgear_region == "US" || netgear_region == "AU") {
+		document.forms[0].agreement[0].click();
+	}
+}
+
+function checkAgreement(cf) {
+	if(cf.agreement[0].checked == true)
+		cf.hid_agreement.value = "1";
+	cf.submit();
+}
+
+function enable_button() {
+	document.getElementById("next").className = "purple_short_btn";
+	document.getElementById("next").disabled = false;
+}
+</script>
+<input type="hidden" name="hid_agreement" value="0" />
+<div class="wizard_content_div">
+	<div class="wizard_words_div">
+		<div class="policy">
+			<script>
+				document.write("<p>" + tnc_collect_1 + "</p>");
+				document.write("<p>" + tnc_collect_2 + "</p>");
+				document.write("<p>" + tnc_collect_3 + "</p>");
+				document.write("<p>" + tnc_collect_4 + "</p>");
+			</script>
+		</div>
+		<div style="text-align:center; margin-top:15px;">
+			<div class="agree-line">
+				<div><b><script>document.write(tnc_must_select)</script></b></div>
+				<div>
+					<span><input type="radio" name="agreement" onclick="enable_button()"><script>document.write(tnc_agree)</script></span>
+					<span><input type="radio" name="agreement" onclick="enable_button()"><script>document.write(tnc_disagree)</script></span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div style="text-align:center;">
+		<img src="/liteblue.gif" width="80%" height="12">
+	</div>
+	<div style="margin-left:12%"><a href="https://www.netgear.com/about/privacy-policy/?cid=wmt_netgear_organic" target="_blank"><script>document.write(tnc_policy)</script></a></div>
+	<div id="allBtns_div" class="wizard_buttons_div" align="right" style="margin-bottom:0;">
+		<script>document.write('<input type="button" name="Next" id="next" class="grey_short_btn" value="'+bh_next_mark+'" onclick="checkAgreement(document.forms[0])" disabled>');</script>
+	</div>
+</div>
+</form>
+</body>
+</html>
+

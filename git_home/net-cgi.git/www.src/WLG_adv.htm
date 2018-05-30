@@ -103,6 +103,9 @@ var super_wifi_value="<% cfg_get("wl_super_wifi") %>";
 var super_wifi_value_an="<% cfg_get("wla_super_wifi") %>";
 var enable_atf = "<% cfg_get("atf_enable") %>";
 
+var smart_connect_flag = parent.smart_connect_flag;
+var get_smart_connect = "<% cfg_get("enable_smart_connect") %>";
+
 function power_display()
 {
 	var form = document.forms[0];
@@ -352,7 +355,16 @@ function loadvalue()
 	top.enable_ap_flag="<% cfg_get("ap_mode") %>";	
 	//bug 29873 [Wireless]The GUI should show wireless radio as checked when user enable wireless router radio
 	//menu_color_change('wladv');
+	if(smart_connect_flag == "1") {
+		if(get_smart_connect == "1") {
+			var tmp_an_router_flag = an_router_flag;
+			an_router_flag = "0";
+			document.getElementById("bgn_settings_title").innerHTML = "$adva_wlan_setting (2.4GHz b/g/n & " + (ac_router_flag? "5GHz 802.11a/n/ac)": "5GHz a/n)");
+		}
+	}
+
 	change_web_format();
+	an_router_flag = (tmp_an_router_flag != undefined? tmp_an_router_flag : an_router_flag);
 	//apmode_display();
 	
 	//form.device_name.value="<!--% cfg_sed("ap_netbiosname") %-->";
@@ -507,7 +519,7 @@ function loadvalue()
 		form.pin_attack_count.disabled = true;
 		form.prevent_pin_compromise.disabled = true;
 	}
-	if(!((country == 10 || country == 4 || country == 6 || country == 11) && (wla_mode != 1 && wla_mode != 2 && wla_mode != 7 && wla_mode != 8)))   
+	if(!((country == 10 || country == 4 || country == 6 || country == 11 || country == 7) && (wla_mode != 1 && wla_mode != 2 && wla_mode != 7 && wla_mode != 8)))   
         {
                 getObj('wladv_ht160').color = 'gray';
                 form.enable_ht160.disabled = true;
@@ -519,6 +531,17 @@ function loadvalue()
 		grayoutElements("body", "A", "input", "select");
 		disableElements("input", "select");
 	}
+	if(smart_connect_flag == "1") {
+		if(get_smart_connect == "1") {
+			document.getElementById("wladv_pin").style.display = "none";
+			document.getElementById("wladv_enable_wps").style.display = "none";
+			document.getElementById("wladv_appin_cfg").style.display = "none";
+			document.getElementById("wladv_keep_exist").style.display = "none";
+			document.getElementById("wps_blank_line").style.display = "none";
+			document.getElementById("wps_settings_title").innerHTML = "$wps_settings_disable_smart";
+		}
+	}
+
 }
 
 function transmit_select(form)
@@ -585,7 +608,7 @@ function transmit_select_an(form)
 
 <TR>
 	<TD nowrap colspan=2>
-	<A tabindex=-1 href="javascript:loadhelp('_wladv','settings')"><B>$adva_wlan_setting <script>if(an_router_flag == 1) document.write("(2.4GHz b/g/n)");</script> </B></A>
+	<A tabindex=-1 href="javascript:loadhelp('_wladv','settings')"><B id="bgn_settings_title">$adva_wlan_setting <script>if(an_router_flag == 1) document.write("(2.4GHz b/g/n)");</script> </B></A>
 	</TD>
 </TR>	
 <TR id="ap_bgn">
@@ -882,7 +905,7 @@ $bluebar
 <TR id=blue_an><TD colspan=2><img src=/liteblue.gif width=100% height=12></TD></TR>
 <TR>
 	<TD nowrap>
-	<B><A tabindex=-1 href="javascript:loadhelp('_wladv','wps')">$wlan_adv_wps</A></B>
+	<A tabindex=-1 href="javascript:loadhelp('_wladv','wps')"><B id="wps_settings_title">$wlan_adv_wps</B></A>
 	</TD> 
 </TR>
 <TR id='wladv_pin'>
@@ -907,7 +930,7 @@ $bluebar
 	<input type="checkbox" name="wsc_config" id="wsc_config" value="on">$wlan_adv_keep <!--<script> if( an_router_flag == 1) document.write("(2.4GHz b/g/n)");</script>-->
 	</TD>
 </TR>
-<TR><TD>&nbsp;</TD></TR>
+<TR id="wps_blank_line"><TD>&nbsp;</TD></TR>
 $bluebar
 <TR id='wladv_beamforming'>
 	<TD nowrap colspan=2 >
