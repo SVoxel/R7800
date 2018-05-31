@@ -82,7 +82,7 @@ function check_traffic_apply(cf)
                 		alert("$monthly_limit_error");
                 		return false;
         		}
-			if(parseInt(cf.volume_monthly_limit.value)>999999)
+			if(parseInt(cf.volume_monthly_limit.value)>999999999)
 			{
 				alert("$monthly_limit_error");
                                 return false;				
