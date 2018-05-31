@@ -1,0 +1,258 @@
+#!/bin/sh
+# Copyright (C) 2006 OpenWrt.org 
+rae_partion=/usr/rae.tar.gz
+panic_partion=/dev/mtd9
+RAE_DIR=/tmp/router-analytics
+
+START=99
+
+#only run on base, MR2.x  use /tmp/orbi_type judge the orbi type
+start() {
+	killall -9  aws-iot
+	rm /var/run/aws_iot.pid
+	/usr/sbin/aws-iot
+}
+
+stop() 
+{
+	killall -9 aws-iot
+	rm /var/run/aws_iot.pid
+}
+
+restart()
+{
+	stop
+	start
+}
+
+update()
+{
+	cd $RAE_DIR
+	FILES="policy_version rae_version RAE_Policy.json /usr/sbin/aws-iot /usr/sbin/data_collector /usr/sbin/subscribe_publish_sample"
+	tar -zcf rae.tar.gz $FILES
+	mv rae.tar.gz $rae_partion
+	echo 1 >$RAE_DIR/status
+}
+
+check()
+{
+	mkdir $RAE_DIR
+	echo 0 >$RAE_DIR/status
+	cp $rae_partion /tmp/rae.tar.gz 
+	tar -zxf /tmp/rae.tar.gz -C $RAE_DIR/
+	tar_status=$?
+	if [ -s $RAE_DIR/rae_version -a -s $RAE_DIR/policy_version -a -s $RAE_DIR/usr/sbin/aws-iot -a -s $RAE_DIR/usr/sbin/data_collector -a -s $RAE_DIR/usr/sbin/subscribe_publish_sample -a -s $RAE_DIR/RAE_Policy.json ];then
+		mv $RAE_DIR/usr/sbin/* /usr/sbin/
+		echo 1 >$RAE_DIR/status
+		rm /tmp/rae.tar.gz -rf
+		rm $RAE_DIR/usr -rf
+	fi
+}
+
+boot()
+{
+	#if DUT not get ntp time, use firmware release time
+	if [ "x$(date | grep 1970)" != "x" -a "x$1" != "xmanually" ]; then
+		local date=`cat /firmware_time`
+		local mon=`echo $date |awk '{print $2}'`
+		local day=`echo $date |awk '{print $3}'`
+		[ "$(echo $mon |wc -L)" = "1" ] && mon="0$mon"
+		[ "$(echo $day |wc -L)" = "1" ] && day="0$day"
+		local time=`echo $date |awk '{print $4}'`
+		local hour=`echo $time |awk  -F ':' '{print $1}'`
+		local min=`echo $time |awk -F ':' '{print $2}'`
+		local year=`echo $date |awk '{print $6}'`
+		case "$mon" in
+			Jan) mon="01";;
+			Feb) mon="02";;
+			Mar) mon="03";;
+			Apr) mon="04";;
+			May) mon="05";;
+			Jun) mon="06";;
+			Jul) mon="07";;
+			Aug) mon="08";;
+			Sep) mon="09";;
+			Oct) mon="10";;
+			Nov) mon="11";;
+			Dec) mon="12";;
+		esac
+		date $mon$day$hour$min$year
+	fi
+
+	dd if=$panic_partion of=/tmp/crash_log bs=131072 count=1
+	local crash_newline=`cat /tmp/crash_log | wc -l`
+	local crash_oldline=`/bin/config get crash_line`
+	if [ "$crash_newline" != "$crash_oldline" ] && [ "x$crash_oldline" != "x" ]; then
+		echo 1 >/tmp/reboot_reason
+		local UTC_time=`date +%s`
+		local get_time_zone=`/bin/config get time_zone`
+		local modify_zone=`echo $get_time_zone | cut -d \T -f 2`
+		local symbol=`echo ${modify_zone%%[0-9]*}`
+		local value=`echo ${modify_zone#[-+]*}`
+		local value_s=$(($value*3600))
+		if [ "$symbol" = "+" ]; then 
+			UTC_time=$(($value_s+$UTC_time-180))
+		fi
+		if [ "$symbol" = "-" ]; then 
+			UTC_time=$(($UTC_time-$value_s-180))
+		fi
+		/bin/config set time_crash=$UTC_time
+		local get_line=$crash_newline
+		tail -n$get_line < /tmp/crash_log > /tmp/crash_aws_log
+		/bin/config set crash_line=$crash_newline
+		/bin/config set eventtype=0
+	fi
+	if [ "x$crash_oldline" == "x" ]; then
+		/bin/config set crash_line=$crash_newline
+	fi
+	
+#	dd if=$panic_partion of=/tmp/reboot_reason bs=16318 count=1
+	reboot_reason=`echo "obase=10;ibase=16;$(cat /proc/reboot_reason|awk -F 'x' '{print $2}')"|bc`
+	oom="0"
+	oops="0"
+	panic="0"
+	watchdog="0"
+	if [ "$(($(($reboot_reason >> 1))%2))" != "0" ];then
+		#  Upgrade 
+		echo 6 >/tmp/reboot_reason
+	fi
+	if [ "$(($(($reboot_reason >> 2))%2))" != "0" ];then
+		#oom
+		oom="1"
+		echo 1 >/tmp/reboot_reason
+	fi
+	if [ "$(($(($reboot_reason >> 3))%2))" != "0" ];then
+		#oops
+		oops="1"
+		echo 1 >/tmp/reboot_reason
+	fi
+	if [ "$(($(($reboot_reason >>  4))%2))" != "0" ];then
+		#panic 
+		panic="1"
+		echo 1 >/tmp/reboot_reason
+	fi
+	if [ "$(($(($reboot_reason >> 5))%2))" != "0" ];then
+		#watchdog reboot
+		watchdog="1"
+		echo 1 >/tmp/reboot_reason
+	fi
+	if [ "$(($(($reboot_reason >> 6))%2))" != "0" ];then
+		#reset button reboot
+		echo 2 >/tmp/reboot_reason
+	fi
+	if [ "$(($(($reboot_reason >> 7))%2))" != "0" ];then
+		#reset button default
+		echo 3 >/tmp/reboot_reason
+	fi
+	if [ "$(($(($reboot_reason >> 8))%2))" != "0" ];then
+		#GUI reboot
+		echo 5 >/tmp/reboot_reason
+	fi
+	if [ "$(($(($reboot_reason >> 9))%2))" != "0" ];then
+		#Factory reset reboot from GUI
+		echo 4 >/tmp/reboot_reason
+	fi
+	if [ "$(($(($reboot_reason >> 10))%2))" != "0" ];then
+		#back up reboot from GUI
+		echo 7 >/tmp/reboot_reason
+	fi
+	if [ "$(($(($reboot_reason))%2))" != "0" -o "$reboot_reason" == "0" ];then
+		#unknown reboot
+		echo 0 >/tmp/reboot_reason
+	fi
+
+	[ -f /tmp/reboot_reason ] || echo 0 >/tmp/reboot_reason
+
+	if [ "x$(cat /tmp/reboot_reason)" = "x1" ];then
+		[ -f /tmp/crash_aws_log ] || echo -n " "> /tmp/crash_aws_log
+		if [ "$oom" = "1" ];then
+			sed -i '1s/^/===Kernel oom===/' /tmp/crash_aws_log
+		elif [ "$oops" = "1" ];then
+			sed -i '1s/^/===Kernel oops===/' /tmp/crash_aws_log
+		elif [ "$watchdog" = "1" ];then 
+			sed -i '1s/^/===Kernel watchdog===/' /tmp/crash_aws_log
+		else
+			sed -i '1s/^/===Kernel panic===/' /tmp/crash_aws_log
+		fi
+	fi
+
+	check
+	/bin/config set cpu_flag=1
+	/bin/config set memory_flag=1
+	/bin/config set eventtype=0
+	/bin/config commit
+	if [ "$(cat $RAE_DIR/status)" = "1" ]; then
+		start
+	else
+		/usr/sbin/ra_check
+	fi
+}
+
+cpu_test()
+{
+	for in in `seq $1`
+	do 
+		echo -ne "i=0;
+		while true
+		do 
+			i=i+1;
+		done" | /bin/sh &
+		
+	done
+}
+
+memory_test()
+{
+	if [ "$1" = 1 ]; then
+		mkdir /tmp/memory
+		mount -t tmpfs -o size=280M tmpfs /tmp/memory
+		dd if=/dev/zero of=/tmp/memory/block
+	else
+		rm /tmp/memory/block
+		umount /tmp/memory
+		rmdir /tmp/memory
+	fi
+}
+
+disable()
+{
+	killall -9 aws-iot
+	rm /var/run/aws_iot.pid
+	killall -9 ra_check
+	rm /var/run/ra_check.pid
+	killall -9 icqm
+	rm /var/run/icqm_check.pid
+}
+case "$1" in 
+	"boot")
+		boot $2
+	;;
+	"start")
+		start
+	;;
+	"stop")
+		stop
+	;;
+	"disable")
+		disable
+	;;
+	"restart")
+		restart
+	;;
+	"update")
+		update
+	;;
+	"check")
+		check
+	;;
+	"cpu")
+		cpu_test  $2
+	;;
+	"memory")
+		memory_test $2
+	;;
+	*)
+		echo "Unknow command" > /dev/console
+		echo "Usage: $0 boot|start|stop|restart|update|disable" > /dev/console
+	;;
+esac

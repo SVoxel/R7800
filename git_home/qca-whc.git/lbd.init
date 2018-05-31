@@ -1,0 +1,290 @@
+#!/bin/sh /etc/rc.common
+#
+# @@-COPYRIGHT-START-@@
+#
+# Copyright (c) 2013,2014 Qualcomm Atheros, Inc.
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary.
+#
+# @@-COPYRIGHT-END-@@
+#
+
+START=55
+SERVICE_WRITE_PID=1
+SERVICE_DAEMONIZE=1
+SERVICE_DEBUG_OUTPUT=0
+SERVICE_PATH="/usr/sbin/lbd"
+LBD_CONFIG_FILE="/tmp/lbd.conf"
+LBD_RUN_FILE="/var/run/.lbd"
+
+. /lib/functions/whc-debug.sh
+. /lib/functions/whc-iface.sh
+
+__lbd_cfg_append() {
+	echo "$1" >> "$LBD_CONFIG_FILE"
+}
+
+__lbd_cfg_nl_append() {
+	echo "" >> "$LBD_CONFIG_FILE"
+	echo "$1" >> "$LBD_CONFIG_FILE"
+}
+
+# __lbd_cfg_add_str <section> <option>
+__lbd_cfg_add_str() {
+	local key="$2"
+	local section="$1"
+	local option="$2"
+
+	config_get val "${section}" "${option}"
+	[ -n "${val}" ] && __lbd_cfg_append "${key}=${val}"
+}
+
+__lbd_cfg_add_str_new_key() {
+	local section="$1"
+	local option="$2"
+	local newkey="$3"
+
+	config_get val "${section}" "${option}"
+	[ -n "${val}" ] && __lbd_cfg_append "${newkey}=${val}"
+}
+
+# Given two (section, key) pairs, subtract the second value from the first
+# to arrive at an RSSI value and use that for the key being generated.
+# This is meant to convert an RSSI on one band to an RSSI on the
+# other band, albeit in such a way that is the mirror image of the estimates
+# performed by lbd.
+# To prevent value underflow/overflow, use 0 for the key if the base value
+# is smaller than the adjust value; use 255 if the base value subtracts the
+# adjust value is greater than 255
+__lbd_cfg_add_rssi_est_str() {
+	local basevalsection="$1"
+	local basevalkey="$2"
+	local adjvalsection="$3"
+	local adjvalkey="$4"
+	local newkey="$5"
+
+	config_get baseval "${basevalsection}" "${basevalkey}"
+	config_get adjval  "${adjvalsection}" "${adjvalkey}"
+	if [ -n "${baseval}" ] && [ -n "${adjval}" ]; then
+		if [ "${baseval}" -gt "${adjval}" ] && \
+                   [ "${baseval}" -lt "$((255 + $adjval))" ]; then
+			val="$(($baseval - $adjval))"
+		elif [ "${baseval}" -le "${adjval}" ]; then
+			val="0"
+		elif [ "${baseval}" -ge "$((255 + $adjval))" ]; then
+			val="255"
+		fi
+	fi
+
+	[ -n "${val}" ] && __lbd_cfg_append "${newkey}=${val}"
+}
+
+__lbd_cfg_add_head() {
+	echo ";"	> "$LBD_CONFIG_FILE"
+	__lbd_cfg_append ';  Automatically generated lbd configure file,do not change it.'
+	__lbd_cfg_append ';'
+	__lbd_cfg_append ';INTERFACE		wlan interface'
+	__lbd_cfg_append ';WLANIF2G		wlan driver interface for 2.4 GHz band'
+	__lbd_cfg_append ';WLANIF5G		wlan driver interface for 5 GHz band'
+	__lbd_cfg_append ';STADB:		station database'
+	__lbd_cfg_append ';STAMON:		station monitor'
+	__lbd_cfg_append ';BANDMON:		band monitor'
+	__lbd_cfg_append ';ESTIMATOR:		rate estimator'
+	__lbd_cfg_append ';STEEREXEC:		steering executor'
+	__lbd_cfg_append ';STEERALG:		steering algorithm'
+	__lbd_cfg_append ';DIAGLOG:		diagnostic logging'
+}
+
+__lbd_cfg_add_interface() {
+	local section="config"
+	local option="MatchingSSID"
+	config_get ssid "${section}" "${option}"
+
+	local all_wlan_ifaces
+
+	# Get a list of wlan interfaces, seperated by comma
+	whc_get_wlan_ifaces all_wlan_ifaces $ssid
+	__lbd_cfg_append 'WlanInterfaces='$all_wlan_ifaces
+}
+
+__lbd_create_config() {
+	config_load 'lbd'
+	__lbd_cfg_add_head
+	__lbd_cfg_add_str	config_Adv	AgeLimit
+
+	__lbd_cfg_nl_append '[INTERFACE]'
+	__lbd_cfg_add_interface
+
+	__lbd_cfg_nl_append '[WLANIF2G]'
+	__lbd_cfg_add_str_new_key	IdleSteer	NormalInactTimeout	InactIdleThreshold
+	__lbd_cfg_add_str_new_key	IdleSteer	OverloadInactTimeout	InactOverloadThreshold
+	__lbd_cfg_add_str	IdleSteer	InactCheckInterval
+	__lbd_cfg_add_rssi_est_str	IdleSteer	RSSISteeringPoint_UG	Estimator_Adv	RSSIDiff_EstW5FromW2	InactRSSIXingHighThreshold
+	__lbd_cfg_add_str	SteerExec_Adv	LowRSSIXingThreshold
+	__lbd_cfg_add_str_new_key	BandMonitor_Adv	MUCheckInterval_W2	MUCheckInterval
+	__lbd_cfg_add_str	Offload		MUAvgPeriod
+	__lbd_cfg_add_str	Estimator_Adv	BcnrptActiveDuration
+	__lbd_cfg_add_str	Estimator_Adv	BcnrptPassiveDuration
+	__lbd_cfg_add_str_new_key	ActiveSteer	TxRateXingThreshold_UG	HighTxRateXingThreshold
+	__lbd_cfg_add_str_new_key	ActiveSteer	RateRSSIXingThreshold_UG	HighRateRSSIXingThreshold
+
+	 __lbd_cfg_nl_append '[WLANIF5G]'
+	__lbd_cfg_add_str_new_key	IdleSteer	NormalInactTimeout	InactIdleThreshold
+	__lbd_cfg_add_str_new_key	IdleSteer	OverloadInactTimeout	InactOverloadThreshold
+	__lbd_cfg_add_str	IdleSteer	InactCheckInterval
+	__lbd_cfg_add_str_new_key	IdleSteer	RSSISteeringPoint_UG	InactRSSIXingHighThreshold
+	__lbd_cfg_add_rssi_est_str	IdleSteer	RSSISteeringPoint_DG	Estimator_Adv	RSSIDiff_EstW2FromW5	InactRSSIXingLowThreshold
+	__lbd_cfg_add_str	SteerExec_Adv	LowRSSIXingThreshold
+	__lbd_cfg_add_str_new_key	BandMonitor_Adv	MUCheckInterval_W5	MUCheckInterval
+	__lbd_cfg_add_str	Offload		MUAvgPeriod
+	__lbd_cfg_add_str	Estimator_Adv	BcnrptActiveDuration
+	__lbd_cfg_add_str	Estimator_Adv	BcnrptPassiveDuration
+	__lbd_cfg_add_str_new_key	ActiveSteer	TxRateXingThreshold_DG	LowTxRateXingThreshold
+	__lbd_cfg_add_str_new_key	ActiveSteer	RateRSSIXingThreshold_DG	LowRateRSSIXingThreshold
+
+	__lbd_cfg_nl_append '[STADB]'
+	__lbd_cfg_add_str	StaDB		IncludeOutOfNetwork
+	__lbd_cfg_add_str	StaDB_Adv	AgingSizeThreshold
+	__lbd_cfg_add_str	StaDB_Adv	AgingFrequency
+	__lbd_cfg_add_str	StaDB_Adv	OutOfNetworkMaxAge
+	__lbd_cfg_add_str	StaDB_Adv	InNetworkMaxAge
+	__lbd_cfg_add_str_new_key	config_Adv	AgeLimit	ProbeMaxInterval
+
+	__lbd_cfg_nl_append '[STAMON]'
+	__lbd_cfg_add_str	StaMonitor_Adv	RSSIMeasureSamples_W2
+	__lbd_cfg_add_str	StaMonitor_Adv	RSSIMeasureSamples_W5
+	__lbd_cfg_add_str	config_Adv	AgeLimit
+	__lbd_cfg_add_str_new_key	ActiveSteer	TxRateXingThreshold_UG	HighTxRateXingThreshold
+	__lbd_cfg_add_str_new_key	ActiveSteer	RateRSSIXingThreshold_UG	HighRateRSSIXingThreshold
+	__lbd_cfg_add_str_new_key	ActiveSteer	TxRateXingThreshold_DG	LowTxRateXingThreshold
+	__lbd_cfg_add_str_new_key	ActiveSteer	RateRSSIXingThreshold_DG	LowRateRSSIXingThreshold
+
+	__lbd_cfg_nl_append '[BANDMON]'
+	__lbd_cfg_add_str	Offload		MUOverloadThreshold_W2
+	__lbd_cfg_add_str	Offload		MUOverloadThreshold_W5
+	__lbd_cfg_add_str	Offload		MUSafetyThreshold_W2
+	__lbd_cfg_add_str	Offload		MUSafetyThreshold_W5
+	__lbd_cfg_add_str_new_key	Offload	OffloadingMinRSSI	RSSISafetyThreshold
+	__lbd_cfg_add_str_new_key	config_Adv	AgeLimit	RSSIMaxAge
+	__lbd_cfg_add_str	BandMonitor_Adv	ProbeCountThreshold
+
+	__lbd_cfg_nl_append '[ESTIMATOR]'
+	__lbd_cfg_add_str	config_Adv	AgeLimit
+	__lbd_cfg_add_str	Estimator_Adv	RSSIDiff_EstW5FromW2
+	__lbd_cfg_add_str	Estimator_Adv	RSSIDiff_EstW2FromW5
+	__lbd_cfg_add_str	Estimator_Adv	ProbeCountThreshold
+	__lbd_cfg_add_str	Estimator_Adv	StatsSampleInterval
+	__lbd_cfg_add_str	Estimator_Adv	11kProhibitTime
+	__lbd_cfg_add_str	Estimator_Adv	PhyRateScalingForAirtime
+	__lbd_cfg_add_str	Estimator_Adv	EnableContinuousThroughput
+
+	__lbd_cfg_nl_append '[STEEREXEC]'
+	__lbd_cfg_add_str	SteerExec	SteeringProhibitTime
+	__lbd_cfg_add_str	SteerExec_Adv	TSteering
+	__lbd_cfg_add_str	SteerExec_Adv	InitialAuthRejCoalesceTime
+	__lbd_cfg_add_str	SteerExec_Adv	AuthRejMax
+	__lbd_cfg_add_str	SteerExec_Adv	SteeringUnfriendlyTime
+	__lbd_cfg_add_str	SteerExec_Adv	MaxSteeringUnfriendly
+	__lbd_cfg_add_str_new_key	SteerExec_Adv	LowRSSIXingThreshold	LowRSSIXingThreshold_W2
+	__lbd_cfg_add_str_new_key	SteerExec_Adv	LowRSSIXingThreshold	LowRSSIXingThreshold_W5
+	__lbd_cfg_add_str	SteerExec_Adv	TargetLowRSSIThreshold_W2
+	__lbd_cfg_add_str	SteerExec_Adv	TargetLowRSSIThreshold_W5
+	__lbd_cfg_add_str	SteerExec_Adv	BlacklistTime
+	__lbd_cfg_add_str	SteerExec_Adv	BTMResponseTime
+	__lbd_cfg_add_str	SteerExec_Adv	BTMAssociationTime
+	__lbd_cfg_add_str	SteerExec_Adv	BTMAlsoBlacklist
+	__lbd_cfg_add_str	SteerExec_Adv	BTMUnfriendlyTime
+	__lbd_cfg_add_str	SteerExec	BTMSteeringProhibitShortTime
+	__lbd_cfg_add_str	SteerExec_Adv	MaxBTMUnfriendly
+	__lbd_cfg_add_str	SteerExec_Adv	MaxBTMActiveUnfriendly
+	__lbd_cfg_add_str	config_Adv	AgeLimit
+	__lbd_cfg_add_str	SteerExec_Adv	MinRSSIBestEffort
+
+	__lbd_cfg_nl_append '[STEERALG]'
+	__lbd_cfg_add_str_new_key	IdleSteer	RSSISteeringPoint_DG	InactRSSIXingThreshold_W2
+	__lbd_cfg_add_str_new_key	IdleSteer	RSSISteeringPoint_UG	InactRSSIXingThreshold_W5
+	__lbd_cfg_add_str_new_key	ActiveSteer	TxRateXingThreshold_UG	HighTxRateXingThreshold
+	__lbd_cfg_add_str_new_key	ActiveSteer	RateRSSIXingThreshold_UG	HighRateRSSIXingThreshold
+	__lbd_cfg_add_str_new_key	ActiveSteer	TxRateXingThreshold_DG	LowTxRateXingThreshold
+	__lbd_cfg_add_str_new_key	ActiveSteer	RateRSSIXingThreshold_DG	LowRateRSSIXingThreshold
+	__lbd_cfg_add_str	SteerAlg_Adv	MinTxRateIncreaseThreshold
+	__lbd_cfg_add_str	config_Adv	AgeLimit
+	__lbd_cfg_add_str	config		PHYBasedPrioritization
+	__lbd_cfg_add_str_new_key	Offload	OffloadingMinRSSI	RSSISafetyThreshold
+
+	__lbd_cfg_nl_append '[DIAGLOG]'
+	__lbd_cfg_add_str	DiagLog		EnableLog
+	__lbd_cfg_add_str	DiagLog		LogServerIP
+	__lbd_cfg_add_str	DiagLog		LogServerPort
+	__lbd_cfg_add_str	DiagLog		LogLevelWlanIF
+	__lbd_cfg_add_str	DiagLog		LogLevelBandMon
+	__lbd_cfg_add_str	DiagLog		LogLevelStaDB
+	__lbd_cfg_add_str	DiagLog		LogLevelSteerExec
+	__lbd_cfg_add_str	DiagLog		LogLevelStaMon
+	__lbd_cfg_add_str	DiagLog		LogLevelEstimator
+	__lbd_cfg_add_str	DiagLog		LogLevelDiagLog
+}
+
+check_bands() {
+	local band_24g
+	local band_5g
+	BANDS=$(/usr/sbin/iwconfig 2> /dev/null | grep Frequency | cut -d':' -f 3 | cut -d'.' -f 1)
+	for band in $BANDS
+	do
+		if [ "$band" == "2" ]; then
+			band_24g=1
+		elif [ "$band" == "5" ]; then
+			band_5g=1
+		fi
+	done
+
+	if [ "$band_24g" == "1" ] && [ "$band_5g" == "1" ]; then
+		dual_bands=1
+	fi
+}
+
+start() {
+	whc_wifi_config_lock
+	__stop
+
+	config_load 'lbd'
+	config_get_bool enabled config 'Enable' '0'
+	local lbd_rcd_enabled=`ls /etc/rc.d/S${START}lbd 2> /dev/null`
+
+	[ "$enabled" -gt 0 -a -n "$lbd_rcd_enabled" ] || {
+		whc_wifi_config_unlock
+		return 1
+	}
+
+	check_bands
+	if [ "$dual_bands" -ne "1" ]; then
+		whc_echo lbd "require both 2.4 GHz and 5 GHz to be configured. Aborting start."
+		whc_wifi_config_unlock
+		return 1
+	fi
+
+	whc_echo lbd "starting daemon"
+	# Create configuration file and start lbd
+	__lbd_create_config
+	${SVCDBG}service_start ${SERVICE_PATH} -d -C "$LBD_CONFIG_FILE"
+
+	touch $LBD_RUN_FILE
+	whc_wifi_config_unlock
+}
+
+__stop() {
+	${SVCDBG}service_stop ${SERVICE_PATH}
+
+	# Workaround, sometimes service_stop does not kill lbd
+	start-stop-daemon -K -x ${SERVICE_PATH} -s SIGKILL > /dev/null
+}
+
+stop() {
+	__stop
+	config_load 'lbd'
+}
+
+restart() {
+	[ -f "$LBD_RUN_FILE" ] || return
+	start
+}
