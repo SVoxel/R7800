@@ -43,14 +43,24 @@ define WifiFirmware
 
   define Package/$(PKG_NAME)$(1)/install
 	$(INSTALL_DIR) $$(1)/lib/firmware/$(3)
+	$(INSTALL_DIR) $$(1)/lib/firmware/$(3)/FCC_ETSI
+	$(INSTALL_DIR) $$(1)/lib/firmware/$(3)/INS
+	$(INSTALL_DIR) $$(1)/lib/firmware/$(3)/SRRC
 	$(HOST_TAR) jxvf $(DL_DIR)/$(PKG_SOURCE) -C $$(1)/lib/firmware/$(3) --strip-components=1
 	$(INSTALL_BIN) ./files/boarddata_0.bin $$(1)/lib/firmware/$(3)
 	$(INSTALL_BIN) ./files/boarddata_1.bin $$(1)/lib/firmware/$(3)
 	$(INSTALL_BIN) ./files/boardData_QCA9984_CUS239_5G_v1_001.bin $$(1)/lib/firmware/$(3)
-	$(INSTALL_BIN) ./files/boardData_QCA9984_CUS260_2G_v1_002.bin $$(1)/lib/firmware/$(3)
 	$(INSTALL_BIN) ./files/boardData_QCA9984_CUS239_5G_v1_NEW_FCC_001.bin $$(1)/lib/firmware/$(3)
-	$(INSTALL_BIN) ./files/boardData_QCA9984_CUS260_2G_v1_PR_002.bin $$(1)/lib/firmware/$(3)
-	$(INSTALL_BIN) ./files/boardData_QCA9984_CUS239_5G_v1_PR_001.bin $$(1)/lib/firmware/$(3)
+	$(INSTALL_BIN) ./files/boardData_QCA9984_CUS260_2G_v1_002.bin $$(1)/lib/firmware/$(3)
+	$(INSTALL_BIN) ./files/FCC_ETSI/boarddata_0.bin $$(1)/lib/firmware/$(3)/FCC_ETSI
+	$(INSTALL_BIN) ./files/FCC_ETSI/boarddata_1.bin $$(1)/lib/firmware/$(3)/FCC_ETSI
+	$(INSTALL_BIN) ./files/FCC_ETSI/boardData_QCA9984_CUS239_5G_v1_001.bin $$(1)/lib/firmware/$(3)/FCC_ETSI
+	$(INSTALL_BIN) ./files/FCC_ETSI/boardData_QCA9984_CUS239_5G_v1_NEW_FCC_001.bin $$(1)/lib/firmware/$(3)/FCC_ETSI
+	$(INSTALL_BIN) ./files/FCC_ETSI/boardData_QCA9984_CUS260_2G_v1_002.bin $$(1)/lib/firmware/$(3)/FCC_ETSI
+	$(INSTALL_BIN) ./files/INS/boardData_QCA9984_CUS239_5G_v1_001.bin $$(1)/lib/firmware/$(3)/INS
+	$(INSTALL_BIN) ./files/INS/boardData_QCA9984_CUS260_2G_v1_002.bin $$(1)/lib/firmware/$(3)/INS
+	$(INSTALL_BIN) ./files/SRRC/boardData_QCA9984_CUS239_5G_v1_001.bin $$(1)/lib/firmware/$(3)/SRRC
+	$(INSTALL_BIN) ./files/SRRC/boardData_QCA9984_CUS260_2G_v1_002.bin $$(1)/lib/firmware/$(3)/SRRC
   endef
 
   $$(eval $$(call BuildPackage,$(PKG_NAME)$(1)))
