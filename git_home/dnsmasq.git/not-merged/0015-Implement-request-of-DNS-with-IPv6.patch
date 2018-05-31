@@ -1,0 +1,227 @@
+From c8044d61ecf9bd3783a9528375c66e1115bf742d Mon Sep 17 00:00:00 2001
+From: Iceway Zhang <iceway.zhang@dniserver.dnish.net>
+Date: Fri, 5 Feb 2010 12:03:12 +0800
+Subject: [PATCH 15/44] Implement request of DNS with IPv6.
+
+1. Add some variables to struct "frec" and "daemon".
+2. Record related information if receive DNS query include type
+   of AAAA, A6 or A from LAN.
+3. Record if DNS servers include type of IPv6 and IPv4, or just
+   one type of them.
+
+Note:
+   Please define macro "DNI_IPV6_FEATURE" to enable this feature,
+   maybe you could do this in file "package/dnsmasq/Makefile".
+
+-------------------------------------------------------
+Following items have been checked in this commit:
+
+1: The syntax and comment are compliant.
+
+2: No memory leak.
+   * memory allocated by malloc() will be freed
+   * memory allocated by calloc() will be freed
+
+3: No deadlock such as
+   * No function call deadlock.
+   * No semaphore deadlock.
+   * No tag or label deadlock.
+
+4: No stack overflow caused by
+   * infinite recursion
+   * too large local array variables
+
+5: coding completeness, such as
+   * conditions completeness
+   * functions completeness
+   * update completeness
+   * memory resources completeness
+   * sessions resources completeness
+
+Signed-off-by: Iceway Zhang <iceway.zhang@dniserver.dnish.net>
+Signed-off-by: josn.wang <josnwang@dniserver.dnish.net>
+---
+ src/dnsmasq.h |   40 ++++++++++++++++++++++++++++++++++++++++
+ src/forward.c |   21 +++++++++++++++++++++
+ src/network.c |   15 +++++++++++++++
+ src/rfc1035.c |   13 +++++++++++--
+ 4 files changed, 87 insertions(+), 2 deletions(-)
+
+diff --git a/src/dnsmasq.h b/src/dnsmasq.h
+index 44a47c0..988a44b 100644
+--- a/src/dnsmasq.h
++++ b/src/dnsmasq.h
+@@ -122,6 +122,10 @@ extern int capset(cap_user_header_t header, cap_user_data_t data);
+ #define OPT_TFTP_NOBLOCK   (1<<27)
+ #define OPT_LOG_OPTS       (1<<28)
+ 
++#ifdef DNI_IPV6_FEATURE
++#define T_A6 ns_t_a6
++#endif
++
+ #ifdef SUP_STATIC_PPTP
+ #define DEF_STATIC_PPTP_CONFIG "/tmp/pptp.conf"
+ #endif
+@@ -305,6 +309,37 @@ struct frec {
+   int fd, forwardall;
+   unsigned int crc;
+   time_t time;
++#ifdef DNI_IPV6_FEATURE
++  /* According to IPv6 spec, when then DNS query from LAN include type of AAAA or A6,
++     if DNS servers configed with an IPv6 address at least, this query should be
++     forwarded to these IPv6 servers. If no-configed with IPv6 address or query fails
++     from IPv6 DNS servers(e.g. timeout, error...), forward it to IPv4 DNS servers,
++     vice versa.
++     This variable identified if IPv6 servers was all sent to if query include AAAA
++     or A6 and configed with IPv6 DNS server, or if IPv4 servers was all sent to and
++     configed with IPv4 DNS server.
++
++     fwd_sign == 0, query is not be forwarded;
++     fwd_sign == 1, query was forwarded to the first group of servers(IPv6 or IPv4);
++     fwd_sign == 2, query was forwarded to the other group of servers(IPv4 or IPv6),
++                    that is to say, query was forwarded to all DNS servers;
++
++     Example:
++     Assume router was configed with 2 IPv6 DNS servers and 3 IPv4 DNS servers, if
++     one query from LAN include type of A6, this variable is set to 0 firstly, once
++     all IPv6 servers are sent to, this variable is set to 1, and after 3 seconds
++     since last IPv6 server was sent to, this query is forwarded to IPv4 DNS
++     servers and this variable is set to 2.
++     Assume router was configed with just serveral IPv6 DNS servers or jsut serveral
++     IPv4 DNS server, if receive one query from LAN, no matter include AAAA or A6 or
++     others, this variable is set to 0 firstly, this query is forwarded to all DNS
++     servers, and the value of this variable will be reset to 2 straight. */
++  int fwd_sign;
++  unsigned short flags;
++  char name[MAXDNAME];
++  unsigned short type;
++  unsigned short class;
++#endif
+   struct frec *next;
+ };
+ 
+@@ -506,6 +541,11 @@ struct daemon {
+   struct iname *if_names, *if_addrs, *if_except, *dhcp_except;
+   struct bogus_addr *bogus_addr;
+   struct server *servers;
++#ifdef DNI_IPV6_FEATURE
++  /* diff_svr == 1, at least one IPv4 DNS server and one IPv6 DNS server configed
++     diff_svr == 0, DNS servers are all IPv4 or IPv6 */
++  int diff_svr;
++#endif
+   int log_fac; /* log facility */
+   char *log_file; /* optional log file */
+   int max_logs;  /* queue limit */
+diff --git a/src/forward.c b/src/forward.c
+index 3968978..3c438b9 100644
+--- a/src/forward.c
++++ b/src/forward.c
+@@ -32,6 +32,10 @@ static int trans_deviceid(char *deviceid, char *deviceid_b);
+ #define PC_PUTSHORT(x, y) *(y)=(x)>>8; *(y+1)=(x)&0x00ff
+ #endif
+ 
++#ifdef DNI_IPV6_FEATURE
++extern int extract_name(HEADER *header, size_t plen, unsigned char **pp,
++                       char *name, int isExtract);
++#endif
+ 
+ /* Send a UDP packet with it's source address set as "source" 
+    unless nowild is true, when we just send it with the kernel default */
+@@ -233,6 +237,11 @@ static void forward_query(struct daemon *daemon, int udpfd, union mysockaddr *ud
+       if (!(daemon->options & OPT_ORDER))
+ 	{
+ 	  forward->forwardall = 1;
++#ifdef DNI_IPV6_FEATURE
++	  forward->time = now;
++          if (2 == forward->fwd_sign)
++	    forward->fwd_sign = 0;
++#endif
+ 	  daemon->last_server = NULL;
+ 	}
+       type = forward->sentto->flags & SERV_TYPE;
+@@ -263,6 +272,18 @@ static void forward_query(struct daemon *daemon, int udpfd, union mysockaddr *ud
+ 	  forward->fd = udpfd;
+ 	  forward->crc = crc;
+ 	  forward->forwardall = 0;
++#ifdef DNI_IPV6_FEATURE
++	  unsigned char *p = (unsigned char *)(header+1);
++	  if (F_IPV4 == gotname || F_IPV6 == gotname)
++	    {
++	      memcpy(&forward->flags, (unsigned char *)header + 2, sizeof(forward->flags));
++	      memset(forward->name, 0x00, sizeof(forward->name));
++	      extract_name(header, plen, &p, forward->name, 1);
++	      GETSHORT(forward->type, p);
++	      GETSHORT(forward->class, p);
++	    }
++	  forward->fwd_sign = 0;
++#endif
+ 	  header->id = htons(forward->new_id);
+ 
+ 	  /* In strict_order mode, or when using domain specific servers
+diff --git a/src/network.c b/src/network.c
+index fffa236..510f6d2 100644
+--- a/src/network.c
++++ b/src/network.c
+@@ -480,6 +480,10 @@ void check_servers(struct daemon *daemon)
+   struct irec *iface;
+   struct server *new, *tmp, *ret = NULL;
+   int port = 0;
++#ifdef DNI_IPV6_FEATURE
++  struct server *sresolv = NULL;
++  daemon->diff_svr = 0;
++#endif
+ 
+   for (new = daemon->servers; new; new = tmp)
+     {
+@@ -521,6 +525,17 @@ void check_servers(struct daemon *daemon)
+       /* reverse order - gets it right. */
+       new->next = ret;
+       ret = new;
++#ifdef DNI_IPV6_FEATURE
++      if (new->flags & SERV_FROM_RESOLV)
++        {
++	  if (NULL == sresolv)
++	    sresolv = new;
++	  if (new->addr.sa.sa_family != sresolv->addr.sa.sa_family)
++            {
++	      daemon->diff_svr = 1;
++            }
++	}
++#endif
+       
+       if (new->flags & (SERV_HAS_DOMAIN | SERV_FOR_NODOTS))
+ 	{
+diff --git a/src/rfc1035.c b/src/rfc1035.c
+index a103335..059e282 100644
+--- a/src/rfc1035.c
++++ b/src/rfc1035.c
+@@ -17,8 +17,13 @@ static int add_resource_record(HEADER *header, char *limit, int *truncp,
+ 			       unsigned long ttl, unsigned int *offset, unsigned short type, 
+ 			       unsigned short class, char *format, ...);
+ 
+-static int extract_name(HEADER *header, size_t plen, unsigned char **pp, 
+-			char *name, int isExtract)
++#ifdef DNI_IPV6_FEATURE
++int extract_name(HEADER *header, size_t plen, unsigned char **pp,
++                       char *name, int isExtract)
++#else
++static int extract_name(HEADER *header, size_t plen, unsigned char **pp,
++                       char *name, int isExtract)
++#endif
+ {
+   unsigned char *cp = (unsigned char *)name, *p = *pp, *p1 = NULL;
+   unsigned int j, l, hops = 0;
+@@ -816,6 +821,10 @@ unsigned short extract_request(HEADER *header, size_t qlen, char *name, unsigned
+ 	return F_IPV4;
+       if (qtype == T_AAAA)
+ 	return F_IPV6;
++#ifdef DNI_IPV6_FEATURE
++      if (qtype == T_A6)
++	return F_IPV6;
++#endif
+       if (qtype == T_ANY)
+ 	return  F_IPV4 | F_IPV6;
+       if (qtype == T_NS || qtype == T_SOA)
+-- 
+1.7.4.1
+

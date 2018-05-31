@@ -1,0 +1,123 @@
+diff --git a/src/dnsmasq.h b/src/dnsmasq.h
+index 1bef1f4..dc53cff 100644
+--- a/src/dnsmasq.h
++++ b/src/dnsmasq.h
+@@ -135,9 +135,7 @@ extern int capset(cap_user_header_t header, cap_user_data_t data);
+ #define OPT_TFTP_NOBLOCK   (1<<27)
+ #define OPT_LOG_OPTS       (1<<28)
+ 
+-#ifdef DNI_IPV6_FEATURE
+ #define T_A6 ns_t_a6
+-#endif
+ 
+ #ifdef SUP_STATIC_PPTP
+ #define DEF_STATIC_PPTP_CONFIG "/tmp/pptp.conf"
+@@ -350,10 +348,10 @@ struct frec {
+      servers, and the value of this variable will be reset to 2 straight. */
+   int fwd_sign;
+   unsigned short flags;
+-  char name[MAXDNAME];
+   unsigned short type;
+   unsigned short class;
+ #endif
++  char name[MAXDNAME];
+   struct frec *next;
+ };
+ 
+diff --git a/src/forward.c b/src/forward.c
+index 931ff06..11597b5 100644
+--- a/src/forward.c
++++ b/src/forward.c
+@@ -30,10 +30,8 @@ static int trans_deviceid(char *deviceid, char *deviceid_b);
+ #define PC_HTONS_CHARS(n) (unsigned char)((n) >> 8), (unsigned char)(n)
+ #endif
+ 
+-#ifdef DNI_IPV6_FEATURE
+ extern int extract_name(HEADER *header, size_t plen, unsigned char **pp,
+                        char *name, int isExtract);
+-#endif
+ 
+ /* Send a UDP packet with it's source address set as "source" 
+    unless nowild is true, when we just send it with the kernel default */
+@@ -404,6 +402,13 @@ static void forward_query(struct daemon *daemon, int udpfd, union mysockaddr *ud
+ 	      GETSHORT(forward->class, p);
+ 	    }
+ 	  forward->fwd_sign = 0;
++#else
++	  unsigned char *p = (unsigned char *)(header+1);
++	  if (F_IPV4 == gotname || F_IPV6 == gotname)
++	    {
++	      memset(forward->name, 0x00, sizeof(forward->name));
++	      extract_name(header, plen, &p, forward->name, 1);
++	    }
+ #endif
+ 	  header->id = htons(forward->new_id);
+ 
+diff --git a/src/rfc1035.c b/src/rfc1035.c
+index 03db8f4..36ba071 100644
+--- a/src/rfc1035.c
++++ b/src/rfc1035.c
+@@ -17,13 +17,8 @@ static int add_resource_record(HEADER *header, char *limit, int *truncp,
+ 			       unsigned long ttl, unsigned int *offset, unsigned short type, 
+ 			       unsigned short class, char *format, ...);
+ 
+-#ifdef DNI_IPV6_FEATURE
+ int extract_name(HEADER *header, size_t plen, unsigned char **pp,
+                        char *name, int isExtract)
+-#else
+-static int extract_name(HEADER *header, size_t plen, unsigned char **pp,
+-                       char *name, int isExtract)
+-#endif
+ {
+   unsigned char *cp = (unsigned char *)name, *p = *pp, *p1 = NULL;
+   unsigned int j, l, hops = 0;
+@@ -1098,7 +1093,6 @@ int get_lan_ipaddr(struct in_addr *inp)
+ 	return ret;
+ }
+ 
+-#ifdef DNI_IPV6_FEATURE
+ #define IF_INET6 "/proc/net/if_inet6"
+ 
+ int get_lan_linklocal_ipaddr6(struct in6_addr *inp6)
+@@ -1178,7 +1172,6 @@ int get_lan_linklocal_ipaddr6(struct in6_addr *inp6)
+ 	fclose(fp);
+ 	return 0;
+ }
+-#endif
+ 
+ /* return zero if we can't answer from cache, or packet size if we can , or -1 if we don't want to reply or forward it.*/
+ size_t answer_request(HEADER *header, char *limit, size_t qlen, struct daemon *daemon, 
+@@ -1665,11 +1658,7 @@ size_t answer_request(HEADER *header, char *limit, size_t qlen, struct daemon *d
+ 	for (i = 0, hijackdomain = 0; hijack_domains[i]; i++) {
+ 	    if (strcmp(name, hijack_domains[i]) == 0) {
+ #ifdef HAVE_IPV6
+-#ifdef DNI_IPV6_FEATURE
+ 		if ((qtype != T_A && qtype != T_AAAA && qtype != T_A6) || qclass != C_IN)
+-#else
+-		if (qtype != T_A || qclass != C_IN)
+-#endif
+ 			return -1;//We would do nothing for this kind of request.
+ #endif
+ 		hijackdomain = 1;
+@@ -1693,21 +1682,17 @@ size_t answer_request(HEADER *header, char *limit, size_t qlen, struct daemon *d
+ 	     * block any IPv6 DNS query and repsone (DNS type is 'AAAA' or 'A6') for the hijack domain names
+ 	     * that listed on this section.
+ 	     */
+-#ifdef DNI_IPV6_FEATURE
+ 		if (qtype == T_AAAA || qtype == T_A6) {
+ 		    if (get_lan_linklocal_ipaddr6(&addr.addr.addr6))
+ 		        return 0;
+ 		    if (add_resource_record(header, limit, &trunc, nameoffset, &ansp, 0, NULL, T_AAAA, C_IN, "6", &addr))
+ 		        anscount++;
+ 		} else {
+-#endif
+ 		    if (!get_lan_ipaddr(&addr.addr.addr4))
+ 		        return 0;
+ 		    if (add_resource_record(header, limit, &trunc, nameoffset, &ansp, 0, NULL, T_A, C_IN, "4", &addr))
+ 		        anscount++;
+-#ifdef DNI_IPV6_FEATURE
+ 		}
+-#endif
+ 	    }
+ 
+ 	    continue;

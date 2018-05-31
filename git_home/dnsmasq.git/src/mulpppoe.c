@@ -96,7 +96,7 @@ static void mulppp_clearrecord(void)
 		fclose(fw);
 }
 
-//ifdef SUP_MUL_PPPOE
+#ifdef SUP_MUL_PPPOE
 static int check_dname_wildcard(struct dname_record *drecord)
 {
   char *dnamep = drecord->dname;
@@ -282,4 +282,4 @@ void check_mul_pppoe_record(HEADER *header, int plen)
   }
   return;
 }
-//endif
+#endif

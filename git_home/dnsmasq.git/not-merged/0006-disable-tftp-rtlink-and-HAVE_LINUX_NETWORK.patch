@@ -1,0 +1,143 @@
+From 36ec47897bed5a766e26e9892f433cddc71b4976 Mon Sep 17 00:00:00 2001
+From: stoneliu <stoneliu@dniserver.dnish.net>
+Date: Mon, 5 Jan 2009 18:05:30 +0800
+Subject: [PATCH 06/44] disable tftp, rtlink and HAVE_LINUX_NETWORK
+
+they are conflict with netgear smartwizard, smart wizard will ifconfig up/down
+wan and lan interface very often. so dnsmasq will receive many netlink packets for
+interface link up down information, sometimes dnsmasq netlink socket will go into
+deadlock,we will not get ping reply by www.routerlogin.net.
+
+Signed-off-by: stoneliu <stoneliu@dniserver.dnish.net>
+---
+ src/config.h  |    2 +-
+ src/dnsmasq.c |    8 ++++++--
+ src/netlink.c |    8 ++++++++
+ src/network.c |    2 ++
+ 4 files changed, 17 insertions(+), 3 deletions(-)
+
+diff --git a/src/config.h b/src/config.h
+index ea19faf..536bb6b 100644
+--- a/src/config.h
++++ b/src/config.h
+@@ -172,7 +172,7 @@ NOTES:
+ */
+ 
+ /* platform independent options- uncomment to enable */
+-#define HAVE_TFTP
++/* #define HAVE_TFTP */
+ /* #define HAVE_BROKEN_RTC */
+ /* #define HAVE_ISC_READER */
+ /* #define HAVE_DBUS */
+diff --git a/src/dnsmasq.c b/src/dnsmasq.c
+index 3ee8eb2..362dc63 100644
+--- a/src/dnsmasq.c
++++ b/src/dnsmasq.c
+@@ -486,7 +486,7 @@ int main (int argc, char **argv)
+ 	  bump_maxfd(daemon->dhcpfd, &maxfd);
+ 	}
+ 
+-#ifdef HAVE_LINUX_NETWORK
++#if 0 //def HAVE_LINUX_NETWORK
+       FD_SET(daemon->netlinkfd, &rset);
+       bump_maxfd(daemon->netlinkfd, &maxfd);
+ #endif
+@@ -494,6 +494,7 @@ int main (int argc, char **argv)
+       FD_SET(piperead, &rset);
+       bump_maxfd(piperead, &maxfd);
+ 
++#if 0     
+       while (helper_buf_empty() && do_script_run(daemon));
+ 
+       if (!helper_buf_empty())
+@@ -501,6 +502,7 @@ int main (int argc, char **argv)
+ 	  FD_SET(daemon->helperfd, &wset);
+ 	  bump_maxfd(daemon->helperfd, &maxfd);
+ 	}
++#endif
+       
+       /* must do this just before select(), when we know no
+ 	 more calls to my_syslog() can occur */
+@@ -679,7 +681,7 @@ int main (int argc, char **argv)
+ 	      }
+ 	}
+       
+-#ifdef HAVE_LINUX_NETWORK
++#if 0 //def HAVE_LINUX_NETWORK
+       if (FD_ISSET(daemon->netlinkfd, &rset))
+ 	netlink_multicast(daemon);
+ #endif
+@@ -706,8 +708,10 @@ int main (int argc, char **argv)
+       if (daemon->dhcp && FD_ISSET(daemon->dhcpfd, &rset))
+ 	dhcp_packet(daemon, now);
+ 
++#if 0     
+       if (daemon->helperfd != -1 && FD_ISSET(daemon->helperfd, &wset))
+ 	helper_write(daemon);
++#endif
+     }
+ }
+ 
+diff --git a/src/netlink.c b/src/netlink.c
+index 98f8b1b..f743c5f 100644
+--- a/src/netlink.c
++++ b/src/netlink.c
+@@ -51,12 +51,14 @@ void netlink_init(struct daemon *daemon)
+   /* May not be able to have permission to set multicast groups don't die in that case */
+   if ((daemon->netlinkfd = socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE)) != -1)
+     {
++#if 0 /* No Bind, No Interest on ROUTE */	 
+       if (bind(daemon->netlinkfd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
+ 	{
+ 	  addr.nl_groups = 0;
+ 	  if (errno != EPERM || bind(daemon->netlinkfd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
+ 	    daemon->netlinkfd = -1;
+ 	}
++#endif    
+     }
+   
+   if (daemon->netlinkfd == -1)
+@@ -153,7 +155,11 @@ int iface_enumerate(struct daemon *daemon, void *parm, int (*ipv4_callback)(), i
+  	if (h->nlmsg_type == NLMSG_ERROR)
+ 	  nl_err(h);
+ 	else if (h->nlmsg_seq != seq)
++#if 1
++	  continue; /* No Interest ... */
++#else
+ 	  nl_routechange(daemon, h); /* May be multicast arriving async */
++#endif
+ 	else if (h->nlmsg_type == NLMSG_DONE)
+ 	  {
+ #ifdef HAVE_IPV6
+@@ -219,6 +225,7 @@ void netlink_multicast(struct daemon *daemon)
+   ssize_t len;
+   struct nlmsghdr *h;
+   
++  my_syslog(LOG_INFO, _("netlink_multicast in in in .......... !!!"));
+   if ((len = netlink_recv(daemon)) != -1)
+     {
+       for (h = (struct nlmsghdr *)iov.iov_base; NLMSG_OK(h, (size_t)len); h = NLMSG_NEXT(h, len))
+@@ -227,6 +234,7 @@ void netlink_multicast(struct daemon *daemon)
+ 	else
+ 	  nl_routechange(daemon, h);
+     }
++  my_syslog(LOG_INFO, _("netlink_multicast out out out ***************** !!!"));
+ }
+ 
+ static void nl_err(struct nlmsghdr *h)
+diff --git a/src/network.c b/src/network.c
+index ace5c10..2f19384 100644
+--- a/src/network.c
++++ b/src/network.c
+@@ -344,6 +344,8 @@ struct listener *create_wildcard_listeners(int port, int have_tftp)
+ 	  bind(tftpfd, (struct sockaddr *)&addr, sa_len(&addr)) == -1)
+ 	return NULL;
+     }
++#else
++  (void) have_tftp;
+ #endif
+   
+   l = safe_malloc(sizeof(struct listener));
+-- 
+1.7.4.1
+

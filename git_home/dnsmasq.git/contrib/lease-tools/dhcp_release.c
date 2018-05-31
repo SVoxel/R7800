@@ -117,7 +117,7 @@ static ssize_t netlink_recv(int fd)
       msg.msg_flags = 0;
       while ((rc = recvmsg(fd, &msg, MSG_PEEK)) == -1 && errno == EINTR);
       
-      /* 2.2.x doesn't suport MSG_PEEK at all, returning EOPNOTSUPP, so we just grab a 
+      /* 2.2.x doesn't support MSG_PEEK at all, returning EOPNOTSUPP, so we just grab a 
          big buffer and pray in that case. */
       if (rc == -1 && errno == EOPNOTSUPP)
         {
@@ -178,7 +178,7 @@ static int is_same_net(struct in_addr a, struct in_addr b, struct in_addr mask)
   return (a.s_addr & mask.s_addr) == (b.s_addr & mask.s_addr);
 }
 
-static struct in_addr find_interface(struct in_addr client, int fd, int index)
+static struct in_addr find_interface(struct in_addr client, int fd, unsigned int index)
 {
   struct sockaddr_nl addr;
   struct nlmsghdr *h;
@@ -255,10 +255,6 @@ int main(int argc, char **argv)
   struct ifreq ifr;
   int fd = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
   int nl = socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
-  struct iovec iov;
- 
-  iov.iov_len = 200;
-  iov.iov_base = malloc(iov.iov_len);
 
   if (argc < 4 || argc > 5)
     { 
@@ -281,6 +277,11 @@ int main(int argc, char **argv)
       exit(1);
     }
   
+  if (inet_addr(argv[2]) == INADDR_NONE)
+    {
+      perror("invalid ip address");
+      exit(1);
+    }
   
   lease.s_addr = inet_addr(argv[2]);
   server = find_interface(lease, nl, if_nametoindex(argv[1]));

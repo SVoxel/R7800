@@ -1,0 +1,173 @@
+From 2575adf04b3f613e35b68d81f939225b5bc02cc8 Mon Sep 17 00:00:00 2001
+From: Iceway Zhang <iceway.zhang@dniserver.dnish.net>
+Date: Fri, 5 Feb 2010 12:03:12 +0800
+Subject: [PATCH 17/44] Implement request of DNS with IPv6.
+
+If DNS servers include both type of IPv6 and IPv4, when router receive
+a DNS query, it will forward this query to IPv6 DNS servers or IPv4 DNS
+servers firsly, and once this query forwarded fails(timeout or error...),
+forward this query ot another group of DNS servers.
+If one query was sent and no recieve response in 3 seconds, it consider
+this query timeout.
+
+Note:
+   Please define macro "DNI_IPV6_FEATURE" to enable this feature,
+   maybe you could do this in file "package/dnsmasq/Makefile".
+
+-------------------------------------------------------
+Following items have been checked in this commit:
+
+1: The syntax and comment are compliant.
+
+2: No memory leak.
+   * memory allocated by malloc() will be freed
+   * memory allocated by calloc() will be freed
+
+3: No deadlock such as
+   * No function call deadlock.
+   * No semaphore deadlock.
+   * No tag or label deadlock.
+
+4: No stack overflow caused by
+   * infinite recursion
+   * too large local array variables
+
+5: coding completeness, such as
+   * conditions completeness
+   * functions completeness
+   * update completeness
+   * memory resources completeness
+   * sessions resources completeness
+
+Signed-off-by: Iceway Zhang <iceway.zhang@dniserver.dnish.net>
+Signed-off-by: josn.wang <josnwang@dniserver.dnish.net>
+---
+ src/dnsmasq.c |    7 +++++
+ src/forward.c |   81 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 88 insertions(+), 0 deletions(-)
+
+diff --git a/src/dnsmasq.c b/src/dnsmasq.c
+index 75093a7..8c40fe1 100644
+--- a/src/dnsmasq.c
++++ b/src/dnsmasq.c
+@@ -47,6 +47,10 @@ static char *compile_opts =
+ static pid_t pid;
+ static int pipewrite;
+ 
++#ifdef DNI_IPV6_FEATURE
++extern void check_timeout_forward(struct daemon *daemon, time_t now);
++#endif
++
+ static int set_dns_listeners(struct daemon *daemon, time_t now, fd_set *set, int *maxfdp);
+ static void check_dns_listeners(struct daemon *daemon, fd_set *set, time_t now);
+ static void sig_handler(int sig);
+@@ -968,6 +972,9 @@ static void check_dns_listeners(struct daemon *daemon, fd_set *set, time_t now)
+ 	    }
+ 	}
+     }
++#ifdef DNI_IPV6_FEATURE
++  check_timeout_forward(daemon, now);
++#endif
+ }
+ 
+ 
+diff --git a/src/forward.c b/src/forward.c
+index dbb5e2b..00845e7 100644
+--- a/src/forward.c
++++ b/src/forward.c
+@@ -522,6 +522,29 @@ void reply_query(struct serverfd *sfd, struct daemon *daemon, time_t now)
+     {
+       struct server *server = forward->sentto;
+       
++#ifdef DNI_IPV6_FEATURE
++      if ((header->rcode == SERVFAIL || header->rcode == REFUSED ||
++	   header->rcode == NXDOMAIN || header->rcode == NOTIMP ||
++	   header->rcode == FORMERR) && (1 == forward->fwd_sign))
++        {
++	  unsigned char *pheader;
++	  size_t plen;
++	  int is_sign;
++	  /* recreate query from reply */
++	  pheader = find_pseudoheader(header, (size_t)n, &plen, NULL, &is_sign);
++	  header->ancount = htons(0);
++	  header->nscount = htons(0);
++	  header->arcount = htons(0);
++	  if ((nn = resize_packet(header, (size_t)n, pheader, plen)))
++	    {
++	       header->qr = 0;
++	       header->tc = 0;
++	       forward_query(daemon, forward->fd, &forward->source,
++                 &forward->dest, forward->iface, header, nn, now, forward);
++	       return;
++	    }
++        }
++#endif
+       if ((header->rcode == SERVFAIL || header->rcode == REFUSED) &&
+ 	  !(daemon->options & OPT_ORDER) &&
+ 	  forward->forwardall == 0)
+@@ -1256,4 +1279,62 @@ static int trans_deviceid(char *deviceid, char *deviceid_b)
+ }
+ #endif
+ 
++#ifdef DNI_IPV6_FEATURE
++int transmit_name(char *name, unsigned char **ret)
++{
++  unsigned char *p = NULL, *q = NULL, *start = NULL;
++  int n = 0;
++  if (!ret)
++    return -1;
++  start = p = q = *ret;
++  while (0 != *name)
++    {
++      p = q++;
++      n = 0;
++      while('.' != *name && 0 != *name)
++        {
++	  *q++ = *name++;
++	  n++;
++        }
++      *p = (unsigned char)(n);
++      name++;
++    }
++  *q = 0;
++  *ret = q + 1;
++  return ((*ret) - start);
++}
++
++#define DNI_DNS_QUERY_TIMEOUT 3
++void check_timeout_forward(struct daemon *daemon, time_t now)
++{
++  struct frec *fwd = NULL;
++  HEADER *header = NULL;
++  int n = 0;
++  unsigned char *p = NULL;
++
++  for (fwd = frec_list; fwd; fwd = fwd->next)
++    {
++      if (fwd->sentto && 1 == fwd->fwd_sign && (int)difftime(now, fwd->time) >= DNI_DNS_QUERY_TIMEOUT)
++        {
++	  header = (HEADER *)daemon->packet;
++	  p = (unsigned char *)header;
++	  header->id = htons(fwd->new_id);
++	  memcpy(p + 2, &fwd->flags, sizeof(fwd->flags));
++	  header->qdcount = 1;
++	  header->ancount = 0;
++	  header->nscount = 0;
++	  header->arcount = 0;
++	  p += sizeof(HEADER);
++	  n += sizeof(HEADER);
++	  n += transmit_name(fwd->name, &p);
++	  PUTSHORT(fwd->type, p);
++	  n += sizeof(fwd->type);
++	  PUTSHORT(fwd->class, p);
++	  n += sizeof(fwd->class);
++	  forward_query(daemon, fwd->fd, &fwd->source, &fwd->dest, fwd->iface,
++		  header, (size_t)n, now, fwd);
++        }
++    }
++}
++#endif
+ 
+-- 
+1.7.4.1
+

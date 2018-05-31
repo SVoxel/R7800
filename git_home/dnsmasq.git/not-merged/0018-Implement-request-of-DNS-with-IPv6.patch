@@ -1,0 +1,75 @@
+From 32084d0220a5444a1d14fe8ffe4fe8e01dd6f904 Mon Sep 17 00:00:00 2001
+From: Iceway Zhang <iceway.zhang@dniserver.dnish.net>
+Date: Fri, 5 Feb 2010 12:03:12 +0800
+Subject: [PATCH 18/44] Implement request of DNS with IPv6.
+
+Change dnsmasq `select` period to 1 seconds.
+
+As requests of DNS in IPv6 spec, maybe one query is re-sent
+if previous query timeout. If one query was sent and no
+receive response in 3 seconds, we consider it is timeout.
+if use 2 seconds in `select`, after 4 seconds passed since one
+query was sent and no receive response, it could re-sent query
+again. so change this value to 1 second.
+
+Note:
+   Please define macro "DNI_IPV6_FEATURE" to enable this feature,
+   maybe you could do this in file "package/dnsmasq/Makefile".
+
+-------------------------------------------------------
+Following items have been checked in this commit:
+
+1: The syntax and comment are compliant.
+
+2: No memory leak.
+   * memory allocated by malloc() will be freed
+   * memory allocated by calloc() will be freed
+
+3: No deadlock such as
+   * No function call deadlock.
+   * No semaphore deadlock.
+   * No tag or label deadlock.
+
+4: No stack overflow caused by
+   * infinite recursion
+   * too large local array variables
+
+5: coding completeness, such as
+   * conditions completeness
+   * functions completeness
+   * update completeness
+   * memory resources completeness
+   * sessions resources completeness
+
+Signed-off-by: Iceway Zhang <iceway.zhang@dniserver.dnish.net>
+Signed-off-by: josn.wang <josnwang@dniserver.dnish.net>
+---
+ src/dnsmasq.c |   11 +++++++++++
+ 1 files changed, 11 insertions(+), 0 deletions(-)
+
+diff --git a/src/dnsmasq.c b/src/dnsmasq.c
+index 8c40fe1..fc8e7dc 100644
+--- a/src/dnsmasq.c
++++ b/src/dnsmasq.c
+@@ -531,7 +531,18 @@ int main (int argc, char **argv)
+ 	 max.. Well, it maybe influence the performance, and it may 
+ 	 be a NOT GOOD idea, but it works ... */
+       tp = &t;
++
++#ifndef DNI_IPV6_FEATURE
+       tp->tv_sec = 2;
++#else
++     /* as requests of DNS in IPv6 spec, maybe one query have to re-sent
++        if previous query timeout, and if one query was sent and no
++        receive response in 3 seconds, we consider it is timeout.
++        if use 2 seconds in `select`, after 4 seconds passed since one
++        query was sent and no receive response, it could re-sent query
++        again. so change this value to 1 second. */
++      tp->tv_sec = 1;
++#endif
+       tp->tv_usec = 0; 
+       if (select(maxfd+1, &rset, &wset, &eset, tp) < 0)
+ 	{
+-- 
+1.7.4.1
+

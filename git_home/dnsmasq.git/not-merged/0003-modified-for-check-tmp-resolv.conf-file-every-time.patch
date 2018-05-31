@@ -1,0 +1,51 @@
+From cb3efd4b7ed3a417205c57c12395d7a40b534a2d Mon Sep 17 00:00:00 2001
+From: stoneliu <stoneliu@dniserver.dnish.net>
+Date: Mon, 5 Jan 2009 17:40:59 +0800
+Subject: [PATCH 03/44] modified for check /tmp/resolv.conf file every time
+
+merge patch 103-dni-resolve-file-time.patch of 3700
+Signed-off-by: stoneliu <stoneliu@dniserver.dnish.net>
+---
+ src/dnsmasq.c |   14 ++++++++++++++
+ 1 files changed, 14 insertions(+), 0 deletions(-)
+
+diff --git a/src/dnsmasq.c b/src/dnsmasq.c
+index d9b64b8..bba9780 100644
+--- a/src/dnsmasq.c
++++ b/src/dnsmasq.c
+@@ -503,6 +503,13 @@ int main (int argc, char **argv)
+ 	 more calls to my_syslog() can occur */
+       set_log_writer(&wset, &maxfd);
+       
++      /* set `select` timeout value to 2 seconds, so we can check 
++	 the resolv files as soon as it is modified once per second 
++	 max.. Well, it maybe influence the performance, and it may 
++	 be a NOT GOOD idea, but it works ... */
++      tp = &t;
++      tp->tv_sec = 2;
++      tp->tv_usec = 0; 
+       if (select(maxfd+1, &rset, &wset, &eset, tp) < 0)
+ 	{
+ 	  /* otherwise undefined after error */
+@@ -545,11 +552,18 @@ int main (int argc, char **argv)
+ 		    if (statbuf.st_mtime != res->mtime)
+ 		      {
+ 			res->mtime = statbuf.st_mtime;
++			/* For we have only one `/tmp/resolv.conf` file, so we check the file whether modified
++			   or not by comparing the `mtime`( != ), NOT after(>) or before(<); Because the system 
++			   time is adjusted when NTP updating. */
++			#if 1
++			latest = res;
++			#else
+ 			if (difftime(statbuf.st_mtime, last_change) > 0.0)
+ 			  {
+ 			    last_change = statbuf.st_mtime;
+ 			    latest = res;
+ 			  }
++			#endif
+ 		      }
+ 		  }
+ 	      
+-- 
+1.7.4.1
+

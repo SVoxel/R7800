@@ -1,0 +1,185 @@
+From 72a3f295166ef86833471d21c7a6ff4948ce4e56 Mon Sep 17 00:00:00 2001
+From: Iceway Zhang <iceway.zhang@dniserver.dnish.net>
+Date: Fri, 25 Feb 2011 15:01:14 +0800
+Subject: [PATCH 37/44] Fixed an issue of that dnsmasq-v2.39-dni11 can't pass compile in old toolchain.
+
+Because header file "ifaddrs.h" not existed in some old toolchain, and
+struct ifaddrs and getifaddrs and freeifaddrs all can't be called in
+these product, compile process will stop with error.
+
+Resolve:
+Get IPv6 address of interface from /proc/net/if_int6, but not via call
+function getifaddrs.
+
+    * Contents of file "/proc/net/if_inet6" like as below:
+    * 00000000000000000000000000000001 01 80 10 80       lo
+    * fe8000000000000032469afffe08aa0f 08 40 20 80     ath0
+    * fe8000000000000032469afffe08aa0f 07 40 20 80    wifi0
+    * fe8000000000000032469afffe08aa0f 05 40 20 80     eth1
+    * fe8000000000000032469afffe08aa0f 03 40 20 80      br0
+    * fe8000000000000032469afffe08aa10 04 40 20 80     eth0
+    *
+    * +------------------------------+ ++ ++ ++ ++    +---+
+    * |                                |  |  |  |     |
+    * 1                                2  3  4  5     6
+    *
+    * There are 6 row items parameters:
+    * 1 => IPv6 address without ':'
+    * 2 => Interface index
+    * 3 => Length of prefix
+    * 4 => Scope value (see kernel source "include/net/ipv6.h" and "net/ipv6/addrconf.c")
+    * 5 => Interface flags (see kernel source "include/linux/rtnetlink.h" and "net/ipv6/addrconf.c")
+    * 6 => Device name
+    *
+    * Note that all values of row 1~5 are hexadecimal string.
+
+DNI Common Module Patch Review Checklist
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here are some basic things that I (Josn.Wang) have checked
+in order to ensure the quality of common modules.
+
+1: The syntax and comment are compliant.
+
+2: No memory leak.
+   * memory allocated by malloc() will be freed
+   * memory allocated by calloc() will be freed
+
+3: No deadlock such as
+   * No function call deadlock.
+   * No semaphore deadlock.
+   * No tag or label deadlock.
+
+4: No stack overflow caused by
+   * infinite recursion
+   * too large local array variables
+
+5: coding completeness, such as
+   * conditions completeness
+   * functions completeness
+   * update completeness
+   * memory resources completeness
+   * sessions resources completeness
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Signed-off-by: Iceway Zhang <iceway.zhang@dniserver.dnish.net>
+Signed-off-by: josn.wang <josnwang@dniserver.dnish.net>
+---
+ src/dnsmasq.h |    1 -
+ src/rfc1035.c |   74 +++++++++++++++++++++++++++++++++++++++++++++++---------
+ 2 files changed, 62 insertions(+), 13 deletions(-)
+
+diff --git a/src/dnsmasq.h b/src/dnsmasq.h
+index b502bf2..46e2eb2 100644
+--- a/src/dnsmasq.h
++++ b/src/dnsmasq.h
+@@ -15,7 +15,6 @@
+ /* get these before config.h  for IPv6 stuff... */
+ #include <sys/types.h> 
+ #include <netinet/in.h>
+-#include <ifaddrs.h>
+ 
+ #ifdef __APPLE__
+ /* need this before arpa/nameser.h */
+diff --git a/src/rfc1035.c b/src/rfc1035.c
+index dab7a46..4c9bc3a 100644
+--- a/src/rfc1035.c
++++ b/src/rfc1035.c
+@@ -1060,33 +1060,83 @@ int get_lan_ipaddr(struct in_addr *inp)
+ }
+ 
+ #ifdef DNI_IPV6_FEATURE
++#define IF_INET6 "/proc/net/if_inet6"
++
+ int get_lan_linklocal_ipaddr6(struct in6_addr *inp6)
+ {
+-	struct ifaddrs *ifa, *p;
+-	struct in6_addr *addr6;
++	char str[128], addr6[64];
++	char *addr, *index, *prefix, *scope, *flags, *name;
++	char *delim = " \t\n", *p, *q;
++	FILE *fp;
++	int count;
+ 
+ 	if (!inp6) {
+ 		printf("get_lan_linklocal_ipaddr6: inp6 can't be NULL!\n");
+ 		return -1;
+ 	}
+ 
+-	if (getifaddrs(&ifa)) {
+-		perror("getifaddrs error");
++	if (NULL == (fp = fopen(IF_INET6, "r"))) {
++		perror("fopen error");
+ 		return -1;
+ 	}
+ 
+-	for (p = ifa; p; p = p->ifa_next) {
+-		if (strcmp(p->ifa_name, "br0"))
+-			continue;
+-		if (p->ifa_addr->sa_family != AF_INET6)
++	/**
++	 * Contents of file "/proc/net/if_inet6" like as below:
++	 * 00000000000000000000000000000001 01 80 10 80       lo
++	 * fe8000000000000032469afffe08aa0f 08 40 20 80     ath0
++	 * fe8000000000000032469afffe08aa0f 07 40 20 80    wifi0
++	 * fe8000000000000032469afffe08aa0f 05 40 20 80     eth1
++	 * fe8000000000000032469afffe08aa0f 03 40 20 80      br0
++	 * fe8000000000000032469afffe08aa10 04 40 20 80     eth0
++	 *
++	 * +------------------------------+ ++ ++ ++ ++    +---+
++	 * |                                |  |  |  |     |
++	 * 1                                2  3  4  5     6
++	 *
++	 * There are 6 row items parameters:
++	 * 1 => IPv6 address without ':'
++	 * 2 => Interface index
++	 * 3 => Length of prefix
++	 * 4 => Scope value (see kernel source "include/net/ipv6.h" and "net/ipv6/addrconf.c")
++	 * 5 => Interface flags (see kernel source "include/linux/rtnetlink.h" and "net/ipv6/addrconf.c")
++	 * 6 => Device name
++	 *
++	 * Note that all values of row 1~5 are hexadecimal string.
++	 */
++	#define IPV6_ADDR_LINKLOCAL 0x0020U
++	while (fgets(str, sizeof(str), fp)) {
++		addr = strtok(str, delim);
++		index = strtok(NULL, delim);
++		prefix = strtok(NULL, delim);
++		scope = strtok(NULL, delim);
++		flags = strtok(NULL, delim);
++		name = strtok(NULL, delim);
++
++		if (strcmp(name, "br0"))
+ 			continue;
+-		addr6 = (&((struct sockaddr_in6 *)(p->ifa_addr))->sin6_addr);
+-		if (!IN6_IS_ADDR_LINKLOCAL(addr6))
++		/* Must be link local IPv6 address */
++		if (IPV6_ADDR_LINKLOCAL != (unsigned int)strtoul(scope, NULL, 16))
+ 			continue;
+-		*inp6 = *addr6;
++
++		memset(addr6, 0x00, sizeof(addr6));
++		p = addr;
++		q = addr6;
++		count = 0;
++		while (*p != '\0') {
++			if (count == 4) {
++				*q++ = ':';
++				count = 0;
++			}
++			*q++ = *p++;
++			count++;
++		}
++
++		inet_pton(AF_INET6, addr6, inp6);
++		break;
+ 	}
++	#undef IPV6_ADDR_LINKLOCAL
+ 
+-	freeifaddrs(ifa);
++	fclose(fp);
+ 	return 0;
+ }
+ #endif
+-- 
+1.7.4.1
+

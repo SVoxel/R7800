@@ -324,6 +324,12 @@ typedef unsigned long in_addr_t;
 #undef USBSHARE_DOMAIN_SUPPORT
 
 /*
+ * define SUP_MUL_PPPOE to support mul pppoe
+ */
+
+#undef SUP_MUL_PPPOE
+
+/*
  * define DNI_IPV6_FEATURE to support request of DNS with IPv6
  * router will accept DNS query from LAN interface with IPv6 source, and DNS server could be also IPv6.
  */

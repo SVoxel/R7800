@@ -1,0 +1,65 @@
+From a416f1c3cebe03a1ee4f5a7481fe76e0cbe0db61 Mon Sep 17 00:00:00 2001
+From: stoneliu <stoneliu@dniserver.dnish.net>
+Date: Mon, 5 Jan 2009 18:02:32 +0800
+Subject: [PATCH 05/44] If WAN/LAN IP conflict happens,re-enumerates interface lists.
+
+merge 105-dni-update-interface-lists.patch of 3700
+below is the comment
+* If WAN/LAN IP conflict happens, and unfortunately, the new DNS nameserver is
+* the LAN's orignal IP address, if DNS-Masq doesn't update the interface lists,
+* this nameserver will be ignored:
+* ...
+* dnsmasq: ignoring nameserver 192.168.1.1 - local interface
+* ...
+* For resolving this problem, re-enumerates interface lists before checking the
+* nameservers in 'check_servers' function.
+
+Signed-off-by: stoneliu <stoneliu@dniserver.dnish.net>
+---
+ src/network.c |   30 ++++++++++++++++++++++++++++++
+ 1 files changed, 30 insertions(+), 0 deletions(-)
+
+diff --git a/src/network.c b/src/network.c
+index 595a961..ace5c10 100644
+--- a/src/network.c
++++ b/src/network.c
+@@ -641,6 +641,36 @@ int reload_servers(char *fname, struct daemon *daemon)
+   daemon->servers = new_servers;
+   fclose(f);
+ 
++/*
++ * If WAN/LAN IP conflict happens, and unfortunately, the new DNS nameserver is
++ * the LAN's orignal IP address, if DNS-Masq doesn't update the interface lists,
++ * this nameserver will be ignored:
++ * ...
++ * dnsmasq: ignoring nameserver 192.168.1.1 - local interface
++ * ...
++ * For resolving this problem, re-enumerates interface lists before checking the
++ * nameservers in 'check_servers' function.
++*/
++#if 1
++  if (gotone == 0)
++      return 0;
++  
++  struct irec *iface;
++  for (iface = daemon->interfaces; iface;) {
++      struct irec *nxt = iface->next;
++
++      /* my_syslog(LOG_WARNING, _("%s - local interface is gone!"), inet_ntoa(iface->addr.in.sin_addr)); */
++      free(iface);
++      iface = nxt;
++  }
++
++  daemon->interfaces = NULL;
++  if (!enumerate_interfaces(daemon))
++      my_syslog(LOG_WARNING, _("failed to find list of interfaces!"));
++
++  return 1;
++#endif
++
+   return gotone;
+ }
+ 
+-- 
+1.7.4.1
+

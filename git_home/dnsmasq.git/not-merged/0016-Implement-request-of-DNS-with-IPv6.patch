@@ -1,0 +1,119 @@
+From d325e7133a899ef59d4dd53b102144458be63772 Mon Sep 17 00:00:00 2001
+From: Iceway Zhang <iceway.zhang@dniserver.dnish.net>
+Date: Fri, 5 Feb 2010 12:03:12 +0800
+Subject: [PATCH 16/44] Implement request of DNS with IPv6.
+
+If DNS servers include both type of IPv6 and IPv4. When router
+receive a DNS query include "AAAA" or "A6" from LAN, forward it
+to DNS servers with type of IPv6 firstly, and if router re-send
+this query(this means the first group of DNS servers can't resolve
+this domain name, timeout, error, etc.), then, forward it to DNS
+servers with type of IPv4. When router receive a DNS query incldue
+"A" form LAN, forward it to DNS servers with type of IPv4, if this
+query fails, forward it to DNS servers with type of IPv6.
+
+If DNS servers just include one type of IPv6 or IPv4. When router
+receive a DNS query form LAN, "AAAA" or "A6" or "A", just forward
+it to DNS servers.
+
+Note:
+   Please define macro "DNI_IPV6_FEATURE" to enable this feature,
+   maybe you could do this in file "package/dnsmasq/Makefile".
+
+-------------------------------------------------------
+Following items have been checked in this commit:
+
+1: The syntax and comment are compliant.
+
+2: No memory leak.
+   * memory allocated by malloc() will be freed
+   * memory allocated by calloc() will be freed
+
+3: No deadlock such as
+   * No function call deadlock.
+   * No semaphore deadlock.
+   * No tag or label deadlock.
+
+4: No stack overflow caused by
+   * infinite recursion
+   * too large local array variables
+
+5: coding completeness, such as
+   * conditions completeness
+   * functions completeness
+   * update completeness
+   * memory resources completeness
+   * sessions resources completeness
+
+Signed-off-by: Iceway Zhang <iceway.zhang@dniserver.dnish.net>
+Signed-off-by: josn.wang <josnwang@dniserver.dnish.net>
+---
+ src/forward.c |   36 ++++++++++++++++++++++++++++++++++++
+ 1 files changed, 36 insertions(+), 0 deletions(-)
+
+diff --git a/src/forward.c b/src/forward.c
+index 3c438b9..dbb5e2b 100644
+--- a/src/forward.c
++++ b/src/forward.c
+@@ -325,6 +325,24 @@ static void forward_query(struct daemon *daemon, int udpfd, union mysockaddr *ud
+ 	      (type != SERV_HAS_DOMAIN || hostname_isequal(domain, start->domain)) &&
+ 	      !(start->flags & SERV_LITERAL_ADDRESS))
+ 	    {
++#ifdef DNI_IPV6_FEATURE
++	      if (!daemon->diff_svr || !(F_IPV6 == gotname || F_IPV4 == gotname))
++		  ;
++	      else if (F_IPV6 == gotname)
++	        {
++		  if (0 == forward->fwd_sign && AF_INET6 != start->addr.sa.sa_family)
++	            goto again;
++		  if (1 == forward->fwd_sign && AF_INET != start->addr.sa.sa_family)
++		    goto again;
++	        }
++	      else
++	        {
++		  if (0 == forward->fwd_sign && AF_INET != start->addr.sa.sa_family)
++		    goto again;
++		  if (1 == forward->fwd_sign && AF_INET6 != start->addr.sa.sa_family)
++		    goto again;
++	        }
++#endif
+ 	      if (sendto(start->sfd->fd, (char *)header, plen, 0,
+ 			 &start->addr.sa,
+ 			 sa_len(&start->addr)) == -1)
+@@ -358,6 +376,9 @@ static void forward_query(struct daemon *daemon, int udpfd, union mysockaddr *ud
+ 		}
+ 	    } 
+ 	  
++#ifdef DNI_IPV6_FEATURE
++again:
++#endif
+ 	  if (!(start = start->next))
+  	    start = daemon->servers;
+ 	  
+@@ -365,8 +386,23 @@ static void forward_query(struct daemon *daemon, int udpfd, union mysockaddr *ud
+ 	    break;
+ 	}
+       
++#ifdef DNI_IPV6_FEATURE
++      if (!daemon->diff_svr || !(F_IPV6 == gotname || F_IPV4 == gotname))
++        forward->fwd_sign = 2;
++      else
++        forward->fwd_sign++;
+       if (forwarded)
++        {
++          return;
++        }
++      else if (1 == forward->fwd_sign)
++        {
+ 	  return;
++        }
++#else
++      if (forwarded)
++	  return;
++#endif
+       
+       /* could not send on, prepare to return */ 
+       header->id = htons(forward->orig_id);
+-- 
+1.7.4.1
+

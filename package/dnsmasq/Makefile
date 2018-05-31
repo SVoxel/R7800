@@ -9,11 +9,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dnsmasq
-PKG_VERSION:=2.39
+PKG_VERSION:=2.78
 PKG_RELEASE:=1
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 include $(INCLUDE_DIR)/package.mk
+
+TARGET_CFLAGS += -ffunction-sections -fdata-sections
+TARGET_LDFLAGS += -Wl,--gc-sections
 
 config-$(CONFIG_DNSMASQ_SUP_PARENTAL_CTL)		+= --enable-parental_ctl_support
 config-$(CONFIG_DNSMASQ_SUP_STATIC_PPTP)		+= --enable-static_pptp_support

@@ -1254,6 +1254,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 echo "creating dnsmasq.init"
 cp dnsmasq.init.in dnsmasq.init
 
+
 # Check whether --enable-parental_ctl_support or --disable-parental_ctl_support was given.
 if test "${enable_parental_ctl_support+set}" = set; then
   enableval="$enable_parental_ctl_support"
@@ -1296,6 +1297,16 @@ _ACEOF
 
 fi;
 
+# Check whether --enable-mul_pppoe_support or --disable-mul_pppoe_support was given.
+if test "${enable_mul_pppoe_support+set}" = set; then
+	enableval="$enable_mul_pppoe_support"
+
+	if test x"$enableval" = xyes ; then
+		cat >>confdefs.h <<\_ACEOF
+#define SUP_MUL_PPPOE 1
+_ACEOF
+	fi
+fi;
 # Check whether --enable-dni_ipv6_feature or --disable-dni_ipv6_feature was given.
 if test "${enable_dni_ipv6_feature+set}" = set; then
   enableval="$enable_dni_ipv6_feature"
