@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ethtool
-PKG_VERSION:=4.15
+PKG_VERSION:=4.16
 PKG_RELEASE:=1
 
 PKG_MAINTAINER:=Matthias Schiffer <mschiffer@universe-factory.net>
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@KERNEL/software/network/ethtool
-PKG_MD5SUM:=1d9a82de6c9131d1caa626f77c6cdb57
+PKG_MD5SUM:=b1eb68053ff6a72f4245421fb2d4f631
 
 PKG_LICENSE:=GPL-2.0
 PKG_LICENSE_FILES:=COPYING

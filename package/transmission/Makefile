@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=transmission
-PKG_VERSION:=2.93V
+PKG_VERSION:=2.94V
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GITHUB/transmission/transmission-releases/master
-PKG_MD5SUM:=c90458c1d28ad6797e53a7b351fdc5af
+PKG_MD5SUM:=9ddf0083f1dada5c650724445581ffde
 PKG_MAINTAINER:=Rosen Penev <rosenp@gmail.com>
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
 

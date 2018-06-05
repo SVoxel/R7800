@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=haveged
-PKG_VERSION:=1.9.1
-PKG_RELEASE:=5
+PKG_VERSION:=1.9.2
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@SF/haveged \
 		http://www.issihosts.com/$(PKG_NAME)
-PKG_MD5SUM:=015ff58cd10607db0e0de60aeca2f5f8
+PKG_MD5SUM:=fb1d8b3dcbb9d06b30eccd8aa500fd31
 PKG_LICENSE:=GPLv3
 
 PKG_MAINTAINER:=Hannu Nyman <hannu.nyman@iki.fi>
