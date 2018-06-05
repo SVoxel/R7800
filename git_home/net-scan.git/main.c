@@ -37,6 +37,16 @@ void signal_pending(int sig)
 	sigval = sig;
 }
 
+void handle_sigchld(void)
+{
+	pid_t pid;
+	int status, num = 0;
+
+	while((++num < 100) && (pid = waitpid(-1, &status, WNOHANG)) > 0)
+		DEBUGP("The child %d exit with code %d\n", pid, WEXITSTATUS(status));
+	return;
+}
+
 void do_signal(int arp_sock, struct sockaddr *me)
 {
 	struct itimerval tv;
@@ -54,13 +64,11 @@ void do_signal(int arp_sock, struct sockaddr *me)
 		/* To fix bug 22146, call reset_arp_table to set active status of all nodes in the arp_tbl to 0 in the parent process */
 		reset_arp_table();
 		scan_arp_table(arp_sock, me);
+		handle_sigchld();
 	} else if (sigval == SIGALRM) {
 		show_arp_table();
 	} else if (sigval == SIGCHLD) {
-		int status;
-		int pid = waitpid(-1, &status, WNOHANG);
-		if(WIFEXITED(status))
-			DEBUGP("[%s][%d]The child %d exit with code %d\n", __FILE__, __LINE__, pid, WEXITSTATUS(status));
+		handle_sigchld();
 	}
 
 	sigval = 0;

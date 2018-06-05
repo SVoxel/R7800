@@ -625,20 +625,39 @@ generate_mu_mimo()
     fi
 }
 
+#decide whether enable lbd through config lbd configration file
+generate_lbd()
+{
+    local lbd_enable=
+
+#   eval lbd_conf_onoff=\$`echo $1`_onoff
+
+    if [ x"$lbd_onoff" = x"1" ]; then
+       lbd_enable=1
+    else
+       lbd_enable=0
+    fi
+    uci set lbd.@config[0].Enable=${lbd_enable}
+}
+
 # config driver parameters
 uci set wireless.qcawifi=qcawifi
-if [ "$wl_super_wifi" == "1" ]; then
+uci set wireless.qcawifi.wl_super_wifi=${wl_super_wifi}
+uci set wireless.qcawifi.wla_super_wifi=${wla_super_wifi}
+
+if [ "$wl_super_wifi" == "1" ] ||
+   ([ "$wlg_power_limit" == "0" ] && [ "$wlg_tpscale" == "0" ]); then
     uci set wireless.qcawifi.wl_tpscale=-1
 else
     uci set wireless.qcawifi.wl_tpscale=${wlg_tpscale}
 fi
-if [ "$wla_super_wifi" == "1" ]; then
+
+if [ "$wla_super_wifi" == "1" ] ||
+   ([ "$wla_power_limit" == "0" ] && [ "$wla_tpscale" == "0" ]); then
     uci set wireless.qcawifi.wla_tpscale=-1
 else
     uci set wireless.qcawifi.wla_tpscale=${wla_tpscale}
 fi
-
-[ -n "$specified_BDF" ] && uci set wireless.qcawifi.specified_BDF=$specified_BDF
 
 if [ "$wl_cb_if_onoff" != "on" ]; then
     uci set wireless.qcawifi.atf_mode=0
@@ -804,4 +823,8 @@ fi
 
 
 uci commit wireless
+sync
+
+generate_lbd "lbd"
+uci commit lbd
 sync

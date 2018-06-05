@@ -178,6 +178,20 @@ load_qcawifi() {
 	config_get_bool testmode qcawifi testmode
 	[ -n "$testmode" ] && append umac_args "testmode=$testmode"
 
+	config_get fcc_b5_threshold qcawifi fcc_b5_threshold
+	[ -n "$fcc_b5_threshold" ]  && append umac_args "fcc_b5_threshold=$fcc_b5_threshold"
+	config_get fcc_b5_mindur qcawifi fcc_b5_mindur
+	[ -n "$fcc_b5_mindur" ]	    && append umac_args "fcc_b5_mindur=$fcc_b5_mindur"
+	config_get fcc_b5_maxdur qcawifi fcc_b5_maxdur
+	[ -n "$fcc_b5_maxdur" ]	    && append umac_args "fcc_b5_maxdur=$fcc_b5_maxdur"
+	config_get fcc_b5_timewindow qcawifi fcc_b5_timewindow
+	[ -n "$fcc_b5_timewindow" ] && append umac_args "fcc_b5_timewindow=$fcc_b5_timewindow"
+	config_get fcc_b5_rssithresh qcawifi fcc_b5_rssithresh
+	[ -n "$fcc_b5_rssithresh" ] && append umac_args "fcc_b5_rssithresh=$fcc_b5_rssithresh"
+	config_get fcc_b5_rssimargin qcawifi fcc_b5_rssimargin
+	[ -n "$fcc_b5_rssimargin" ] && append umac_args "fcc_b5_rssimargin=$fcc_b5_rssimargin"
+
+
 	config_get vow_config qcawifi vow_config
 	[ -n "$vow_config" ] && append umac_args "vow_config=$vow_config"
 
@@ -261,9 +275,6 @@ load_qcawifi() {
 	region=`artmtd -r region | grep REGION | cut -d" " -f2`
 	[ "$region" = "US" ] && append umac_args "new_fcc_rule=1"
 
-	config_get specified_BDF qcawifi specified_BDF
-	[ "x$specified_BDF" = "xPR" ] && append umac_args "use_pr_bd=1"
-
 	find_qca_wifi_dir _qca_wifi_dir
 	for mod in $(cat ${_qca_wifi_dir}/33-qca-wifi*); do
 
@@ -301,6 +312,66 @@ unload_qcawifi() {
 	done
 }
 
+set_boarddata() {
+	local country_code="$1"
+
+	REGULATORY_DOMAIN=FCC_ETSI
+	IPQ4019_BDF_DIR=/lib/firmware/IPQ4019/hw.1
+	QCA9984_BDF_DIR=/lib/firmware/QCA9984/hw.1
+	QCA9888_BDF_DIR=/lib/firmware/QCA9888/hw.2
+
+	config_get wl_super_wifi qcawifi wl_super_wifi
+	config_get wla_super_wifi qcawifi wla_super_wifi
+	if [ "$wl_super_wifi" == "1" ] || [ "$wla_super_wifi" == "1" ]; then
+		REGULATORY_DOMAIN=SUPER_WIFI
+	else
+		case "$country_code" in
+			5001)
+				REGULATORY_DOMAIN=Canada
+				;;
+			5000)
+				REGULATORY_DOMAIN=AU
+				;;
+			412)
+				REGULATORY_DOMAIN=Korea
+				;;
+			356)
+				REGULATORY_DOMAIN=INS
+				;;
+			458|156|702|764)
+				REGULATORY_DOMAIN=SRRC
+				;;
+		esac
+	fi
+
+	if [ -d $IPQ4019_BDF_DIR/$REGULATORY_DOMAIN ]; then
+		/bin/cp -f $IPQ4019_BDF_DIR/$REGULATORY_DOMAIN/* $IPQ4019_BDF_DIR/
+	elif ([ "$wl_super_wifi" == "1" ] || [ "$wla_super_wifi" == "1" ]) &&
+	     [ -d $IPQ4019_BDF_DIR/SRRC ]; then
+		/bin/cp -f $IPQ4019_BDF_DIR/SRRC/* $IPQ4019_BDF_DIR/
+	elif [ -d $IPQ4019_BDF_DIR/FCC_ETSI ]; then
+		/bin/cp -f $IPQ4019_BDF_DIR/FCC_ETSI/* $IPQ4019_BDF_DIR/
+	fi
+
+	if [ -d $QCA9984_BDF_DIR/$REGULATORY_DOMAIN ]; then
+		/bin/cp -f $QCA9984_BDF_DIR/$REGULATORY_DOMAIN/* $QCA9984_BDF_DIR/
+	elif ([ "$wl_super_wifi" == "1" ] || [ "$wla_super_wifi" == "1" ]) &&
+	     [ -d $QCA9984_BDF_DIR/SRRC ]; then
+		/bin/cp -f $QCA9984_BDF_DIR/SRRC/* $QCA9984_BDF_DIR/
+	elif [ -d $QCA9984_BDF_DIR/FCC_ETSI ]; then
+		/bin/cp -f $QCA9984_BDF_DIR/FCC_ETSI/* $QCA9984_BDF_DIR/
+	fi
+
+	if [ -d $QCA9888_BDF_DIR/$REGULATORY_DOMAIN ]; then
+		/bin/cp -f $QCA9888_BDF_DIR/$REGULATORY_DOMAIN/* $QCA9888_BDF_DIR/
+	elif ([ "$wl_super_wifi" == "1" ] || [ "$wla_super_wifi" == "1" ]) &&
+	     [ -d $QCA9888_BDF_DIR/SRRC ]; then
+		/bin/cp -f $QCA9888_BDF_DIR/SRRC/* $QCA9888_BDF_DIR/
+	elif [ -d $QCA9888_BDF_DIR/FCC_ETSI ]; then
+		/bin/cp -f $QCA9888_BDF_DIR/FCC_ETSI/* $QCA9888_BDF_DIR/
+	fi
+}
+
 
 disable_qcawifi() {
 	local device="$1"
@@ -328,7 +399,16 @@ disable_qcawifi() {
 			local parent=$(cat /sys/class/net/${dev}/parent)
 			[ -n "$parent" -a "$parent" = "$device" ] && { \
 				[ -f "/var/run/wifi-${dev}.pid" ] &&
-					kill "$(cat "/var/run/wifi-${dev}.pid")"
+					kill "$(cat "/var/run/wifi-${dev}.pid")" || {
+						pids=`ps | grep hostapd | grep "\-d\{1,4\}" | awk '{print $1}'`
+						for pid in $pids; do
+							found=`cat /proc/$pid/cmdline | grep ${dev}`
+							[ -n "$found" ] && {
+								echo "Kill debug enabled hostapd for interface ${dev}"
+								kill $pid
+							}
+						done
+					}
 				[ -f "/var/run/hostapd_cli-${dev}.pid" ] &&
 					kill "$(cat "/var/run/hostapd_cli-${dev}.pid")"
 				ifconfig "$dev" down
@@ -357,10 +437,21 @@ disable_qcawifi() {
 	return 0
 }
 
+reload_check_qcawifi() {
+    [ ! -d /sys/module/umac ] && {
+        echo "umac module is expected to be inserted, but not, so load WiFi modules again"
+        load_qcawifi
+    } || {
+        echo "No reload qcawifi modules"
+    }
+}
 
 enable_qcawifi() {
 	local device="$1"
 	echo "$DRIVERS: enable radio $1" >/dev/console
+
+	config_get country "$device" country
+	set_boarddata "$country"
 
 	config_get_bool module_reload qcawifi module_reload 1
 	if [ "$2" != "dni" ]; then	    # wifi up
@@ -372,8 +463,8 @@ enable_qcawifi() {
 		    sleep 3
 		    load_qcawifi
 		}
-	else				    # wlan up
-		echo "qcawifi modules are not reloaded"
+	else
+		reload_check_qcawifi
 	fi
 
 	find_qcawifi_phy "$device" || return 1
@@ -1627,6 +1718,7 @@ wifischedule_qcawifi()
     local hw_btn_state="$2"
     local band="$3"
     local newstate="$4"
+    local is_guest="$5"
 
     find_qcawifi_phy "$device" || return 1
 
@@ -1634,6 +1726,9 @@ wifischedule_qcawifi()
     config_get vifs "$device" vifs
     for vif in $vifs; do
         config_get ifname "$vif" ifname
+	if [ "$is_guest" = "1" ]; then
+	   [ "$ifname" = "ath0" -o "$ifname" = "ath1" ] && continue # only want to set guest network vap
+	fi
         if [ "$newstate" = "on" -a "$hw_btn_state" = "on" ]; then
             isup=`ifconfig $ifname | grep UP`
             [ -n "$isup" ] && continue
@@ -1681,6 +1776,7 @@ wifischedule_qcawifi()
         fi
     done
 
+    [ "$is_guest" = "1" ] && return
     # update wlan uptime file
     config_get ifname "$vif" ifname
     isup=`ifconfig $ifname | grep UP`
@@ -2167,8 +2263,6 @@ post_qcawifi() {
                 wlanconfig ath1 vendorie add len 11 oui 00146c pcap_data 0801020110000000 ftype_map 18
                 wlanconfig ath0 vendorie add len 11 oui 00146c pcap_data 0801020110000000 ftype_map 18
             fi
-			pidlist=`ps | grep 'hyt_result_maintain' | cut -b1-5`
-			[ "x$pidlist" != "x" ] || /usr/share/udhcpd/hyt_result_maintain &
 
 		;;
 	esac

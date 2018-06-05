@@ -62,6 +62,8 @@ static void exit_server(int retval)
 {
 	pidfile_delete(server_config.pidfile);
 	CLOSE_LOG();
+	if (access(HOSTNAME_SHOWFILE, F_OK) == 0)
+		unlink(HOSTNAME_SHOWFILE);
 	exit(retval);
 }
 
@@ -107,8 +109,8 @@ void show_clients_hostname(void)
 		fprintf(fp, "%u.%u.%u.%u %s\n", NIPQUAD(lease->yiaddr),
 				lease->hostname);
 	}
-
 	fclose(fp);
+	system("cp /tmp/dhcpd_hostlist /tmp/dhcpd_hostlist_new");
 }
 
 #endif

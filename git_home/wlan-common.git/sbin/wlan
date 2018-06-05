@@ -305,6 +305,7 @@ wifi_toggle() {
 wifi_schedule() {
 	local band=$2
 	local newstate=$3
+    local guest=$4
 
 	if eval "type config_get_$CONFIGS" 2>/dev/null >/dev/null; then
 		eval "config_get_$CONFIGS _tmp_state hw_btn_state"
@@ -325,17 +326,17 @@ wifi_schedule() {
 	); done
 	if [ "$newstate" = "on" -a "$_tmp_state" = "on" ]; then
 		if eval "type config_set_$CONFIGS" 2>/dev/null >/dev/null; then
-			eval "config_set_$CONFIGS sched_status $band 0"
+			eval "config_set_$CONFIGS sched_status $band 0 $guest"
 		fi
 		if eval "type config_set_$CONFIGS" 2>/dev/null >/dev/null; then
-			eval "config_set_$CONFIGS wl_onoff $band 1"
+			eval "config_set_$CONFIGS wl_onoff $band 1 $guest"
 		fi
 	else
 		if eval "type config_set_$CONFIGS" 2>/dev/null >/dev/null; then
-			eval "config_set_$CONFIGS sched_status $band 1"
+			eval "config_set_$CONFIGS sched_status $band 1 $guest"
 		fi
 		if eval "type config_set_$CONFIGS" 2>/dev/null >/dev/null; then
-			eval "config_set_$CONFIGS wl_onoff $band 0"
+			eval "config_set_$CONFIGS wl_onoff $band 0 $guest"
 		fi
 	fi
 	if eval "type config_get_$CONFIGS" 2>/dev/null >/dev/null; then

@@ -617,6 +617,20 @@ EOF
 	# Run a single hostapd instance for all the radio's
 	# Enables WPS VAP TIE feature
 	config_get_bool wps_vap_tie_dbdc qcawifi wps_vap_tie_dbdc 0
+	config_get hostapd_debug_level "$vif" hostapd_debug_level
+	case "$hostapd_debug_level" in
+		1)
+			hostapd_debug="d" ;;
+		2)
+			hostapd_debug="dd" ;;
+		3)
+			hostapd_debug="ddd" ;;
+		4)
+			hostapd_debug="dddd" ;;
+		*)
+			hostapd_debug=""
+			;;
+	esac
 
 	if [ $wps_vap_tie_dbdc -ne 0 ]; then
 		echo -e "/var/run/hostapd-$ifname.conf \c\h" >> /tmp/hostapd_conf_filename
@@ -624,7 +638,13 @@ EOF
 		if [ "$ifname" = "ath0" ]; then
 			sleep 1
 		fi
-		hostapd -P /var/run/wifi-$ifname.pid -B /var/run/hostapd-$ifname.conf -e $entropy_file
+
+		if [ -z "$hostapd_debug" ]; then
+			hostapd -P /var/run/wifi-$ifname.pid -B /var/run/hostapd-$ifname.conf -e $entropy_file
+		else
+			hostapd -${hostapd_debug} /var/run/hostapd-$ifname.conf -e $entropy_file &
+			sleep 2
+		fi
 
 			if [ -n "$wps_possible" -a -n "$config_methods" ]; then
 				pid=/var/run/hostapd_cli-$ifname.pid

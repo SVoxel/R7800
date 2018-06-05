@@ -19,20 +19,23 @@ listening_net=$6
 allow 1024-65535 192.168.0.0/24 1024-65535
 allow 1024-65535 192.168.1.0/24 1024-65535
 allow 0-65535 0.0.0.0/0 0-65535
-appsystem_location=http://updates1.netgear.com/r7800/ww/r7800.ddf
-appsystem_os=Linux/3.4
-appsystem_product=r7800
-non_igd=${7:-0}
+appsystem_location=http://updates1.netgear.com/$7/ww/$7.ddf
+appsystem_os=$8
+appsystem_product=${9}
+non_igd=${10:-0}
 EOF
 }
 
 upnp_start() {
 	local proto=$($config get wan_proto)
+	local appsystem_os_version="$(cat /proc/version |awk -F ' ' '{print $3}' |awk -F '.' '{print $1"."$2}')"
+	local product_name=`cat /module_name |tr '[A-Z]' '[a-z]'`
+	local appsystem_product=`echo $product_name |sed 's/v/\//'`
 
 	if [ "$proto" = "pppoe" -o "$proto" = "pptp" -o "$proto" = "mulpppoe1" ]; then
 		wan_ifname="ppp0"
 	else
-		wan_ifname="brwan"
+		wan_ifname=$($config get wan_ifname)
 	fi
 
 	local name=$($config get netbiosname)
@@ -49,16 +52,20 @@ upnp_start() {
 		non_igd=1
 	fi
 
-	local listenip=$(ip addr show dev br0|sed -n 's#.*inet \([0-9.]*\)/.*#\1#p')
+	local listenip=$(ip addr show dev $($config get lan_ifname) |sed -n 's#.*inet \([0-9.]*\)/.*#\1#p')
 
 	[ -f $MINIUPNPD_CONF ] && rm -f $MINIUPNPD_CONF
 	[ ! -d /tmp/etc ] && mkdir /tmp/etc
-	print_upnp_conf "$wan_ifname" "$listenip" "$($config get upnp_AdverTime)" "$($config get upnp_TimeToLive)" "$name" "$($config get lan_netmask)" "$non_igd" > $MINIUPNPD_CONF
+	print_upnp_conf "$wan_ifname" "$listenip" "$($config get upnp_AdverTime)" "$($config get upnp_TimeToLive)" "$name" "$($config get lan_netmask)" "$product_name" "Linux/$appsystem_os_version" "$appsystem_product" "$non_igd" > $MINIUPNPD_CONF
 
 	# wait a moment ...
 	sleep 2
 
-	/usr/sbin/miniupnpd &
+	if [ ! -f /sbin/kwilt ] && [ "$upnp_enable" = "0" ]; then
+		echo "No kwilt and upnp disable, so not start miniupnpd." > /dev/console
+	else
+		/usr/sbin/miniupnpd &
+	fi
 }
 
 case "$1" in

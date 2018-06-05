@@ -17,6 +17,10 @@ start() {
 		exit
 	fi
 
+	if [ ! -f /tmp/dnsmasq.conf ]; then
+		cp /etc/dnsmasq-resolv.conf /tmp/dnsmasq.conf
+	fi
+
 	[ ! -f /tmp/resolv.conf ] && touch /tmp/resolv.conf
 
 	local opt_argv=""

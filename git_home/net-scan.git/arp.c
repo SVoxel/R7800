@@ -518,7 +518,7 @@ static void get_dhcp_host(char host[], struct in_addr ip, int *isrepl)
 
 	host[0] = '\0';
 	ipstr = inet_ntoa(ip);
-	if ((tfp = fopen(DHCP_LIST_FILE,"r")) == 0)
+	if ((tfp = fopen("/tmp/dhcpd_hostlist_new","r")) == 0)
 		return;
 
 	while (fgets(buff, sizeof(buff), tfp)) {
@@ -1143,6 +1143,8 @@ void scan_arp_table(int sock, struct sockaddr *me)
 		for (i = 0; i < (NEIGH_HASHMASK + 1); i++) {
 			for (u = arp_tbl[i]; u; u = u->next) {
 				memcpy(req->ar_tip, &u->ip, 4);
+				memcpy(req->ar_tha, &u->mac, 6);
+				memcpy(req->h_dest, &u->mac, 6);
 				sendto(sock, req, sizeof(struct arpmsg), 0, me, sizeof(struct sockaddr));
 				sum++;
 				if(sum == 128) {

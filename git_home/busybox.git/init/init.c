@@ -649,6 +649,14 @@ static void shutdown_system(void)
 {
 	sigset_t block_signals;
 
+	static char cmd[128];
+	struct tm *tm_now;
+	time_t now;
+	time(&now);
+	tm_now = localtime(&now);
+	sprintf(cmd, "/bin/config set Reboot_timestamp=\"%d/%d/%d %d:%d:%d\" >/dev/console",(1900+tm_now->tm_year), (1+tm_now->tm_mon), tm_now->tm_mday, tm_now->tm_hour, tm_now->tm_min, tm_now->tm_sec);
+	system(cmd);
+
     //some progresses block pppd to send the package.But if put kill pppd here,it will send.
 	system("killall pppd");
     //acld can not run config_commit success when reboot.But if put kill acld here,it can run success.
@@ -1060,8 +1068,9 @@ static void reset_action(int sig)
 			system("/bin/echo \"Resetting to Default...\" > /dev/console");
 			system("/bin/config default");
 			system("/bin/echo \"Done!!!\" > /dev/console");
-		}
-
+			system("/bin/echo 0x07 > /proc/reboot_reason");
+		} else 
+			system("/bin/echo 0x06 > /proc/reboot_reason");
 		system("/bin/echo \" Reset-Button Default Reboot \" > /dev/console");
 		system("/sbin/reboot");
 	}

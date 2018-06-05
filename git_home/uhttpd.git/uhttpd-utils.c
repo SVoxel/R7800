@@ -524,7 +524,7 @@ struct path_info * uh_path_lookup(struct client *cl, const char *url)
 	int no_sym = cl->server->conf->no_symlinks;
 	int i = 0;
 	struct stat s;
-
+        char *remote_addr = sa_straddr(&cl->peeraddr);
 	/* back out early if url is undefined */
 	if ( url == NULL )
 		return NULL;
@@ -680,6 +680,28 @@ struct path_info * uh_path_lookup(struct client *cl, const char *url)
 			p.phys = path_info;
 			p.info = path_info;
 			p.name = path_info;
+		}
+	}
+	if( config_match("enable_block_device", "1") )
+	{
+		int i=1;
+		char mac[32], dev[32];
+		char block_name[32], *block_mac;
+		arp_mac(remote_addr, mac, dev);
+		for( i=1; ; i++)
+		{
+			sprintf(block_name, "access_control%d", i);
+
+			block_mac = config_get(block_name);
+			if( *block_mac == '\0' )
+				break;
+			if(cmp_access_device("block_device", mac, block_mac)==1)
+			{
+				p.root = "/www";
+				p.phys = "/www/start.htm";
+				p.info = NULL;
+				p.name = "/start.htm";
+			}
 		}
 	}
 
@@ -1579,3 +1601,24 @@ int update_login_guest(struct client *cl)
 		return ret;
 	}
 }
+int cmp_access_device(char *dtype, char *mac,char *cur_val)
+{
+        char *ptr, *ac_mode,*ac_mac;
+
+        ptr = cur_val;
+        ac_mode = strtok(ptr," ");
+        ac_mac = strtok(NULL, " ");
+
+        if(ac_mode==NULL ||ac_mac==NULL)
+                return 0;
+
+        if((strcasecmp(dtype,"allow_device")==0 && strcmp(ac_mode,"0")==0) || (strcasecmp(dtype,"block_device")==0 && strcmp(ac_mode,"1")==0))
+        {
+                if (strcasecmp(ac_mac, mac) == 0)
+                {
+                        return 1;
+                }
+        }
+        return 0;
+}
+

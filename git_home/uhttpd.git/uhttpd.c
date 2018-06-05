@@ -760,13 +760,15 @@ void fw_checking()
 	int rand_num=0;
 	long sn=0;
 	long sleep_seconds;
-	long expect_time = 0;
+	long expect_time = 0, important_time = 0;
 	long current_time = 0;
 	long diff_time = 0;
+	int important_check = 0;
 	
 	time_t now;
 	struct tm *tm;
 	char *p;
+	char save_time[64];
 
 	enum weekday{sunday, monday, tuesday, wednesday, thursday, friday, saturday};
 	enum weekday week_day;
@@ -851,7 +853,6 @@ void fw_checking()
 	fprintf(stderr, "week_day == %d\n", week_day);
 	//expect time is 10:00(pm) + random number between 0-59
 	srand((int)time(0));
-	expect_time = 22*60*60+ (rand()%60)*60;
 
 	while(1)
 	{/* check current time every half hour. */
@@ -869,20 +870,38 @@ void fw_checking()
 			//fprintf(stderr, "tm_wday == week_day\n");
 			current_time = (long)tm->tm_hour*60*60+(long)tm->tm_min*60+(long)tm->tm_sec;
 			expect_time = 22*60*60+ (rand()%60)*60;
+			important_time = 1*60*60 + (rand()%60)*180;
 
-			diff_time = expect_time - current_time;
-			//printf(stedrr, "diff_time ==%ld\n", diff_time);
+			sprintf(save_time, "%ld", expect_time);
+			config_set("fw_weekly_check_time", save_time);
+			sprintf(save_time, "%ld", important_time);
+			config_set("fw_weekly_important_time", save_time);
+
+			if((expect_time - current_time) < (important_time - current_time)) {
+				diff_time = expect_time - current_time;
+				important_check = 0;
+			}
+			else {
+				diff_time = important_time - current_time;
+				important_check = 1;
+			}//printf(stedrr, "diff_time ==%ld\n", diff_time);
 			if(diff_time == 0)
 			{
 				fprintf(stderr, "AUTO FW checking: once a week\n");
-				system("net-cgi -c");
+				if(important_check == 1)
+					system("net-cgi -i");
+				else
+					system("net-cgi -c");
 			}
 			else if(diff_time < TWO_HOUR && diff_time > 0 )
 			{
 				fprintf(stderr, "AUTO FW will check after %ld seconds\n", diff_time);
 				sleep(diff_time);
 				fprintf(stderr, "AUTO FW checking: once a week\n");
-				system("net-cgi -c");
+				if(important_check == 1)
+					system("net-cgi -i");
+				else
+					system("net-cgi -c");
 			}
 		}
 	}

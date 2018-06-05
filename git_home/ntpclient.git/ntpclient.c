@@ -413,6 +413,10 @@ int rfc1305print(char *data, struct ntptime *arrival, struct ntptime *udp_send_n
 	daylight_saving_setting();
 #endif
 #endif
+	/*
+	 * Update guest wifi schedule after get time
+	 */
+	 system("/sbin/guest_sched.sh update");
 
 	/* 
 	 * When time updates, and selects "Per Schedule" for "Block Sites" && "Block Services",
@@ -485,7 +489,7 @@ int stuff_net_addr(struct in_addr *p, char *hostname)
 	return 1;
 }
 
-int setup_receive(int usd, unsigned int interface, short port)
+int setup_receive(int usd, unsigned int interface, unsigned short port)
 {
 	struct sockaddr_in sa_rcvr;
 
@@ -509,7 +513,7 @@ int setup_receive(int usd, unsigned int interface, short port)
 	return 1;
 }
 
-int setup_transmit(int usd, char *host, short port)
+int setup_transmit(int usd, char *host, unsigned short port)
 {
 	struct sockaddr_in sa_dest;
 	
@@ -529,7 +533,7 @@ int setup_transmit(int usd, char *host, short port)
 	return 1;
 }
 
-void primary_loop(int usd, int num_probes, int cycle_time)
+int primary_loop(int usd, int num_probes, int cycle_time)
 {
 	fd_set fds;
 	struct sockaddr sa_xmit;
@@ -537,6 +541,7 @@ void primary_loop(int usd, int num_probes, int cycle_time)
 	struct timeval to;
 	struct ntptime udp_send_ntp;
 	int steady_state = 0;
+	int sysnc_result=0;
 
 	if (debug) printf("Listening...\n");
 
@@ -556,8 +561,10 @@ void primary_loop(int usd, int num_probes, int cycle_time)
 			if ((to.tv_sec == 0) || (to.tv_sec == cycle_time) 
 					|| (to.tv_sec == DAY_TIME)) {
 				if (steady_state != 1 
-					&& probes_sent >= num_probes && num_probes != 0) 
+					&& probes_sent >= num_probes && num_probes != 0) {
+					sysnc_result = 0;
 					break;
+				}
 				
 				steady_state = 0;
 				send_packet(usd, &udp_send_ntp);
@@ -587,11 +594,14 @@ void primary_loop(int usd, int num_probes, int cycle_time)
 		if (steady_state == 1) {
 			to.tv_sec = DAY_TIME;
 			to.tv_usec = 0;
-		} else if (probes_sent >= num_probes && num_probes != 0) 
+		} else if (probes_sent >= num_probes && num_probes != 0) {
+			sysnc_result = 0;
 			break;
+		}
 	}
 	/*when program is out of primary loop,the NTP server is fail,so delete the file.*/
 	system("rm -f /tmp/ntp_updated");
+	return sysnc_result;
 }
 
 /****************************************************************************
@@ -825,12 +835,35 @@ static void select_ntp_servers(char **primary, char **secondary)
 	*secondary = ntpsvrs[tmzone].secondary;
 }
 
+int get_random_sport()
+{
+	FILE *fp;
+	char cmd[64];
+	int sport, ret;
+	int ntp_min_port = 1024;
+	int ntp_max_port = 65535;
+
+	while(1) {
+		sport = ntp_min_port + rand()%(ntp_max_port - ntp_min_port + 1);
+		sprintf(cmd, "netstat -atu |grep %d > /tmp/ntp_sport", sport);
+		system(cmd);
+		if((fp = fopen("/tmp/ntp_sport", "r"))) {
+			ret = fgetc(fp);
+			fclose(fp);
+			if(ret == EOF)
+				break;
+		}
+	}
+	system("rm -f /tmp/ntp_sport ");
+	return sport;
+}
+
 int main(int argc, char *argv[]) {
 	int usd;  /* socket */
 	int c;
 	/* These parameters are settable from the command line
 	   the initializations here provide default behavior */
-	short int udp_local_port = 0;   /* default of 0 means kernel chooses */
+	unsigned short udp_local_port = 0;   /* default of 0 means kernel chooses */
 	int probe_count = 1;            /* default of 0 means loop forever */
 	int cycle_time = 15;          /* request timeout in seconds */
 	int min_interval = 0;
@@ -841,6 +874,7 @@ int main(int argc, char *argv[]) {
 	char *ntps = "0.0.0.0";
 	struct timeval to;
 	FILE *fp = NULL;
+	int sysnc_ok =0, change_mode = 0, err;
 
 	unsigned long seed;
 	seed = time(0);
@@ -1007,7 +1041,11 @@ int main(int argc, char *argv[]) {
 			goto loop;
 		}
 
-		primary_loop(usd, probe_count, cycle_time);
+		/* The NTP packet must be a server response to a previously issued query received within
+		 * a reasonable time window(5 sec) relative to the request, and the secs time window
+		 * shall not be include in the 0~60 seconds interval*/
+		sysnc_ok = primary_loop(usd, probe_count, 5);
+
 		close(usd);
 	loop:
 		/* [NETGEAR Spec 8.6]:Subsequent queries will double the preceding query interval 
@@ -1015,6 +1053,44 @@ int main(int argc, char *argv[]) {
 		 * and new random interval between 15.00 and 60.00 seconds is selected and the 
 		 * process repeats.
 		 */
+
+		if(!sysnc_ok) {
+			printf("NTP Sync time stamp fail, will wait %d s\n", cycle_time);
+			to.tv_sec = cycle_time;
+			to.tv_usec = 0;
+			do {
+				err = select(1, NULL, NULL, NULL, &to);
+			}
+			while(err < 0 && errno == EINTR);
+		}
+
+		/* to avoid the false alarm of ISP blocking port 123 situation due to internet unstable
+		 * reasons, the retries shall iterate swithching between primart and secondary server, and
+		 * between 123 and non-123 port
+		 * No.1 retry to primary server with source port 123
+		 * No.2 retry to secondary server with source port 123
+		 * No.3 retry to primary server with source port 1077
+		 * No.4 retry to secondary server with source port 1077
+		 * No.5 retry to primary server with source port 123
+		 * No.6 retry to secondary server with source port 123
+		 * No.7 retry to primary server with source port 3045
+		 * No.8 retry to secondary server with source port 3045
+		 * keep iterating*/
+        if(strcmp(ntps, hostname))
+			change_mode=1;
+		else
+			change_mode=0;
+
+		/*(1)Scan port range from 1024 to 65535 to know which ports are in use
+		 * (2)Random select a non-used port from the range in (1)
+		 * (3) Send the next request with the selected port in (2)*/
+		if(change_mode) {
+			if(udp_local_port == NTP_PORT)
+				udp_local_port = get_random_sport();
+			else
+				udp_local_port = NTP_PORT;
+		}
+
 		if ((cycle_time * 2) > DAY_TIME)
 			cycle_time = min_interval + rand()%(max_interval-min_interval+1);
 		else
