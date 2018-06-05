@@ -2,7 +2,8 @@
 START=99
 
 boot(){
-	[ $(cat /tmp/openvpn/cert_file_status) = "1" ] && {
+	[ $(cat /tmp/openvpn/cert_file_status) = "1" ] && [ "x`$CONFIG get factory_mode`" -ne "x1" ] && {
+		rm -rf /tmp/md5vpn > /dev/null
 		/etc/init.d/openvpn regenerate_cert_file
 		/etc/init.d/openvpn start
 	}

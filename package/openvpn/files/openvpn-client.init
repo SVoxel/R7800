@@ -11,7 +11,7 @@ BRIDGE_MODE=$($CONFIG get bridge_mode)
 EXTENDER_MODE=$($CONFIG get extender_mode)
 OPENVPN_CONF_DIR=/etc/openvpn/config/client
 CHECK_HOST=www.google.com
-OPT_ARGS="--fast-io --nice -20 --auth-nocache --sndbuf 393216 --rcvbuf 393216 --tun-mtu 1500 --mssfix 1460"
+OPT_ARGS="--fast-io --nice -20 --auth-nocache --sndbuf 786432 --rcvbuf 786432 --tun-mtu 1500 --mssfix 1460"
 
 start() {
 	# Check existence of /etc/openvpn/config/client/*.ovpn file
@@ -67,7 +67,7 @@ start() {
 	done
 
 	# Start OpenVPN client (assigned to CPU1)
-	taskset -c 1 $PROG $OPT_ARGS --writepid $PID_FILE --cd $OPENVPN_CONF_DIR --log-append $LOG_FILE --config $OVPN_CLIENT_CONF --script-security 2 --up /etc/openvpn/ovpnclient-up.sh --down /etc/openvpn/ovpnclient-down.sh --daemon --push "sndbuf 393216" --push "rcvbuf 393216"
+	taskset -c 1 $PROG $OPT_ARGS --writepid $PID_FILE --cd $OPENVPN_CONF_DIR --log-append $LOG_FILE --config $OVPN_CLIENT_CONF --script-security 2 --up /etc/openvpn/ovpnclient-up.sh --down /etc/openvpn/ovpnclient-down.sh --daemon --push "sndbuf 786432" --push "rcvbuf 786432"
 	echo "Please wait..."
 	sleep 15
 
@@ -103,26 +103,46 @@ start() {
 }
 
 stop() {
+	# Kamoj: Light Amber LED
+	/etc/openvpn/ovpnclient-down.sh
+
+	# Kill OpenVPN client using its pid
 	if [ -f $PID_FILE ]; then
-		kill `cat $PID_FILE` 
+		kill `cat $PID_FILE`
 		rm -f $PID_FILE
 	fi
+
+	# Kamoj: kill openvpn in those cases the pid_file didn't exist or contained wrong pid
+	while [[ $(ps | grep -vE "rc.common|grep" | grep -c "/usr/sbin/openvpn" ) -gt 0 ]] ; do
+		echo  "`date` Voxel: Error: openvpn-client stop: process was not killed properly 2, try a new kill!" | tee -a $LOG_FILE
+		OPENVPN_PID=`ps | grep -vE "rc.common|grep" | grep "/usr/sbin/openvpn" | awk '{ print $1 }'`
+		kill -9 $OPENVPN_PID
+	done
 
 	# Restore CPU power to auto mode
 	echo "ondemand" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 	echo "ondemand" > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
 	echo 1 > /proc/sys/dev/nss/clock/auto_scale
 
-        # Update affinity for NSS RPS
+	# Update affinity for NSS RPS
 	irq_nss_rps=`grep 'nss' /proc/interrupts | sed '4,$d' | cut -d ':' -f 1 | tail -n1 | tr -d ' '`
 	[ -n "$irq_nss_rps" ] && echo 2 > /proc/irq/$irq_nss_rps/smp_affinity
 
 	# Enable NSS RPS
 	sysctl -w dev.nss.general.rps=1 >/dev/null 2>/dev/null
 
-	# Restart firewall	
+	# Restart firewall  
 	net-wall rule
 	net-wall start
+
+	# Kamoj: There is a bug leaving an entry in "ip route" when stopping the openvpn-client, fix it:
+	# ip route show table local
+	echo  "`date` Voxel: OpenVPNclient stop run: ip route del:" | tee -a $LOG_FILE
+	sleep 2
+	wan=`ip route | awk '/^default/{print $NF}'`
+	route=`ip route | grep "dev $wan" | grep -vE "default|kernel|scope|link"`
+	[ "$route" != "" ] && ip route del `ip route | grep "dev $wan" | grep -vE "default|kernel|scope|link"`
+	sleep 2 && ip route  | tee -a $LOG_FILE
 }
 
 restart() {

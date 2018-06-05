@@ -257,7 +257,11 @@ regenerate_cert_file() {
 	clean-all
 	build-ca
 	build-key-server server
-	build-dh
+	if [ -f /tmp/md5vpn ] && [ -f /tmp/openvpn/dh1024.pem ] && [ -n "`cat /tmp/openvpn/dh1024.pem`" ]; then
+		cp /tmp/openvpn/dh1024.pem $EASY_RSA_DIR/keys/
+	else
+		build-dh
+	fi
 	build-key client
 
 	# Input: artmtd -r sn
