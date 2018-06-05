@@ -22,9 +22,10 @@ load_sfe() {
 }
 
 load_ecm() {
+	blocksite=`/bin/config get block_skeyword`
 	[ -d /sys/module/ecm ] || {
 		load_sfe
-		insmod ecm
+		insmod ecm blocksite_enable=$blocksite
 	}
 
 	support_bridge && {

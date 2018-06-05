@@ -1,6 +1,0 @@
-#!/bin/sh
-passcode=`config get itunes_app_passcode`
-
-# add action here
-echo "dummyname" > /tmp/itunes/apple.remote
-echo "$passcode" >> /tmp/itunes/apple.remote

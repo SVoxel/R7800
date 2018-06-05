@@ -1,0 +1,31 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=99
+start() {
+	if [ "x`$CONFIG get factory_mode`" == "x1" ]; then
+		return
+	fi
+	local openvpn_cert=$($CONFIG get vpn_enable)
+	local cert_time=`cat /tmp/openvpn/client.crt |grep 'Not Before'|cut -d ":" -f 4|cut -d " " -f 2` 
+	local sys_time=2017
+	local sn_router=$(artmtd -r sn | grep sn: | sed 's/sn://g')
+	local sn_vpn=`cat /tmp/openvpn/cert.info | tr -d "\015\012"`
+	local sig_alg=""
+	if [ -f /tmp/openvpn/client.crt ]; then
+		sig_alg=`openssl x509 -in /tmp/openvpn/client.crt -text -noout | grep "Signature Algorithm:"| grep -i md5`
+	
+		if [ -n "$sig_alg" ]; then
+			echo "1" > /tmp/md5vpn
+		fi
+	fi
+	if [ $cert_time -lt $sys_time ] || [ "$sn_router" != "$sn_vpn" ] || [ -n "$sig_alg" ] && [ "x$openvpn_cert" = "x0" ];then
+		echo "1" > /tmp/vpn_on_updating
+		/bin/openvpn_cert_check &
+	fi
+	if [ $cert_time -lt $sys_time ] || [ "$sn_router" != "$sn_vpn" ] || [ -n "$sig_alg" ] && [ "x$openvpn_cert" = "x1" ]; then
+		$CONFIG set openvpn_cert_update=1
+	else
+		$CONFIG set openvpn_cert_update=0
+	fi
+}

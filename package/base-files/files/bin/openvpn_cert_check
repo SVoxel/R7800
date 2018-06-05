@@ -1,0 +1,48 @@
+#!/bin/sh
+
+CONFIG=/bin/config
+local cert_time=`cat /tmp/openvpn/client.crt |grep 'Not Before'|cut -d ":" -f 4|cut -d " " -f 2` 
+local sys_time=2017
+local router_time=`date +%Y`
+local running_num=1
+local running_total=3
+local sn_router=$(artmtd -r sn | grep sn: | sed 's/sn://g')
+local sn_vpn=`cat /tmp/openvpn/cert.info | tr -d "\015\012"`
+
+local cert_start_time=`openssl x509 -in /tmp/openvpn/client.crt -text -noout |grep 'Not Before'|cut -d ":" -f 4|cut -d " " -f 2`
+local cert_end_time=`openssl x509 -in /tmp/openvpn/client.crt -text -noout |grep 'Not After'|cut -d ":" -f 4|cut -d " " -f 2`
+#local cert_end_time=`date -d "$(openssl x509 -in /tmp/openvpn/client.crt -noout -enddate | awk -F "=" '{print $2}')" %s`
+
+while [ 1 ]
+do
+	if [ $router_time -lt $sys_time ]; then
+		/bin/openvpn_update 
+		$CONFIG set openvpn_cert_update=0
+		rm -rf /tmp/vpn_on_updating
+		rm -rf /tmp/md5vpn
+
+		if [ "x`$CONFIG get vpn_enable`" = "x1" ]; then
+			/etc/init.d/openvpn restart
+		fi
+		break
+	fi
+	if [ $cert_time -lt $sys_time ] || [ "$sn_router" != "$sn_vpn" ]; then
+		/etc/init.d/openvpn regenerate_cert_file
+	fi
+	
+	if [ $cert_end_time -lt $cert_start_time ] || [ "x`cat /tmp/md5vpn`" = "x1" ]; then
+		/etc/init.d/openvpn regenerate_cert_file
+	fi
+	cert_time=`cat /tmp/openvpn/client.crt |grep 'Not Before'|cut -d ":" -f 4|cut -d " " -f 2` 
+	sn_router=$(artmtd -r sn | grep sn: | sed 's/sn://g')
+	sn_vpn=`cat /tmp/openvpn/cert.info | tr -d "\015\012"`
+	if [ $sys_time -le $cert_time ] && [ "$sn_router" = "$sn_vpn" ]; then
+		$CONFIG set openvpn_cert_update=0
+		rm -rf /tmp/vpn_on_updating
+		rm -rf /tmp/md5vpn
+		if [ "x`$CONFIG get vpn_enable`" = "x1" ]; then
+			/etc/init.d/openvpn restart
+		fi
+		break
+	fi
+done

@@ -495,6 +495,7 @@ int insertRoute(uint32 group, int ifx) {
 
 	        	newlistener = (struct Listener*)malloc(sizeof(struct Listener));
 	        	newlistener->nextlistener = NULL;
+				newlistener->timeout = GetSysUpTime();
 	        	newlistener->srcAddr = src;
 			newroute->listeners = newlistener;
 #ifdef USE_ATH_HEADER

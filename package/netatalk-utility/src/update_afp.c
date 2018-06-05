@@ -111,6 +111,9 @@ static void reload_services(void)
 		system("/bin/nice -n 19 /usr/sbin/afpd -F /etc/netatalk/afpd.conf -P /var/run/afpd.pid -c 7 > /dev/null 2>&1");
 	}
 
+	system("/usr/bin/killall afpd");
+	system("/usr/sbin/afpd -F /etc/netatalk/afpd.conf -P /var/run/afpd.pid -c 7");
+
 #if 0 /* Not required */
 	/* cnid_metad */
 	ret = system("/bin/pidof cnid_metad > /dev/zero 2>&1");

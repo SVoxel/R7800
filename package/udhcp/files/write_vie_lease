@@ -38,5 +38,5 @@ sleep 3
 #    exit 0
 #else
     /usr/sbin/soapclient -a $ip -p 80 -m $mac -s $profile  $logs &
-    /usr/share/udhcpd/hyt_result_maintain &
+#    /usr/share/udhcpd/hyt_result_maintain &
 #fi

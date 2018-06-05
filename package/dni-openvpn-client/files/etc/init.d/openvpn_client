@@ -1,0 +1,16 @@
+#!/bin/sh /etc/rc.common
+START=60
+
+router_region=`artmtd -r region |grep REGION|awk -F ': ' '{print $2}'`
+if [ "x$router_region" = "xPR" ]; then
+	exit 0
+fi
+
+start() {
+	openvpn_client.sh "enable"
+}
+
+# this functions should not be called, it's recommend to call openvpn_client.sh directly!
+stop() {
+	openvpn_client.sh "disable"
+}

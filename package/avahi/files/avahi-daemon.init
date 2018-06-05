@@ -19,7 +19,6 @@ start() {
 		fi
 	done
 	$BIN $OPTIONS  &
-	/usr/share/udhcpd/hyt_result_maintain &
 }
 
 stop() {

@@ -49,7 +49,7 @@ endef
 define KernelPackage/qca-nss-ecm/install
 $(call KernelPackage/qca-nss-ecm/Default/install, $(1))
 	$(INSTALL_DIR) $(1)/etc/uci-defaults $(1)/etc/sysctl.d
-	$(INSTALL_DATA) ./files/qca-nss-ecm.defaults $(1)/etc/uci-defaults/99-qca-nss-ecm
+	$(INSTALL_BIN) ./files/qca-nss-ecm.defaults $(1)/etc/uci-defaults/99-qca-nss-ecm
 	$(INSTALL_BIN) ./files/qca-nss-ecm.sysctl $(1)/etc/sysctl.d/qca-nss-ecm.conf
 
 	# install service by default

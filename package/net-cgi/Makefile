@@ -12,7 +12,7 @@ WEB_PATH:=www
 
 include $(INCLUDE_DIR)/package.mk
 
-PKG_GIT_TREEISH:=net-cgi-router-dni003
+PKG_GIT_TREEISH:=net-cgi-router-dni007
 
 define Package/net-cgi
   SECTION:=utils

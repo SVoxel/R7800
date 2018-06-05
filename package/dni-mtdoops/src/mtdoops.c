@@ -1,9 +1,7 @@
 /*
  * MTD Oops/Panic logger
  *
- * Copyright (C) 2007 Nokia Corporation. All rights reserved.
  *
- * Author: Richard Purdie <rpurdie@openedhand.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,405 +29,209 @@
 #include <linux/delay.h>
 #include <linux/mtd/mtd.h>
 #include <linux/slab.h>
+#include <linux/ctype.h>
+#include <linux/parport.h>
+#include <linux/list.h>
+#include <linux/notifier.h>
+#include <linux/reboot.h>
+#include <linux/kdebug.h>
 
-static   char *oops_part = "reserve";
-module_param(oops_part, charp, 0444);
-MODULE_PARM_DESC(oops_part, "mtdoops mtd partiton name");
+#define DNI_PAGE_SIZE 2048
 
-#define MTDOOPS_KERNMSG_MAGIC 0x5d005d00
-#define OOPS_PAGE_SIZE 1024
+extern int register_oom_notifier(struct notifier_block *);
+extern int mtd_erase_block(struct mtd_info *mtd,int offset);
 
-extern int redirect_console_oops_msg(char *buf, int len);
+static unsigned long reboot_reason_flags = 0;
 
-static struct mtdoops_context {
-	int mtd_index;
-	struct work_struct work_erase;
-	struct mtd_info *mtd;
-	int oops_pages;
-	int nextpage;
-	int nextcount;
-	char *name;
-
-	void *oops_buf;
-
-	/* writecount and disabling ready are spin lock protected */
-	int ready;
-	int writecount;
-} oops_cxt;
-
-static void mtdoops_erase_callback(struct erase_info *done)
+static int dni_ubi_read_for_proc(char *msg)
 {
-	wait_queue_head_t *wait_q = (wait_queue_head_t *)done->priv;
-	wake_up(wait_q);
-}
+	struct mtd_info *mtd = NULL;
+	int len;
 
-static int mtdoops_erase_block(struct mtd_info *mtd, int offset)
-{
-	struct erase_info erase;
-	DECLARE_WAITQUEUE(wait, current);
-	wait_queue_head_t wait_q;
-	int ret;
+	mtd = get_mtd_device(NULL, 9);
 
-	init_waitqueue_head(&wait_q);
-	erase.mtd = mtd;
-	erase.callback = mtdoops_erase_callback;
-	erase.addr = offset;
-	erase.len = mtd->erasesize;
-	erase.priv = (u_long)&wait_q;
-
-	set_current_state(TASK_INTERRUPTIBLE);
-	add_wait_queue(&wait_q, &wait);
-
-	ret = mtd->_erase(mtd, &erase);
-	if (ret) {
-		set_current_state(TASK_RUNNING);
-		remove_wait_queue(&wait_q, &wait);
-		printk (KERN_WARNING "mtdoops: erase of region [0x%llx, 0x%llx] "
-				     "on \"%s\" failed\n",
-			(unsigned long long)erase.addr, (unsigned long long)erase.len, mtd->name);
-		return ret;
+	if (!mtd){
+		printk("can not get mtd9\n");
+		return -1;
 	}
-
-	schedule();  /* Wait for erase to finish. */
-	remove_wait_queue(&wait_q, &wait);
-
+	else{
+		mtd_read(mtd, 0, 6, &len, msg);
+	}
 	return 0;
 }
 
-static void mtdoops_inc_counter(struct mtdoops_context *cxt)
+static int dni_ubi_write_for_proc(char *msg)
 {
-	struct mtd_info *mtd = cxt->mtd;
-	size_t retlen;
-	u32 count;
-	int ret;
 
-	cxt->nextpage++;
-	if (cxt->nextpage >= cxt->oops_pages)
-		cxt->nextpage = 0;
-	cxt->nextcount++;
-	if (cxt->nextcount == 0xffffffff)
-		cxt->nextcount = 0;
+	struct mtd_info *mtd = NULL;
+	int retbad, len, ret ;
 
-	ret = mtd->_read(mtd, cxt->nextpage * OOPS_PAGE_SIZE, 4,
-			&retlen, (u_char *) &count);
-	if ((retlen != 4) || ((ret < 0) && (ret != -EUCLEAN))) {
-		printk(KERN_ERR "mtdoops: Read failure at %d (%td of 4 read)"
-				", err %d.\n", cxt->nextpage * OOPS_PAGE_SIZE,
-				retlen, ret);
-		schedule_work(&cxt->work_erase);
-		return;
+	if(!msg)
+		return -1;
+	mtd = get_mtd_device(NULL, 9);
+
+	if (!mtd){
+		printk("can not get mtd9\n");
+		return -1;
 	}
-
-	/* See if we need to erase the next block */
-	if (count != 0xffffffff) {
-		schedule_work(&cxt->work_erase);
-		return;
-	}
-
-	printk(KERN_DEBUG "mtdoops: Ready %d, %d (no erase)\n",
-			cxt->nextpage, cxt->nextcount);
-	cxt->ready = 1;
-}
-
-/* Scheduled work - when we can't proceed without erasing a block */
-static void mtdoops_workfunc_erase(struct work_struct *work)
-{
-	struct mtdoops_context *cxt =
-			container_of(work, struct mtdoops_context, work_erase);
-	struct mtd_info *mtd = cxt->mtd;
-	int i = 0, j, ret, mod;
-//	printk("******** mtdoops_workfunc_erase **********\n");
-	/* We were unregistered */
-	if (!mtd)
-		return;
-
-	mod = (cxt->nextpage * OOPS_PAGE_SIZE) % mtd->erasesize;
-	if (mod != 0) {
-		cxt->nextpage = cxt->nextpage + ((mtd->erasesize - mod) / OOPS_PAGE_SIZE);
-		if (cxt->nextpage >= cxt->oops_pages)
-			cxt->nextpage = 0;
-	}
-
-	while (mtd->_block_isbad) {
-		ret = mtd->_block_isbad(mtd, cxt->nextpage * OOPS_PAGE_SIZE);
-		if (!ret)
-			break;
-		if (ret < 0) {
-			printk(KERN_ERR "mtdoops: _block_isbad failed, aborting.\n");
-			return;
+	else{
+		retbad = mtd_erase_block(mtd, 0);
+		if( retbad < 0 ){
+			printk( KERN_WARNING "erase failed.\n");
+			return -1;
 		}
-badblock:
-		printk(KERN_WARNING "mtdoops: Bad block at %08x\n",
-				cxt->nextpage * OOPS_PAGE_SIZE);
-		i++;
-		cxt->nextpage = cxt->nextpage + (mtd->erasesize / OOPS_PAGE_SIZE);
-		if (cxt->nextpage >= cxt->oops_pages)
-			cxt->nextpage = 0;
-		if (i == (cxt->oops_pages / (mtd->erasesize / OOPS_PAGE_SIZE))) {
-			printk(KERN_ERR "mtdoops: All blocks bad!\n");
-			return;
-		}
-	}
-
-	for (j = 0, ret = -1; (j < 3) && (ret < 0); j++)
-		ret = mtdoops_erase_block(mtd, cxt->nextpage * OOPS_PAGE_SIZE);
-
-	if (ret >= 0) {
-		printk(KERN_DEBUG "mtdoops: Ready %d, %d \n", cxt->nextpage, cxt->nextcount);
-		cxt->ready = 1;
-		return;
-	}
-
-	if (mtd->_block_markbad && (ret == -EIO)) {
-		ret = mtd->_block_markbad(mtd, cxt->nextpage * OOPS_PAGE_SIZE);
-		if (ret < 0) {
-			printk(KERN_ERR "mtdoops: block_markbad failed, aborting.\n");
-			return;
-		}
-	}
-	goto badblock;
-}
-
-static void mtdoops_write(struct mtdoops_context *cxt, int panic)
-{
-	struct mtd_info *mtd = cxt->mtd;
-	size_t retlen;
-	int ret;
-	char *buff = NULL;
-	int i;
-//	printk("********* mtdoops_write ********\n");
-	if (cxt->writecount < OOPS_PAGE_SIZE)
-		memset(cxt->oops_buf + cxt->writecount, 0xff,
-					OOPS_PAGE_SIZE - cxt->writecount);
-
-	if (panic)
-		ret = mtd->_panic_write(mtd, cxt->nextpage * OOPS_PAGE_SIZE,
-					OOPS_PAGE_SIZE, &retlen, cxt->oops_buf);
-	else
-	{
-//		printk("********* %d\n",panic);
-	//	mtd_write(mtd,0,2048, &retlen, buff);
-		buff = (char *)cxt->oops_buf;
-		for(i = 0; i < OOPS_PAGE_SIZE; i++)
-			printk("%c",buff[i]);
-//		printk("***** ret = mtd_write *****\n");
-		ret = mtd_write(mtd, cxt->nextpage * OOPS_PAGE_SIZE,
-					OOPS_PAGE_SIZE, &retlen, cxt->oops_buf);
-	}
-	cxt->writecount = 0;
-	printk("***** if ((relen *****\n");
-	if ((retlen != OOPS_PAGE_SIZE) || (ret < 0))
-		printk(KERN_ERR "mtdoops: Write failure at %d (%td of %d written), err %d.\n",
-			cxt->nextpage * OOPS_PAGE_SIZE, retlen,	OOPS_PAGE_SIZE, ret);
-//	printk("**** mtdoops_inc_counter ****\n");
-	mtdoops_inc_counter(cxt);
-}
-
-static void find_next_position(struct mtdoops_context *cxt)
-{
-	struct mtd_info *mtd = cxt->mtd;
-	int ret, page, maxpos = 0;
-	u32 count[2], maxcount = 0xffffffff;
-	size_t retlen;
-
-	for (page = 0; page < cxt->oops_pages; page++) {
-		ret = mtd->_read(mtd, page * OOPS_PAGE_SIZE, 8, &retlen, (u_char *) &count[0]);
-		if ((retlen != 8) || ((ret < 0) && (ret != -EUCLEAN))) {
-			printk(KERN_ERR "mtdoops: Read failure at %d (%td of 8 read)"
-				", err %d.\n", page * OOPS_PAGE_SIZE, retlen, ret);
-			continue;
-		}
-
-		if (count[1] != MTDOOPS_KERNMSG_MAGIC)
-			continue;
-		if (count[0] == 0xffffffff)
-			continue;
-		if (maxcount == 0xffffffff) {
-			maxcount = count[0];
-			maxpos = page;
-		} else if ((count[0] < 0x40000000) && (maxcount > 0xc0000000)) {
-			maxcount = count[0];
-			maxpos = page;
-		} else if ((count[0] > maxcount) && (count[0] < 0xc0000000)) {
-			maxcount = count[0];
-			maxpos = page;
-		} else if ((count[0] > maxcount) && (count[0] > 0xc0000000)
-					&& (maxcount > 0x80000000)) {
-			maxcount = count[0];
-			maxpos = page;
-		}
-	}
-	if (maxcount == 0xffffffff) {
-		cxt->nextpage = 0;
-		cxt->nextcount = 1;
-		schedule_work(&cxt->work_erase);
-		return;
-	}
-
-	cxt->nextpage = maxpos;
-	cxt->nextcount = maxcount;
-
-	mtdoops_inc_counter(cxt);
-}
-
-
-static void mtdoops_notify_add(struct mtd_info *mtd)
-{
-	struct mtdoops_context *cxt = &oops_cxt;
-
-	if (cxt->name && !strcmp(mtd->name, cxt->name))
-		cxt->mtd_index = mtd->index;
-
-	if ((mtd->index != cxt->mtd_index) || cxt->mtd_index < 0)
-		return;
-
-	if (mtd->size < (mtd->erasesize * 1)) {
-		printk(KERN_ERR "MTD partition %d not big enough for mtdoops\n",
-				mtd->index);
-		return;
-	}
-
-	if (mtd->erasesize < OOPS_PAGE_SIZE) {
-		printk(KERN_ERR "Eraseblock size of MTD partition %d too small\n",
-				mtd->index);
-		return;
-	}
-
-	cxt->mtd = mtd;
-	cxt->oops_pages = (int)mtd->size / OOPS_PAGE_SIZE;
-	
-	find_next_position(cxt);
-
-	printk(KERN_INFO "mtdoops: Attached to MTD device %d name %s\n", mtd->index, mtd->name);
-}
-
-static void mtdoops_notify_remove(struct mtd_info *mtd)
-{
-	struct mtdoops_context *cxt = &oops_cxt;
-
-	if ((mtd->index != cxt->mtd_index) || cxt->mtd_index < 0)
-		return;
-
-	cxt->mtd = NULL;
-	flush_scheduled_work();
-}
-
-static void mtdoops_console_sync(void)
-{
-	struct mtdoops_context *cxt = &oops_cxt;
-	struct mtd_info *mtd = cxt->mtd;
-
-	if (!cxt->ready || !mtd || cxt->writecount == 0)
-		return;
-
-	/* 
-	 *  Once ready is 0 and we've held the lock no further writes to the 
-	 *  buffer will happen
-	 */
-	if (!cxt->ready) {
-		return;
-	}
-
-	cxt->ready = 0;
-
-	if (mtd->_panic_write){
-		/* Interrupt context, we're going to panic so try and log */
-		mtdoops_write(cxt, 1);
-	} else {
-		/* we're going to panic so try and log */
-		mtdoops_write(cxt, 0);
+		ret = mtd_write(mtd, 0, DNI_PAGE_SIZE, &len, msg);
+		if( ret < 0 )
+			printk(KERN_WARNING "mtd_write fail\n");
+		return ret;
 	}
 }
-
-static void
-mtdoops_console_write(const char *s, unsigned int count)
-{
-	struct mtdoops_context *cxt = &oops_cxt;
-	struct mtd_info *mtd = cxt->mtd;
-
-	if (!cxt->ready || !mtd)
-		return;
-
-	/* Check ready status didn't change whilst waiting for the lock */
-	if (!cxt->ready) {
-		return;
-	}
-	if (cxt->writecount == 0) {
-		u32 *stamp = cxt->oops_buf;
-		*stamp++ = cxt->nextcount;
-		*stamp = MTDOOPS_KERNMSG_MAGIC;
-		cxt->writecount = 8;
-	}
-
-	if ((count + cxt->writecount) > OOPS_PAGE_SIZE)
-		count = OOPS_PAGE_SIZE - cxt->writecount;
-
-	/* Skip the first 8 byte for mtdoops magic number */
-	memcpy(cxt->oops_buf + cxt->writecount, s + 8, count);
-	cxt->writecount += count;
-
-	//if (cxt->writecount == OOPS_PAGE_SIZE)
-	mtdoops_console_sync();
-}
-
-static struct mtd_notifier mtdoops_notifier = {
-	.add	= mtdoops_notify_add,
-	.remove	= mtdoops_notify_remove,
-};
 
 static int console_panic_event(struct notifier_block *blk, unsigned long event, void *ptr)
 {
-	char log_buff[OOPS_PAGE_SIZE];
-//	int retlen = 0;
-	int count = 0;
+	char reboot_reason_flags_str[DNI_PAGE_SIZE+1]={0};
 
-	count = redirect_console_oops_msg(log_buff, OOPS_PAGE_SIZE);
-	mtdoops_console_write(log_buff, count);
-//	printk("********   return   ********\n");
-        return NOTIFY_DONE;
+	printk("@@@@@@@@@ DNI Kernel panic @@@@@@@@@@\n");
+
+	reboot_reason_flags = reboot_reason_flags | (0x1 << 4);
+	sprintf(reboot_reason_flags_str, "0x%lx", reboot_reason_flags);
+	dni_ubi_write_for_proc(reboot_reason_flags_str);
+	
+	return NOTIFY_DONE;
 }
 
 static struct notifier_block console_panic_block = {
-	 .notifier_call = console_panic_event,
+	.notifier_call = console_panic_event,
 	.next = NULL,
 	.priority = INT_MAX /* try to do it first */
 };
 
-static int __init mtdoops_console_init(void)
+static int dni_oom_handler(struct notifier_block *self, unsigned long val, void *data)
 {
-	struct mtdoops_context *cxt = &oops_cxt;
+	char reboot_reason_flags_str[DNI_PAGE_SIZE+1]={0};
 
-	cxt->mtd_index = -1;
-	cxt->name = oops_part;
-	cxt->oops_buf = vmalloc(OOPS_PAGE_SIZE);
+	printk("@@@@@@@@@ DNI Kernel oom @@@@@@@@@@\n");
+	reboot_reason_flags = reboot_reason_flags | (0x1 << 2);
+	sprintf(reboot_reason_flags_str, "0x%lx", reboot_reason_flags);
+	dni_ubi_write_for_proc(reboot_reason_flags_str);
 
-	if (!cxt->oops_buf) {
-		printk(KERN_ERR "Failed to allocate mtdoops buffer workspace\n");
-		return -ENOMEM;
+	return NOTIFY_DONE;
+}
+
+static struct notifier_block dni_oom_notifier = {
+	.notifier_call = dni_oom_handler,
+};
+
+static int dni_oops_handler(struct notifier_block *self, unsigned long val, void *data)
+{
+	char reboot_reason_flags_str[DNI_PAGE_SIZE+1]={0};
+
+	if(val == DIE_OOPS) {
+		printk("@@@@@@@@@ DNI Kernel oops @@@@@@@@@@\n");
+		reboot_reason_flags = reboot_reason_flags | (0x1 << 3);
+		sprintf(reboot_reason_flags_str, "0x%lx", reboot_reason_flags);
+		dni_ubi_write_for_proc(reboot_reason_flags_str);
 	}
 
-	INIT_WORK(&cxt->work_erase, mtdoops_workfunc_erase);
+	return NOTIFY_DONE;
+}
 
-	register_mtd_user(&mtdoops_notifier);
-	atomic_notifier_chain_register(&panic_notifier_list, &console_panic_block);
+static struct notifier_block dni_oops_notifier = {
+	.notifier_call = dni_oops_handler,
+};
 
+static int dni_reboot_handler(struct notifier_block *self, unsigned long val, void *data)
+{
+	switch(val) {
+		case SYS_HALT:
+			printk("@@@@@@@@@ DNI Kernel halt @@@@@@@@@@\n");
+			break;
+
+		case SYS_RESTART:
+			printk("@@@@@@@@@ DNI Kernel restart @@@@@@@@@@\n");
+			break;
+
+		case SYS_POWER_OFF:
+			printk("@@@@@@@@@ DNI Kernel power off @@@@@@@@@@\n");
+			break;
+	}
+
+	return NOTIFY_DONE;
+}
+
+static struct notifier_block dni_reboot_notifier = {
+	.notifier_call = dni_reboot_handler,
+};
+
+void dni_watchdog_handler(void)
+{
+	char reboot_reason_flags_str[DNI_PAGE_SIZE+1]={0};
+
+	printk("@@@@@@@@@ DNI Kernel watchdog reboot @@@@@@@@@@\n");
+	reboot_reason_flags = reboot_reason_flags | (0x1 << 5);
+	sprintf(reboot_reason_flags_str, "0x%lx", reboot_reason_flags);
+	dni_ubi_write_for_proc(reboot_reason_flags_str);
+}
+EXPORT_SYMBOL(dni_watchdog_handler);
+
+static int reboot_reason_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+{
+	char buffer[8], reboot_reason_flags_str[DNI_PAGE_SIZE+1]={0};
+	int len = 6;
+
+	dni_ubi_read_for_proc(reboot_reason_flags_str);
+	reboot_reason_flags = simple_strtoul(reboot_reason_flags_str, NULL, 16);
+	len = snprintf(buffer, sizeof(buffer), "0x%lx", reboot_reason_flags);
+
+	strcpy(reboot_reason_flags_str, "0x00");
+	dni_ubi_write_for_proc(reboot_reason_flags_str);
+
+	return simple_read_from_buffer(buf, count, ppos, buffer, len);
+}
+
+static int reboot_reason_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
+{
+	unsigned long tmp_bits = 0;
+	char reboot_reason_flags_str[DNI_PAGE_SIZE+1]={0};
+
+	tmp_bits = simple_strtoul(buf, NULL, 16);
+	reboot_reason_flags = reboot_reason_flags | (0x1 << tmp_bits);
+	sprintf(reboot_reason_flags_str, "0x%lx\n", reboot_reason_flags);
+	dni_ubi_write_for_proc(reboot_reason_flags_str);
+	
+	return count;
+}
+
+static const struct file_operations proc_reboot_reason_operations = {
+	.read       = reboot_reason_read,
+	.write      = reboot_reason_write,
+};
+
+static void reboot_reason_proc_init(void)
+{
+	struct proc_dir_entry *reboot_reason;
+
+	reboot_reason = proc_create("reboot_reason", 0666, NULL, &proc_reboot_reason_operations);
+}
+
+static int __init mtdoops_init(void)
+{
+	register_reboot_notifier(&dni_reboot_notifier);
+//	register_die_notifier(&dni_oops_notifier);
+//	register_oom_notifier(&dni_oom_notifier);
+//	atomic_notifier_chain_register(&panic_notifier_list, &console_panic_block);
+	reboot_reason_proc_init();
 	return 0;
 }
 
-static void __exit mtdoops_console_exit(void)
+static void __exit mtdoops_exit(void)
 {
-	struct mtdoops_context *cxt = &oops_cxt;
-
-	unregister_mtd_user(&mtdoops_notifier);
-	atomic_notifier_chain_unregister(&panic_notifier_list, &console_panic_block);
-	kfree(cxt->name);
-	vfree(cxt->oops_buf);
+	return;
 }
 
 
-subsys_initcall(mtdoops_console_init);
-module_exit(mtdoops_console_exit);
+subsys_initcall(mtdoops_init);
+module_exit(mtdoops_exit);
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Richard Purdie <rpurdie@delta.com>");
 MODULE_DESCRIPTION("MTD Oops/Panic console logger/driver");

@@ -3,7 +3,7 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=qca-nss-fw
 PKG_BRANCH:=master
-PKG_VERSION:=1.0.c8-00014
+PKG_VERSION:=1.0.c8-00015
 PKG_RELEASE:=1
 
 PKG_SOURCE:=NSS.AK.$(PKG_VERSION).tar.bz2

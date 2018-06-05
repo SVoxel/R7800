@@ -74,7 +74,6 @@ define Package/udhcp/install
 	install -d -m0755 $(1)/usr/share/zcip
 	install -m0755 ./files/zcip.script $(1)/usr/share/zcip/
 	install -m0755 ./files/write_vie_lease $(1)/usr/share/udhcpd/
-	install -m0755 ./files/hyt_result_maintain $(1)/usr/share/udhcpd/
 endef
 
 $(eval $(call BuildPackage,udhcp))

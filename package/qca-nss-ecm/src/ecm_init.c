@@ -44,6 +44,7 @@
 #include "ecm_front_end_ipv6.h"
 #endif
 #include "ecm_front_end_common.h"
+#include "ecm_dni_state.h"
 
 struct dentry *ecm_dentry;	/* Dentry object for top level ecm debugfs directory */
 
@@ -291,6 +292,7 @@ static void __exit ecm_exit(void)
 
 module_init(ecm_init)
 module_exit(ecm_exit)
+module_param(blocksite_enable, int, S_IRUGO);
 
 MODULE_AUTHOR("Qualcomm Atheros, Inc.");
 MODULE_DESCRIPTION("ECM Core");

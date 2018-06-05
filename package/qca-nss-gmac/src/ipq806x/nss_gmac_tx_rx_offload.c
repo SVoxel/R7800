@@ -47,7 +47,7 @@
 #include <linux/sched.h>
 #include <net/sock.h>
 #include "ipv6_pssthrgh.h"
-#define NETLINK_TM 21
+#define NETLINK_TM 24
 
 #define TM_ETH_ONE_DIRECTION 0
 #define TM_ETH_BOTH_DIRECTION 1

@@ -51,9 +51,9 @@ start_stage0() # $1: boot/start
 	op_set_induced_configs
 	op_create_brs_and_vifs
 
-	#For AP mode and Bridge mode turn off access control
+	#For Bridge mode turn off access control
 	local opmode=$($CONFIG get i_opmode)
-	if [ "$opmode" = "apmode"  -o "$opmode" = "brmode" ]; then
+	if [ "$opmode" = "brmode" ]; then
 		$CONFIG set enable_block_device=0
 	else
 		[ "x$($CONFIG get old_enable_acl_status)" != "x" ] && $CONFIG set enable_block_device=$($CONFIG get old_enable_acl_status)

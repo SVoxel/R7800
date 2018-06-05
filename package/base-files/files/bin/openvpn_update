@@ -1,0 +1,112 @@
+#!/bin/sh
+	CONFIG=/bin/config
+config_random_time()
+{
+	rand=`head -c 500 /dev/urandom | tr -dc [:digit:]| head -c 10`
+	rand2=`echo $((rand%$1))`
+	if [ "$rand2" = "x" ];then
+		rand=1
+	else
+		rand=$rand2
+	fi
+
+	return $rand
+}
+
+config_random_date()
+{
+	rand=`head -c 500 /dev/urandom | tr -dc [:digit:]| head -c 10`
+	rand2=`echo $((rand%$1))`
+	if [ "$rand2" = "x" ];then
+		rand=1
+	else
+		rand=$(expr "$rand2" + "1")
+	fi
+
+	return $rand
+}
+
+	number=1
+	running_total=3
+	daily=`cat /firmware_time|cut -d " " -f 2`
+	if [ "$daily" == "Jan" ]; then
+		MM=01
+	elif [ "$daily" == "Feb" ]; then
+		MM=02
+	elif [ "$daily" == "Mar" ]; then
+		MM=03
+	elif [ "$daily" == "Apr" ]; then
+		MM=04
+	elif [ "$daily" == "May" ]; then
+		MM=05
+	elif [ "$daily" == "June" ]; then
+		MM=06
+	elif [ "$daily" == "Jul" ]; then
+		MM=07
+	elif [ "$daily" == "Aug" ]; then
+		MM=08
+	elif [ "$daily" == "Sep" ]; then
+		MM=09
+	elif [ "$daily" == "Oct" ]; then
+		MM=10
+	elif [ "$daily" == "Nov" ]; then
+		MM=11
+	elif [ "$daily" == "Dec" ]; then
+		MM=12
+	fi
+
+	if [ "$MM" = "2" ];then
+		config_random_date 28
+		rand1=$?
+	elif [ "$MM" = "4" ] || [ "$MM" = "6" ] || [ "$MM" = "9" ] || [ "$MM" = "11" ]; then
+		config_random_date 30
+		rand1=$?
+	else
+		config_random_date 31
+		rand1=$?
+	fi
+	if [ "$rand1" -lt "10" ];then
+		DD=`echo 0$rand1`
+	else
+		DD=`echo $rand1`
+	fi
+	
+	config_random_time 24
+	rand1=$?
+	if [ "$rand1" -lt "10" ];then
+		HH=`echo 0$rand1`
+	else
+		HH=`echo $rand1`
+	fi
+	config_random_time 60
+	rand1=$?
+	if [ "$rand1" -lt "10" ];then
+		mm=`echo 0$rand1`
+	else
+		mm=`echo $rand1`
+	fi
+	YY=`cat /firmware_time|cut -d " " -f 6`	
+	
+	date -s $MM$DD$HH$mm$YY
+	/etc/init.d/openvpn regenerate_cert_file
+	while [ 1 ]
+	do
+		vpn_DD=`openssl x509 -in /tmp/openvpn/client.crt -text -noout |grep Before|cut -d : -f 2-|cut -d " " -f 4`
+		vpn_YY=`openssl x509 -in /tmp/openvpn/client.crt -text -noout |grep Before|cut -d : -f 2-|cut -d " " -f 6`
+		if [ $vpn_DD -lt 10 ]; then
+			vpn_DD=`echo 0$vpn_DD`
+		fi
+		if [ "x$vpn_DD" = "x$DD" -a "x$vpn_YY" = "x$YY" ];then
+			break
+		else
+			if [ $number -gt $running_total ]; then
+				break
+			else
+				number=$(($number + 1))
+				/etc/init.d/openvpn regenerate_cert_file
+			fi
+		fi
+	done
+
+	$CONFIG set openvpn_update=1
+	

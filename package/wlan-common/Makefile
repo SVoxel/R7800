@@ -37,6 +37,7 @@ endef
 
 define Package/wlan-common/install
 	$(INSTALL_DIR) $(1)/etc
+	$(INSTALL_DIR) $(1)/etc/ath
 	cp -af $(PKG_BUILD_DIR)/etc/* $(1)/etc
 	if [ -f $(PKG_BUILD_DIR)/etc/ath/wifi.conf ]; then \
 		sed -i 's/vht_11ng=.*/vht_11ng="on"/g' $(1)/etc/ath/wifi.conf; \
@@ -48,7 +49,10 @@ define Package/wlan-common/install
 	$(INSTALL_DIR) $(1)/lib/wifi/
 	cp -af $(PKG_BUILD_DIR)/lib/wifi/* $(1)/lib/wifi
 	install -d -m0755 $(1)/etc/config
-	install -m0755 ./files/qca11k  $(1)/sbin/
+	install -m0755  ./files/qca11k  $(1)/sbin/
+	install -m0755  ./files/guest_sched.sh  $(1)/sbin/
+	install -m0755  ./files/dni_wlan $(1)/sbin/
+	$(INSTALL_DATA) ./files/non_limit_country.conf $(1)/etc/ath
 endef
 
 $(eval $(call BuildPackage,wlan-common))

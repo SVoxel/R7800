@@ -1,0 +1,50 @@
+#! /bin/sh
+
+### Router Anlynatic - Data Collector : OpenVPN client
+
+history_db_file="/tmp/openvpn/client/conn_cfg_history.db"
+
+vpn_client_entry_num_file=/tmp/openvpn/client/vpn_client_entry_num
+vpn_client_entry_num=0
+
+get_conn_entries ()
+{
+	head -n 20 $history_db_file | sort | uniq | { while read line
+	do
+		[ -z "$line" ] && break
+		[ -n "$sep" ] && echo ',' || sep=1
+		vpn_client_entry_num=$((vpn_client_entry_num+1))
+
+		set $(echo "$line" | sed -r 's/;/ /g')
+		cat <<-EOF
+			{
+				"vpnServer" : "$1",
+				"conuntry" : "$2",
+				"city" : "$3"
+			}
+		EOF
+	done;
+	echo $vpn_client_entry_num > $vpn_client_entry_num_file; }
+}
+
+print_data_in_json ()
+{
+	vpn_client_enabled="$(config get vpn_client_enabled)"
+	[ "$vpn_client_enabled" = "1" ] && vpn_client_enabled="true" || vpn_client_enabled="false"
+
+	vpn_client_entries_json="$(get_conn_entries)"
+	vpn_client_entry_num=$(cat $vpn_client_entry_num_file)
+	rm $vpn_client_entry_num_file
+
+	cat <<-EOF
+	"vpnClient" : {
+		"vpnClientEnabled" : $vpn_client_enabled,
+		"numberOfEntry" : ${vpn_client_entry_num:-0},
+		"connEntry" : [
+			$vpn_client_entries_json
+		]
+	}
+	EOF
+}
+
+print_data_in_json

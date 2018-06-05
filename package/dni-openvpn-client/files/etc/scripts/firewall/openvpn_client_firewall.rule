@@ -1,0 +1,33 @@
+#! /bin/sh
+
+tunnel_dev=$(config get vpn_client_tunnel_dev_name)
+tunnel_dev=${tunnel_dev:=tun80}
+
+case "$(config get vpn_client_enabled)" in
+	"on"|"1"|"ON"|"enabled"|"ENABLED")
+		vpn_client_state="on" ;;
+	*)
+		vpn_client_state="off" ;;
+esac
+
+case $1 in
+	"start")
+		if [ "$vpn_client_state" = "on" ]; then
+			iptables -I INPUT -i $tunnel_dev -j ACCEPT
+			iptables -I OUTPUT -o $tunnel_dev -j ACCEPT
+			iptables -I FORWARD -i $tunnel_dev -j ACCEPT
+			iptables -I FORWARD -o $tunnel_dev -j ACCEPT
+			iptables -t nat -I POSTROUTING -o $tunnel_dev -j MASQUERADE
+		fi
+		;;
+	"stop")
+		iptables -D INPUT -i $tunnel_dev -j ACCEPT
+		iptables -D OUTPUT -o $tunnel_dev -j ACCEPT
+		iptables -D FORWARD -i $tunnel_dev -o brwan -j ACCEPT
+		iptables -D FORWARD -i brwan -o $tunnel_dev -j ACCEPT
+		iptables -t nat -D POSTROUTING -o $tunnel_dev -j MASQUERADE
+		;;
+	*)
+		echo "unknow argument!"
+		;;
+esac

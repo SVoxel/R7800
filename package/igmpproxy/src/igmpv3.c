@@ -395,7 +395,6 @@ processV3report(char *buf, uint32 src, uint32 port)
 			if (croute->mode > 2)
 				croute->mode = 0;
 
-			listener = (struct Listener *)findListener(croute, src);
 			// it should not be happened
 			if (croute->mode == st_none)
 			{
@@ -421,6 +420,8 @@ processV3report(char *buf, uint32 src, uint32 port)
 				return;
 			// to update kernel multicast route table
 			insertRoute(port, group, sourceVif->index, src);
+			listener = (struct Listener *)findListener(croute, src);
+			listener->version = IGMP_V3_MEMBERSHIP_REPORT;
 			if (listener)
 			{
 				// to check port is changed or not
