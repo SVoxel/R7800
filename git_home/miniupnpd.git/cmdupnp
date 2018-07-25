@@ -66,6 +66,7 @@ upnp_start() {
 	else
 		/usr/sbin/miniupnpd &
 	fi
+	[ "$upnp_enable" = "0" ] && killall miniupnpd
 }
 
 case "$1" in

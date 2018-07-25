@@ -50,12 +50,12 @@ define Build/Compile
 endef
 
 define Package/miniupnpd/install
-	install -d -m0755 $(1)/usr/sbin
-	install -m0755 $(PKG_BUILD_DIR)/miniupnpd $(1)/usr/sbin/
-	install -d -m0755 $(1)/sbin
-	install -m0755 $(PKG_BUILD_DIR)/cmdupnp $(1)/sbin/
-	install -d -m0755 $(1)/etc/init.d
-	install -m0755 ./files/upnp.init $(1)/etc/init.d/upnp
+	$(INSTALL_DIR) $(1)/usr/sbin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/miniupnpd $(1)/usr/sbin/
+	$(INSTALL_DIR) $(1)/sbin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/cmdupnp $(1)/sbin/
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./files/upnp.init $(1)/etc/init.d/upnp
 endef
 
 $(eval $(call BuildPackage,miniupnpd))
