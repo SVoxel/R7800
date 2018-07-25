@@ -11,7 +11,7 @@ BRIDGE_MODE=$($CONFIG get bridge_mode)
 EXTENDER_MODE=$($CONFIG get extender_mode)
 OPENVPN_CONF_DIR=/etc/openvpn/config/client
 CHECK_HOST=www.google.com
-OPT_ARGS="--fast-io --nice -20 --auth-nocache --sndbuf 786432 --rcvbuf 786432 --tun-mtu 1500 --mssfix 1460"
+OPT_ARGS="--fast-io --nice -20 --auth-nocache --sndbuf 786432 --rcvbuf 786432 --tun-mtu 1500 --mssfix 1460 --txqueuelen 1000"
 
 start() {
 	# Check existence of /etc/openvpn/config/client/*.ovpn file
