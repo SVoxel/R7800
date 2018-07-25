@@ -8,14 +8,16 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libgcrypt
-PKG_VERSION:=1.6.6
+PKG_VERSION:=1.8.3
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
-PKG_SOURCE_URL:=ftp://ftp.gnupg.org/gcrypt/libgcrypt
-PKG_MD5SUM:=944cf6595021d0c33478148a315b335b
+PKG_SOURCE_URL:=https://www.gnupg.org/ftp/gcrypt/libgcrypt/
+PKG_HASH:=66ec90be036747602f2b48f98312361a9180c97c68a690a5f376fa0f67d0af7c
+PKG_LICENSE:=LGPL-2.1+ GPL-2.0+
+PKG_LICENSE_FILES:=COPYING
 
-PKG_FIXUP:=patch-libtool
+PKG_FIXUP:=autoreconf patch-libtool
 PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
 
@@ -45,6 +47,7 @@ CONFIGURE_ARGS += \
 	--enable-shared \
 	--enable-static \
 	--disable-asm \
+	--disable-doc \
 	--with-gpg-error-prefix="$(STAGING_DIR)/usr"
 
 TARGET_CFLAGS += $(FPIC)
