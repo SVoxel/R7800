@@ -17,13 +17,13 @@ endif
 
 
 PKG_NAME:=avahi
-PKG_VERSION:=0.6.32
+PKG_VERSION:=0.7
 PKG_RELEASE:=1
 
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://avahi.org/download/
-PKG_MD5SUM:=22b5e705d3eabb31d26f2e1e7b074013
+PKG_MD5SUM:=d76c59d0882ac6c256d70a2a585362a6
 
 PKG_FIXUP:=autoreconf
 PKG_REMOVE_FILES:=autogen.sh
