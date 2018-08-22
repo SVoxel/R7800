@@ -1,12 +1,15 @@
 #!/bin/sh /etc/rc.common
 START=30
 
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+FILE=/firmware_time
+
 start() {
-	DATE=`/bin/date +%Y%m%d`
-	if [ "$DATE" -lt "20180601" ]; then
-		/bin/date 060101002018
+	DATE=`date +%Y%m%d`
+	if [ "$DATE" -lt "`date +%Y%m%d -r $FILE`" ]; then
+		date `date +%m%d%H%M%Y -r $FILE`
 	fi
-	/usr/sbin/ntpclient
+	ntpclient
 }
 
 stop() {
