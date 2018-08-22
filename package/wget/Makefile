@@ -90,6 +90,7 @@ define Package/wget/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/wget $(1)/usr/bin/wget-ssl
+	$(INSTALL_BIN) files/wgdl $(1)/usr/sbin
 	(cd $(1)/usr/bin;  $(LN) /usr/bin/wget-ssl wget)
 	(cd $(1)/usr/sbin; $(LN) /usr/bin/wget-ssl wget)
 endef
