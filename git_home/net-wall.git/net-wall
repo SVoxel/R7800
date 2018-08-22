@@ -32,8 +32,10 @@ elif [ "$1" = "start" ] || [ "$1" = "restart" ]; then
 		iptables -t nat -A POSTROUTING -o tun0 -j MASQUERADE
 	fi
 
-	# Run own script with own iptables rules
-	if [ -x /root/firewall-start.sh ]; then
+	# Run own script with own iptables rules providing backward compatibility
+	if [ -x /opt/scripts/firewall-start.sh ]; then
+		/opt/scripts/firewall-start.sh
+	elif [ -x /root/firewall-start.sh ]; then
 		/root/firewall-start.sh
 	fi
 fi
