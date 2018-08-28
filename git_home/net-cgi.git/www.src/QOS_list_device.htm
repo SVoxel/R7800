@@ -106,7 +106,7 @@ function show_all()
 				
 			linehtml=linehtml+'<div class="byAlp"  >';
 			linehtml=linehtml+'<div class="devName"><b>'+dev.name+'</b></div>';
-			linehtml=linehtml+'<div class="devIcon big-corner-all" title="$qos_mac: '+dev.mac+'&#13$device_type: '+show_icon_name(dev.devtype)+show_wlan_ssid(dev.contype)+'"    onclick="edit_select_device(\''+dev.mac+'\',\''+dev.ip+'\',\''+dev.name.replace(/\\/g,"\\\\").replace(/&#39;/g,"\\&#39;")+'\', \''+dev.priority+'\', \''+dev.devtype+'\',\''+dev.contype+'\' );">';
+			linehtml=linehtml+'<div class="devIcon big-corner-all" title="$qos_mac: '+dev.mac+'&#13$device_type: '+show_icon_name(dev.devtype)+show_wlan_ssid(dev.contype)+'"    onclick="edit_select_device(\''+dev.mac+'\',\''+dev.ip+'\',\''+dev.name.replace(/&#92;/g,"&#92;&#92;").replace(/&#39;/g,"\\&#39;")+'\', \''+dev.priority+'\', \''+dev.devtype+'\',\''+dev.contype+'\' );">';
 			linehtml=linehtml+device_icon(dev.devtype);
 			linehtml=linehtml+'</div>';
 			linehtml=linehtml+'<div class="devType">';
@@ -171,7 +171,7 @@ function loadvalue()
 
 <div class="access">$access_control_url1
 <script>
-	if(enable_bridge_flag == "1" || enable_ap_mode_flag == "1")
+	if(enable_bridge_flag == "1")
 		document.write("<a href=# class=\"ui-corner-all\" style=\"background-color:grey;\">&nbsp; $access_control_url2 &nbsp;</a>&nbsp;");
 	else
 		document.write("<a href=# onclick=\"goto_url(); return false;\" class=\"ui-corner-all\">&nbsp; $access_control_url2 &nbsp;</a>&nbsp;");

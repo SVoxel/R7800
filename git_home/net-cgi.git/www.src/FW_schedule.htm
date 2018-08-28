@@ -19,13 +19,8 @@ else
 <% table_header() %>
 
 <script>
-var select_ntp='<% cfg_get("ntp_hidden_select") %>';
-var old_ntpadjust="<% cfg_get("ntpadjust") %>";
-
-var cur_time="<% cur_time() %>";
 var gui_region="<% cfg_get("GUI_Region") %>";
 var netgear_region=top.netgear_region;
-cur_time=change_cur_time(cur_time,gui_region);
 
 var enable_ap_flag="<% cfg_get("ap_mode") %>"; //for bug 30286 add this
 var enable_extender_flag="<% cfg_get("extender_mode") %>";
@@ -96,25 +91,12 @@ function loadvalue()
 	}
 	BlockAllClickCheck(cf);	
 
-	var hidden_ntpserver='<% cfg_get("ntpserver_select") %>';
-        cf.time_zone.options[eval(select_ntp)].selected =true;
-	if( old_ntpadjust == "1")
-                cf.adjust.checked =true;
-        else
-                cf.adjust.checked =false;
 }
 </script>
 <input type="hidden" name="days_to_block">
 <input type="hidden" name="start_block_time">
 <input type="hidden" name="end_block_time">
 <input type="hidden" name="hidden_all_day">
-<input type="hidden" name="ntpadjust">
-<input type="hidden" name="ntpserver1">
-<input type="hidden" name="ntpserver2">
-<input type="hidden" name="hidden_ntpserver">
-<input type="hidden" name="hidden_dstflag">
-<input type="hidden" name="hidden_select">
-<input type="hidden" name="dif_timezone">
 <TR id="multipppoe" style="display:none;">
 	<TD nowrap colspan=2>
 	<input type="radio" name="session" value="session1">$mul_session1
@@ -194,71 +176,6 @@ $bluebar
 	<input maxLength=2 type="text" id="end_hour" name=end_hour size=3 onKeyPress="return getkey('num', event)">$schedule_hour
 	<input maxLength=2 type="text" id="end_minute" name=end_minute size=3 onKeyPress="return getkey('num', event)">$schedule_min
 	</TD>
-</TR>
-$bluebar
-<TR>
-        <TD nowrap colspan=2>
-        <A tabindex=-1 href="javascript:loadhelp('_FW_schedule','timezone')"><B>$email_timezone</B></a>
-        </TD>
-</TR>
-<TR>
-        <TD nowrap colspan=2>
-        <select name="time_zone" id="time_zone">					  <!--vcna-->
-		<option value="GMT+12" selected>$gmt_12_1</option><!--0-->
-		<option value="GMT+11" >$gmt_11</option>	<!--1-->
-		<option value="GMT+10" >$gmt_10</option>	<!--2-->
-		<option value="GMT+9" >$gmt_9</option>		<!--3-->
-		<option value="GMT+8" >$gmt_8</option>		<!--4-->
-		<option value="GMT+7" >$gmt_7_1</option>	<!--5-->
-		<option value="GMT+7" >$gmt_7_2</option>	<!--6-->
-		<option value="GMT+6" >$gmt_6_1</option>	<!--7-->
-		<option value="GMT+6" >$gmt_6_2</option>        <!--8-->
-		<option value="GMT+5" >$gmt_5_1_1</option>	<!--9--><!--8-->
-		<option value="GMT+5" >$gmt_5_1_2</option>	<!--10--><!--9-->
-		<option value="GMT+5" >$gmt_5_2</option>	<!--11--><!--10-->
-		<option value="GMT+4" >$gmt_4</option>		<!--12--><!--11-->
-		<option value="GMT+3:30" >$gmt_3_1</option>	<!--13--><!--12-->
-		<option value="GMT+3" >$gmt_3</option>		<!--14--><!--13-->
-		<option value="GMT+2" >$gmt_2</option>		<!--15--><!--14-->
-		<option value="GMT+1" >$gmt_1</option>		<!--16--><!--15-->
-		<option value="GMT-0" >$gmt_0_1</option>	<!--17--><!--16-->
-		<option value="GMT-0" >$gmt_0_2</option>	<!--18--><!--17-->
-		<option value="GMT-1" >$gmt1_1</option>		<!--19--><!--18-->
-		<option value="GMT-1" >$gmt1_2</option>		<!--20--><!--19-->
-		<option value="GMT-1" >$gmt1_3</option>		<!--21--><!--20-->
-		<option value="GMT-1" >$gmt1_4</option>		<!--22--><!--21-->
-		<option value="GMT-2" >$gmt2_1</option>		<!--23--><!--22-->
-		<option value="GMT-2" >$gmt2_2</option>		<!--24--><!--23-->
-		<option value="GMT-2" >$gmt2_3</option>		<!--25--><!--24-->
-		<option value="GMT-3" >$gmt3_1</option>		<!--26--><!--25-->
-		<option value="GMT-3" >$gmt3_2</option>		<!--27--><!--26-->
-		<option value="GMT-4" >$gmt4</option>		<!--28--><!--27-->
-		<option value="GMT-5" >$gmt5_1</option>		<!--29--><!--28-->
-		<option value="GMT-5:30" >$gmt5_2_1</option>	<!--30--><!--29-->
-		<option value="GMT-6" >$gmt6_1</option>		<!--31--><!--30-->
-		<option value="GMT-7" >$gmt7</option>		<!--32--><!--31-->
-		<option value="GMT-8" >$gmt8_1_1</option>	<!--33--><!--32-->
-		<option value="GMT-8" >$gmt8_2_1</option>	<!--34--><!--33-->
-		<option value="GMT-9" >$gmt9</option>		<!--35--><!--34-->
-		<option value="GMT-9:30" >$gmt9_1</option>	<!--36-->
-		<option value="GMT-10" >$gmt10_1</option>	<!--37--><!--35-->
-		<option value="GMT-10" >$gmt10_2_1</option>	<!--38--><!--36-->
-		<option value="GMT-10" >$gmt10_2_2</option>	<!--39--><!--37-->
-		<option value="GMT-11" >$gmt11_1</option>	<!--40--><!--38-->
-		<option value="GMT-11" >$gmt11</option>		<!--41--><!--39-->
-		<option value="GMT-12" >$gmt12_1</option>	<!--42--><!--40-->
-		<option value="GMT-12" >$gmt12_2</option>	<!--43--><!--41-->
-		<option value="GMT-13" >$gmt13</option>		<!--44--><!--42-->
-        </select>
-        </TD>
-</TR>
-<TR>
-        <TD nowrap colspan=2>
-        <input type="checkbox" name="adjust" id="adjust" value="1">$email_auto_adjust
-        </TD>
-</TR>
-<TR>
-        <TD nowrap colspan=2 align=center><B id="current_time">$ntp_curtime: <script>document.write(cur_time)</script></B></TD>
 </TR>
 $bluebar
 </TABLE>

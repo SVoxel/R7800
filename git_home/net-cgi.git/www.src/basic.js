@@ -174,13 +174,13 @@ function basic_menu_class_default()
 	if( top.funjsq_flag==1 && (top.enable_ap_flag== 1 || top.enable_bridge_flag== 1 || top.enable_extender_flag == "1") && top.gui_region=="Chinese" && top.netgear_region=="PR")
 	{
 		var wds_div = top.document.getElementById("funjsq");
-		ds_div.className = wds_div.className + "_grey";
+		wds_div.className = wds_div.className + "_grey";
 	}
 
 	if( top.funjsq_mul_flag==1 && (top.enable_ap_flag== 1 || top.enable_bridge_flag== 1 || top.enable_extender_flag == "1") && top.gui_region=="Chinese" && top.netgear_region=="PR")
         {
                 var wds_div = top.document.getElementById("funjsq");
-                ds_div.className = wds_div.className + "_grey";
+                wds_div.className = wds_div.className + "_grey";
         }
 	
 	/*if(top.have_broadband == 1 && top.is_ru_version == 1 && top.is_pr_version == 1)

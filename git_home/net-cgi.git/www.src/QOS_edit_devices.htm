@@ -116,7 +116,8 @@ function check_device_edit_apply(cf)
 		if(device_icons.options[i].selected==true)
 			value_type = i+1;
 	}
-	var value_name = cf.name_tag.value.replace(/\\/g,"\\\\");
+	//var value_name = cf.name_tag.value.replace(/\\/g,"\\\\");
+	var value_name = cf.name_tag.value;
 	var value_mac = edit_mac_addr;
 
 	if(value_priority == "" || value_type == "") {

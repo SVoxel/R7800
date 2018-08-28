@@ -199,88 +199,8 @@ function check_schedule_apply(cf)
 	}
 	cf.hidden_all_day.value=tmp_all_day;
 
-	check_ntp(cf);
 	cf.submit();
 	return true;
 }
 
-function check_ntp(cf)
-{
-        cfindex=cf.time_zone.options[cf.time_zone.selectedIndex].value;
-        if( cfindex == "GMT+1" || cfindex == "GMT+2" || cfindex == "GMT+3" )
-        {
-                cf.ntpserver1.value="time-h.netgear.com";
-                cf.ntpserver2.value="time-a.netgear.com";
-        }
-        else if( cfindex == "GMT+3:30" || cfindex == "GMT+4" || cfindex == "GMT+5" || cfindex == "GMT+6" )
-        {
-                cf.ntpserver1.value="time-a.netgear.com";
-                cf.ntpserver2.value="time-b.netgear.com";
-        }
-        else if( cfindex == "GMT+7" || cfindex == "GMT+8" || cfindex == "GMT+9" )
-        {
-                cf.ntpserver1.value="time-b.netgear.com";
-                cf.ntpserver2.value="time-c.netgear.com";
-        }
-        else if( cfindex == "GMT+10" || cfindex == "GMT+11" || cfindex == "GMT+12" )
-        {
-                cf.ntpserver1.value="time-c.netgear.com";
-                cf.ntpserver2.value="time-d.netgear.com";
-        }
-        else if( cfindex == "GMT-9" || cfindex == "GMT-9:30" || cfindex == "GMT-10" || cfindex == "GMT-11" || cfindex=="GMT-12" || cfindex=="GMT-13")
-        {
-                cf.ntpserver1.value="time-d.netgear.com";
-                cf.ntpserver2.value="time-e.netgear.com";
-        }
-        else if( cfindex == "GMT-6" || cfindex == "GMT-7" || cfindex == "GMT-8" )
-        {
-                cf.ntpserver1.value="time-e.netgear.com";
-                cf.ntpserver2.value="time-f.netgear.com";
-        }
-        else if( cfindex == "GMT-3" || cfindex == "GMT-4" || cfindex == "GMT-5" || cfindex == "GMT-5:30" )
-        {
-                cf.ntpserver1.value="time-f.netgear.com";
-                cf.ntpserver2.value="time-g.netgear.com";
-        }
-        else if( cfindex == "GMT-0" || cfindex == "GMT-1" || cfindex == "GMT-2" )
-	 {
-                cf.ntpserver1.value="time-g.netgear.com";
-                cf.ntpserver2.value="time-h.netgear.com";
-        }
-        if(cf.adjust.checked == true)
-        {
-                cf.ntpadjust.value="1";
-		var index = cf.time_zone.selectedIndex;
-		if ( ( index >= 2 && index <= 7 ) || (index >= 10 && index <= 13) )
-			cf.hidden_ntpserver.value=cf.time_zone.value+"GMT\,M3.2.0\/2:00\,M11.1.0\/2:00";
-		else if ( index == 8 )
-			cf.hidden_ntpserver.value=cf.time_zone.value+"GMT\,M4.1.0\/2:00\,M10.5.0\/2:00";
-		else if ( index >= 14 && index <= 25 )
-			cf.hidden_ntpserver.value=cf.time_zone.value+"GMT\,M3.5.0\/2:00\,M10.5.0\/2:00";
-		else if ( (index >= 37 && index <= 42) && index != 38 && index != 40 )
-			cf.hidden_ntpserver.value=cf.time_zone.value+"GMT\,M10.5.0\/2:00\,M3.5.0\/2:00";
-		else
-			cf.hidden_ntpserver.value=cf.time_zone.value;
-        }
-        else
-        {
-                cf.ntpadjust.value="0";
-                cf.hidden_ntpserver.value=cf.time_zone.value;
-        }
-
-        if( old_ntpadjust == cf.ntpadjust.value )
-                cf.hidden_dstflag.value="0";
-        else
-                cf.hidden_dstflag.value="1";
-
-        cf.hidden_select.value=cf.time_zone.selectedIndex;
-
-        //16044 if time zone changed set dif_timezone as "1"
-        if( select_ntp == cf.hidden_select.value.toString() )
-                cf.dif_timezone.value = "0";
-        else
-                cf.dif_timezone.value = "1";
-
-        return true;
-}
 

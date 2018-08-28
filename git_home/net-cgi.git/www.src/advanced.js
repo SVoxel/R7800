@@ -685,7 +685,11 @@ function click_adv_action(id)
 			goto_formframe("vpn_client.htm");
 			menu_color_change('vpn_client');
 		}
-						                 
+		else if( id == "ntp" )
+		{
+			goto_formframe("NTP_debug.htm");
+			menu_color_change('ntp');
+		}				                 
         }
 	change_menu_height();
 }

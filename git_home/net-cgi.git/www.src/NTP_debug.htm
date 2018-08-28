@@ -1,0 +1,269 @@
+<% http_header("style/form.css", "funcs.js") %>
+<% body_header("", "NTP_debug.htm", "ntp_debug") %>
+<div class="page_title">$ntp_settings</div>
+<style>
+tr{ height:25px; }
+</style>
+<script>
+var select_ntp='<% cfg_get("ntp_hidden_select") %>';
+var old_ntpadjust="<% cfg_get("ntpadjust") %>";
+var cur_time = "<% cur_time() %>";
+var gui_region = "<% cfg_get("GUI_Region") %>";
+var netgear_region = "<% get_firmeare_region() %>";
+cur_time = change_cur_time(cur_time, gui_region);
+
+var cf = document.forms[0];
+var sel_type = "<% cfg_get("ntp_server_type") %>";
+var pri_ntp_ser = "<% cfg_get("manual_ntp_server") %>";
+
+function loadvalue()
+{
+	if(sel_type == "1")
+		cf.ntp_type[1].checked = true;
+	else
+	{	cf.ntp_type[0].checked = true;
+		pri_ntp_ser = "";
+	}
+	cf.pri_ntp.value = pri_ntp_ser;
+	cf.time_zone.options[eval(select_ntp)].selected = true;
+	if( old_ntpadjust == "1")
+		cf.adjust.checked = true;
+	else
+		cf.adjust.checked = false;
+
+}
+
+function click_apply()
+{
+	if(!cf.ntp_type[0].checked && !cf.ntp_type[1].checked)
+	{
+		alert("$ntp_ser_type");
+		return false;
+	}
+	if(cf.ntp_type[1].checked && cf.pri_ntp.value == "")
+	{
+		alert("$ntp_blank");
+		return false;
+	}
+	if(cf.ntp_type[1].checked)
+	{
+		var tmp = cf.pri_ntp.value;
+		if(tmp.slice(0, 7) == "http://")
+			tmp = tmp.slice(7);
+		else if(tmp.slice(0, 8) == "https://")
+			tmp = tmp.slice(8);
+		var i = tmp.indexOf("/");
+		i == -1? i=tmp.length: i=i;
+		tmp = tmp.slice(0, i);
+		var isIP = /^[0-9.]+$$/g.test(tmp);
+		if(isIP)
+		{
+			if(checkipaddr(tmp) == false)
+			{
+				alert("$ntp_invalid_ip");
+				return false;
+			}
+		}
+		else if(!check_domain(tmp))
+		{
+			alert("$ntp_invalid_domain");
+			return false;
+		}
+	}
+	check_ntp(cf);
+	cf.submit();
+}
+
+function check_domain(str)
+{
+	var exp = /^(www\.)?[-a-zA-Z0-9]+(\.[-a-zA-Z0-9]+)+$$/g;
+	return exp.test(str);
+}
+
+function check_ntp(cf)
+{
+        cfindex=cf.time_zone.options[cf.time_zone.selectedIndex].value;
+        if( cfindex == "GMT+1" || cfindex == "GMT+2" || cfindex == "GMT+3" )
+        {
+                cf.ntpserver1.value="time-h.netgear.com";
+                cf.ntpserver2.value="time-a.netgear.com";
+        }
+        else if( cfindex == "GMT+3:30" || cfindex == "GMT+4" || cfindex == "GMT+5" || cfindex == "GMT+6" )
+        {
+                cf.ntpserver1.value="time-a.netgear.com";
+                cf.ntpserver2.value="time-b.netgear.com";
+        }
+        else if( cfindex == "GMT+7" || cfindex == "GMT+8" || cfindex == "GMT+9" )
+        {
+                cf.ntpserver1.value="time-b.netgear.com";
+                cf.ntpserver2.value="time-c.netgear.com";
+        }
+        else if( cfindex == "GMT+10" || cfindex == "GMT+11" || cfindex == "GMT+12" )
+        {
+                cf.ntpserver1.value="time-c.netgear.com";
+                cf.ntpserver2.value="time-d.netgear.com";
+        }
+        else if( cfindex == "GMT-9" || cfindex == "GMT-9:30" || cfindex == "GMT-10" || cfindex == "GMT-11" || cfindex=="GMT-12" || cfindex=="GMT-13")
+        {
+                cf.ntpserver1.value="time-d.netgear.com";
+                cf.ntpserver2.value="time-e.netgear.com";
+        }
+        else if( cfindex == "GMT-6" || cfindex == "GMT-7" || cfindex == "GMT-8" )
+        {
+                cf.ntpserver1.value="time-e.netgear.com";
+                cf.ntpserver2.value="time-f.netgear.com";
+        }
+        else if( cfindex == "GMT-3" || cfindex == "GMT-4" || cfindex == "GMT-5" || cfindex == "GMT-5:30" )
+        {
+                cf.ntpserver1.value="time-f.netgear.com";
+                cf.ntpserver2.value="time-g.netgear.com";
+        }
+        else if( cfindex == "GMT-0" || cfindex == "GMT-1" || cfindex == "GMT-2" )
+	 {
+                cf.ntpserver1.value="time-g.netgear.com";
+                cf.ntpserver2.value="time-h.netgear.com";
+        }
+        if(cf.adjust.checked == true)
+        {
+                cf.ntpadjust.value="1";
+		var index = cf.time_zone.selectedIndex;
+		if ( ( index >= 2 && index <= 7 ) || (index >= 10 && index <= 13) )
+			cf.hidden_ntpserver.value=cf.time_zone.value+"GMT\,M3.2.0\/2:00\,M11.1.0\/2:00";
+		else if ( index == 8 )
+			cf.hidden_ntpserver.value=cf.time_zone.value+"GMT\,M4.1.0\/2:00\,M10.5.0\/2:00";
+		else if ( index >= 14 && index <= 25 )
+			cf.hidden_ntpserver.value=cf.time_zone.value+"GMT\,M3.5.0\/2:00\,M10.5.0\/2:00";
+		else if ( (index >= 37 && index <= 42) && index != 38 && index != 40 )
+			cf.hidden_ntpserver.value=cf.time_zone.value+"GMT\,M10.5.0\/2:00\,M3.5.0\/2:00";
+		else
+			cf.hidden_ntpserver.value=cf.time_zone.value;
+        }
+        else
+        {
+                cf.ntpadjust.value="0";
+                cf.hidden_ntpserver.value=cf.time_zone.value;
+        }
+
+        if( old_ntpadjust == cf.ntpadjust.value )
+                cf.hidden_dstflag.value="0";
+        else
+                cf.hidden_dstflag.value="1";
+
+        cf.hidden_select.value=cf.time_zone.selectedIndex;
+
+        //16044 if time zone changed set dif_timezone as "1"
+        if( select_ntp == cf.hidden_select.value.toString() )
+                cf.dif_timezone.value = "0";
+        else
+                cf.dif_timezone.value = "1";
+
+        return true;
+}
+</script>
+
+<input type="hidden" name="conflict_wanlan">
+<input type="hidden" name="ntpadjust">
+<input type="hidden" name="ntpserver1">
+<input type="hidden" name="ntpserver2">
+<input type="hidden" name="hidden_ntpserver">
+<input type="hidden" name="hidden_dstflag">
+<input type="hidden" name="hidden_select">
+<input type="hidden" name="dif_timezone">
+
+<div class="fix_button">
+<TABLE width=100% border=0 cellpadding=0 cellspacing=2>
+<script>
+	var master="<% cfg_get("http_loginname") %>";
+	if( master =="admin" ){
+		document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" onClick="location.href=\'NTP_debug.htm\';">&nbsp;&nbsp;<input class="apply_bt" type="button" name="Apply" id="apply" value="$apply_mark" onClick="click_apply();"></TD></TR>');
+	}
+	else
+		document.write('<TR><TD nowrap colspan=2 align=center><input class="cancel1_bt" type="button" name="Cancel" id="cancel" value="$cancel_mark" disabled>&nbsp;&nbsp;<input class="apply1_bt" type="button" name="Apply" id="apply" value="$apply_mark" disabled></TD></TR>');
+</script>
+</TABLE>
+</div>
+
+<div id="main" class="main_top_button">
+<TABLE cellspacing=5 cellPadding=0 width=100% border=0>
+<TR><TD nowrap colspan=1><b>$ntp_cur_time: <script>document.write(cur_time);</script></b>
+</TD>
+<TD><b id="ntp_warning" style="color:red">
+<script>
+	var ntp_updated = "<% access_file("/tmp/ntp_updated") %>";
+	if(ntp_updated != "1")
+		document.write("$router_ntp_setting_warning");
+</script></b></TD></TR>
+<TR><TD nowrap colspan=2><input type="radio" name="ntp_type" value="0">$ntp_default</TD></TR>
+<TR><TD nowrap colspan=2><input type="radio" name="ntp_type" value="1">$ntp_pre_ser</TD></TR>
+<TR><TD nowrap colspan=2>
+	<span style="position:relative; left:23px;">$ntp_pri_ser<input type="text" name="pri_ntp" id="pri_ntp" size="25" maxlength="128" onfocus="cf.ntp_type[1].checked = true;"></span>
+</TD></TR>
+$bluebar
+<TR>
+        <TD nowrap colspan=2>
+        <!--<A tabindex=-1 href="javascript:loadhelp('_FW_schedule','timezone')">--><B>$email_timezone</B><!--</a>-->
+        </TD>
+</TR>
+<TR>
+    <TD nowrap colspan=2>
+        <select name="time_zone" id="time_zone">					  <!--vcna-->
+		<option value="GMT+12" selected>$gmt_12_1</option><!--0-->
+		<option value="GMT+11" >$gmt_11</option>	<!--1-->
+		<option value="GMT+10" >$gmt_10</option>	<!--2-->
+		<option value="GMT+9" >$gmt_9</option>		<!--3-->
+		<option value="GMT+8" >$gmt_8</option>		<!--4-->
+		<option value="GMT+7" >$gmt_7_1</option>	<!--5-->
+		<option value="GMT+7" >$gmt_7_2</option>	<!--6-->
+		<option value="GMT+6" >$gmt_6_1</option>	<!--7-->
+		<option value="GMT+6" >$gmt_6_2</option>        <!--8-->
+		<option value="GMT+5" >$gmt_5_1_1</option>	<!--9--><!--8-->
+		<option value="GMT+5" >$gmt_5_1_2</option>	<!--10--><!--9-->
+		<option value="GMT+5" >$gmt_5_2</option>	<!--11--><!--10-->
+		<option value="GMT+4" >$gmt_4</option>		<!--12--><!--11-->
+		<option value="GMT+3:30" >$gmt_3_1</option>	<!--13--><!--12-->
+		<option value="GMT+3" >$gmt_3</option>		<!--14--><!--13-->
+		<option value="GMT+2" >$gmt_2</option>		<!--15--><!--14-->
+		<option value="GMT+1" >$gmt_1</option>		<!--16--><!--15-->
+		<option value="GMT-0" >$gmt_0_1</option>	<!--17--><!--16-->
+		<option value="GMT-0" >$gmt_0_2</option>	<!--18--><!--17-->
+		<option value="GMT-1" >$gmt1_1</option>		<!--19--><!--18-->
+		<option value="GMT-1" >$gmt1_2</option>		<!--20--><!--19-->
+		<option value="GMT-1" >$gmt1_3</option>		<!--21--><!--20-->
+		<option value="GMT-1" >$gmt1_4</option>		<!--22--><!--21-->
+		<option value="GMT-2" >$gmt2_1</option>		<!--23--><!--22-->
+		<option value="GMT-2" >$gmt2_2</option>		<!--24--><!--23-->
+		<option value="GMT-2" >$gmt2_3</option>		<!--25--><!--24-->
+		<option value="GMT-3" >$gmt3_1</option>		<!--26--><!--25-->
+		<option value="GMT-3" >$gmt3_2</option>		<!--27--><!--26-->
+		<option value="GMT-4" >$gmt4</option>		<!--28--><!--27-->
+		<option value="GMT-5" >$gmt5_1</option>		<!--29--><!--28-->
+		<option value="GMT-5:30" >$gmt5_2_1</option>	<!--30--><!--29-->
+		<option value="GMT-6" >$gmt6_1</option>		<!--31--><!--30-->
+		<option value="GMT-7" >$gmt7</option>		<!--32--><!--31-->
+		<option value="GMT-8" >$gmt8_1_1</option>	<!--33--><!--32-->
+		<option value="GMT-8" >$gmt8_2_1</option>	<!--34--><!--33-->
+		<option value="GMT-9" >$gmt9</option>		<!--35--><!--34-->
+		<option value="GMT-9:30" >$gmt9_1</option>	<!--36-->
+		<option value="GMT-10" >$gmt10_1</option>	<!--37--><!--35-->
+		<option value="GMT-10" >$gmt10_2_1</option>	<!--38--><!--36-->
+		<option value="GMT-10" >$gmt10_2_2</option>	<!--39--><!--37-->
+		<option value="GMT-11" >$gmt11_1</option>	<!--40--><!--38-->
+		<option value="GMT-11" >$gmt11</option>		<!--41--><!--39-->
+		<option value="GMT-12" >$gmt12_1</option>	<!--42--><!--40-->
+		<option value="GMT-12" >$gmt12_2</option>	<!--43--><!--41-->
+		<option value="GMT-13" >$gmt13</option>		<!--44--><!--42-->
+        </select>
+    </TD>
+</TR>
+<TR>
+    <TD nowrap colspan=2>
+        <input type="checkbox" name="adjust" id="adjust" value="1">$email_auto_adjust
+    </TD>
+</TR>
+$bluebar
+</TABLE>
+</div>
+<% help_box("0","_ntp") %>
+</FORM>
+</BODY>
+</HTML>
