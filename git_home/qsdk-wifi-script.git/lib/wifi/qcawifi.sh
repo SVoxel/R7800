@@ -1286,7 +1286,7 @@ enable_qcawifi() {
 		config_get_bool rrm "$vif" rrm
 		[ -n "$rrm" ] && iwpriv "$ifname" rrm "$rrm"
 
-		config_get_bool nrshareflag "$vif" nrshareflag
+		config_get nrshareflag "$vif" nrshareflag
 		[ -n "$nrshareflag" ] && iwpriv "$ifname" nrshareflag "$nrshareflag"
 
 		config_get_bool scanentryage "$vif" scanentryage
@@ -1795,6 +1795,17 @@ wifischedule_qcawifi()
         rm /tmp/WLAN_uptime_5G
         echo "OFF" > /tmp/WLAN_5G_status
     fi
+}
+
+wifiapscan_qcawifi()
+{
+    local device="$1"
+
+    config_get vifs "$device" vifs
+    for vif in $vifs; do
+        config_get ifname "$vif" ifname
+        [ "$ifname" = "ath0" -o "$ifname" = "ath1" ] && iwlist "$ifname" scan
+    done
 }
 
 wifistainfo_qcawifi()
