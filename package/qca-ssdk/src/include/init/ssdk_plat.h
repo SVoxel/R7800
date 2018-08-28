@@ -102,6 +102,7 @@
 #define AR8327_REG_MODULE_EN  0x30
 #define   AR8327_REG_MODULE_EN_QM_ERR	BIT(8)
 
+#define AR8327_REG_MAC_SFT_RST		0x68
 
 #define AR8327_REG_PAD_SGMII_CTRL			0xe0
 #define AR8327_REG_PAD_SGMII_CTRL_HW_INIT   0xc70164c0
@@ -240,11 +241,11 @@ void
 qca_ar8327_phy_dbg_read(a_uint32_t dev_id, a_uint32_t phy_addr,
 		                          a_uint16_t dbg_addr, a_uint16_t *dbg_data);
 
-void 
+void
 qca_phy_mmd_write(u32 dev_id, u32 phy_id,
                      u16 mmd_num, u16 reg_id, u16 reg_val);
 
-u16 
+u16
 qca_phy_mmd_read(u32 dev_id, u32 phy_id,
 		u16 mmd_num, u16 reg_id);
 

@@ -123,7 +123,7 @@ void send_packet(int usd, struct ntptime *udp_send_ntp)
 	__u32 data[12];
 	struct timeval now;
 #define LI 0
-#define VN 3
+#define VN 4
 #define MODE 3
 #define STRATUM 0
 #define POLL 4 
@@ -533,7 +533,7 @@ int setup_transmit(int usd, char *host, unsigned short port)
 	return 1;
 }
 
-int primary_loop(int usd, int num_probes, int cycle_time)
+void primary_loop(int usd, int num_probes, int cycle_time)
 {
 	fd_set fds;
 	struct sockaddr sa_xmit;
@@ -541,7 +541,6 @@ int primary_loop(int usd, int num_probes, int cycle_time)
 	struct timeval to;
 	struct ntptime udp_send_ntp;
 	int steady_state = 0;
-	int sysnc_result=0;
 
 	if (debug) printf("Listening...\n");
 
@@ -562,7 +561,6 @@ int primary_loop(int usd, int num_probes, int cycle_time)
 					|| (to.tv_sec == DAY_TIME)) {
 				if (steady_state != 1 
 					&& probes_sent >= num_probes && num_probes != 0) {
-					sysnc_result = 0;
 					break;
 				}
 				
@@ -595,13 +593,11 @@ int primary_loop(int usd, int num_probes, int cycle_time)
 			to.tv_sec = DAY_TIME;
 			to.tv_usec = 0;
 		} else if (probes_sent >= num_probes && num_probes != 0) {
-			sysnc_result = 0;
 			break;
 		}
 	}
 	/*when program is out of primary loop,the NTP server is fail,so delete the file.*/
 	system("rm -f /tmp/ntp_updated");
-	return sysnc_result;
 }
 
 /****************************************************************************
@@ -834,28 +830,42 @@ static void select_ntp_servers(char **primary, char **secondary)
 	*primary = ntpsvrs[tmzone].primary;
 	*secondary = ntpsvrs[tmzone].secondary;
 }
-
-int get_random_sport()
+/*	
+ *	@brief  get a random and availdable port
+ *		it's for switching port fot NTPv4,because some ISP will 
+ *		block NTP's src port packet. 
+ *	@return if success, return a port value,
+ *		if failed ,while() in the funciton.
+ * */
+unsigned short get_random_port(void)
 {
-	FILE *fp;
-	char cmd[64];
-	int sport, ret;
-	int ntp_min_port = 1024;
-	int ntp_max_port = 65535;
-
-	while(1) {
-		sport = ntp_min_port + rand()%(ntp_max_port - ntp_min_port + 1);
-		sprintf(cmd, "netstat -atu |grep %d > /tmp/ntp_sport", sport);
-		system(cmd);
-		if((fp = fopen("/tmp/ntp_sport", "r"))) {
-			ret = fgetc(fp);
-			fclose(fp);
-			if(ret == EOF)
-				break;
-		}
-	}
-	system("rm -f /tmp/ntp_sport ");
-	return sport;
+	int sockfd = 0;
+	struct sockaddr_in addr;
+	unsigned short port = 0;
+	int addr_len = sizeof(struct sockaddr_in);
+	do{
+	    while((sockfd = socket(AF_INET,SOCK_DGRAM,0)) < 0)
+	    {
+		    perror("socket for switching port");
+		    sleep(1);
+	    }
+	    addr.sin_family = AF_INET;
+	    addr.sin_port = htons(port);
+	    addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	    while(bind(sockfd,(struct sockaddr*)&addr,sizeof(addr))< 0)
+	    {
+		    perror("bind for switching port");
+		    sleep(1);
+	    }
+	    while(getsockname(sockfd,(struct sockaddr*)&addr,&addr_len)!= 0)
+	    {
+		    perror("ntp get sock name error");
+		    sleep(1);
+	    }
+	    port = ntohs(addr.sin_port);
+	    close(sockfd);
+	}while(port<1024);
+	return(port);
 }
 
 int main(int argc, char *argv[]) {
@@ -874,7 +884,11 @@ int main(int argc, char *argv[]) {
 	char *ntps = "0.0.0.0";
 	struct timeval to;
 	FILE *fp = NULL;
-	int sysnc_ok =0, change_mode = 0, err;
+	char *manual_ntp = NULL;
+	char manual_ntp_server_tmp[128]={0};  // The length of manual server have checked with GUI,it's less than 128 bytes.
+	unsigned int retry_count = 0;
+	unsigned short use_default_server = 1;
+	char ntpportnum[8];
 
 	unsigned long seed;
 	seed = time(0);
@@ -886,8 +900,20 @@ int main(int argc, char *argv[]) {
 		probe_count = 1;
 		min_interval = 15;
 		max_interval = 60;
-//		udp_local_port = 123;
-		select_ntp_servers(&hostname, &sec_host);
+		udp_local_port = 123;
+		/* select ntpserver by default or by manual through NET-CGI */
+		manual_ntp = config_get("ntp_server_type");
+		if(strcmp(manual_ntp,"1") != 0){
+			select_ntp_servers(&hostname, &sec_host);
+			use_default_server=1;
+		}
+		else{
+			hostname = config_get("manual_ntp_server");
+			strcpy(manual_ntp_server_tmp,hostname);
+			hostname=manual_ntp_server_tmp;
+			sec_host=hostname;
+			use_default_server=0;
+		}
 #ifdef ENABLE_BOOT_RELAY
 		boot_relay = 0;
 #endif
@@ -999,8 +1025,49 @@ int main(int argc, char *argv[]) {
 #endif
 
 	while(1) {
-		ntps = (strcmp(ntps, hostname) == 0) ? sec_host : hostname;
-
+		/* if use default server, client's requests should like following
+		 *  |  NTP Server   time-e.netgear.com  |
+		 *  |  local port    123                |
+		 *  |  NTP Server   time-f.netgear.com  |
+		 *  |  local port    123                |
+		 *  |  NTP Server   time-e.netgear.com  |
+		 *  |  local port    random-port        |
+		 *  |  NTP Server   time-f.netgear.com  |
+		 *  |  local port    random-port        |
+		 * * * 
+		 * */
+		if(use_default_server){
+			if((retry_count/2)%2){
+				while((retry_count%4)==2){
+					udp_local_port=get_random_port();
+					break;
+				}
+				ntps = (strcmp(ntps, hostname) == 0) ? sec_host : hostname;
+			}
+			else{
+				udp_local_port=NTP_PORT;
+				ntps = (strcmp(ntps, hostname) == 0) ? sec_host : hostname;
+			}
+			retry_count++;
+		}
+		/* if use manual server, client's requests should like following
+		 *  |  NTP Server   manual-server       |
+		 *  |  local port    123                |
+		 *  |  NTP Server   manual-server       |
+		 *  |  local port    random-port        |
+		 * * * 
+		 * */
+		else
+		{
+			if(retry_count%2){
+				udp_local_port=get_random_port();
+			}
+			else{
+				udp_local_port=NTP_PORT;
+			}
+			ntps = hostname;
+			retry_count++;
+		}
 		if (debug) {
 			printf("Configuration:\n"
 				"  Probe count          %d\n"
@@ -1012,6 +1079,8 @@ int main(int argc, char *argv[]) {
 				probe_count, debug, ntps, cycle_time, 
 				udp_local_port, set_clock);
 		}
+		sprintf(ntpportnum, "%d", udp_local_port);
+		config_set("ntpPortNumber",ntpportnum);
 
 		/* Startup sequence */
 		if ((usd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
@@ -1021,6 +1090,7 @@ int main(int argc, char *argv[]) {
 
 		if (!wan_conn_up() && config_match("ap_mode", "0") && config_match("bridge_mode", "0")) {
 			/* printf("The WAN connection is NOT up!\n"); */
+			config_set("ntpFailReason", "1");
 			close(usd);
 			goto cont;
 		}
@@ -1041,55 +1111,15 @@ int main(int argc, char *argv[]) {
 			goto loop;
 		}
 
-		/* The NTP packet must be a server response to a previously issued query received within
-		 * a reasonable time window(5 sec) relative to the request, and the secs time window
-		 * shall not be include in the 0~60 seconds interval*/
-		sysnc_ok = primary_loop(usd, probe_count, 5);
-
+		primary_loop(usd, probe_count, cycle_time);
 		close(usd);
 	loop:
+		config_set("ntpFailReason", "2");
 		/* [NETGEAR Spec 8.6]:Subsequent queries will double the preceding query interval 
 		 * until the interval has exceeded the steady state query interval, at which point 
 		 * and new random interval between 15.00 and 60.00 seconds is selected and the 
 		 * process repeats.
 		 */
-
-		if(!sysnc_ok) {
-			printf("NTP Sync time stamp fail, will wait %d s\n", cycle_time);
-			to.tv_sec = cycle_time;
-			to.tv_usec = 0;
-			do {
-				err = select(1, NULL, NULL, NULL, &to);
-			}
-			while(err < 0 && errno == EINTR);
-		}
-
-		/* to avoid the false alarm of ISP blocking port 123 situation due to internet unstable
-		 * reasons, the retries shall iterate swithching between primart and secondary server, and
-		 * between 123 and non-123 port
-		 * No.1 retry to primary server with source port 123
-		 * No.2 retry to secondary server with source port 123
-		 * No.3 retry to primary server with source port 1077
-		 * No.4 retry to secondary server with source port 1077
-		 * No.5 retry to primary server with source port 123
-		 * No.6 retry to secondary server with source port 123
-		 * No.7 retry to primary server with source port 3045
-		 * No.8 retry to secondary server with source port 3045
-		 * keep iterating*/
-        if(strcmp(ntps, hostname))
-			change_mode=1;
-		else
-			change_mode=0;
-
-		/*(1)Scan port range from 1024 to 65535 to know which ports are in use
-		 * (2)Random select a non-used port from the range in (1)
-		 * (3) Send the next request with the selected port in (2)*/
-		if(change_mode) {
-			if(udp_local_port == NTP_PORT)
-				udp_local_port = get_random_sport();
-			else
-				udp_local_port = NTP_PORT;
-		}
 
 		if ((cycle_time * 2) > DAY_TIME)
 			cycle_time = min_interval + rand()%(max_interval-min_interval+1);

@@ -280,6 +280,16 @@ typedef struct phy_identification {
     sw_error_t
     ssdk_init(a_uint32_t dev_id, ssdk_init_cfg *cfg);
 
+sw_error_t qca_ar8327_phy_read(a_uint32_t dev_id, a_uint32_t phy_addr,
+                           a_uint32_t reg, a_uint16_t* data);
+sw_error_t qca_ar8327_phy_write(a_uint32_t dev_id, a_uint32_t phy_addr,
+                            a_uint32_t reg, a_uint16_t data);
+
+uint32_t qca_switch_reg_read(a_uint32_t dev_id, a_uint32_t reg_addr,
+			a_uint8_t * reg_data, a_uint32_t len);
+uint32_t qca_switch_reg_read(a_uint32_t dev_id, a_uint32_t reg_addr,
+			a_uint8_t * reg_data, a_uint32_t len);
+
     sw_error_t
     ssdk_hsl_access_mode_set(a_uint32_t dev_id, hsl_access_mode reg_mode);
 	a_uint32_t ssdk_dt_global_get_mac_mode(void);

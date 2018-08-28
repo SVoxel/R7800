@@ -27,8 +27,8 @@ wep_auth_type_1="shared"
 wep_auth_type_2="auto"
 
 preamble_0="auto"
-preamble_1="short"
-preamble_2="long"
+preamble_1="long"
+preamble_2="short"
 
 [ -f /etc/ath/wifi.conf ] && . /etc/ath/wifi.conf
 if [ "$wla_exist" = "on" ]; then
@@ -445,6 +445,9 @@ load_wep_config()
         if [ -n $_trans ]; then
             sed -i -e "s/$_wl/$_trans/g" /tmp/wepkey-$$
         fi
+
+        #pass special character
+        sed  -i -e "s/'/'\\\''/g" /tmp/wepkey-$$
 
         sed -i -e "s/=/='/g" /tmp/wepkey-$$
         sed -i -e "s/$/'/g" /tmp/wepkey-$$

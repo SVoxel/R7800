@@ -118,6 +118,15 @@ start() {
 
         mtdn=`grep language /proc/mtd | awk -F ':' '{print $1}' | awk -F 'd' '{print $2}'`
 	/usr/sbin/nanddump /dev/mtd$mtdn -f /tmp/lang_file &
+
+	#get Production time to /tmp/protime
+	pro_time1=`/sbin/artmtd -r protime|grep Usage`
+	pro_time2=`/sbin/artmtd -r protime|cut -d ":" -f 2`
+	pro_oldtime=20180717
+	if [ "x$pro_time1" != "xUsage" ] && [ $pro_time2 -gt $pro_oldtime ]; then
+		/bin/config set new_sold_board=1
+	fi
+
 	#read wpspin from flash to /tmp/wpspin
 	/sbin/artmtd -r wpspin
 	#read serial number from flash to /tmp/Seria_Number

@@ -191,15 +191,24 @@ dni_wifi_radio()
 	esac
 }
 
+get_vap_schedule_state(){
+    _prefix=$1
+    if [ "$(config get ${_prefix}_onoff_sched)" = "0" ] || [ "$(config get ${_prefix}_onoff_sched)" = "" ]; then
+        echo 0
+    else
+        echo 1
+    fi
+}
+
 dni_wifi_stainfo()
 {
     interface=
 
-    [ "$(config get endis_wl_radio)" = "1" -a "$(config get wlg_onoff_sched)" = "0" ] && interface="ath1"
-    [ "$(config get endis_wla_radio)" = "1" -a "$(config get wla_onoff_sched)" = "0" ] && interface="$interface ath0"
-    [ "$(config get wlg1_endis_guestNet)" = "1" -a "$(config get wlg_onoff_sched)" = "0" ] && interface="$interface ath11"
-    [ "$(config get wla1_endis_guestNet)" = "1" -a "$(config get wla_onoff_sched)" = "0" ] && interface="$interface ath01"
-    [ "$interface" = "" -o "$(config get br_mode)" = "1" -o "$(config get wl_hw_btn_state)" = "off" ] && return
+    [ "$(config get endis_wl_radio)" = "1" -a "$(get_vap_schedule_state wlg)" = "0" ] && interface="ath1"
+    [ "$(config get endis_wla_radio)" = "1" -a "$(get_vap_schedule_state wla)" = "0" ] && interface="$interface ath0"
+    [ "$(config get wlg1_endis_guestNet)" = "1" -a "$(get_vap_schedule_state wlg)" = "0" ] && interface="$interface ath11"
+    [ "$(config get wla1_endis_guestNet)" = "1" -a "$(get_vap_schedule_state wla)" = "0" ] && interface="$interface ath01"
+    [ "$interface" = "" -o "$(config get wl_hw_btn_state)" = "off" ] && return
     
 
     tmpfile=/tmp/sta_info.$$

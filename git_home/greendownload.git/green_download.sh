@@ -261,7 +261,7 @@ do_stop() {
 	#stop amuled
 	/etc/aMule/amule.sh stop
 	#stop wget
-	killall wget
+	killall wgdl
 #	/bin/config set green_download_enable=0
 	/bin/config set	green_download_status=0
 	/bin/config commit

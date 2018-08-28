@@ -469,6 +469,9 @@ get_sata_serial_num()
 {
 	serial_num=`$config get sata_serial_no`
 	disk_num=`echo $1 | sed 's/[a-z]//g'`	
+	if [ "x$disk_num" = "x" ]; then
+		disk_num = "a"
+	fi
 	echo "$serial_num"_"$disk_num"
 }
 	
@@ -477,7 +480,7 @@ get_usb_serial_num()
 	disk_name=`echo $1 | sed 's/[0-9]//g'`
 	partition_num=`echo $1 | cut -c 4-`
 	if [ "x$partition_num" = "x" ]; then
-		partition_num=0
+		partition_num=`echo $1 | cut -c 3-`
 	fi
 	disk_scsi_id=`ls /sys/block/$disk_name/device/scsi_device* | awk -F: '{print $1}'`
 	cat /proc/scsi/usb-storage/$disk_scsi_id > /tmp/disk_scsi_info_ftp
@@ -495,6 +498,9 @@ get_usb_serial_num()
 get_sd_card_serial_num()
 {
 	partition_num=`echo $1 | cut -c 4-`
+	if [ "x$partition_num" = "x" ]; then
+		partition_num=`echo $1 | cut -c 3-`
+	fi
 	uuid=`/usr/sbin/vol_id -u /dev/$1`
 	if [ "x$uuid" = "x" ]; then
 		get_usb_serial_num $1

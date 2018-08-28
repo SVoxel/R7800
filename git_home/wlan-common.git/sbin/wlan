@@ -110,6 +110,17 @@ wifi_updateconf() {
 	fi
 }
 
+wifi_apscan() {
+	for device in ${2:-$DEVICES}; do
+		config_get iftype "$device" type
+		if eval "type wifiapscan_$iftype" 2>/dev/null >/dev/null; then
+			eval "wifiapscan_$iftype '$device'" || echo "$device($iftype): apscan failed"
+		else
+			echo "$device($iftype): Interface type not supported apscan"
+		fi
+	done
+}
+
 wifi_updown() {
 	#[ enable = "$1" ] && {
 	#	wifi_updown disable "$2"
@@ -441,6 +452,7 @@ Commands:
          --wps_stop                  :: stop WPS actions
     toggle                           : toggle wireless radio (ON <-> OFF)
     schedule <11g/11a> <on/off>      : do wireless schedule
+    apscan                           : do ap scan
     stainfo                          : show all attached wireless stations.
     radio <11g/11a> <arguments>      : actions related to radio
          --status                    :: show radio status (ON or OFF)
@@ -470,6 +482,7 @@ case "$1" in
 	wps) wifi_wps "$@";;
 	toggle) wifi_toggle "$@";;
 	schedule) wifi_schedule "$@";;
+	apscan) wifi_apscan "$@";;
 	stainfo) wifi_stainfo "$@";;
 	radio) wifi_radio "$@";;
 	up) wifi_updown "enable" "$2";;
