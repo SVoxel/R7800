@@ -6,12 +6,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=expat
-PKG_VERSION:=2.2.5
+PKG_VERSION:=2.2.6
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=@SF/expat
-PKG_MD5SUM:=789e297f547980fc9ecc036f9a070d49
+PKG_MD5SUM:=ca047ae951b40020ac831c28859161b2
 PKG_MAINTAINER:=Steven Barth <cyrus@openwrt.org>, \
 		Ted Hess <thess@kitschensync.net>
 
