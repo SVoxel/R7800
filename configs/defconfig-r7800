@@ -1240,6 +1240,13 @@ CONFIG_PACKAGE_dnsmasq=y
 CONFIG_PACKAGE_dnscrypt-proxy=y
 
 #
+# DNS-Over-TLS
+CONFIG_PACKAGE_libyaml=y
+CONFIG_PACKAGE_libunbound=y
+CONFIG_PACKAGE_getdns=y
+CONFIG_PACKAGE_stubby=y
+
+#
 # Configuration
 #
 CONFIG_DNSMASQ_GIT_TREEISH="dnsmasq-v2.39-dni20"
