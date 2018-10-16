@@ -1,0 +1,13 @@
+#!/bin/sh /etc/rc.common
+
+START=10
+
+CAPATH="/etc/ssl/certs"
+
+boot () {
+	for CERTFILE in $(ls -1 $CAPATH/*.crt)
+	do
+		HASH="$(openssl x509 -hash -noout -in "$CERTFILE")"
+		test -h "$CAPATH/$HASH.0" || ln -s "$CERTFILE" "$CAPATH/$HASH.0"
+	done
+}
