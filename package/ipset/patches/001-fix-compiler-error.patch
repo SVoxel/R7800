@@ -1,0 +1,21 @@
+--- ipset-6.24/kernel/include/linux/netfilter/ipset/ip_set_compat.h.in	2017-09-30 11:04:57.811403371 +0800
++++ ipset-6.24.org/kernel/include/linux/netfilter/ipset/ip_set_compat.h.in	2017-09-30 11:03:01.807404451 +0800
+@@ -47,6 +47,7 @@
+ 
+ #include <linux/version.h>
+ #include <linux/netlink.h>
++#include <linux/vmalloc.h>
+ 
+ #ifndef rcu_dereference_bh
+ #define rcu_dereference_bh(p)		rcu_dereference(p)
+--- ipset-6.24//kernel/net/netfilter/ipset/ip_set_list_set.c	2014-11-25 04:46:45.000000000 +0800
++++ ipset-6.24.org//kernel/net/netfilter/ipset/ip_set_list_set.c	2017-09-30 11:03:01.807404451 +0800
+@@ -280,7 +280,7 @@
+ 	if (d->before == 0) {
+ 		/* Append  */
+ 		n = list_empty(&map->members) ? NULL :
+-		    list_last_entry(&map->members, struct set_elem, list);
++		    plist_last_entry(&map->members, struct set_elem, list);
+ 	} else if (d->before > 0) {
+ 		/* Insert after next element */
+ 		if (!list_is_last(&next->list, &map->members))
