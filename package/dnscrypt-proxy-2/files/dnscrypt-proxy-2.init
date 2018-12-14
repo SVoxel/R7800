@@ -1,0 +1,72 @@
+#!/bin/sh /etc/rc.common
+
+START=70
+STOP=10
+
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+CONFIG=/bin/config
+DNSCRYPTPROXY2_ON=$($CONFIG get dnscrypt2)
+CONFIG_FILE=/etc/dnscrypt-proxy-2.toml
+PID_FILE=/var/run/dnscrypt-proxy-2.pid
+LOG_FILE=/var/log/dnscrypt-proxy-2.log
+PORT=64153
+PROG=/usr/sbin/dnscrypt-proxy-2
+
+start() {
+	# Check if dnscrypt-proxy-2 is enabled
+	if [ ! "$DNSCRYPTPROXY2_ON" == "1" ]; then
+		echo "DNSCrypt-Proxy-2 is not enabled in nvram. Exit."
+		exit 1
+	fi
+
+	# Check if service is already started and kill it
+	if [ -f $PID_FILE ]; then
+		kill `cat $PID_FILE` 2> /dev/null
+		rm -f $PID_FILE
+	fi
+
+	# If dnscrypt-proxy is enabled stop it
+	if [ -f /etc/dnscrypt.conf ] || [ -f /root/dnscrypt-list ]; then
+		/etc/init.d/dnscrypt-proxy stop 2> /dev/null
+	fi
+
+	# Restore dnsmasq config file
+	cp -f /etc/dnsmasq-resolv.conf /tmp/dnsmasq.conf
+
+	# Update dnsmasq config file
+	echo "no-resolv" >> /tmp/dnsmasq.conf
+	echo "server=127.0.0.1#$PORT" >> /tmp/dnsmasq.conf
+	echo "proxy-dnssec" >> /tmp/dnsmasq.conf
+
+	# Start service
+	$PROG -config=$CONFIG_FILE -pidfile=$PID_FILE -logfile=$LOG_FILE &
+
+	# Restart dnsmasq
+	/etc/init.d/dnsmasq stop 2> /dev/null
+	/etc/init.d/dnsmasq start 2> /dev/null
+
+	echo Started.
+}
+
+stop() {
+	# Check if dnscrypt-proxy-2 is enabled
+	if [ ! "$DNSCRYPTPROXY2_ON" == "1" ]; then
+		echo "DNSCrypt-Proxy-2 is not enabled in nvram. Exit."
+		exit 1
+	fi
+
+	# Check if service is already started and kill it
+	if [ -f $PID_FILE ]; then
+		kill `cat $PID_FILE` 2> /dev/null
+		rm -f $PID_FILE
+	fi
+	
+	# Restore dnsmasq config file
+	cp -f /etc/dnsmasq-resolv.conf /tmp/dnsmasq.conf
+
+	# Restart dnsmasq
+	/etc/init.d/dnsmasq stop 2> /dev/null
+	/etc/init.d/dnsmasq start 2> /dev/null
+
+	echo Terminated.
+}
