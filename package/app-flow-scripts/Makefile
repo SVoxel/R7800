@@ -2,8 +2,6 @@ include $(TOPDIR)/rules.mk
 
 # Build package version from git sha-1
 PKG_NAME:=app-flow-scripts
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=ssh://qca-git01.qualcomm.com:29418/streamboost/app-flow-scripts
 PKG_BRANCH:=banana
 PKG_RELEASE:=2
 
@@ -13,7 +11,6 @@ PKG_REV:=f69f16b
 PKG_VERSION:=gf69f16b
 endif
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_VERSION:=$(PKG_REV)
 PKG_SOURCE_MIRROR:=none
@@ -58,7 +55,7 @@ endef
 define Build/Compile
 endef
 
-define Package/app-flow-scripts/Default/install
+define Package/app-flow-scripts/install
 	$(INSTALL_DIR) $(1)/etc/appflow
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_DIR) $(1)/etc/hotplug.d/iface
@@ -77,9 +74,9 @@ define Package/app-flow-scripts/Default/install
 	$(INSTALL_BIN) ./files/appflow $(1)/etc/config/
 endef
 
-define Package/app-flow-scripts/install
-	$(call Package/app-flow-scripts/Default/install, $(1))
-endef
+#define Package/app-flow-scripts/install
+#	$(call Package/app-flow-scripts/Default/install, $(1))
+#endef
 
 define Package/app-flow-scripts-noload/install
 	$(call Package/app-flow-scripts/Default/install, $(1))

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+MAC=$1
+SALT=$2
+OUI=$(expr substr $MAC 1 8)
+HASH=$(echo $MAC $SALT | md5sum | awk '{print substr($1, 0, 16)}')
+
+echo -n $OUI:$HASH
+
+exit 0

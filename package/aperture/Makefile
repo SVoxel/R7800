@@ -2,8 +2,6 @@ include $(TOPDIR)/rules.mk
 
 # Build package version from git sha-1
 PKG_NAME:=aperture
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=ssh://qca-git01.qualcomm.com:29418/streamboost/aperture
 PKG_BRANCH:=banana
 PKG_START_ORDER:=81
 PKG_RELEASE:=2
@@ -11,9 +9,8 @@ PKG_RELEASE:=2
 include $(INCLUDE_DIR)/local-development.mk
 ifeq ($(DUMP)$(PKG_VERSION),)
 PKG_REV:=2e65dce
-PKG_VERSION:=g2e65dce
+PKG_VERSION:=g04177cf
 endif
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_VERSION:=$(PKG_REV)
 PKG_SOURCE_MIRROR:=none
@@ -55,17 +52,19 @@ $(call Package/$(PKG_NAME)/description)
 This is the package without auto-start.
 endef
 
-# nothing to configure
+MAKE_FLAGS += LDLIBS+="-largp"
+
 define Build/Configure
 endef
 
-MAKE_FLAGS += LDLIBS+="-largp"
+define Build/Compile
+endef
 
 define Package/$(PKG_NAME)-noauto/install
 	$(INSTALL_DIR) $(1)/usr/sbin/
 	$(INSTALL_DIR) $(1)/etc/appflow/streamboost.d/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/$(PKG_NAME) $(1)/usr/sbin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/$(PKG_NAME)-controller.sh $(1)/usr/sbin/
+	$(INSTALL_BIN) ./files/$(PKG_NAME) $(1)/usr/sbin/
+	$(INSTALL_BIN) ./files/$(PKG_NAME)-controller.sh $(1)/usr/sbin/
 	$(INSTALL_BIN) ./files/$(PKG_NAME).init $(1)/usr/sbin/
 endef
 

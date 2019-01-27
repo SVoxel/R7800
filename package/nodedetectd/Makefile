@@ -2,9 +2,6 @@ include $(TOPDIR)/rules.mk
 
 # Build package version from git sha-1
 PKG_NAME:=nodedetectd
-PKG_SOURCE_PROTO:=git
-#PKG_SOURCE_URL:=ssh://qca-git01.qualcomm.com:29418/streamboost/nodedetectd
-PKG_SOURCE_URL:=ssh://qca-git01.qualcomm.com:29418/streamboost/nodedetectd
 PKG_BRANCH:=banana
 PKG_RELEASE:=1
 PKG_START_ORDER:=31
@@ -15,7 +12,6 @@ PKG_REV:=bfefe1a
 PKG_VERSION:=gbfefe1a
 endif
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_VERSION:=$(PKG_REV)
 PKG_SOURCE_MIRROR:=none
@@ -42,13 +38,19 @@ MAKE_FLAGS += \
 	LDLIBS+="-largp"
 
 # TABS
+define Build/Configure
+endef
+
+define Build/Compile
+endef
+
 define Package/nodedetectd/install
 	$(INSTALL_DIR) $(1)/etc
 	$(INSTALL_DIR) $(1)/etc/appflow
 	$(INSTALL_DIR) $(1)/etc/appflow/streamboost.d
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/nodedetectd     $(1)/usr/sbin/
-	$(INSTALL_BIN) ./files/nodedetectd.init         $(1)/etc/appflow/streamboost.d/${PKG_START_ORDER}_nodedetectd
+	$(INSTALL_BIN) ./files/nodedetectd $(1)/usr/sbin/
+	$(INSTALL_BIN) ./files/nodedetectd.init $(1)/etc/appflow/streamboost.d/${PKG_START_ORDER}_nodedetectd
 endef
 
 # NO TABS, NO SPACES

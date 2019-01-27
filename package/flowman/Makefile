@@ -2,8 +2,6 @@ include $(TOPDIR)/rules.mk
 
 # Build package version from git sha-1
 PKG_NAME:=flowman
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=ssh://qca-git01.qualcomm.com:29418/streamboost/flowman.git
 PKG_BRANCH:=banana
 PKG_START_ORDER:=45
 PKG_RELEASE:=2
@@ -13,7 +11,6 @@ ifeq ($(DUMP)$(PKG_VERSION),)
 PKG_REV:=2b87ed0
 PKG_VERSION:=g2b87ed0
 endif
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_VERSION:=$(PKG_REV)
 PKG_SOURCE_MIRROR:=none
@@ -42,11 +39,17 @@ TARGET_CFLAGS += -Wl,-rpath-link=$(STAGING_DIR)/usr/lib
 MAKE_FLAGS += \
 	EXTRA_LDLIBS+="-largp"
 
+define Build/Configure
+endef
+
+define Build/Compile
+endef
+
 # TABS
 define Package/flowman/install
 	$(INSTALL_DIR) $(1)/etc/appflow/streamboost.d/
 	$(INSTALL_DIR) $(1)/usr/sbin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/flowman $(1)/usr/sbin/
+	$(INSTALL_BIN) ./files/flowman $(1)/usr/sbin/
 	$(INSTALL_BIN) ./files/flowman.init $(1)/etc/appflow/streamboost.d/${PKG_START_ORDER}_${PKG_NAME}
 endef
 

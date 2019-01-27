@@ -2,8 +2,6 @@ include $(TOPDIR)/rules.mk
 
 # Build package version from git sha-1
 PKG_NAME:=jigglyp0f
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=ssh://qca-git01.qualcomm.com:29418/streamboost/jigglyp0f
 PKG_BRANCH:=banana
 PKG_RELEASE:=2
 
@@ -12,7 +10,6 @@ ifeq ($(DUMP)$(PKG_VERSION),)
 PKG_REV:=ae11533
 PKG_VERSION:=gae11533
 endif
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_VERSION:=$(PKG_REV)
 PKG_SOURCE_MIRROR:=none
@@ -39,9 +36,15 @@ endef
 MAKE_FLAGS += \
 	LDLIBS+="-largp"
 
+define Build/Configure
+endef
+
+define Build/Compile
+endef
+
 define Package/jigglyp0f/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/jigglyp0f $(1)/usr/sbin/
+	$(INSTALL_BIN) ./files/jigglyp0f $(1)/usr/sbin/
 	$(INSTALL_DIR) $(1)/etc/appflow/streamboost.d
 	$(INSTALL_BIN) ./files/$(PKG_NAME).init $(1)/etc/appflow/streamboost.d/${PKG_START_ORDER}_$(PKG_NAME)
 endef

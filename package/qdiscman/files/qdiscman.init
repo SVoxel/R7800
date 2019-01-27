@@ -197,8 +197,11 @@ start() {
 		return 0
 	}
 
-	teardown_iptables 2>/dev/null
-	setup_iptables
+	[ ! -f /var/log/setup_iptables ] && {
+		teardown_iptables 2>/dev/null
+		setup_iptables
+	}
+	touch /var/log/setup_iptables
 
 	for i in ${KERNEL_MODULES}; do
 		insmod $i 2>/dev/null
@@ -233,6 +236,7 @@ stop() {
 
 	stop_qdiscs
 	teardown_iptables
+	rm -rf /var/log/setup_iptables
 
 	return ${retval}
 }

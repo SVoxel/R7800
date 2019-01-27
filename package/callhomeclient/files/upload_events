@@ -1,0 +1,75 @@
+#!/bin/sh
+
+# Copyright (c) 2014 Qualcomm Atheros, Inc.
+#
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary
+## Uploads all oversubscription events for the previous day.
+
+. /etc/appflow/rc.appflow
+
+set -e
+
+PROG=`basename $0`
+LOCKFILE=$RUNDIR/$PROG.lock
+DBFILE=$RUNDIR/events.db
+
+EVENTFILE=/tmp/events.csv
+NODESFILE=${STORAGEDIR}/bwcd_nodes.json
+NAMELESSFILE=/tmp/nameless_nodes.json
+
+usage() {
+	echo "usage: $PROG" 1>&2
+}
+
+error() {
+	local code=$1
+	local msg=$2
+	if [ $code -eq 1 ]
+	then
+		usage
+	fi
+	echo "error: $msg" 1>&2
+	exit $code
+}
+
+
+if ( set -o noclobber; echo "$$" > "$LOCKFILE" ) 2> /dev/null;
+then
+	trap 'rm -f "$LOCKFILE" "$EVENTFILE" "$NAMELESSFILE"; exit $?' INT TERM EXIT
+
+
+	##=================================================================
+	## Figure out which dates to use
+	##-----------------------------------------------------------------
+	oneday=$((60*60*24))
+
+	midnight=$(date +%s -d 0:0)
+
+	start=$(($midnight-$oneday))
+	end=$(($midnight-1))
+
+
+	##=================================================================
+	## Create the snapshot of the events
+	##-----------------------------------------------------------------
+	dump_events_by_time_json $start $end "eventdb:events" "eventdb:connections" "eventdb:features" | anonymize.awk > ${EVENTFILE}
+
+
+	##=================================================================
+	## Create the snapshot of the nodes file (minus names)
+	##-----------------------------------------------------------------
+	dump_nodes_json | anonymize.awk > ${NAMELESSFILE}
+
+
+	##=================================================================
+	## Send the files to the "cloud"
+	##-----------------------------------------------------------------
+	send_event "${EVENTFILE}" "${NAMELESSFILE}"
+
+
+	rm -f "$LOCKFILE" "$EVENTFILE" "${NAMELESSFILE}"
+	trap - INT TERM EXIT
+else
+	error 2 "Another ${PROG}($(cat $LOCKFILE)) is already running"
+fi

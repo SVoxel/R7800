@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Copyright (c) 2014 Qualcomm Atheros, Inc.
+#
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary
+
+. /etc/appflow/rc.appflow
+
+FILE="$1"
+
+URL=https://${BWEST_UPLOAD_HOST}/api/v1/pcapupload/
+
+authcurl --form pcapfile=@"$FILE" $URL

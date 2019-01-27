@@ -1,0 +1,22 @@
+#!/bin/sh
+
+MYDIR="/usr/lib/callhomeclient"
+SALTFILE="$MYDIR/salt"
+
+# Try to read the CPU serial.
+SALT=0
+SERIAL_LINE=$(grep Serial /proc/cpuinfo)
+if [ $? -eq 0 ]; then
+	SALT=$(echo "$SERIAL_LINE" | awk '{print $3}')
+fi
+
+# If no CPU serial, try to use pre-generated random salt.
+if [ $SALT -eq 0 ]; then
+	# If no pre-generated random salt, create a new random salt.
+	if [ ! -e $SALTFILE ]; then
+		mkdir -p $MYDIR
+		hexdump -n 8 -e '1/1 "%X"' /dev/urandom >$SALTFILE
+	fi
+	SALT=$(cat $SALTFILE)
+fi
+echo $SALT

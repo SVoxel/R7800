@@ -1,0 +1,64 @@
+#!/bin/sh
+
+# Copyright (c) 2014 Qualcomm Atheros, Inc.
+#
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary
+# Uploads bwest data files in UPLOADABLEDIR to callhome server then deletes them.
+
+. /etc/appflow/rc.appflow
+
+set -e
+
+PROG=`basename $0`
+LOCKFILE=/var/run/appflow/$PROG.lock
+
+usage() {
+	echo "usage: $PROG" 1>&2
+}
+
+error() {
+	local code=$1
+	local msg=$2
+	if [ $code -eq 1 ]
+	then
+		usage
+	fi
+	echo "error: $msg" 1>&2
+	exit $code
+}
+
+
+if ( set -o noclobber; echo "$$" > "$LOCKFILE" ) 2> /dev/null;
+then
+	trap 'rm -f "$LOCKFILE"; exit $?' INT TERM EXIT
+
+        [ ! -f $BWEST_UPLOADABLE_DIR/bwest_id ] && {
+            head -c 6 /dev/urandom | hexdump -e '"%02x"' | head -c 12 > $BWEST_UPLOADABLE_DIR/bwest_id
+        }
+        BWEST_ID=$(cat $BWEST_UPLOADABLE_DIR/bwest_id)
+        
+        LOGS=$(ls $BWEST_UPLOADABLE_DIR/bwest_*.csv | wc -l)
+        while [ $LOGS -gt 1 ]; do
+            OLDEST=$(ls -tr $BWEST_UPLOADABLE_DIR/bwest_*.csv | head -n 1)
+            PREF=$BWEST_UPLOADABLE_DIR/bwest
+            TARGET=$(echo $OLDEST | sed -e "s#$PREF#$BWEST_ID#g")
+            gzip -c $OLDEST > $BWEST_UPLOADABLE_DIR/$TARGET.gz
+            send_bwestdata $BWEST_UPLOADABLE_DIR/$TARGET.gz
+            RESULT=$?
+            if [ $RESULT -eq 0 ]; then
+                # "Successfully uploaded $OLDEST to cloud as $TARGET.gz"
+                rm -f $OLDEST
+            else
+                # keep trying
+                error 3 "Unable to upload $OLDEST to cloud."
+            fi
+            rm -f $BWEST_UPLOADABLE_DIR/$TARGET.gz
+            LOGS=$(ls $BWEST_UPLOADABLE_DIR/bwest_*.csv | wc -l)
+        done    
+
+	rm -f "$LOCKFILE"
+	trap - INT TERM EXIT
+else
+	error 2 "Another ${PROG}($(cat $LOCKFILE)) is already running"
+fi

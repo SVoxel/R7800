@@ -2,8 +2,6 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sea
 BIN_NAME:=sead
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=ssh://qca-git01.qualcomm.com:29418/streamboost/$(PKG_NAME).git
 PKG_BRANCH:=banana
 PKG_RELEASE:=1
 
@@ -14,7 +12,6 @@ PKG_VERSION:=g16f93db
 endif
 PKG_START_ORDER:=25
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_VERSION:=$(PKG_REV)
 PKG_SOURCE_MIRROR:=none
@@ -45,12 +42,18 @@ MAKE_FLAGS += \
 	LDLIBS+="-largp"
 
 # TABS
+define Build/Configure
+endef
+
+define Build/Compile
+endef
+
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/etc
 	$(INSTALL_DIR) $(1)/etc/appflow
 	$(INSTALL_DIR) $(1)/etc/appflow/streamboost.d
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/$(BIN_NAME)     $(1)/usr/sbin/
+	$(INSTALL_BIN) ./files/$(BIN_NAME)              $(1)/usr/sbin/
 	$(INSTALL_BIN) ./files/$(PKG_NAME).init         $(1)/etc/appflow/streamboost.d/${PKG_START_ORDER}_$(PKG_NAME)
 endef
 

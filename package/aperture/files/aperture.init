@@ -35,8 +35,8 @@ HISTORY_FILE="--"
 STCACHE_FILE="--"
 DEBUGLOG_FILE="${RUNDIR}/aperture-debug.log"
 BWCD_BWCFG="${RUNDIR}/bw.conf"
-SERVERLIST_URL="http://${CONFIG_HOST}/speedtest.v1/speedtest-servers.xml"
-GEOLOCATE_URL="http://www.speedtest.net/speedtest-config.php"
+SERVERLIST_URL="${SERVERLIST_URL:-http://${CONFIG_HOST}/speedtest.v1/speedtest-servers.xml}"
+GEOLOCATE_URL="${GEOLOCATE_URL:-http://speedometer.streamboost.qualcomm.com/locationator.php}"
 REDIS_HOST="127.0.0.1"
 REDIS_PORT=6379
 export PIDFILE PIDFILE_ONERUN LOCKFILE INTERVAL INTERVAL_DECAYPERCENT INTERVAL_CUTOFF RETRYINTERVAL CONVERGEDELAY LOGDEST LOGLEVEL THRESHOLD BWCD_SOCKET SRC_PORT CONFIG_FILE RESULTS_FILE RESULTS_FILE_OUT HISTORY_FILE STCACHE_FILE DEBUGLOG_FILE BWCD_BWCFG SERVERLIST_URL GEOLOCATE_URL REDIS_HOST REDIS_PORT
@@ -57,12 +57,20 @@ start() {
 }
 
 stop() {
+	local count=0
+	local maxcount=5
+
 	killall ${BINARY} 2>/dev/null
 	killall sleep 2>/dev/null
 	trap "" TERM
 	killall ${BINARY_ONERUN} 2>/dev/null
 	while status >/dev/null 2>&1 ; do
 		sleep 1
+		let count++
+		[ "$count" -gt $maxcount ] && {
+			kill -9 $(cat ${PIDFILE}) 2>/dev/null
+			rm -f ${PIDFILE}
+		}
 	done
 	$LOGGER "$DISPLAY_NAME stopped"
 }
@@ -80,6 +88,7 @@ boot() {
 
 measure() {
 	RESULTS_FILE="${1:-$RESULTS_FILE_OUT}"
+	shift
 	$LOGGER "$DISPLAY_NAME running manual measurement"
 	${BINDIR}/${BINARY} measure ${CMDLINE} >/dev/null 2>&1 "$@"
 }

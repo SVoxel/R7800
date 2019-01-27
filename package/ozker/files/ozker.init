@@ -81,9 +81,10 @@ boot() {
 
 stop() {
 	default_stop && {
-		sed -i -e '/^\/cgi-bin\/ozker:root:.*/d' /etc/httpd.conf
-		sed -i -e 's/^[ \t]\+option[ \t]\+realm[ \t]\+/#\toption realm /;s/^[ \t]\+option[ \t]\+config[ \t]\+/#\toption config /' /etc/config/uhttpd
-		/etc/init.d/uhttpd restart
+		# We have our way to do authentication, so comment these three commands.
+#		sed -i -e '/^\/cgi-bin\/ozker:root:.*/d' /etc/httpd.conf
+#		sed -i -e 's/^[ \t]\+option[ \t]\+realm[ \t]\+/#\toption realm /;s/^[ \t]\+option[ \t]\+config[ \t]\+/#\toption config /' /etc/config/uhttpd
+#		/etc/init.d/uhttpd restart
 		true
 	}
 }

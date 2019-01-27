@@ -1,0 +1,1127 @@
+*3
+$3
+SET
+$28
+nodedb:type:Unknown:priority
+$2
+30
+*3
+$3
+SET
+$34
+nodedb:type:ADEMCO Device:priority
+$2
+40
+*3
+$3
+SET
+$35
+nodedb:type:Amazon Fire TV:priority
+$2
+10
+*3
+$3
+SET
+$28
+nodedb:type:Android:priority
+$2
+20
+*3
+$3
+SET
+$26
+nodedb:type:Apple:priority
+$2
+20
+*3
+$3
+SET
+$29
+nodedb:type:Apple TV:priority
+$2
+10
+*3
+$3
+SET
+$33
+nodedb:type:Asus MeMOPad:priority
+$2
+20
+*3
+$3
+SET
+$31
+nodedb:type:BlackBerry:priority
+$2
+30
+*3
+$3
+SET
+$36
+nodedb:type:BlackBerry 9220:priority
+$2
+30
+*3
+$3
+SET
+$26
+nodedb:type:Boxee:priority
+$2
+10
+*3
+$3
+SET
+$31
+nodedb:type:Chromecast:priority
+$2
+10
+*3
+$3
+SET
+$30
+nodedb:type:Chrome OS:priority
+$2
+20
+*3
+$3
+SET
+$26
+nodedb:type:Cisco:priority
+$2
+10
+*3
+$3
+SET
+$33
+nodedb:type:Denon Device:priority
+$2
+10
+*3
+$3
+SET
+$35
+nodedb:type:DirecTV Device:priority
+$2
+10
+*3
+$3
+SET
+$27
+nodedb:type:D-Link:priority
+$2
+30
+*3
+$3
+SET
+$50
+nodedb:type:D-Link DSM-312 MovieNite Plus:priority
+$2
+10
+*3
+$3
+SET
+$28
+nodedb:type:Droid 4:priority
+$2
+30
+*3
+$3
+SET
+$33
+nodedb:type:Droid Bionic:priority
+$2
+30
+*3
+$3
+SET
+$31
+nodedb:type:Droid Mini:priority
+$2
+30
+*3
+$3
+SET
+$28
+nodedb:type:Droid M:priority
+$2
+30
+*3
+$3
+SET
+$31
+nodedb:type:Droid Razr:priority
+$2
+30
+*3
+$3
+SET
+$32
+nodedb:type:Droid Ultra:priority
+$2
+30
+*3
+$3
+SET
+$28
+nodedb:type:FreeBSD:priority
+$2
+20
+*3
+$3
+SET
+$43
+nodedb:type:Frontier Silicon Radio:priority
+$2
+40
+*3
+$3
+SET
+$30
+nodedb:type:Google TV:priority
+$2
+10
+*3
+$3
+SET
+$29
+nodedb:type:Haier AC:priority
+$2
+40
+*3
+$3
+SET
+$30
+nodedb:type:HDHomeRun:priority
+$2
+10
+*3
+$3
+SET
+$31
+nodedb:type:HomeWizard:priority
+$2
+10
+*3
+$3
+SET
+$30
+nodedb:type:HP Device:priority
+$2
+40
+*3
+$3
+SET
+$30
+nodedb:type:HP Inkjet:priority
+$2
+40
+*3
+$3
+SET
+$33
+nodedb:type:HTC Amaze 4G:priority
+$2
+30
+*3
+$3
+SET
+$39
+nodedb:type:HTC Android Device:priority
+$2
+30
+*3
+$3
+SET
+$31
+nodedb:type:HTC Desire:priority
+$2
+30
+*3
+$3
+SET
+$31
+nodedb:type:HTC Device:priority
+$2
+30
+*3
+$3
+SET
+$34
+nodedb:type:HTC Droid DNA:priority
+$2
+30
+*3
+$3
+SET
+$26
+nodedb:type:HTC J:priority
+$2
+30
+*3
+$3
+SET
+$28
+nodedb:type:HTC One:priority
+$2
+30
+*3
+$3
+SET
+$31
+nodedb:type:HTC One M8:priority
+$2
+30
+*3
+$3
+SET
+$30
+nodedb:type:HTC One S:priority
+$2
+30
+*3
+$3
+SET
+$30
+nodedb:type:HTC One X:priority
+$2
+30
+*3
+$3
+SET
+$32
+nodedb:type:HTC Rezound:priority
+$2
+30
+*3
+$3
+SET
+$33
+nodedb:type:HTC Shift 4G:priority
+$2
+30
+*3
+$3
+SET
+$36
+nodedb:type:HTC ThunderBolt:priority
+$2
+30
+*3
+$3
+SET
+$27
+nodedb:type:iPad 2:priority
+$2
+20
+*3
+$3
+SET
+$25
+nodedb:type:iPad:priority
+$2
+20
+*3
+$3
+SET
+$29
+nodedb:type:iPad Air:priority
+$2
+20
+*3
+$3
+SET
+$31
+nodedb:type:iPad Air 2:priority
+$2
+20
+*3
+$3
+SET
+$30
+nodedb:type:iPad Mini:priority
+$2
+20
+*3
+$3
+SET
+$32
+nodedb:type:iPad Mini 2:priority
+$2
+20
+*3
+$3
+SET
+$32
+nodedb:type:iPad Mini 3:priority
+$2
+20
+*3
+$3
+SET
+$32
+nodedb:type:iPad Mini 4:priority
+$2
+20
+*3
+$3
+SET
+$29
+nodedb:type:iPad Pro:priority
+$2
+20
+*3
+$3
+SET
+$32
+nodedb:type:iPad Retina:priority
+$2
+20
+*3
+$3
+SET
+$27
+nodedb:type:iPhone:priority
+$2
+30
+*3
+$3
+SET
+$29
+nodedb:type:iPhone 4:priority
+$2
+30
+*3
+$3
+SET
+$30
+nodedb:type:iPhone 4s:priority
+$2
+30
+*3
+$3
+SET
+$29
+nodedb:type:iPhone 5:priority
+$2
+30
+*3
+$3
+SET
+$30
+nodedb:type:iPhone 5c:priority
+$2
+30
+*3
+$3
+SET
+$30
+nodedb:type:iPhone 5s:priority
+$2
+30
+*3
+$3
+SET
+$34
+nodedb:type:iPhone 6 Plus:priority
+$2
+30
+*3
+$3
+SET
+$29
+nodedb:type:iPhone 6:priority
+$2
+30
+*3
+$3
+SET
+$30
+nodedb:type:iPhone 6s:priority
+$2
+30
+*3
+$3
+SET
+$35
+nodedb:type:iPhone 6s Plus:priority
+$2
+30
+*3
+$3
+SET
+$31
+nodedb:type:iPod Touch:priority
+$2
+30
+*3
+$3
+SET
+$32
+nodedb:type:Kindle Fire:priority
+$2
+20
+*3
+$3
+SET
+$36
+nodedb:type:Kindle Fire HDX:priority
+$2
+20
+*3
+$3
+SET
+$35
+nodedb:type:Kindle Fire HD:priority
+$2
+20
+*3
+$3
+SET
+$39
+nodedb:type:Kodak Smart Device:priority
+$2
+10
+*3
+$3
+SET
+$41
+nodedb:type:La Crosse Technology:priority
+$2
+40
+*3
+$3
+SET
+$25
+nodedb:type:LETV:priority
+$2
+10
+*3
+$3
+SET
+$26
+nodedb:type:LG G2:priority
+$2
+30
+*3
+$3
+SET
+$31
+nodedb:type:LG G Pro 2:priority
+$2
+30
+*3
+$3
+SET
+$25
+nodedb:type:LIFX:priority
+$2
+40
+*3
+$3
+SET
+$42
+nodedb:type:Linksys Phone Adapter:priority
+$2
+40
+*3
+$3
+SET
+$26
+nodedb:type:Linux:priority
+$2
+20
+*3
+$3
+SET
+$42
+nodedb:type:Logitech Media Server:priority
+$2
+40
+*3
+$3
+SET
+$29
+nodedb:type:Mac OS X:priority
+$2
+20
+*3
+$3
+SET
+$30
+nodedb:type:Magicjack:priority
+$2
+40
+*3
+$3
+SET
+$35
+nodedb:type:Marantz Device:priority
+$2
+10
+*3
+$3
+SET
+$40
+nodedb:type:Motorola TV Set-Top:priority
+$2
+10
+*3
+$3
+SET
+$27
+nodedb:type:Moto G:priority
+$2
+30
+*3
+$3
+SET
+$27
+nodedb:type:Moto X:priority
+$2
+30
+*3
+$3
+SET
+$25
+nodedb:type:Nest:priority
+$2
+40
+*3
+$3
+SET
+$47
+nodedb:type:Netgear NeoTV Prime GTV100:priority
+$2
+10
+*3
+$3
+SET
+$41
+nodedb:type:Netgear NeoTV NTV300:priority
+$2
+10
+*3
+$3
+SET
+$34
+nodedb:type:Netgear NeoTV:priority
+$2
+10
+*3
+$3
+SET
+$29
+nodedb:type:Nexus 10:priority
+$2
+10
+*3
+$3
+SET
+$28
+nodedb:type:Nexus 4:priority
+$2
+30
+*3
+$3
+SET
+$28
+nodedb:type:Nexus 5:priority
+$2
+30
+*3
+$3
+SET
+$28
+nodedb:type:Nexus 7:priority
+$2
+20
+*3
+$3
+SET
+$28
+nodedb:type:Nexus S:priority
+$2
+30
+*3
+$3
+SET
+$29
+nodedb:type:Nintendo:priority
+$2
+10
+*3
+$3
+SET
+$33
+nodedb:type:Nintendo 3DS:priority
+$2
+30
+*3
+$3
+SET
+$33
+nodedb:type:Nintendo Wii:priority
+$2
+10
+*3
+$3
+SET
+$35
+nodedb:type:Nintendo Wii U:priority
+$2
+30
+*3
+$3
+SET
+$30
+nodedb:type:Nokia E72:priority
+$2
+30
+*3
+$3
+SET
+$32
+nodedb:type:Nokia Lumia:priority
+$2
+30
+*3
+$3
+SET
+$36
+nodedb:type:Nokia Lumia 520:priority
+$2
+30
+*3
+$3
+SET
+$36
+nodedb:type:Nokia Lumia 521:priority
+$2
+30
+*3
+$3
+SET
+$36
+nodedb:type:Nokia Lumia 822:priority
+$2
+30
+*3
+$3
+SET
+$36
+nodedb:type:Nokia Lumia 920:priority
+$2
+30
+*3
+$3
+SET
+$36
+nodedb:type:Nokia Lumia 928:priority
+$2
+30
+*3
+$3
+SET
+$25
+nodedb:type:Nook:priority
+$2
+20
+*3
+$3
+SET
+$34
+nodedb:type:NVIDIA SHIELD:priority
+$2
+30
+*3
+$3
+SET
+$27
+nodedb:type:Obihai:priority
+$2
+40
+*3
+$3
+SET
+$40
+nodedb:type:Obihai VoIP Adapter:priority
+$2
+40
+*3
+$3
+SET
+$43
+nodedb:type:Panasonic Smart Device:priority
+$2
+10
+*3
+$3
+SET
+$32
+nodedb:type:Philips Hue:priority
+$2
+40
+*3
+$3
+SET
+$32
+nodedb:type:Playstation:priority
+$2
+10
+*3
+$3
+SET
+$34
+nodedb:type:Playstation 3:priority
+$2
+10
+*3
+$3
+SET
+$34
+nodedb:type:Playstation 4:priority
+$2
+10
+*3
+$3
+SET
+$37
+nodedb:type:Playstation Vita:priority
+$2
+30
+*3
+$3
+SET
+$29
+nodedb:type:ReadyNAS:priority
+$2
+40
+*3
+$3
+SET
+$25
+nodedb:type:Roku:priority
+$2
+10
+*3
+$3
+SET
+$35
+nodedb:type:Samsung Device:priority
+$2
+10
+*3
+$3
+SET
+$41
+nodedb:type:Samsung Galaxy Nexus:priority
+$2
+30
+*3
+$3
+SET
+$40
+nodedb:type:Samsung Galaxy Note:priority
+$2
+30
+*3
+$3
+SET
+$42
+nodedb:type:Samsung Galaxy Note 3:priority
+$2
+30
+*3
+$3
+SET
+$43
+nodedb:type:Samsung Galaxy Note II:priority
+$2
+30
+*3
+$3
+SET
+$37
+nodedb:type:Samsung Galaxy S:priority
+$2
+30
+*3
+$3
+SET
+$38
+nodedb:type:Samsung Galaxy S4:priority
+$2
+30
+*3
+$3
+SET
+$43
+nodedb:type:Samsung Galaxy S4 Mini:priority
+$2
+30
+*3
+$3
+SET
+$40
+nodedb:type:Samsung Galaxy S II:priority
+$2
+30
+*3
+$3
+SET
+$41
+nodedb:type:Samsung Galaxy S III:priority
+$2
+30
+*3
+$3
+SET
+$38
+nodedb:type:Samsung Galaxy S5:priority
+$2
+30
+*3
+$3
+SET
+$47
+nodedb:type:Samsung Galaxy Note Tablet:priority
+$2
+20
+*3
+$3
+SET
+$39
+nodedb:type:Samsung Galaxy Tab:priority
+$2
+20
+*3
+$3
+SET
+$37
+nodedb:type:Samsung Smart TV:priority
+$2
+10
+*3
+$3
+SET
+$35
+nodedb:type:Seagate Device:priority
+$2
+40
+*3
+$3
+SET
+$38
+nodedb:type:Sharp Aquos LE830:priority
+$2
+10
+*3
+$3
+SET
+$35
+nodedb:type:Sharp Aquos TV:priority
+$2
+10
+*3
+$3
+SET
+$36
+nodedb:type:Sirius XM Radio:priority
+$2
+40
+*3
+$3
+SET
+$29
+nodedb:type:Slingbox:priority
+$2
+10
+*3
+$3
+SET
+$26
+nodedb:type:Sonos:priority
+$2
+10
+*3
+$3
+SET
+$35
+nodedb:type:Sony BD Player:priority
+$2
+10
+*3
+$3
+SET
+$32
+nodedb:type:Sony Device:priority
+$2
+30
+*3
+$3
+SET
+$37
+nodedb:type:Sony KDL-55HX850:priority
+$2
+10
+*3
+$3
+SET
+$37
+nodedb:type:Sony KDL-55W900A:priority
+$2
+10
+*3
+$3
+SET
+$34
+nodedb:type:Sony Receiver:priority
+$2
+10
+*3
+$3
+SET
+$28
+nodedb:type:Sony TV:priority
+$2
+10
+*3
+$3
+SET
+$36
+nodedb:type:SunPower Device:priority
+$2
+40
+*3
+$3
+SET
+$30
+nodedb:type:Swann DVR:priority
+$2
+10
+*3
+$3
+SET
+$34
+nodedb:type:Symbian Phone:priority
+$2
+30
+*3
+$3
+SET
+$36
+nodedb:type:Synology Device:priority
+$2
+40
+*3
+$3
+SET
+$25
+nodedb:type:TiVo:priority
+$2
+10
+*3
+$3
+SET
+$39
+nodedb:type:Vizio Smart Device:priority
+$2
+10
+*3
+$3
+SET
+$41
+nodedb:type:Vonage Phone Adapter:priority
+$2
+10
+*3
+$3
+SET
+$30
+nodedb:type:Ooma Telo:priority
+$2
+10
+*3
+$3
+SET
+$26
+nodedb:type:WD TV:priority
+$2
+10
+*3
+$3
+SET
+$28
+nodedb:type:Windows:priority
+$2
+20
+*3
+$3
+SET
+$34
+nodedb:type:Windows Phone:priority
+$2
+30
+*3
+$3
+SET
+$31
+nodedb:type:Windows RT:priority
+$2
+20
+*3
+$3
+SET
+$29
+nodedb:type:Xbox 360:priority
+$2
+10
+*3
+$3
+SET
+$29
+nodedb:type:Xbox One:priority
+$2
+10
+*3
+$3
+SET
+$30
+nodedb:type:Xperia go:priority
+$2
+30
+*3
+$3
+SET
+$36
+nodedb:type:Xperia Tablet Z:priority
+$2
+20
+*3
+$3
+SET
+$30
+nodedb:type:Xperia Z1:priority
+$2
+30
+*3
+$3
+SET
+$30
+nodedb:type:Xperia Z2:priority
+$2
+30
+*3
+$3
+SET
+$29
+nodedb:type:Xperia Z:priority
+$2
+30
+*3
+$3
+SET
+$31
+nodedb:type:Yamaha AVR:priority
+$2
+10

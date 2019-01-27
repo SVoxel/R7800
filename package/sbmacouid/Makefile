@@ -1,8 +1,6 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sbmacouid
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=ssh://qca-git01.qualcomm.com:29418/streamboost/sbmacouid.git
 PKG_BRANCH:=banana
 PKG_RELEASE:=1
 PKG_BUILD_DEPENDS:=argp-standalone
@@ -12,7 +10,6 @@ include $(INCLUDE_DIR)/local-development.mk
 ifeq ($(DUMP)$(PKG_VERSION),)
 PKG_VERSION:=gcf006c6
 endif
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_VERSION:=$(PKG_VERSION)
 
@@ -35,9 +32,15 @@ endef
 MAKE_FLAGS += \
 	EXTRA_LDFLAGS="-largp"
 
+define Build/Configure
+endef
+
+define Build/Compile
+endef
+
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/$(PKG_NAME) $(1)/usr/sbin
+	$(INSTALL_BIN) ./files/$(PKG_NAME) $(1)/usr/sbin
 	$(INSTALL_DIR) $(1)/etc/appflow/streamboost.d
 	$(INSTALL_BIN) ./files/$(PKG_NAME).init $(1)/etc/appflow/streamboost.d/${PKG_START_ORDER}_$(PKG_NAME)
 endef

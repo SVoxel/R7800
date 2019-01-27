@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# Copyright (c) 2014 Qualcomm Atheros, Inc.
+#
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary
+
+curl --cacert /etc/ssl/certs/CA.cert.pem --cert /etc/ssl/certs/client_cert.pem --key /etc/ssl/private/client_key.pem "$@"

@@ -5,22 +5,23 @@
 STREAMBOOST_SYS_CFG=${STREAMBOOST_SYS_CFG:-"${STREAMBOOST_RUNDIR:-/var/run/appflow}/streamboost.sys.conf"}
 STREAMBOOST_SYS_DEFAULTS=${STREAMBOOST_SYS_DEFAULTS:-"${STREAMBOOST_CFGDIR:-/etc/appflow}/streamboost.sys.conf"}
 
-. /usr/share/libubox/jshn.sh
+#. /usr/share/libubox/jshn.sh
 
 print_interface_device() {
-        json_load "$(ubus call network.interface.$1 status)"
-        json_get_var dev_name device
+#       json_load "$(ubus call network.interface.$1 status)"
+#       json_get_var dev_name device
         echo "$dev_name"
 }
 
 is_interface_up() {
-        json_load "$(ubus call network.interface.$1 status)"
-	json_get_var iface_up up
-	return $((! ${iface_up:-0}))
+#   json_load "$(ubus call network.interface.$1 status)"
+#	json_get_var iface_up up
+#	return $((! ${iface_up:-0}))
+	return 0
 }
 
 . /lib/functions.sh
-. /lib/firewall/core.sh
+#. /lib/firewall/core.sh
 
 is_firewall_up() {
 	fw_is_loaded
@@ -46,7 +47,7 @@ RELOAD_SENDS_HUP=${RELOAD_SENDS_HUP:-no}
 
 check_for_zombies() {
 	local PID=$1
-	if grep "^State:.*Z" /proc/$PID/status &>/dev/null; then
+	if grep "^State:.*Z" /proc/$PID/status 2>/dev/null; then
 		echo "$DISPLAY_NAME (pid $PID) is a zombie"
 		return 2
 	fi

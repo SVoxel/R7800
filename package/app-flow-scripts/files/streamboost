@@ -59,6 +59,7 @@ STATUS_ALL_DOWN=100
 STATUS_UNAVAILABLE=101
 
 CRON_LINE="*/3 * * * * /usr/sbin/streamboost_status_monit"
+DNI_CONFIG=/bin/config
 
 # tests whether the ECM package is installed
 ecm_is_installed() {
@@ -393,7 +394,7 @@ apply_action() {
 		}
 
 		# Set a boot flag when we first boot.
-		[ "$action" = "boot" ] && set_boot_flag=yes && preboot && auto_update
+		[ "$action" = "boot" ] && set_boot_flag=yes && preboot 
 
 		FSM_action "$orig_action"
 		fsm_reply=$?
@@ -485,6 +486,20 @@ apply_action() {
 	[ "$set_boot_flag" = "yes" ] && postboot
 
 	# DON'T ADD STUFF AFTER THIS, as sourcing rc.appflow causes sys.conf to regenerate
+	if [ "$action" = "boot" -o "$action" = "start" -o "$action" = "stop" ]; then
+		net-wall restart
+	fi
+	# Bug 50855, this is workaround, we will find a better solution.
+	if [ "$action" = "boot" -o "$action" = "start" ]; then
+		update_fmn
+		poll_set_priority
+	else
+		if [ "$action" = "stop" ]; then
+			killall poll_set_priority
+		fi
+	fi
+	# Currently, in case update hang, after streamboost is started, we update the database in the backgound
+	[ "$action" = "boot" -o "$action" = "start" ] && sb_update_database $action &
 	[ "$delete_sys_conf" = "yes" ] && rm "$STREAMBOOST_SYS_CFG"
 
 	[ "$fsm_reply" -eq $FSM_ACTION_START ] && apply_action force_start all
@@ -576,7 +591,11 @@ read_config() {
 		echo >&2 "User config file $STREAMBOOST_USER_CFG does not exist, exiting"
 		return 1
 	}
-	. $STREAMBOOST_USER_CFG
+
+	improve_streamboost=$($DNI_CONFIG get improve_streamboost)
+	auto_bandwidth=$($DNI_CONFIG get auto_bandwidth)
+	auto_update=$($DNI_CONFIG get auto_update)
+
 	ENABLE_GWCLIENT=$improve_streamboost
 	ENABLE_AUTO_BW=$auto_bandwidth
 	ENABLE_AUTO_UPDATE=$auto_update
@@ -631,9 +650,14 @@ print_versions() {
 }
 
 auto_update() {
-	[ "$ENABLE_AUTO_UPDATE" = "yes" ] || {
+	[ "$ENABLE_AUTO_UPDATE" = "1" ] || {
 		$LOGGER "Automatic updates are disabled.  Using existing files."
 		return 10
+	}
+	# NTGR Spec request: 
+	enabled || {
+		$LOGGER "Streamboost is not enabled, auto update will not run."
+		return 11
 	}
 	update
 	return $?
@@ -661,6 +685,7 @@ update() {
 		if [ $UPDATE_STATUS -eq 0 ]; then
 			if grep "Upgrading" $UPGRADE_LOG; then
 				echo "Last updated: $(date)" > "$STORAGEDIR/last_updated"
+				opkg -f "$SB_OPKG_CONF"  info wopr-db > /etc/appflow/database_versions
 				$LOGGER "[  OK  ] Update successful.  Run streamboost restart to use updated definitions."
 			else
 				$LOGGER "[  OK  ] Everything is up-to-date."
@@ -677,7 +702,7 @@ update() {
 }
 
 auto_upload() {
-	[ "$ENABLE_AUTO_UPLOAD" = "yes" ] || {
+	[ "$ENABLE_AUTO_UPLOAD" = "1" ] || {
 		$LOGGER "Automatic uploads are disabled.  Exiting."
 		return 0
 	}
@@ -721,7 +746,8 @@ upload() {
 }
 
 enabled() {
-	[ "$enable_streamboost" = "yes" ] || return 1
+	enable_streamboost=$($DNI_CONFIG get streamboost_enable)
+	[ "$enable_streamboost" = "1" ] || return 1
 }
 
 setbw() {
@@ -732,6 +758,18 @@ setbw() {
 		redis-cli set settings:bw:down $downlimit
 		redis-cli publish bandwidth.events "$uplimit;$downlimit"
 	}
+}
+
+update_fmn(){
+	return 0
+	local FILE=flows_EN-US.json
+	URL="http://$STATIC_HOST/luci-app-streamboost-assets/$UPDATE_VERSION/trans/$FILE"
+
+	rm -f /www/$FILE.new
+	wget  -T 15 $URL -O /www/$FILE.new
+	RET=$?
+	[ "$RET" = "0" ] && mv /www/$FILE.new /www/$FILE
+	return $RET
 }
 
 
@@ -758,7 +796,7 @@ shift
 
 case "${action}" in
 	# Global-only actions
-	enable|disable|ifup|ifdn|fwup|fwdn|measure|applybw|enabled|update|auto_update|upload|auto_upload|setbw|print_versions|status_monit)
+	enable|disable|ifup|ifdn|fwup|fwdn|measure|applybw|enabled|update|auto_update|upload|auto_upload|setbw|print_versions|status_monit|update_fmn)
 		if [ "$target" = "all" ]; then
 			${action} "$@"
 		else

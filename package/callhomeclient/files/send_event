@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Copyright (c) 2014 Qualcomm Atheros, Inc.
+#
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary
+
+. /etc/appflow/rc.appflow
+
+EVENTFILE="$1"
+NODESFILE="$2"
+
+URL=https://${UPLOAD_HOST}/api/v1/dbupload/
+
+authcurl --form upload=@"$EVENTFILE" --form nodes=@"$NODESFILE" $URL

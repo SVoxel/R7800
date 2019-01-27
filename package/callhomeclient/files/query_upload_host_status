@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# Copyright (c) 2014 Qualcomm Atheros, Inc.
+#
+# All Rights Reserved.
+# Qualcomm Atheros Confidential and Proprietary
+
+. /etc/appflow/rc.appflow
+
+URL=https://${UPLOAD_HOST}/api/v1/ping/
+
+VERBOSE=
+if [ "$1" = "-v" -o "$1" = "--verbose" ]; then
+	VERBOSE=true
+	shift
+fi
+
+ping_callhome() {
+	local url="$1"
+	local macaddr=$(ifconfig ${LAN_IFACE} | awk '/HWaddr/ {print $5}')
+	local data
+
+	data="${data} --data-urlencode macaddr=${macaddr}"
+	# specify additional params by adding more --data-urlencode args
+	# data="${data} --data-urlencode param=${param}"
+
+	authcurl -i --silent --get ${data} ${url} 2>/dev/null
+}
+
+main() {
+	local response
+	local ret
+
+	response="$(ping_callhome ${URL})"
+	ret=$?
+
+	[ -n "${VERBOSE}" ] && echo "${response}"
+
+	# for now we ignore the response and just check to see if we could
+	# reach the server.   the return code from authcurl is good enough
+	# for this purpose.
+	return ${ret}
+}
+
+main

@@ -7,6 +7,7 @@ DISPLAY_NAME="settings-loader"
 REDIS_PORT=6379
 
 EXTRA_COMMANDS=status
+DNI_CONFIG=/bin/config
 
 export DISPLAY_NAME
 
@@ -18,7 +19,19 @@ start() {
 		echo >&2 "User config file $STREAMBOOST_USER_CFG does not exist, exiting"
 		return 1
 	}
-	. $STREAMBOOST_USER_CFG
+	
+	if [ "x$($DNI_CONFIG get bandwidth_type)" = "x1" ]; then
+		uplimit=$($DNI_CONFIG get uplimit)
+		downlimit=$($DNI_CONFIG get downlimit)
+	else
+		uplimit=$($DNI_CONFIG get ookla_uplimit)
+		downlimit=$($DNI_CONFIG get ookla_downlimit)
+	fi
+
+	if [ "x$uplimit" != "x" ] && [ "x$downlimit" != "x" ]; then
+		uplimit=`awk -v up=$uplimit 'BEGIN{printf "%.0f",up/0.9}'`
+		downlimit=`awk -v down=$downlimit 'BEGIN{printf "%.0f",down/0.9}'`
+	fi
 	redis-cli set settings:bw:up $uplimit > /dev/null
 	redis-cli set settings:bw:down $downlimit > /dev/null
 	redis-cli set ${STATUS_KEY} 1

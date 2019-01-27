@@ -1,0 +1,222 @@
+# OS type:OS flavor:HTTP client type:HTTP client flavor:OUI=[Device name - Terminating]
+# OS type:OS flavor:HTTP client type:HTTP client flavor:OUI=(Device name - Non-terminating)
+# Note: These rules are evaluated from top to bottom.  The first one that matches will succeed and cause matching to stop, regardless of whether the rule is terminating.
+# Terminating rules will cause matching to stop on a device regardless of future changes in p0f output on that device.
+
+# iOS
+iOS:*:iPad:2:Apple=[iPad 2]
+iOS:*:iPad:Retina:Apple=[iPad Retina]
+iOS:*:iPad:Air:Apple=[iPad Air]
+iOS:*:iPad:Air2:Apple=[iPad Air 2]
+iOS:*:iPad:Mini:Apple=[iPad Mini]
+iOS:*:iPad:Mini2:Apple=[iPad Mini 2]
+iOS:*:iPad:Mini3:Apple=[iPad Mini 3]
+iOS:*:iPad:Mini4:Apple=[iPad Mini 4]
+iOS:*:iPad:Pro:Apple=[iPad Pro]
+iOS:*:iPhone:4:Apple=[iPhone 4]
+iOS:*:iPhone:4s:Apple=[iPhone 4s]
+iOS:*:iPhone:5:Apple=[iPhone 5]
+iOS:*:iPhone:5c:Apple=[iPhone 5c]
+iOS:*:iPhone:5s:Apple=[iPhone 5s]
+iOS:*:iPhone:6plus:Apple=[iPhone 6 Plus]
+iOS:*:iPhone:6:Apple=[iPhone 6]
+iOS:*:iPhone:6splus:Apple=[iPhone 6s Plus]
+iOS:*:iPhone:6s:Apple=[iPhone 6s]
+iOS:*:Apple_TV:*:Apple=[Apple TV]
+iOS:*:iPad:*:*=(iPad)
+iOS:*:iPhone:*:*=(iPhone)
+iOS:*:iPod:Touch:*=(iPod Touch)
+# Mountain Lion traffic sometimes detects as iOS
+iOS:*:Mac_OS_X:*:*=[Mac OS X]
+iOS:*:*:*:Apple=(Apple)
+
+# Android
+Linux:*:Android:*:LeShi=[LETV]
+Linux:Android:Android:HTCSP:*=[HTC Android Device]
+Linux:*:Android:SHIELD:*=[NVIDIA SHIELD]
+Linux:*:Samsung:GalaxyS5:*=[Samsung Galaxy S5]
+Linux:*:Samsung:GalaxyS4Mini:*=[Samsung Galaxy S4 Mini]
+Linux:*:Samsung:GalaxyS4:*=[Samsung Galaxy S4]
+Linux:*:Samsung:GalaxySIII:*=[Samsung Galaxy S III]
+Linux:*:Samsung:GalaxySII:*=[Samsung Galaxy S II]
+Linux:*:Samsung:GalaxyS:*=[Samsung Galaxy S]
+Linux:*:Samsung:GalaxyJ3:*=[Samsung Galaxy J3]
+Linux:*:Samsung:GalaxyNexus:*=[Samsung Galaxy Nexus]
+Linux:*:Samsung:GalaxyNote:*=[Samsung Galaxy Note]
+Linux:*:Samsung:GalaxyNoteII:*=[Samsung Galaxy Note II]
+Linux:*:Samsung:GalaxyNote3:*=[Samsung Galaxy Note 3]
+Linux:*:Samsung:GalaxyTab:*=[Samsung Galaxy Tab]
+Linux:*:Samsung:GalaxyNoteTablet:*=[Samsung Galaxy Note Tablet]
+Linux:*:Motorola:DROID_Ultra:*=[Droid Ultra]
+Linux:*:Motorola:DROID_M:*=[Droid M]
+Linux:*:Motorola:DROID_4:*=[Droid 4]
+Linux:*:Motorola:DROID_Bionic:*=[Droid Bionic]
+Linux:*:Motorola:DROID_RAZR:*=[Droid Razr]
+Linux:*:Motorola:DROID_RAZR_HD:*=[Droid Razr]
+Linux:*:Motorola:Moto_X:*=[Moto X]
+Linux:*:Motorola:DROID_MINI:*=[Droid Mini]
+Linux:*:Motorola:Moto_G:*=[Moto G]
+Linux:*:HTC:One:HTC=[HTC One]
+Linux:*:HTC:One_M8:HTC=[HTC One M8]
+Linux:*:HTC:One_X:HTC=[HTC One X]
+Linux:*:HTC:One_S:HTC=[HTC One S]
+Linux:*:HTC:Amaze_4G:HTC=[HTC Amaze 4G]
+Linux:*:HTC:ThunderBolt:HTC=[HTC ThunderBolt]
+Linux:*:HTC:Shift_4G:HTC=[HTC Shift 4G]
+Linux:*:HTC:Rezound:HTC=[HTC Rezound]
+Linux:*:HTC:J:HTC=[HTC J]
+Linux:*:HTC:EVO:HTC=[HTC J]
+Linux:*:HTC:Droid_DNA:HTC=[HTC Droid DNA]
+Linux:*:HTC:Desire:HTC=[HTC Desire]
+Linux:*:Sony:Xperia_go:Sony=[Xperia go]
+Linux:*:Sony:Xperia_Z1:Sony=[Xperia Z1]
+Linux:*:Sony:Xperia_Z:Sony=[Xperia Z]
+Linux:*:Sony:Xperia_Z2:Sony=[Xperia Z2]
+Linux:*:Sony:Xperia_Tablet_Z:Sony=[Xperia Tablet Z]
+Linux:*:Nexus:10:Samsung=[Nexus 10]
+Linux:*:Nexus:7:Asus=[Nexus 7]
+Linux:*:Nexus:5:*=[Nexus 5]
+Linux:*:Nexus:4:LG=[Nexus 4]
+Linux:*:Nexus:S:*=[Nexus S]
+Linux:*:Kindle:Fire:*=[Kindle Fire]
+Linux:*:Kindle:Fire_HD:*=[Kindle Fire HD]
+Linux:*:Kindle:Fire_HDX:*=[Kindle Fire HDX]
+Linux:*:Amazon:Fire_TV:*=[Amazon Fire TV]
+Linux:*:ASUS:MeMOPad:*=[Asus MeMOPad]
+Linux:*:*:WDTV:*=[WD TV]
+Linux:*:LG:G2:*=[LG G2]
+Linux:*:LG:G_Pro_2:*=[LG G Pro 2]
+
+# BlackBerry
+BlackBerry:*:BlackBerry:9220:*=[BlackBerry 9220]
+BlackBerry:*:*:*:*=(BlackBerry)
+
+# Windows Phone
+# (Not sure about this one)
+# Windows:*:WebClient:WindowsPhone:*=[Windows Phone]
+Windows:*:Nokia:Lumia_520:Nokia=[Nokia Lumia 520]
+Windows:*:Nokia:Lumia_521:Nokia=[Nokia Lumia 521]
+Windows:*:Nokia:Lumia_822:Nokia=[Nokia Lumia 822]
+Windows:*:Nokia:Lumia_920:Nokia=[Nokia Lumia 920]
+Windows:*:Nokia:Lumia_928:Nokia=[Nokia Lumia 928]
+Windows:*:Nokia:Lumia:Nokia=(Nokia Lumia)
+Windows:*:WindowsPhone:*:*=(Windows Phone)
+
+# Symbian
+SymbianOS:*:Symbian:E72:*=[Nokia E72]
+SymbianOS:*:Symbian:*:*=(Symbian Phone)
+
+# Smart devices
+*:*:*:*:LIFI=[LIFX]
+Linux:*:*:*:Haier=[Haier AC]
+Linux:*:Vizio:*:*=[Vizio Smart Device]
+Linux:*:Roku:*:*=[Roku]
+Linux:*:*:*:Roku=[Roku]
+Linux:*:Boxee:*:*=[Boxee]
+D-Link:DSM-312:*:*:*=[D-Link DSM-312 MovieNite Plus]
+Linux:Nest:Nest:*:*=[Nest]
+*:*:*:*:Nest=[Nest]
+FreeBSD:*:Panasonic:*:*=[Panasonic Smart Device]
+Sling:main:*:*:*=[Slingbox]
+PH_NinSling:*:Sling:*:*=[Slingbox]
+PH_NinSling:*:*:*:Sling=[Slingbox]
+SiliconDust:*:*:*:*=[HDHomeRun]
+Linux:*:TiVo:*:*=[TiVo]
+Linux:*:*:*:TiVo=[TiVo]
+PH_Kodak:*:AVOS:*:*=[Kodak Smart Device]
+PH_Motorola:*:Motorola:DCT:*=[Motorola TV Set-Top]
+PH_1:*:Motorola:DCT:*=[Motorola TV Set-Top]
+Philips:Hue:*:*:*=[Philips Hue]
+Yamaha:AVR:Yamaha:AVR:*=[Yamaha AVR]
+Linux:Sony:Sony:KDL-55HX850:*=[Sony KDL-55HX850]
+Linux:Sony:Sony:KDL-55W900A:*=[Sony KDL-55W900A]
+Linux:Sony:Sony:TV:*=(Sony TV)
+Linux:Sony:Sony:BD:*=[Sony BD Player]
+Linux:*:Sony:BD:*=[Sony BD Player]
+PH_NinSling:*:Sony:Receiver:Sony=[Sony Receiver]
+PH_Arcadyan:*:Sharp:Aquos:*=(Sharp Aquos TV)
+PH_Arcadyan:*:Sharp:LE830:*=[Sharp Aquos LE830]
+Linux:*:Squeezebox:Server:*=[Logitech Media Server]
+PH_Slim:*:Squeezebox:Server:*=[Logitech Media Server]
+Linux:*:*:*:Sirius=[Sirius XM Radio]
+Linux:*:Samsung:OTN:*=[Samsung Device]
+Linux:*:DirecTV:*:*=[DirecTV Device]
+Linux:*:Nook:*:Barnes&Noble=[Nook]
+Linux:*:Samsung:SmartTV:Samsung=[Samsung Smart TV]
+PH_Frontier:*:Frontier:radio:*=[Frontier Silicon Radio]
+Linux:*:Synology:*:*=[Synology Device]
+*:*:*:*:Synology=[Synology Device]
+PH_ADEMCO:*:*:*:ADEMCO=[ADEMCO Device]
+Linux:*:Swann:DVR:*=[Swann DVR]
+PH_HomeWizard:*:b0rked:*:*=[HomeWizard]
+Linux:*:Seagate:*:*=[Seagate Device]
+Linux:*:Sonos:*:*=[Sonos]
+*:*:*:*:Sonos=[Sonos]
+Linux:*:NeoTV:NTV300:*=[Netgear NeoTV NTV300]
+Linux:*:NeoTV:GTV100:*=[Netgear NeoTV Prime GTV100]
+Linux:*:NeoTV:*:*=(Netgear NeoTV)
+Linux:*:MTK:NeoTV:Netgear=(Netgear NeoTV)
+Linux:*:Chromecast:*:*=[Chromecast]
+PH_1:*:*:*:HP=(HP Device)
+*:*:*:*:Marantz=(Marantz Device)
+*:*:*:*:Denon=(Denon Device)
+
+# Phone adapters
+PH_Linksys:*:Linksys:PhoneAdapter:*=[Linksys Phone Adapter]
+PH_Obihai:*:Obihai:VoIP:*=[Obihai VoIP Adapter]
+OpenBSD:*:Vonage:*:*=[Vonage Phone Adapter]
+OpenBSD:Vonage:Magicjack:*:*=[Magicjack]
+*:*:*:*:Magicjack=[Magicjack]
+*:*:*:*:Ooma=[Ooma Telo]
+
+# Printers
+PH_1:*:HP:InkjetUpdate:*=[HP Inkjet]
+
+# Game consoles
+Playstation:*:Playstation:3:*=[Playstation 3]
+PH_Apple:*:Playstation:3:Sony=[Playstation 3]
+FreeBSD:*:Playstation:4:*=[Playstation 4]
+Playstation:*:Playstation:Vita:*=[Playstation Vita]
+Playstation:*:*:*:*=(Playstation)
+Xbox:360:*:*:*=[Xbox 360]
+*:*:Xbox:360:*=[Xbox 360]
+*:*:WebClient:Xbox:*=[Xbox 360]
+Windows:*:MSIE:XboxOne:*=[Xbox One]
+
+Nintendo:3DS:*:*:*=[Nintendo 3DS]
+Nintendo:Wii:*:*:*=[Nintendo Wii]
+*:*:Nintendo:WiiU:*=[Nintendo Wii U]
+Nintendo:*:*:*:*=(Nintendo)
+
+# NAS storage devices
+Linux:*:Debian:NetgearNAS:*=[ReadyNAS]
+
+# Misc
+SunPower:*:*:*:*=[SunPower Device]
+LaCrosse:*:*:*:*=[La Crosse Technology]
+
+# Desktop PC
+Windows:*:MSIE:WinRT:*=[Windows RT]
+Windows:*:Chrome:*:*=[Windows]
+Windows:*:DynGate:*:*=[Windows]
+Mac_OS_X:*:*:*:*=[Mac OS X]
+Linux:*:Firefox:*:*=[Linux]
+Linux:*:Chrome:Chrome_OS:*=[Chrome OS]
+
+# Catchall rules
+Linux:*:Android:Google_TV:*=(Google TV)
+*:*:*:*:HTC=(HTC Device)
+Windows:*:*:*:*=(Windows)
+*:*:*:*:Sony=(Sony Device)
+Linux:*:Android:*:*=(Android)
+Linux:*:*:Android:*=(Android)
+Linux:Android:*:*:*=(Android)
+Linux:*:*:*:*=(Linux)
+FreeBSD:*:*:*:*=(FreeBSD)
+PH_Apple:*:*:*:Apple=(Apple)
+PH_Obihai:*:*:*:*=(Obihai)
+*:*:*:*:D-Link=(D-Link)
+*:*:*:*:Cisco=(Cisco)
+
+# "Unknown" is a special value for nodedetect.  Don't change the spelling
+*:*:*:*:*=(Unknown)

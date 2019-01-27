@@ -9,6 +9,9 @@ BINARY="drflocs"
 NAME=${BINARY}
 DISPLAY_NAME=drflocs
 
+#make sure drflocs stops
+STOP_IS_BLOCKING=yes
+
 # path to redis socket
 REDIS_SOCK="/var/run/appflow/redis.sock"
 
