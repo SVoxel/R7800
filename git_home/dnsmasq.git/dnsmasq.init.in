@@ -1,7 +1,7 @@
 #!/bin/sh /etc/rc.common
 # Copyright (C) 2007 OpenWrt.org
 
-START=60
+START=61
 
 set_hijack() {
 	sleep 2
@@ -69,7 +69,7 @@ start() {
 	fi
 	# end static pptp config
 
-	/usr/sbin/dnsmasq --except-interface=lo -r $resolv_file $opt_argv
+	/usr/sbin/dnsmasq --except-interface=lo -u root -r $resolv_file $opt_argv
 
 	[ "$($CONFIG get dns_hijack)" = "1" ] && set_hijack &
 }

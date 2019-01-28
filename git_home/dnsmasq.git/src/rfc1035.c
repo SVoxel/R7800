@@ -1434,6 +1434,60 @@ static unsigned long crec_ttl(struct crec *crecp, time_t now)
     return daemon->max_ttl;
 }
   
+typedef struct extender_record_t{
+    char hostname[128];
+    char ip[32];
+} extender_record;
+
+char * strtolwr(const char * inp)
+{
+    char * tmp1, *tmp2;
+    tmp1 = strdup(inp);
+    tmp2 = tmp1;
+    while(*tmp2 != '\0')
+    {
+        if( *tmp2 >= 'A' && *tmp2 <= 'Z')
+            *tmp2 += 'a' - 'A';
+        tmp2++;
+    }
+    return tmp1;
+}
+
+static int deal_extender_hijack(extender_record * now_record, const char * name_in, int qtype, int qclass)
+{
+    FILE * fp;
+    char line[256] = {0};
+    char * delim=" \n";
+    char * tmp_name = NULL;
+    int  flag_extender_hijack=0 ;
+
+    if((fp = fopen("/tmp/mdns_a_record", "r")) == NULL)
+    {
+        printf("open mdns_a_record file error\n");
+        return 0;
+    }
+
+    tmp_name = strtolwr(name_in); /*notice :  must free tmp_name due to strdup*/
+
+    while((fgets(line, 256, fp)) != NULL)
+    {
+        strncpy(now_record->hostname, strtok(line, delim), sizeof(now_record->hostname));
+        strncpy(now_record->ip, strtok(NULL, delim), sizeof(now_record->ip));
+        //printf("hostname=%s ip=%s\n", er->hostname, er->ip);
+        if ((strstr(tmp_name, now_record->hostname)) != NULL) {
+#ifdef HAVE_IPV6
+            if ((qtype != T_A && qtype != T_AAAA && qtype != T_A6) || qclass != C_IN)
+                return 0;//We would do nothing for this kind of request.
+#endif
+            flag_extender_hijack = 1;
+            break;
+        }
+    }
+
+    free(tmp_name);
+    fclose(fp);
+    return flag_extender_hijack;
+}
 
 /* return zero if we can't answer from cache, or packet size if we can , or -1 if we don't want to reply or forward it. */
 size_t answer_request(struct dns_header *header, char *limit, size_t qlen,  
@@ -1452,6 +1506,9 @@ size_t answer_request(struct dns_header *header, char *limit, size_t qlen,
   int nxdomain = 0, auth = 1, trunc = 0, sec_data = 1;
   struct mx_srv_record *rec;
   size_t len;
+  int hijack_extender_flag = 0;
+  unsigned long extender_ip = 0;
+  extender_record hijack_extender_hostname;
 
   if (ntohs(header->ancount) != 0 ||
       ntohs(header->nscount) != 0 ||
@@ -2091,6 +2148,8 @@ size_t answer_request(struct dns_header *header, char *limit, size_t qlen,
 			  "tgs.xboxlive.com.local",
 			  "macs.xboxlive.com.local",
 			  "updates1.netgear.com",
+			  "472263.ftp.download.akadns.net",
+			  "http.updates1.netgear.com",
 			  "captive.apple.com",
 			  "www.appleiphonecell.com",
 			  "www.apple.com",
@@ -2112,6 +2171,7 @@ size_t answer_request(struct dns_header *header, char *limit, size_t qlen,
 			  "www.routerlogin.net",
 			  "routerlogin.com",
 			  "routerlogin.net",
+			  "mini-app.funjsq.com",
 
 #if defined(USBSHARE_DOMAIN_SUPPORT)
 			  "readyshare.routerlogin.net",
@@ -2120,8 +2180,10 @@ size_t answer_request(struct dns_header *header, char *limit, size_t qlen,
 
 			  NULL    /* The End One */
 		  };
+		  
+		  int connect_ext_num=atoi(config_get("connect_ext_num"));
 
-		  int i, hijackdomain;
+		  int i, hijackdomain = 0;
 
 		  /*
 		   * NETGEAR SPEC v1.6
@@ -2170,7 +2232,14 @@ size_t answer_request(struct dns_header *header, char *limit, size_t qlen,
 			  }
 		  }
 
-		  if (hijackdomain || in_hijack) {
+
+		  if(connect_ext_num > 0 ){
+			  hijack_extender_flag = deal_extender_hijack(&hijack_extender_hostname, name, qtype, qclass);
+			  printf("=======after deal_extender_hijack hijack_extender_f= %d=======\n", hijack_extender_flag);
+		  }
+
+		  printf("=======hijackdomain = %d in_hijack = %d=======\n", hijackdomain, in_hijack);
+		  if (hijackdomain || in_hijack || hijack_extender_flag) {
 			  if (!hijackdomain) {
 				  /* In DNS Hijack mode now: MUST `in_hijack != 0`. */
 				  for (i = 0; pass_domains[i]; i++) {
@@ -2195,8 +2264,16 @@ size_t answer_request(struct dns_header *header, char *limit, size_t qlen,
 						  anscount++;
 				  }
 				  else {
-					  if (!get_lan_ipaddr(&addr.addr.addr4))
-						  return 0;
+					  if(hijack_extender_flag == 1)
+					  {
+						  if((inet_pton(AF_INET, hijack_extender_hostname.ip, &extender_ip)) <= 0)
+							  return 0;
+						  memcpy(&addr.addr.addr4.s_addr, &extender_ip, sizeof(extender_ip));
+					  } else
+					  {
+						  if (!get_lan_ipaddr(&addr.addr.addr4))
+							  return 0;
+					  }
 					  if (add_resource_record(header, limit, &trunc, nameoffset, &ansp, 0, NULL, T_A, C_IN, "4", &addr))
 						  anscount++;
 				  }
