@@ -214,8 +214,8 @@ define Package/libopenssl/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/libcrypto.so.* $(1)/usr/lib/
 	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/libssl.so.* $(1)/usr/lib/
-	(cd $(1)/usr/lib; $(LN) libcrypto.so.1.0.0 libcrypto.so.0.9.8)
-	(cd $(1)/usr/lib; $(LN) libssl.so.1.0.0 libssl.so.0.9.8)
+	$(INSTALL_DATA) ./files/libcrypto.so.* $(1)/usr/lib/
+	$(INSTALL_DATA) ./files/libssl.so.* $(1)/usr/lib/
 endef
 
 define Package/openssl-util/install
