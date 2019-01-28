@@ -51,6 +51,8 @@ define Package/samba-scripts/install
 	install -m0755 ./files/update_user_v_02 $(1)/usr/sbin/update_user
 	install -m0755 ./files/detectSATA $(1)/usr/sbin/detectSATA
 	install -m0755 $(PKG_BUILD_DIR)/update_smb $(1)/usr/sbin/update_smb
+	install -m0755 ./files/update_user_v_02_security $(1)/usr/sbin/update_user
+	install -m0755 ./files/save_shadow $(1)/usr/sbin/save_shadow
 	-rm -f $(1)/etc/gshadow
 	ln -s /tmp/config/gshadow $(1)/etc/gshadow
 	-rm -f $(1)/home/
