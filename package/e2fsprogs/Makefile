@@ -8,8 +8,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=e2fsprogs
-PKG_VERSION:=1.44.4
-PKG_MD5SUM:=e0104efd6b60611aa4c755e47a6f904e
+PKG_VERSION:=1.44.5
+PKG_MD5SUM:=3b52323fe5777d33d0b10a1b2ee54c86
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
@@ -113,15 +113,15 @@ CONFIGURE_VARS += \
 	ac_cv_lib_pthread_sem_init=no
 
 CONFIGURE_ARGS += \
-	--disable-testio-debug \
+	--disable-testio-debug  \
 	--enable-elf-shlibs	\
 	--disable-libuuid	\
-	--enable-libblkid	\
-	--disable-defrag	\
+	--disable-libblkid	\
 	--disable-uuidd		\
 	--disable-tls		\
 	--disable-nls		\
-	--disable-rpath
+	--disable-rpath		\
+	--disable-fuse2fs
 
 define Build/Prepare
 	$(call Build/Prepare/Default)
