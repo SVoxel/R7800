@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dbus
-PKG_VERSION:=1.12.10
+PKG_VERSION:=1.12.12
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://dbus.freedesktop.org/releases/dbus/
-PKG_HASH:=4b693d24976258c3f2fa9cc33ad9288c5fbfa7a16481dbd9a8a429f7aa8cdcf7
+PKG_MD5SUM:=ea11069521beeee4e47f0086596a43c8
 PKG_MAINTAINER:=
 PKG_LICENSE:=AFL-2.1
 
