@@ -15,7 +15,7 @@
 
 <% wizlog_congratulations_ck15() %>
 <% wan1_and_wan2_configed() %>
-<body>
+<body onload="loadvalue();">
 <form action="NETGEAR_WNDR3700.cfg" method="post" enctype="multipart/form-data">
 <input type="hidden" name="submit_flag" value="hijack_success" />
 <input type="hidden" name="click_flag" value="0" />
@@ -40,7 +40,13 @@ var have_wifi_flag = "<% get_have_wifi_flag() %>";
 var click_no = top.click_no_flag;
 if(have_wifi_flag != "0" && have_wifi_flag != "1")
 	have_wifi_flag = "1";
-
+function loadvalue()
+{
+	if(top.security_enhance_flag)
+	{
+		document.getElementById("admin_passwd").style.display="none";
+	}
+}
 function to_success()
 {
 	top.location="to_internet_no_auth.htm"
@@ -48,9 +54,9 @@ function to_success()
 
 function location_to_OS()
 {
-	if(is_Mac_Win == "Mac" || is_Mac_Win.indexOf("Win") != -1)
+	/*if(is_Mac_Win == "Mac" || is_Mac_Win.indexOf("Win") != -1)
 		location.href="BRS_hdd_download.htm";
-	else
+	else*/
 		to_success();
 }
 </script>

@@ -9,7 +9,7 @@ PKG_VERSION:=1.0
 PKG_RELEASE:=1
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
-PKG_GIT_TREEISH:=wan-detection-dni31
+PKG_GIT_TREEISH:=wan-detection-dni33
 
 include $(INCLUDE_DIR)/package.mk
 

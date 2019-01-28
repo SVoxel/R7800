@@ -8,7 +8,7 @@ DISPLAY_NAME="leash"
 LOGGER="logger -p daemon.info -t ${DISPLAY_NAME}"
 PIDFILE="${RUNDIR}/${BINARY}.pid"
 
-INFILE="/tmp/dhcp.leases"
+INFILE="/tmp/udhcp.leases"
 OUTFILE="${RUNDIR}/dhcp.leases"
 CHECK_INTERVAL=2
 

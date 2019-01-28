@@ -114,7 +114,7 @@ function checkvpn(cf)
         }
 	if(cf.openvpnActive.checked == true && backup_rsp == "")
 	{
-		cf.hidden_backup_rspToPing.value = cf.rspToPing_value;
+		cf.hidden_backup_rspToPing.value = rspToPing_value;
 	}
 	if((cf.hidden_vpn_type.value!=type || cf.hidden_vpn_port.value != port || cf.hidden_vpn_access.value != access_mode || cf.hidden_tun_vpn_type.value != tun_type || cf.hidden_tun_vpn_port.value != tun_port) && cf.hidden_enable_vpn.value == 1)
 	{

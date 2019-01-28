@@ -47,6 +47,7 @@
 #include "dhcpc.h"
 #include "debug.h"
 
+extern char hostname_buff[64];
 
 /* Create a random xid */
 unsigned long random_xid(void)
@@ -73,6 +74,7 @@ unsigned long random_xid(void)
 /* initialize a packet with the proper defaults */
 static void init_packet(struct dhcpMessage *packet, char type)
 {
+	int len;
 	struct vendor  {
 		char vendor, length;
 		char str[sizeof("udhcp "VERSION)];
@@ -81,6 +83,13 @@ static void init_packet(struct dhcpMessage *packet, char type)
 	init_header(packet, type);
 	memcpy(packet->chaddr, client_config.arp, 6);
 	add_option_string(packet->options, client_config.clientid);
+	read_config_file(HOSTNAME_FILE);
+	len = strlen(hostname_buff) > 255 ? 255 : strlen(hostname_buff);
+	if (client_config.hostname) free(client_config.hostname);
+	client_config.hostname = xmalloc(len + 2);
+	client_config.hostname[OPT_CODE] = DHCP_HOST_NAME;
+	client_config.hostname[OPT_LEN] = len;
+	strncpy(client_config.hostname + 2, hostname_buff, len);
 	if (client_config.hostname) add_option_string(packet->options, client_config.hostname);
 	if (client_config.domain_name) add_option_string(packet->options, client_config.domain_name);
 	if (type != DHCPDECLINE) {

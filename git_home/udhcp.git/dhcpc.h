@@ -36,5 +36,7 @@ struct client_config_t {
 
 extern struct client_config_t client_config;
 
+char hostname_buff[64];
+#define HOSTNAME_FILE "/tmp/dhcp_name.conf"
 
 #endif

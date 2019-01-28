@@ -9,6 +9,10 @@ cat << EOF
 EOF
 echo -n "telnet password:"
 read telnet_passwd
+telnet_passwd_hashed=$(/usr/sbin/hash-data -e "$telnet_passwd")
+if [ -n "$telnet_passwd_hashed" ]; then
+	telnet_passwd="$telnet_passwd_hashed"
+fi
 if [ "$telnet_passwd" = "$(/bin/config get http_passwd)" ];then
 cat << EOF
 === IMPORTANT ============================

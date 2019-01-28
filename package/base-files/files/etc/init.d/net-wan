@@ -2,6 +2,7 @@
 #START=20
 
 FIREWALL="/www/cgi-bin/firewall.sh"
+DHCPNAME="/tmp/dhcp_name.conf"
 if [ -f /tmp/modem ]; then
 	WAN_IF=eth0
 fi
@@ -96,6 +97,7 @@ get_wan_hostname()
 	local wan_hostname="$($CONFIG get wan_hostname)"
 	[ -z "$wan_hostname" ] && wan_hostname="$($CONFIG get Device_name)"
 	echo "$wan_hostname"
+	echo "$wan_hostname" > $DHCPNAME
 }
 
 setup_interface_dhcp()
@@ -112,11 +114,12 @@ setup_interface_dhcp()
 	else
 		u_hostname=$($CONFIG get Device_name)
 	fi
+	echo $u_hostname > $DHCPNAME
 	if [ "$changing_mode" = "1" ]; then
-		udhcpc -b -i $WAN_IF -h $u_hostname -r $($CONFIG get wan_dhcp_ipaddr) -N $($CONFIG get wan_dhcp_oldip) ${u_wan_domain:+-d $u_wan_domain} &
-    	else
-		udhcpc -b -i $WAN_IF -h $u_hostname -r $($CONFIG get wan_dhcp_ipaddr) -N $($CONFIG get wan_dhcp_oldip) ${u_wan_domain:+-d $u_wan_domain}
-    	fi	
+    		udhcpc -b -i $WAN_IF -h $DHCPNAME -r $($CONFIG get wan_dhcp_ipaddr) -N $($CONFIG get wan_dhcp_oldip) ${u_wan_domain:+-d $u_wan_domain} &
+	else
+    		udhcpc -b -i $WAN_IF -h $DHCPNAME -r $($CONFIG get wan_dhcp_ipaddr) -N $($CONFIG get wan_dhcp_oldip) ${u_wan_domain:+-d $u_wan_domain}
+	fi	
 
 }
 
@@ -329,7 +332,7 @@ start_stage0() # $1: boot/start, $2: manually
 	# If not wait, the `udhcpc` CAN'T obtain IP address in its selecting time.
 	[ "$changing_mode" = "1" ] && sleep 5
 	setup_wan_interface $2
-
+	
 	/etc/init.d/upnp $1 &                # upnp daemon
 	/etc/init.d/ddns $1 &                # DDNS daemon
 	restart_ipv6 $1 &
@@ -341,6 +344,7 @@ start() # $1: manually
 	start_stage0 start $1
 	/etc/init.d/ntpclient start
 	/etc/init.d/cron restart
+	/etc/init.d/dnsmasq stop
 	/etc/init.d/dnsmasq start
 }
 
@@ -481,4 +485,3 @@ restart_from_detwan()
 
          sleep 8                       #wait for setting wan ip over
 }
-

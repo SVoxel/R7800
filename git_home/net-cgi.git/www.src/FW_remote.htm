@@ -134,8 +134,14 @@ $bluebar
 <script>
 if(ipv6_lan_ip != "")
 {
+		var index = ipv6_lan_ip.indexOf("/64");
+		var real_ipv6_ip = ipv6_lan_ip;
+		if(index !== -1)
+		{
+			real_ipv6_ip = ipv6_lan_ip.substring(0, index);
+		}
                 document.write("<TR><TD nowrap></TD><TD nowrap>");
-		document.write("https://["+ipv6_lan_ip+"]:443");
+		document.write("https://["+real_ipv6_ip+"]:443");
 		document.write("</TD><TR>");
 }
 </script>

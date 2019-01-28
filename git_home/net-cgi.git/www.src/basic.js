@@ -467,9 +467,9 @@ function click_action(id)
 		{
 			basic_menu_color_change('funjsq');
 			if(funjsq_no_need_login != "1")
-				goto_formframe("funjsq_login.htm");
+				goto_formframe("funjsq.htm");
 			else
-				goto_formframe("funjsq_select.htm");
+				goto_formframe("funjsq.htm");
 		}
                 else if( id == "vpn_client" && top.vpn_client_flag == "1")
 		{

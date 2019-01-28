@@ -68,6 +68,7 @@ var support_netgear_ddns=parent.support_netgear_ddns;
 var wan_status = "<% detwan_valid() %>";
 var register_result="<% cat_file("/tmp/ntgr-register.status") %>";
 <% echo_set("","/tmp/ntgr-register.status") %>
+var current_reg_agree = "<% cfg_get("ddns_reg_agree")%>";
 
 function ajaxCheckHost(host)
 {
@@ -333,7 +334,7 @@ function clear_all_status()
 function check_register_available()
 {
 	var cf = document.forms[0];
-	if(valid_host == 1 && valid_email == 1 && valid_passwd == 1 && master =="admin" )
+	if(valid_host == 1 && valid_email == 1 && valid_passwd == 1 && master =="admin" && cf.ddns_reg_agree.checked == true)
 	{
 		cf.Register.className="common_bt";
 		cf.Register.disabled = false;
@@ -516,6 +517,11 @@ function loadvalue()
 		else
 			cf.account[1].checked = true;
 	}
+	
+	if(current_reg_agree == "1")
+		cf.ddns_reg_agree.checked = true;
+	else
+		cf.ddns_reg_agree.checked = false;
 
 	if( register_result == "10" && n_have_account == "0")
 	{
@@ -598,6 +604,11 @@ function click_register(cf, isRegister)
 		document.getElementById("rg_err_1").style.display="";
 		return false;
 	}
+	
+	if(cf.ddns_reg_agree.checked == true)
+		cf.ddns_reg_agree.value = "1";
+	else
+		cf.ddns_reg_agree.value = "0";
 
 	cf.submit();
 	return true;
@@ -762,7 +773,7 @@ $bluebar
 <TR>
         <TD nowrap>$ddns_hostname</TD>
         <TD nowrap>
-        <input type="text" name="sysDNSHost_Netgear" id="sys_dnshost" size="16" maxlength="128" onKeyPress="return getkey('hostname',event)" onKeyup="return keyup_check_host(this, event);" onchange="check_value('host', this);" >.mynetgear.com  <img id="right_png" style="display:none" src=/image/check.png width=25 height=25 /> <img  id="x_png" style="display:none" src=/image/x.png width=25 height=25  />
+        <input type="text" name="sysDNSHost_Netgear" id="sys_dnshost_1" size="16" maxlength="128" onKeyPress="return getkey('hostname',event)" onKeyup="return keyup_check_host(this, event);" onchange="check_value('host', this);" >.mynetgear.com  <img id="right_png" style="display:none" src=/image/check.png width=25 height=25 /> <img  id="x_png" style="display:none" src=/image/x.png width=25 height=25  />
         </TD>
 </TR>
 <tr id="host_error" style="display: none; color:red">
@@ -782,7 +793,7 @@ $bluebar
 <TR>
         <TD nowrap>$ddns_ntg_password</TD>
         <TD nowrap>
-        <input type="text" name="sysDNSPassword_Netgear" id="sys_dnspassword" size="32" maxlength="32" value="" onKeyPress="return getkey('ssid',event)" onKeyUp="return check_value('passwd', this);">
+        <input type="text" name="sysDNSPassword_Netgear" id="sys_dnspassword_1" size="32" maxlength="32" value="" onKeyPress="return getkey('ssid',event)" onKeyUp="return check_value('passwd', this);">
         </TD>
 </TR>
 <tr id="passwd_error" style="display: none; color:red">
@@ -816,6 +827,13 @@ $bluebar
 </tbody>
 <tbody id="netgear_ddns_no">
 <tr class="blue_a">
+	<td nowrap colspan=2>
+	<input type="checkbox" name="ddns_reg_agree" id="ddns_reg_agree" onclick="check_register_available()"/>
+	<label for="ddns_reg_agree">$ddns_ntg_agree_no_ip<a class='linktype' href='https://www.noip.com/legal/tos' target='_blank'>$ddns_ntg_agree_2</a> $and <a class='linktype' href='https://www.noip.com/legal/privacy' target='_blank'>$tnc_policy</a></label>
+	</td>
+</tr>
+
+<tr class="blue_a">
         <td nowrap colspan=2>
         <script>
 		if( master == "admin" )
@@ -823,7 +841,7 @@ $bluebar
 		else
 			document.write('<input class="common1_bt" type="button" name="Register" id="NRegister" value="$ddns_register" disabled>');
 	</script>
-	<div>$ddns_ntg_agree_1 <a class='linktype' href='http://kb.netgear.com/app/answers/detail/a_id/23757' target='_blank'>$ddns_ntg_agree_2</a> $ddns_ntg_agree_3</div>
+	<div style="display:none">$ddns_ntg_agree_1 <a class='linktype' href='http://kb.netgear.com/app/answers/detail/a_id/23757' target='_blank'>$ddns_ntg_agree_2</a> $ddns_ntg_agree_3</div>
         </td>
 </tr>
 </tbody>

@@ -5,6 +5,7 @@
 <form method="post" action="/upgrade.cgi" target=formframe>
 <input type="hidden" name="submit_flag" value="upload_firmware" />
 <input type="hidden" name="upgrade_yes_no" value="">
+<input type="hidden" name="downgrade_flag" value="0">
 
 <div><img src=/liteblue.gif width=100%% height=12></div>
 
@@ -107,6 +108,7 @@ function loadvalue()
 			return_to_upgrade_page();
 			return false;
 		}
+		document.forms[0].downgrade_flag.value = "1";
 	}
 }
 </script>

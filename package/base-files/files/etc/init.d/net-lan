@@ -1,11 +1,14 @@
 #!/bin/sh /etc/rc.common
 #START=20
 
+DHCPNAME="/tmp/dhcp_name.conf"
+
 setup_hostname()
 {
 	local hostname="$($CONFIG get netbiosname)"
 	[ -z "$hostname" ] && hostname="$($CONFIG get Device_name)"
 	echo "$hostname" > /proc/sys/kernel/hostname
+	echo "$hostname" > $DHCPNAME
 }
 
 print_dhcpd_conf()
@@ -103,6 +106,7 @@ start_stage0() # $1: boot/start
 	# Set Hairpin mode on br0:ethlan
 	brctl hairpin $BR_IF $LAN_IF on
 
+	[ "$1" = "boot" ] && /data/funjsq/bin/funjsq.sh init & 
 	start_dhcpd   
 	check_wlanboot
 

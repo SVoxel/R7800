@@ -12,13 +12,17 @@ WEB_PATH:=www
 
 include $(INCLUDE_DIR)/package.mk
 
-PKG_GIT_TREEISH:=net-cgi-router-dni009
+PKG_GIT_TREEISH:=net-cgi-router-dni013
 
 define Package/net-cgi
   SECTION:=utils
   CATEGORY:=Base system
   DEFAULT:=y
   TITLE:=The mini_httpd CGI interface
+endef
+
+define Package/net-cgi/config
+  	source "$(SOURCE)/Config.in"
 endef
 
 define Build/Prepare

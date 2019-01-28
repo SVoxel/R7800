@@ -3,7 +3,7 @@ include $(TOPDIR)/rules.mk
 PKG_TARGETS:=ipkg-prebuilt
 PKG_NAME:=customer-keys
 PKG_RELEASE:=1
-PKG_VERSION:=1-netgear-r7800
+PKG_VERSION:=1-qualcomm-ap148
 
 include $(INCLUDE_DIR)/package.mk
 

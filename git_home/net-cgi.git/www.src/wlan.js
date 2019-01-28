@@ -1943,6 +1943,10 @@ function handle_samrt_connect() {
 	if(!cf.enable_smart_connect.checked) {
 		cf.hid_enable_smart_connect.value = "0";
 		toggle_an_edit();
+		if(cf.ssid.value.length > "29")
+			cf.ssid_an.value = cf.ssid.value.substr(0,29)+"-5G";
+		else
+			cf.ssid_an.value = cf.ssid.value+"-5G";
 		return;
 	}
 
@@ -2039,14 +2043,16 @@ function sync_user_input(origin) {
 function toggle_an_edit() {
 	var cf = document.forms[0];
 	var flag = !!cf.enable_smart_connect.checked;
+	var passphrase_ans= document.getElementsByName("passphrase_an");
 	wl_sectype_change();
 	cf.ssid_an.disabled = flag;
 	cf.ssid_bc_an.disabled = flag;
 	for(var i=0; i<cf.security_type_an.length; i++) {
 		cf.security_type_an[i].disabled = flag;
 	}
-	if(!!cf.passphrase_an)
-		cf.passphrase_an.disabled = flag;
+
+	for(var i=0; i<passphrase_ans.length; i++)
+		passphrase_ans[i].disabled = flag;
 
 	var radius_ids = ["wpae_mode", "radius_ipaddress1", "radius_ipaddress2", "radius_ipaddress3", "radius_ipaddress4", "radius_port", "radius_secret"];
 	for(var i=0; i<radius_ids.length; i++) {

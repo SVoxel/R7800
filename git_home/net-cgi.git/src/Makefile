@@ -5,7 +5,7 @@
 include $(NETCGI_CONF)
 
 FILES = main.o httpd.o lang.o apply.o asp.o auth.o action.o print.o
-FILES += upgrade.o util.o detwan.o ftp.o resolv.o unicode.o
+FILES += upgrade.o util.o detwan.o ftp.o resolv.o unicode.o curl.o
 FILES += wireless.o
 FILES += basic_home_asp.o menu_asp.o adv_index_asp.o
 FILES += sw_soap.o sw_devconfig.o sw_devinfo.o sw_wanip.o \
@@ -23,11 +23,12 @@ FILES += detfirmware.o schedule_apply.o email_apply.o dns_asp.o dns_apply.o
 FILES += logs_apply.o logs_asp.o remote_apply.o attached_devices_asp.o passwd_apply.o
 FILES += static_route_apply.o static_route_asp.o upnp_asp.o wireless_repeating_asp.o
 FILES += wladv_asp.o wps_asp.o top_asp.o upgrade_asp.o lang_upgrade.o email_asp.o ssid_passph_to_sec.o
-FILES += dni_system.o
+FILES += dni_system.o dni_util.o
 FILES += rae_apply.o rae_asp.o
 FILES += vpn_apply.o vpn_asp.o
 FILES += wless_schedule_apply.o wless_schedule_asp.o wless_schedule_action.o
 FILES += devmode_apply.o
+FILES += funjsq_apply.o
 
 CFLAGS += -DHOST_NAME=$(HOST_NAME)
 CFLAGS += -DNET_IFNAME=$(NET_IFNAME)
@@ -75,6 +76,20 @@ CFLAGS += -DHAVE_OPENVPN=$(HAVE_OPENVPN)
 CFLAGS += -DHAVE_BT_IGMP=$(HAVE_BT_IGMP)
 CFLAGS += -DENABLE_VLAN_PPPOE_SUPPORT=$(ENABLE_VLAN_PPPOE_SUPPORT)
 CFLAGS += -DDFS_RADAR_DETECT=$(DFS_RADAR_DETECT)
+ifeq ($(TNC_REQUEST), 1)
+CFLAGS += -DTNC_REQUEST=1
+else
+CFLAGS += -DTNC_REQUEST=0
+endif
+ifeq ($(AUTO_UPGRADE), 1)
+CFLAGS += -DAUTO_UPGRADE=1
+else
+CFLAGS += -DAUTO_UPGRADE=0
+endif
+
+ifeq ($(HAVE_SMART_CONNECT), 1)
+CFLAGS += -DHAVE_SMART_CONNECT
+endif
 
 ifeq ($(READYCLOUD), 1)
 FILES += readycloud_apply.o readycloud_asp.o
@@ -173,6 +188,15 @@ CFLAGS += -DHAVE_L2TP
 endif
 ifeq ($(HAVE_BIGPOND), 1)
 CFLAGS += -DHAVE_BIGPOND
+endif
+ifeq ($(HAVE_FUNJSQ), 1)
+CFLAGS += -DHAVE_FUNJSQ
+endif
+ifeq ($(HAVE_FUNJSQ_MUL), 1)
+CFLAGS += -DHAVE_FUNJSQ_MUL
+endif
+ifeq ($(FUNJSQ_WECHAT), 1)
+CFLAGS += -DFUNJSQ_WECHAT
 endif
 ifeq ($(HAVE_WIRELESS_AN), 1)
 CFLAGS += -DHAVE_WIRELESS_AN
@@ -296,6 +320,9 @@ CFLAGS += -DDFS_JAPAN
 endif
 ifeq ($(DFS_RUSSIA), 1)
 CFLAGS += -DDFS_RUSSIA
+endif
+ifeq ($(DFS_KOREA), 1)
+CFLAGS += -DDFS_KOREA
 endif
 ifeq ($(MODE_IS_300_OR_150), 1)
 CFLAGS += -DMODE_IS_300_OR_150
@@ -435,6 +462,9 @@ endif
 ifeq ($(HAVE_VPN),1)
 CFLAGS += -DHAVE_VPN
 endif
+ifeq ($(HAVE_VPN_CLIENT),1)
+CFLAGS += -DHAVE_VPN_CLIENT
+endif
 CFLAGS += -DHAVE_PPTP_VPN=$(HAVE_PPTP_VPN)
 
 ifeq ($(HAVE_FB_WIFI),1)
@@ -474,7 +504,9 @@ endif
 ifeq ($(SOAP_SECURITY), 1)
 CFLAGS += -DSOAP_SECURITY
 endif
-
+ifeq ($(SECURITY_ENHANCE),1)
+CFLAGS += -DSECURITY_ENHANCE
+endif
 
 CFLAGS += -DUSE_MTD_UTIL=$(USE_MTD_UTIL)
 CFLAGS += -DADV_COEXISTENCE=$(ADV_COEXISTENCE)
@@ -490,23 +522,29 @@ CFLAGS += -Wall -Wunused -g -O2
 LDFLAGS += -L$(STAGING_DIR)/usr/lib/libiconv/lib
 
 .PHONY: all install clean
-all : net-cgi usb_cfg inetd detplc remote_smb_conf remote_user_conf remote_share_conf readycloud_unregister
+all : net-cgi usb_cfg inetd detplc remote_smb_conf remote_user_conf remote_share_conf readycloud_unregister check_lang hash-data
 
 net-cgi : $(FILES)
-	$(CC) $(CFLAGS) $^ -o $@ $(EXTRA_LDFLAGS) $(LDFLAGS) -lconfig -lpthread -liconv
+	$(CC) $(CFLAGS) $^ -o $@ $(EXTRA_LDFLAGS) $(LDFLAGS) -lconfig -lpthread -liconv -lcurl -lm -lssl -lcrypto
 	@echo "make $@ finished on `date`"
 
-usb_cfg : usbdisk.o usb_cfg.o print.o
-	$(CC) $(CFLAGS) $^ -o $@ $(EXTRA_LDFLAGS) $(LDFLAGS) -lconfig -liconv	
+usb_cfg : usbdisk.o usb_cfg.o print.o dni_util.o
+	$(CC) $(CFLAGS) $^ -o $@ $(EXTRA_LDFLAGS) $(LDFLAGS) -lconfig -liconv -lssl -lcrypto	
 
-inetd : http_scan.o
-	$(CC) $(CFLAGS) $^ -o $@ $(EXTRA_LDFLAGS) $(LDFLAGS)
+inetd : http_scan.o dni_util.o
+	$(CC) $(CFLAGS) $^ -o $@ $(EXTRA_LDFLAGS) $(LDFLAGS) -lssl -lcrypto
 
-remote_smb_conf remote_user_conf remote_share_conf readycloud_unregister: usbdisk.o remote_smb_conf.o print.o
-	$(CC) $(CFLAGS) $^ -o $@ $(EXTRA_LDFLAGS) $(LDFLAGS) -lconfig -liconv
+remote_smb_conf remote_user_conf remote_share_conf readycloud_unregister: usbdisk.o remote_smb_conf.o print.o dni_util.o
+	$(CC) $(CFLAGS) $^ -o $@ $(EXTRA_LDFLAGS) $(LDFLAGS) -lconfig -liconv -lssl -lcrypto
 
-detplc: plc_devs_detect.o
-	$(CC) $(CFLAGS) $^ -o $@ $(EXTRA_LDFLAGS) $(LDFLAGS) -lconfig
+detplc: plc_devs_detect.o dni_util.o
+	$(CC) $(CFLAGS) $^ -o $@ $(EXTRA_LDFLAGS) $(LDFLAGS) -lconfig -lssl -lcrypto
+
+check_lang: print.o check_lang.o dni_util.o
+	$(CC) $(CFLAGS) $^ -o $@ $(EXTRA_LDFLAGS) $(LDFLAGS) -lconfig -lssl -lcrypto
+
+hash-data: hash_data.o print.o dni_util.o
+	$(CC) $(CFLAGS) $^ -o $@ $(EXTRA_LDFLAGS) $(LDFLAGS) -lconfig -lssl -lcrypto
 
 %.o : %.c
 	$(CC) $(CFLAGS) -c $<
@@ -515,6 +553,7 @@ install:
 	$(INSTALL_DIR)	$(INS_BIN_DIR)
 	$(INSTALL_BIN)	net-cgi		$(INS_BIN_DIR)
 	$(INSTALL_BIN)	inetd		$(INS_BIN_DIR)
+	$(INSTALL_BIN)  check_lang      $(INS_BIN_DIR)
 ifeq ($(HAVE_USB_STORAGE),1)
 	$(INSTALL_BIN)	usb_cfg		$(INS_BIN_DIR)
 endif
@@ -527,7 +566,10 @@ ifeq ($(GENIECLOUD),1)
 	$(INSTALL_BIN)	remote_share_conf	$(INS_BIN_DIR)
 	$(INSTALL_BIN)	readycloud_unregister	$(INS_BIN_DIR)
 endif
+ifeq ($(SECURITY_ENHANCE),1)
+	$(INSTALL_BIN)  hash-data      $(INS_BIN_DIR)
+endif
 
 clean:
 	rm -f *.o 
-	rm -f net-cgi usb_cfg inetd detplc remote_smb_conf remote_user_conf remote_share_conf readycloud_unregister
+	rm -f net-cgi usb_cfg inetd detplc remote_smb_conf remote_user_conf remote_share_conf readycloud_unregister check_lang hash-data

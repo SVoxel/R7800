@@ -1,0 +1,77 @@
+<% http_header("style/form.css", "/jquery-1.7.2.min.js", "style/form2.css","/funcs.js", "/funjsq.js" ) %>
+<body onLoad="loadvalue(); please_wait(false);" style="background:rgb(229,229,229)">
+<script language="javascript" type="text/javascript">
+<% refresh_timestamp("open_plugin_new","close_plugin_new","reset_plugin","reset_open_plugin","need_login") %>
+<% update_pay_result() %>
+<% get_funjsq_device() %>
+var ts = "<% cfg_get("open_plugin_new") %>";
+function loadvalue()
+{
+}
+</script>
+<form id="selectForm" method="POST" action="/admin.cgi?/funjsq_select.htm" target=formframe>
+<input type=hidden name=submit_flag value="open_plugin_new" />
+<input type=hidden name="selMac" id="selMac" value="" />
+<input type=hidden name="selType" id="selType" value="" />
+<input type=hidden name="selArea" id="selArea" value="" />
+<script>
+var mobile="<% cfg_get("funjsq_mobile") %>";
+var expire="<% cfg_get("funjsq_expire") %>";
+var funjsq_ip=("<% cfg_get("funjsq_ip") %>" == "x.x.x.x") ? "未绑定加速设备IP" : ("<% cfg_get("funjsq_ip") %>");
+var funjsq_mac=("<% cfg_get("funjsq_mac") %>" == "x.x.x.x.x.x") ? "未绑定加速设备MAC" : ("<% cfg_get("funjsq_mac") %>");
+var accType = "<% cfg_get("funjsq_accType") %>";
+var accArea = "<% cfg_get("funjsq_accArea") %>";
+var funjsq_status = "<% cfg_get("funjsq_status") %>";
+var funjsq_conntime = "<% cfg_get("funjsq_conntime") %>";
+var QQSupport="<% cfg_get("funjsq_QQSupport") %>";
+var funjsq_TXbyte = "<% cfg_get("funjsq_TXbyte") %>";
+var funjsq_RXbyte = "<% cfg_get("funjsq_RXbyte") %>";
+var funjsq_accNum = "<% cfg_get("funjsq_accNum") %>";
+var funjsq_acc_max = "<% cfg_get("funjsq_acc_max") %>";
+var funjsq_acc_tips = "<% cfg_get("funjsq_acc_tips") %>";
+var funjsq_user_status = "<% cfg_get("funjsq_user_status") %>";
+</script>
+<input type="hidden" name="hidden_accType" />
+<input type="hidden" name="hidden_accArea" />
+<div class="funjsq_new">
+<div class="funjsq_title_new">
+	<div class="icon_account"></div>
+	<div class="funjsq_basic_info">
+		<h1>基本信息</h1>
+		<script>
+                        document.write('<div id="funjsq_account_new">帆游账号：'+mobile+'</div><div class="funjsq_sel_new">过期时间: '+expire+'<div class="ui-corner-all" id="pay_bt_new"><a href="funjsq_pay.htm" style="color:rgb(242,187,111);">续费</a></div></div><div class="funjsq_sel_new">帐号可同时加速：<span style="color:red;">'+funjsq_accNum+'</span> 个设备</div>');
+                </script>
+	</div>
+	<div class="funjsq_alert">
+		<div style="top:17px;margin-left:-3px;">PS:</div><div style="top:10px;margin-left:16px;">1.当出现未知错误时，请点击<input class="funjsq_bt_new" type="button" name="Apply" id="resetBt2" value="按钮重置">加速器。<br>2.被加速主机有线、无线连接的切换需要重新选择加速设备。<br>3.被加速主机的IP必须为自动获取。<br>4.如果您在使用过程中遇到任何问题，请关注公众号：帆游加速器，获取人工客服帮助。</div>
+		<div style="bottom:0px;position:absolute;right:0px;">（已检测到加速设备）</div>
+	</div>
+</div>
+<div class="funjsq_type_new">
+	<div class="funjsq_no_device">
+		<div class="icon_unknow2"></div>
+		<div class="title">未识别到可加速设备，您的设备可能尚未连接！</div>
+	</div>
+	<table cellspacing="3" cellpadding="0" hidden="">
+		<tr id="funjsq_update">
+			<td></td>
+			<td class="icon_update_shop" id="funUpdate"></td>
+			<td>更新包下载加速</td>
+			<td class="icon_update_shop funjsq_enable"></td>
+			<td style="color:green;">加速成功</td>
+			<td style="width:10%;"></td>
+			<td class="icon_update_shop" id="funShop"></td>
+			<td>商店及游戏载入加速</td>
+			<td class="icon_update_shop funjsq_disable"></td>
+			<td style="color:green;">加速成功</td>
+		</tr>
+	</table>
+</div>
+
+</div>
+<div class="WeChat" onClick="window.open('https://static.meiqia.com/dist/standalone.html?=t&eid=48087');">
+        <img class="funjsq_new_image" style="margin:-420px 0px 0px 630px;" src="/image/WeChat.png" />
+</div>
+</form>
+</body>
+</html>

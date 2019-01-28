@@ -4,12 +4,30 @@ boot() {
        wlan updateconf
        wlan down
        wlan up
+       11k_scan -f &
 }
 
 start()    # don't use this command unless you know what it means
 {
         wlan updateconf
-        wlan up
+        if [ "$(/bin/config get factory_mode)" = "1" -a "$(/bin/config get cal)" = "0" ]; then
+            wlan down
+            /bin/mv /lib/firmware/QCA9984/hw.1/otp.bin lib/firmware/QCA9984/hw.1/otp123.bin
+            /bin/sync
+            /etc/init.d/qcmbr start
+            /bin/sleep 2 # ensure pcie process is running
+            /sbin/led_all amberon
+        else
+            if [ "$(/bin/config get factory_mode)" = "1" ]; then
+                uci set wireless.wlg.ssid=R7800-TP
+                uci set wireless.wla.ssid=R7800-TP
+                uci set wireless.wlg.disablecoext=1
+                uci set wireless.wifi1.channel=6
+                uci commit
+            fi
+            wlan up
+        fi
+        11k_scan -f &
 }
 
 stop()    # don't use this command unless you know what it means

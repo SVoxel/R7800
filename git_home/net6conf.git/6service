@@ -42,6 +42,24 @@ radvd_write_config() {
 	local OLD_PRELEN
 	local OLD_PD_INFO
 
+	wan_type=`$CONFIG get wan_proto`
+	if [ "x$wan_type" = "xpppoe" ]; then
+		wan_mtu=`$CONFIG get wan_pppoe_mtu`
+	elif [ "x$wan_type" = "xl2tp" ]; then 
+		wan_mtu=`$CONFIG get wan_l2tp_mtu`
+	elif [ "x$wan_type" = "xpptp" ]; then
+		wan_mtu=`$CONFIG get wan_pptp_mtu`
+	elif [ "x$wan_type" = "xmulpppoe1" ]; then
+		wan_mtu=`$CONFIG get wan_mulpppoe_mtu`
+	else
+		if [ "x$w6_type" = "xpppoe" ];then
+			dhcp_mtu=`$CONFIG get wan_dhcp_mtu`
+			wan_mtu=$(($dhcp_mtu-8))
+		else
+			wan_mtu=`$CONFIG get wan_dhcp_mtu`
+		fi
+	fi
+
 	printf 'interface %s {\n' "$bridge"
 	printf '\tAdvSendAdvert on;\n'
 	printf '\tAdvCurHopLimit 64;\n'
@@ -52,6 +70,7 @@ radvd_write_config() {
 	printf '\tAdvRetransTimer 0;\n'
 	printf '\tAdvDefaultPreference low;\n'
 	printf '\tAdvHomeAgentFlag off;\n'
+	printf '\tAdvLinkMTU %s;\n' "$wan_mtu"
 	if [ "$DHCPS_ENABLE" = "0" ]; then
 		printf '\tAdvOtherConfigFlag on;\n'
 		printf '\tAdvManagedFlag off;\n'

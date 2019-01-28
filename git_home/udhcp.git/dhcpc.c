@@ -263,6 +263,65 @@ static inline int eth_up(void)
 	return link_up;
 }
 
+int read_config_file(char *file)
+{
+	FILE *in;
+	char buffer[64];
+	int i = 0;
+
+	if (!(in = fopen(file, "r"))) {
+		LOG(LOG_ERR, "unable to open config file: %s", file);
+		return 1;
+	}
+
+	fgets(buffer, sizeof(buffer), in);
+	for(i = 0;i<64;i++){
+		if(buffer[i] == '\n'){
+			buffer[i] = '\0';
+			break;
+		}
+	}
+	if (strcmp(buffer, "") == 0) {
+		LOG(LOG_ERR, "hostname config file is empty");
+		return 1;
+	}
+	strcpy(hostname_buff,buffer);
+	fclose(in);
+	return 0;
+}
+
+int hostname_error_handle(char *file)
+{
+	FILE *fq, *fp;
+	char default_name[32] = {0};
+	int i = 0;
+	
+	/* get default hostname from /tmp/board_model_id */
+	if (!(fq = fopen("/tmp/board_model_id", "r"))) {
+		LOG(LOG_ERR, "unable to open /tmp/board_model_id file");
+		return 1;
+	}
+	fgets(default_name, sizeof(default_name), fq);
+	for(i = 0; i < sizeof(default_name); i++){
+		if(default_name[i] == '\n'){
+			default_name[i] = '\0';
+			break;
+		}
+	}
+	strcpy(hostname_buff, default_name);
+	fclose(fq);
+	
+	/* rewrite hostname config file */
+	fp = fopen(file, "w");
+	if (fp == NULL) {
+		LOG(LOG_ERR, "unable to creat hostname config file: %s", file);
+		return 1;
+	}
+	fprintf(fp, "%s", default_name);
+	fclose(fp);
+	return 0;
+}
+
 #define BR_MODE_ENABLE	"/tmp/enable_br_mode"
 
 static inline int br_mode_enable(void)
@@ -377,12 +436,16 @@ int main(int argc, char *argv[])
 			break;
 		case 'h':
 		case 'H':
-			len = strlen(optarg) > 255 ? 255 : strlen(optarg);
+			if (read_config_file(optarg)) {
+				LOG(LOG_ERR, "get host name from file: %s error!, run into error handle", optarg);
+				hostname_error_handle(optarg);
+			}
+			len = strlen(hostname_buff) > 255 ? 255 : strlen(hostname_buff);
 			if (client_config.hostname) free(client_config.hostname);
 			client_config.hostname = xmalloc(len + 2);
 			client_config.hostname[OPT_CODE] = DHCP_HOST_NAME;
 			client_config.hostname[OPT_LEN] = len;
-			strncpy(client_config.hostname + 2, optarg, len);
+			strncpy(client_config.hostname + 2, hostname_buff, len);
 			break;
 		case 'd':
 			len = strlen(optarg) > 255 ? 255 : strlen(optarg);

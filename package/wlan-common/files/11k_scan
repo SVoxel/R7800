@@ -1,0 +1,37 @@
+#!/bin/sh
+
+[ "x$(config get i_opmode)" = "xbrmode" ] && return 0
+
+LOCK_11K=/tmp/.11k_scan_lock
+
+[ -f ${LOCK_11K} ] && return 0
+touch ${LOCK_11K}
+
+. /etc/ath/wifi.conf
+
+local force=0
+[ "x$1" = "x-f" ] && force=1
+local rx_last_2g=0
+local rx_last_5g=0
+local rx_new_2g=0
+local rx_new_5g=0
+local diff_2g=0
+local diff_5g=0
+
+# record 2.4G and 5G rx packets
+rx_last_2g=`athstats -i ${g_device} | grep ast_rx_packets | cut -f 2`
+rx_last_5g=`athstats -i ${a_device} | grep ast_rx_packets | cut -f 2`
+
+# record 2.4G and 5G rx packets again after 2 min
+sleep 120
+rx_new_2g=`athstats -i ${g_device} | grep ast_rx_packets | cut -f 2`
+rx_new_5g=`athstats -i ${a_device} | grep ast_rx_packets | cut -f 2`
+
+# if received packets less than 200, then trigger scan
+diff_2g=`expr $rx_new_2g - $rx_last_2g`
+diff_5g=`expr $rx_new_5g - $rx_last_5g`
+if [ "$diff_2g" -lt "200" -a "$diff_5g" -lt "200" ] || [ "x$force" = "x1" ] ; then
+	wlan apscan
+fi
+
+rm -f ${LOCK_11K}

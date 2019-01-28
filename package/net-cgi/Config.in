@@ -1,0 +1,3 @@
+config SECURITY_ENHANCE
+	bool "Enable Security Enhancement support"
+	default y

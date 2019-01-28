@@ -2,6 +2,70 @@
 # Copyright (C) 2006 OpenWrt.org
 
 START=95
+
+security_enhancement(){
+	local check_security_flag="0"
+	local passwd_backup=$(/bin/config get http_passwd_backup)
+	local answer1_backup=$(/bin/config get PWD_answer1_backup)
+	local answer2_backup=$(/bin/config get PWD_answer2_backup)
+
+	if [ "x$(/bin/config get blank_state)" = "x1" ]; then
+		if [ "x$(/bin/config get origin_blank_state_flag)" = "x1" ]; then
+			if [ "x$(/bin/config get dns_hijack)" = "x1" -a "x$(/bin/config get hijack_process)" = "x1" -a "x$(/bin/config get hijack_config_status)" = "x0" ]; then
+					/bin/config set http_passwd="$passwd_backup"
+					/bin/config set http_passwd_digest="$passwd_backup"
+					/bin/config set PWD_answer1="$answer1_backup"
+					/bin/config set PWD_answer2="$answer2_backup"
+
+					/bin/config unset http_passwd_backup
+					/bin/config unset PWD_answer1_backup
+					/bin/config unset PWD_answer2_backup
+
+					/bin/config set blank_state="0"
+					/bin/config set origin_blank_state_flag="0" 
+					/bin/config set flag_use_passwd_digest="1" 
+					/bin/config set dns_hijack="0" 
+					/bin/config set hijack_process="3" 
+					/bin/config set hijack_config_status="4"
+
+					sleep 2
+					killall -SIGUSR2 dnsmasq
+					sleep 1
+					killall -SIGUSR2 dnsmasq
+
+			else
+				if [ "x$(/bin/config get flag_use_passwd_digest)" != "x1" ]; then
+					check_security_flag="1"
+				fi
+			fi
+		else
+			/bin/config set blank_state="0"
+			check_security_flag="1"
+		fi
+	else
+		if [ "x$(/bin/config get flag_use_passwd_digest)" != "x1" ]; then
+			check_security_flag="1"
+		fi
+	fi
+
+	local http_passwd=$(/bin/config get http_passwd)
+	local answer1=$(/bin/config get PWD_answer1)
+	local answer2=$(/bin/config get PWD_answer2)
+	if [ "x$check_security_flag" = "x1" ]; then
+		if [ "x$(/usr/sbin/hash-data -c "$http_passwd")" = "x1" ]; then
+			/bin/config set weak_password_check="1"
+		fi
+	/bin/config set	http_passwd="$(/usr/sbin/hash-data -e "$http_passwd")"
+	/bin/config set http_passwd_digest="$(/usr/sbin/hash-data -e "$http_passwd")"
+	/bin/config set samba_passwd="$(/usr/sbin/hash-data -s "$http_passwd")"
+	/bin/config set	PWD_answer1="$(/usr/sbin/hash-data -e "$answer1")"
+	/bin/config set	PWD_answer2="$(/usr/sbin/hash-data -e "$answer1")"
+	/bin/config set flag_use_passwd_digest="1"
+	fi
+
+	/bin/config commit
+}
+
 boot() {
 	# process user commands
 	[ -f /etc/rc.local ] && {
@@ -19,6 +83,9 @@ boot() {
 			ledcontrol -n usb1 -c amber -s on
 		fi
 	fi
+
+	security_enhancement
+
 	# set leds to normal state
 	if [ "x$(/bin/config get factory_mode)" = "x1" ]; then
 		/sbin/power_led.sh &

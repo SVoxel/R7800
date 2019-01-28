@@ -654,6 +654,77 @@ cursor:pointer;
                 -webkit-transform: rotate(45deg);
   }
 }
+/*funjsq wechat GUI*/
+.wechat_left {
+  width: 920px;
+  height: 650px;
+  background: rgba(0,0,0,0) url("../image/funjsq3.jpg") no-repeat scroll;
+  position: absolute;
+}
+.wechat_right {
+  background-color: black;
+  width: 490px;
+  height: 650px ;
+  border-radius: 0px 8px 8px 0px;
+  margin-left: 920px;
+}
+.wechat_video {
+  margin-left: 10px;
+}
+.funjsq_wechat {
+  margin-top: 130px;
+  width: 920px;
+  height: 400px;
+  background: rgba(0,0,0,0) url("../image/funjsq1.png") no-repeat scroll;
+}
+.wechat_content {
+  width:  270px;
+  height: 400px;
+  float: right;
+}
+.wechat_content h1{
+  font-size: 20px;
+  color: rgb(107,76,144);
+  margin-left: 20px;
+}
+.wechat_code {
+  margin: 70px 20px 0px 0px;
+}
+.wechat_code img{
+  width: 180px;
+}
+.wechat_success img {
+  width: 130px;
+  margin-left: 20px;
+}
+.wechat_invalid img {
+  width: 180px;
+}
+.invalid_alert {
+  width: 180px;
+  height: 180px;
+  margin-top: -180px;
+}
+.invalid_alert div:first-child{
+  color: white;
+  font-size: 18px;
+  padding-top: 80px;
+  padding-left: 30px;
+}
+#wechat_bt{
+  background: rgb(53,150,231);
+  color: white;
+  height: 28px;
+  margin: 20px 50px;
+  width: 80px;
+  font-size: 15px;
+}
+.wechat_start_content {
+  margin:20px 0px 0px 10px;
+}
+.wechat_success_content {
+  margin:30px 0px 70px 0px;
+}
 /*funjsq new GUI*/
 .funjsq_login_new {
   margin: 40px 20px;
@@ -747,7 +818,7 @@ cursor:pointer;
 }
 .funjsq_basic_info {
   margin: -75px 75px;
-  width: 190px;
+  width: 200px;
 }
 .funjsq_alert {
   margin-left: 265px;
@@ -1028,6 +1099,9 @@ cursor:pointer;
   -moz-opacity:0.4;
   -khtml-opacity: 0.4;
 }
+.centerButtons {
+  padding: 20px;
+}
 .modalBox {
   position: absolute;
   top: 0;
@@ -1060,7 +1134,7 @@ cursor:pointer;
   display: none;
 }
 .boxButtons {
-  margin-top: 60px;
+  /*margin-top: 60px;*/
   text-align: center;
 }
 #alertImage {
@@ -1072,6 +1146,9 @@ cursor:pointer;
 #alertMsg {
   font-size: 22px;
   margin-left: 110px;
+}
+.recommendation {
+  height: 130px;
 }
 .recommendation p{
   font-size: 15px;

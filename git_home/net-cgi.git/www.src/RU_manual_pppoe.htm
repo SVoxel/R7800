@@ -48,13 +48,13 @@ function loadvalue()
 	<td colspan=2 align=center><script>document.write(RU_service_optional)</script></td>
 </tr>	
 <tr>
-	<td><script>document.write(basic_pppoe_login)</script></td><td align=right><input type="text" name="pppoe_username" onKeyPress="return getkey('ssid', event)"></td>	
+	<td><script>document.write(basic_pppoe_login)</script></td><td align=right><input type="text" name="pppoe_username" maxlength="64" onKeyPress="return getkey('ssid', event)"></td>	
 </tr>
 <tr>
-	<td><script>document.write(basic_pppoe_passwd)</script></td><td align=right><input type="text" name="pppoe_passwd" onFocus="this.select();" onKeyPress="return getkey('ssid', event)"></td>	
+	<td><script>document.write(basic_pppoe_passwd)</script></td><td align=right><input type="text" name="pppoe_passwd" maxlength="64" onFocus="this.select();" onKeyPress="return getkey('ssid', event)"></td>	
 </tr>
 <tr>
-	<td><script>document.write(forward_service_name)</script></td><td align=right><input type="text" name="pppoe_servername" onKeyPress="return getkey('ssid', event)"></td>	
+	<td><script>document.write(forward_service_name)</script></td><td align=right><input type="text" name="pppoe_servername" maxlength="50" onKeyPress="return getkey('ssid', event)"></td>	
 </tr>
 <tr><td><br></td></tr>
 

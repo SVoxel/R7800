@@ -22,7 +22,7 @@ var quest2_5="$quest2_5";
 var quest2_6="$quest2_6";
 var quest2_7="$quest2_7";
 var quest2_8="$quest2_8";
-
+var security_enhance_flag= "<% security_enhance_support() %>";
 function loadvalue()
 {
 	var answer_again="<% cfg_get("enter_answer_again") %>";
@@ -62,7 +62,12 @@ TR{ FONT-FAMILY: Arial;}
 <INPUT type=hidden name=submit_flag value="security_question">
 
 <TABLE width="100%" border=0 cellpadding=0 cellspacing=3>
-<TR><TD colSpan=2><H1>$router_password_recovery</H1></TD></TR>
+<script>
+if(security_enhance_flag)
+	document.write("<TR><TD colSpan=2><H1>$password_reset</H1></TD></TR>");
+else
+	document.write("<TR><TD colSpan=2><H1>$router_password_recovery</H1></TD></TR>");
+</script>
 <TR><TD colSpan=2></TD></TR>
 
 <TR><TD colSpan=2>$complete_security_answers</TD></TR>

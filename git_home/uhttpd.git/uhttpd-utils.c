@@ -56,6 +56,7 @@ static char *uh_index_files[] = {
 	"default.htm"
 };
 
+
 const char * sa_straddr(void *sa)
 {
 	static char str[INET6_ADDRSTRLEN];
@@ -773,8 +774,21 @@ struct auth_realm * uh_auth_add(char *path, char *user, char *pass)
 
 	return NULL;
 }
+/*
+static void __nprintf(const char *fmt, ...)
+{
+	va_list ap;
+	static FILE *filp;
 
+	if ((filp == NULL) && (filp = fopen("/dev/console", "a")) == NULL)
+		return;
 
+	va_start(ap, fmt);
+	vfprintf(filp, fmt, ap);
+	fputs("\n", filp);
+	va_end(ap);
+}
+*/
 int uh_cgi_auth_check(
 		struct client *cl, struct http_request *req, struct path_info *pi
 		) {
@@ -783,7 +797,7 @@ int uh_cgi_auth_check(
 	char *user = NULL;
 	char *pass = NULL;
 	char *remote_addr;
-	char command[128];
+	char command[128],*result;
 
 	ret = AUTH_TIMEOUT;
 	plen = strlen(pi->name);
@@ -816,18 +830,26 @@ int uh_cgi_auth_check(
 				break;
 			}
 		}
+		
+		if(pass != NULL)
+		{
+			snprintf(command,sizeof(command),"/usr/sbin/hash-data -e %s >/tmp/hash_result",pass);
+			system(command);
+			result = cat_file("/tmp/hash_result");
+		}
+
 		/* check user and pass */
 		if(!strcmp(remote_addr, "127.0.0.1"))
 			ret = AUTH_OK;
 		else if(user != NULL && pass != NULL && 
-				config_match("http_username", user) && config_match("http_passwd", pass))
+				config_match("http_username", user) && config_match("http_passwd", result))
 		{
 			if(strstr(pi->name, "/genie.cgi"))
 				ret = AUTH_OK;
 			else
 				ret=update_login(cl);
 		}
-		else if(user != NULL && pass != NULL && config_match("guest_enable", "1") && config_match("http_guestname", user) && config_match("http_guestpwd", pass))
+		else if(user != NULL && pass != NULL && config_match("guest_enable", "1") && config_match("http_guestname", user) && config_match("http_guestpwd", result))
 		{
 			if(strstr(pi->name, "/genie.cgi"))
 				ret = AUTH_OK;

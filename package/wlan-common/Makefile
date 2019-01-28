@@ -52,6 +52,7 @@ define Package/wlan-common/install
 	install -m0755  ./files/qca11k  $(1)/sbin/
 	install -m0755  ./files/guest_sched.sh  $(1)/sbin/
 	install -m0755  ./files/dni_wlan $(1)/sbin/
+	install -m0755 ./files/11k_scan $(1)/sbin/
 	$(INSTALL_DATA) ./files/non_limit_country.conf $(1)/etc/ath
 endef
 

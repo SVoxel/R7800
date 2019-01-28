@@ -230,7 +230,7 @@ function loadvalue()
 		cf.hour.value=hour;
 		cf.minute.value=time_array[1];
 		
-		cf.day.value=traffic_restart_day;
+		cf.day.value= parseInt(traffic_restart_day).toString();
 		set_gray();
 	}
 }

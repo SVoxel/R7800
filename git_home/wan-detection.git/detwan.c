@@ -1287,7 +1287,7 @@ static int checkType(uint32_t ConnType)
 	} else if ( ConnType & DHCPFound) {
 		system("/usr/bin/killall udhcpc");
 		config_set("wan_proto", "dhcp");
-		dni_system(NULL, "/sbin/udhcpc", "-b", "-i", wan_if_name, "-h", host_name, NULL);
+		dni_system(NULL, "/sbin/udhcpc", "-b", "-i", wan_if_name, "-h", "/tmp/dhcp_name.conf", NULL);
 		if(resolve_dns("www.netgear.com")){
 		//fix the bug [SQA-93][Smart wizard]Smart Wizard can not detect DHCP mode
 		//in this case, it means we can access the internet with DHCP, so we should change the status of internet
@@ -1307,7 +1307,7 @@ static int checkType(uint32_t ConnType)
 		mac_spoofing();
 		system("/usr/bin/killall udhcpc");
 		config_set("wan_proto", "dhcp");
-		dni_system(NULL, "/sbin/udhcpc", "-b", "-i", wan_if_name, "-h", host_name, NULL);
+		dni_system(NULL, "/sbin/udhcpc", "-b", "-i", wan_if_name, "-h", "/tmp/dhcp_name.conf", NULL);
 		if(resolve_dns("www.netgear.com")) {
 			config_set("wan_proto", wan_proto);
 			config_set("wan_ether_mac_assign", "1");
