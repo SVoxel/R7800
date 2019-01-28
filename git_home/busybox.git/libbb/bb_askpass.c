@@ -25,7 +25,7 @@ static void askpass_timeout(int ATTRIBUTE_UNUSED ignore)
 
 char *bb_askpass(int timeout, const char * prompt)
 {
-	static char passwd[64];
+	static char passwd[128];
 
 	char *ret;
 	int i;
