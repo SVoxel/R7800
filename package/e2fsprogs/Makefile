@@ -116,12 +116,12 @@ CONFIGURE_ARGS += \
 	--disable-testio-debug  \
 	--enable-elf-shlibs	\
 	--disable-libuuid	\
-	--disable-libblkid	\
+	--enable-libblkid	\
+	--disable-defrag	\
 	--disable-uuidd		\
 	--disable-tls		\
 	--disable-nls		\
-	--disable-rpath		\
-	--disable-fuse2fs
+	--disable-rpath
 
 define Build/Prepare
 	$(call Build/Prepare/Default)
