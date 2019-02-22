@@ -5,7 +5,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=stubby
-PKG_VERSION:=0.2.3
+PKG_VERSION:=0.2.4
 PKG_RELEASE:=1
 
 PKG_LICENSE:=BSD-3-Clause
@@ -14,7 +14,7 @@ PKG_MAINTAINER:=David Mora <iamperson347+public@gmail.com>
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://github.com/getdnsapi/$(PKG_NAME)
-PKG_MD5SUM:=084ea192a870a553540135fc655c55b7
+PKG_MD5SUM:=670a1987c1633192bb8d82e6a2eedd0a
 
 PKG_FIXUP:=autoreconf
 
