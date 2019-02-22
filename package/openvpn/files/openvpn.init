@@ -65,33 +65,19 @@ generate_server_conf_file() {
 		port=$($CONFIG get vpn_serv_port)
 		proto=$($CONFIG get vpn_serv_type)
 		if [ "$proto" = "udp" ]; then
-			cipher="AES-128-CBC"
-			complzo="comp-lzo"
-			complz4=";compress lz4-v2"
-			pushlz4=";push \"compress lz4-v2\""
-			sndbuf=393216
-			rcvbuf=393216
-		elif [ "$proto" = "tcp" ]; then
-			cipher="AES-128-CBC"
-			complzo="comp-lzo"
-			complz4=";compress lz4-v2"
-			pushlz4=";push \"compress lz4-v2\""
-			sndbuf=0
-			rcvbuf=0
-		elif [ "$proto" = "udp_lz4" ]; then
 			cipher="AES-128-GCM"
 			proto=udp
-			complzo=";comp-lzo"
 			complz4="compress lz4-v2"
 			pushlz4="push \"compress lz4-v2\""
+			fastio="fast-io"
 			sndbuf=393216
 			rcvbuf=393216
 		else
 			proto=tcp
 			cipher="AES-128-GCM"
-			complzo=";comp-lzo"
 			complz4="compress lz4-v2"
 			pushlz4="push \"compress lz4-v2\""
+			fastio=";fast-io"
 			sndbuf=0
 			rcvbuf=0
 		fi
@@ -121,10 +107,9 @@ auth sha1
 tls-server
 client-to-client
 duplicate-cn
-$complzo
 $complz4
 $pushlz4
-fast-io
+$fastio
 client-connect "$push tap"
 sndbuf $sndbuf
 rcvbuf $rcvbuf
@@ -137,33 +122,19 @@ EOF
 		lan_ipaddr=$($CONFIG get lan_ipaddr)
 		subnet=$(tun_net $lan_ipaddr $lan_netmask)
 		if [ "$proto" = "udp" ]; then
-			cipher="AES-128-CBC"
-			complzo="comp-lzo"
-			complz4=";compress lz4-v2"
-			pushlz4=";push \"compress lz4-v2\""
-			sndbuf=393216
-			rcvbuf=393216
-		elif [ "$proto" = "tcp" ]; then
-			cipher="AES-128-CBC"
-			complzo="comp-lzo"
-			complz4=";compress lz4-v2"
-			pushlz4=";push \"compress lz4-v2\""
-			sndbuf=0
-			rcvbuf=0
-		elif [ "$proto" = "udp_lz4" ]; then
 			proto=udp
 			cipher="AES-128-GCM"
-			complzo=";comp-lzo"
 			complz4="compress lz4-v2"
 			pushlz4="push \"compress lz4-v2\""
+			fastio="fast-io"
 			sndbuf=393216
 			rcvbuf=393216
 		else
 			proto=tcp
 			cipher="AES-128-GCM"
-			complzo=";comp-lzo"
 			complz4="compress lz4-v2"
 			pushlz4="push \"compress lz4-v2\""
+			fastio=";fast-io"
 			sndbuf=0
 			rcvbuf=0
 		fi
@@ -192,10 +163,9 @@ cipher $cipher
 auth sha1
 client-to-client
 duplicate-cn
-$complzo
 $complz4
 $pushlz4
-fast-io
+$fastio
 push "dhcp-option DNS $lan_ipaddr"
 client-connect "$push tun"
 sndbuf $sndbuf

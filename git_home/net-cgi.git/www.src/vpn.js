@@ -75,24 +75,14 @@ function checkvpn(cf)
 		cf.hidden_enable_vpn.value=1;
 	else
 		cf.hidden_enable_vpn.value=0;
-
 	if(cf.openvpn_protocol[0].checked == true)
 		cf.hidden_vpn_type.value="udp";
 	else if(cf.openvpn_protocol[1].checked == true)
 		cf.hidden_vpn_type.value="tcp";
-	else if(cf.openvpn_protocol[2].checked == true)
-		cf.hidden_vpn_type.value="udp_lz4";
-	else if(cf.openvpn_protocol[3].checked == true)
-		cf.hidden_vpn_type.value="tcp_lz4";
 	if(cf.openvpn_tun_protocol[0].checked == true)
                 cf.hidden_tun_vpn_type.value="udp";
         else if(cf.openvpn_tun_protocol[1].checked == true)
                 cf.hidden_tun_vpn_type.value="tcp";
-	else if(cf.openvpn_tun_protocol[2].checked == true)
-                cf.hidden_tun_vpn_type.value="udp_lz4";
-        else if(cf.openvpn_tun_protocol[3].checked == true)
-                cf.hidden_tun_vpn_type.value="tcp_lz4";
-
 	if(cf.openvpn_service_port.value==cf.openvpn_tun_service_port.value)
 	{
 		alert("Can't use the same port in TUN mode and TAP mode.");

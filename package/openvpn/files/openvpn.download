@@ -26,28 +26,14 @@ generate_client_conf_file(){
 	port=$($CONFIG get vpn_serv_port)
 	proto=$($CONFIG get vpn_serv_type)
 	if [ "$proto" = "udp" ]; then
-		cipher="AES-128-CBC"
-		complzo="comp-lzo"
-		complz4=";compress lz4-v2"
-		sndbuf=393216
-		rcvbuf=393216
-	elif [ "$proto" = "tcp" ]; then
-		cipher="AES-128-CBC"
-		complzo="comp-lzo"
-		complz4=";compress lz4-v2"
-		sndbuf=0
-		rcvbuf=0
-	elif [ "$proto" = "udp_lz4" ]; then
 		proto=udp
 		cipher="AES-128-GCM"
-		complzo=";comp-lzo"
 		complz4="compress lz4-v2"
 		sndbuf=393216
 		rcvbuf=393216
 	else
 		proto=tcp
 		cipher="AES-128-GCM"
-		complzo=";comp-lzo"
 		complz4="compress lz4-v2"
 		sndbuf=0
 		rcvbuf=0
@@ -55,7 +41,7 @@ generate_client_conf_file(){
 	cat << EOF
 client
 dev tap
-proto $proto
+proto ${proto}4
 ;dev-node NETGEAR-VPN
 remote $host_name $static_ip $port
 resolv-retry infinite
@@ -67,7 +53,6 @@ ca ca.crt
 cert client.crt
 key client.key
 cipher $cipher
-$complzo
 $complz4
 verb 0
 sndbuf $sndbuf
@@ -79,28 +64,18 @@ EOF
 	port=$($CONFIG get vpn_serv_port)
 	proto=$($CONFIG get vpn_serv_type)
 	if [ "$proto" = "udp" ]; then
-		cipher="AES-128-CBC"
-		complzo="comp-lzo"
-		complz4=";compress lz4-v2"
-	elif [ "$proto" = "tcp" ]; then
-		cipher="AES-128-CBC"
-		complzo="comp-lzo"
-		complz4=";compress lz4-v2"
-	elif [ "$proto" = "udp_lz4" ]; then
 		proto=udp
 		cipher="AES-128-GCM"
-		complzo=";comp-lzo"
 		complz4="compress lz4-v2"
 	else
 		proto=tcp
 		cipher="AES-128-GCM"
-		complzo=";comp-lzo"
 		complz4="compress lz4-v2"
 	fi
 	cat << EOF
 client
 dev tap
-proto $proto
+proto ${proto}4
 remote $host_name $static_ip $port
 resolv-retry infinite
 nobind
@@ -111,7 +86,6 @@ ca ca.crt
 cert client.crt
 key client.key
 cipher $cipher
-$complzo
 $complz4
 verb 5
 script-security 2
@@ -123,28 +97,18 @@ EOF
 	port=$($CONFIG get tun_vpn_serv_port)
 	proto=$($CONFIG get tun_vpn_serv_type)
 	if [ "$proto" = "udp" ]; then
-		cipher="AES-128-CBC"
-		complzo="comp-lzo"
-		complz4=";compress lz4-v2"
-	elif [ "$proto" = "tcp" ]; then
-		cipher="AES-128-CBC"
-		complzo="comp-lzo"
-		complz4=";compress lz4-v2"
-	elif [ "$proto" = "udp_lz4" ]; then
 		proto=udp
 		cipher="AES-128-GCM"
-		complzo=";comp-lzo"
 		complz4="compress lz4-v2"
 	else
 		proto=tcp
 		cipher="AES-128-GCM"
-		complzo=";comp-lzo"
 		complz4="compress lz4-v2"
 	fi
 	cat << EOF
 client
 dev tun
-proto $proto
+proto ${proto}4
 remote $host_name $static_ip $port
 resolv-retry infinite
 nobind
@@ -167,7 +131,6 @@ EOF
 	cat << EOF
 </key>
 cipher $cipher
-$complzo
 $complz4
 verb 5
 EOF

@@ -67,18 +67,10 @@ function loadvalue()
 		cf.openvpn_protocol[0].checked = true;
 	else if(type == "tcp")
 		cf.openvpn_protocol[1].checked = true;
-	else if(type == "udp_lz4")
-		cf.openvpn_protocol[2].checked = true;
-	else if(type == "tcp_lz4")
-		cf.openvpn_protocol[3].checked = true;
 	if(tun_type == "udp")
                 cf.openvpn_tun_protocol[0].checked = true;
         else if(tun_type == "tcp")
                 cf.openvpn_tun_protocol[1].checked = true;
-        else if(tun_type == "udp_lz4")
-                cf.openvpn_tun_protocol[2].checked = true;
-        else if(tun_type == "tcp_lz4")
-                cf.openvpn_tun_protocol[3].checked = true;
 	
 	if(access_mode == "auto")
 		cf.openvpn_redirectGW[0].checked = true;
@@ -143,10 +135,8 @@ $bluebar
 <TR><TD nowrap><a href="javascript:loadhelp('_openvpn','adv_config')" tabindex="-1"><b>$adv_config</b></a></TD></TR>
 <TR>
 	<TD><a href="javascript:loadhelp('_openvpn','tun_mode_type')" tabindex="-1">$tun_mode_type</a>&nbsp;&nbsp;&nbsp;
-	<input type="radio" name="openvpn_tun_protocol" id="tun_protocol_udp" value="udp">UDP&nbsp;&nbsp;
-	<input type="radio" name="openvpn_tun_protocol" id="tun_protocol_tcp" value="tcp">TCP&nbsp;&nbsp;
-	<input type="radio" name="openvpn_tun_protocol" id="tun_protocol_udp" value="udp_lz4">UDP (2.4.x clients)&nbsp;&nbsp;
-	<input type="radio" name="openvpn_tun_protocol" id="tun_protocol_tcp" value="tcp_lz4">TCP (2.4.x clients)
+	<input type="radio" name="openvpn_tun_protocol" id="tun_protocol_udp" value="udp">UDP (2.4.x clients)&nbsp;&nbsp;
+	<input type="radio" name="openvpn_tun_protocol" id="tun_protocol_tcp" value="tcp">TCP (2.4.x clients)
 	</TD>
 	
 </TR>
@@ -157,10 +147,8 @@ $bluebar
 </TR>
 <TR>
 	<TD><a href="javascript:loadhelp('_openvpn','tap_mode_type')" tabindex="-1">$tap_mode_type</a>&nbsp;&nbsp;&nbsp;
-	<input type="radio" name="openvpn_protocol" id="protocol_udp" value="udp">UDP&nbsp;&nbsp;
-	<input type="radio" name="openvpn_protocol" id="protocol_tcp" value="tcp">TCP&nbsp;&nbsp;
-	<input type="radio" name="openvpn_protocol" id="protocol_udp" value="udp_lz4">UDP (2.4.x clients)&nbsp;&nbsp;
-	<input type="radio" name="openvpn_protocol" id="protocol_tcp" value="tcp_lz4">TCP (2.4.x clients)
+	<input type="radio" name="openvpn_protocol" id="protocol_udp" value="udp">UDP (2.4.x clients)&nbsp;&nbsp;
+	<input type="radio" name="openvpn_protocol" id="protocol_tcp" value="tcp">TCP (2.4.x clients)
 	</TD>
 	
 </TR>
