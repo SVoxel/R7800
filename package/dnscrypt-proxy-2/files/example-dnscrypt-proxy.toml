@@ -75,6 +75,9 @@ require_nolog = true
 # Server must not enforce its own blacklist (for parental control, ads blocking...)
 require_nofilter = true
 
+# Server names to avoid even if they match all criteria
+disabled_server_names = []
+
 
 ## Always use TCP to connect to upstream servers.
 ## This can be useful if you need to route everything through Tor.
@@ -106,6 +109,13 @@ timeout = 2500
 ## Keepalive for HTTP (HTTPS, HTTP/2) queries, in seconds
 
 keepalive = 30
+
+
+## Use the REFUSED return code for blocked responses
+## Setting this to `false` means that some responses will be lies.
+## Unfortunately, `false` appears to be required for Android 8+
+
+refused_code_in_responses = false
 
 
 ## Load-balancing strategy: 'p2' (default), 'ph', 'fastest' or 'random'
@@ -190,7 +200,7 @@ ignore_system_dns = false
 ## connectivity is not guaranteed to be immediately available.
 ## Use 0 to disable.
 
-netprobe_timeout = 30
+netprobe_timeout = 60
 
 
 ## Offline mode - Do not use any remote encrypted servers.

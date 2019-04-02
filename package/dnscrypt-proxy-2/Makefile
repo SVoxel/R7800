@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2011-2018 Entware
+# Copyright (C) 2011-2019 Entware
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 BASENAME:=dnscrypt-proxy
 PKG_NAME:=$(BASENAME)-2
-PKG_VERSION:=2.0.19
+PKG_VERSION:=2.0.22
 PKG_RELEASE:=1
 PKG_SOURCE=$(BASENAME)-linux_arm-$(PKG_VERSION).tar.gz
 PKG_BUILD_DIR:=$(BUILD_DIR)/linux-arm
