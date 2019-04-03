@@ -98,7 +98,8 @@ append_read_allowuser()
 		case "$1" in
 			0) echo "			AllowUser admin"
 			   echo "			AllowUser guest";;
-			1) echo "			AllowUser guest";;
+			1) echo "			AllowUser admin";;
+			   echo "			AllowUser guest";;
 			2) echo "			AllowUser admin";;
 			*);;
 		esac
