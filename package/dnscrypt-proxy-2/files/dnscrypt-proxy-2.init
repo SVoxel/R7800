@@ -6,7 +6,7 @@ STOP=10
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
 CONFIG=/bin/config
 DNSCRYPTPROXY2_ON=$($CONFIG get dnscrypt2)
-CONFIG_FILE=/etc/dnscrypt-proxy-2.toml
+CONFIG_FILE=/tmp/etc/dnscrypt-proxy-2.toml
 PID_FILE=/var/run/dnscrypt-proxy-2.pid
 LOG_FILE=/var/log/dnscrypt-proxy-2.log
 PORT=64153
@@ -37,6 +37,11 @@ start() {
 	echo "no-resolv" >> /tmp/dnsmasq.conf
 	echo "server=127.0.0.1#$PORT" >> /tmp/dnsmasq.conf
 	echo "proxy-dnssec" >> /tmp/dnsmasq.conf
+
+	# Create symlink to /etc/dnscrypt-proxy-2.toml
+	if [ ! -e /tmp/etc/dnscrypt-proxy-2.toml ]; then
+		ln -sf /etc/dnscrypt-proxy-2.toml /tmp/etc/dnscrypt-proxy-2.toml
+	fi
 
 	# Start service
 	$PROG -config=$CONFIG_FILE -pidfile=$PID_FILE -logfile=$LOG_FILE &
