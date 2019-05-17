@@ -702,13 +702,6 @@ static int wan_conn_up(void)
 {
 	int mode, alive;
 	struct in_addr ip;
-	struct stat statbuf;
-
-	if (stat(MODEM, &statbuf) == 0)
-		{
-		ip = get_ipaddr(CDC_IFNAME);
-		return ip.s_addr != 0;
-		}
 
 	alive = net_verified(&mode);
 	if (alive == 0)

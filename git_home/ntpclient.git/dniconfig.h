@@ -3,9 +3,7 @@
  * you can replace with yours.
  */
 #define NET_IFNAME              "brwan"  /* The router's wan side interface name. */
-#define CDC_IFNAME              "eth0"   /* The router's CDC modem side interface name. */
 #define PPP_IFNAME              "ppp0"
-#define MODEM			"/tmp/modem"
 
 #define NETGEAR_DAYLIGHT_SAVING_TIME
 

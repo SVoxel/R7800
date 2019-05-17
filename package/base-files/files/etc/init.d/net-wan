@@ -3,9 +3,6 @@
 
 FIREWALL="/www/cgi-bin/firewall.sh"
 DHCPNAME="/tmp/dhcp_name.conf"
-if [ -f /tmp/modem ]; then
-	WAN_IF=eth0
-fi
 
 check_qca_nss() {
 	local proto=$($CONFIG get wan_proto)

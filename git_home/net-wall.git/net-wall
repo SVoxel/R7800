@@ -1,14 +1,11 @@
 #!/bin/sh
 
-if [ ! -f /tmp/modem ]; then
-	/usr/sbin/net-wall-bin $*
-else
-	/usr/sbin/net-wall-bin -w eth0 $*
-fi
+# Run original firewall
+/usr/sbin/net-wall-bin $*
 
 if [ "$1" = "rule" ]; then
-	# Add own rules and remove "_lz4" occurrences if any
-	sed 's/_lz4//g' /tmp/netwall-rules > /tmp/netwall-rules.tmp
+	# Store rules of original firewall
+	cat /tmp/netwall-rules > /tmp/netwall-rules.tmp
 
 	# Check config file existence, add own rules if exists
 	if [ -f /etc/netwall.conf ]; then
