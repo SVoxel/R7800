@@ -1,14 +1,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=usbmode
-PKG_VERSION:=2014-08-26
-PKG_RELEASE=$(PKG_SOURCE_VERSION)
+PKG_VERSION:=2017-12-19-f40f84c2
+PKG_RELEASE=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(OPENWRT_GIT)/project/usbmode.git
+PKG_SOURCE_VERSION:=f40f84c2
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=993a9a542791953c4804f7ddbb3a07756738e37a
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 CMAKE_INSTALL:=1
 
 PKG_LICENSE:=GPL-2.0
@@ -16,7 +16,7 @@ PKG_LICENSE_FILES:=
 
 PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 
-PKG_DATA_VERSION:=20150115
+PKG_DATA_VERSION:=20170806
 PKG_DATA_URL:=http://www.draisberghof.de/usb_modeswitch
 PKG_DATA_PATH:=usb-modeswitch-data-$(PKG_DATA_VERSION)
 PKG_DATA_FILENAME:=$(PKG_DATA_PATH).tar.bz2
@@ -27,7 +27,7 @@ include $(INCLUDE_DIR)/cmake.mk
 define Download/data
   FILE:=$(PKG_DATA_FILENAME)
   URL:=$(PKG_DATA_URL)
-  MD5SUM:=662bcd56a97e560ea974bc710822de51
+  MD5SUM:=fb50d15b52e909d742dd16f0a9882316
 endef
 $(eval $(call Download,data))
 
@@ -41,9 +41,25 @@ endef
 define Build/Prepare
 	$(Build/Prepare/Default)
 	tar xvfj $(DL_DIR)/$(PKG_DATA_FILENAME) -C $(PKG_BUILD_DIR)
-	rm -f \
-		$(PKG_BUILD_DIR)/$(PKG_DATA_PATH)/usb_modeswitch.d/05c6:1000:sVe=GT
+	#remove devices with unsupported modes
+	for filevar in $(PKG_BUILD_DIR)/$(PKG_DATA_PATH)/usb_modeswitch.d/* ; \
+	do \
+		if grep -q -E '(Quanta|Option|Blackberry|Pantech)Mode' "$$$$filevar" ; then \
+			rm "$$$$filevar" ; \
+		fi \
+	done
 	cp ./data/* $(PKG_BUILD_DIR)/$(PKG_DATA_PATH)/usb_modeswitch.d/
+	#in order to keep the Lede GIT repo free of filenames with colons,
+	#we name the files xxxx-yyyy
+	# and rename here after copying to the build directory
+	for filevar in $(PKG_BUILD_DIR)/$(PKG_DATA_PATH)/usb_modeswitch.d/*-* ; \
+	do \
+		[ -f "$$$$filevar" ] || continue ; \
+		FILENAME=$$$$(basename $$$$filevar) ; \
+		NEWNAME=$$$${FILENAME//-/:} ; \
+		rm "$(PKG_BUILD_DIR)/$(PKG_DATA_PATH)/usb_modeswitch.d/$$$$NEWNAME" ; \
+		mv "$(PKG_BUILD_DIR)/$(PKG_DATA_PATH)/usb_modeswitch.d/$$$$FILENAME" "$(PKG_BUILD_DIR)/$(PKG_DATA_PATH)/usb_modeswitch.d/$$$$NEWNAME" ; \
+	done
 endef
 
 define Package/usb-modeswitch/install
