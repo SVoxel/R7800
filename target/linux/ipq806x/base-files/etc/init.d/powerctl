@@ -1,6 +1,6 @@
 #!/bin/sh /etc/rc.common
 
-START=99
+START=98
 
 # ipq806x_power_auto()
 #   Changes the governor to ondemand and sets the default parameters for cpu ondemand governor.
@@ -75,4 +75,3 @@ start() {
 		echo "\"${mode}\" power mode not supported"
 	fi
 }
-
