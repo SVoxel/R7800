@@ -5,7 +5,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=getdns
-PKG_VERSION:=1.5.0
+PKG_VERSION:=1.5.2
 PKG_RELEASE:=1
 
 PKG_LICENSE:=BSD-3-Clause
@@ -14,7 +14,7 @@ PKG_MAINTAINER:=David Mora <iamperson347+public@gmail.com>
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://getdnsapi.net/dist/
-PKG_MD5SUM:=77e246e2ff4cc3c6e7a74380c2e423af
+PKG_MD5SUM:=7d29d4b5043ab217b98331661cca47bb
 
 PKG_FIXUP:=autoreconf
 
