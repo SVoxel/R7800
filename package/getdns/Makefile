@@ -26,6 +26,8 @@ PKG_CONFIG_DEPENDS:= \
 	
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CPPFLAGS:=-I$(STAGING_DIR)/usr/include/openssl-1.1.x $(TARGET_CPPFLAGS)
+TARGET_LDFLAGS:=-L$(STAGING_DIR)/usr/lib/openssl-1.1.x $(TARGET_LDFLAGS)
 TARGET_CFLAGS += -std=gnu99
 
 define Package/getdns/Default
@@ -38,7 +40,7 @@ define Package/getdns
 	SECTION:=libs
 	CATEGORY:=Libraries
 	TITLE+= (library)
-	DEPENDS+= +libopenssl +!GETDNS_ENABLE_STUB_ONLY:libunbound +GETDNS_ENABLE_IDN_LIBIDN2:libidn2
+	DEPENDS+= +libopenssl-1.1.x +!GETDNS_ENABLE_STUB_ONLY:libunbound +GETDNS_ENABLE_IDN_LIBIDN2:libidn2
 	MENU:=1
 endef
 
@@ -54,8 +56,7 @@ endef
 CONFIGURE_ARGS += \
 		$(if $(CONFIG_GETDNS_ENABLE_STUB_ONLY), --enable-stub-only, ) \
 		--without-libidn \
-		$(if $(CONFIG_GETDNS_ENABLE_IDN_LIBIDN2), , --without-libidn2 ) \
-		--with-ssl="$(STAGING_DIR)/usr" \
+		$(if $(CONFIG_GETDNS_ENABLE_IDN_LIBIDN2), , --without-libidn2 )
 
 CONFIGURE_ARGS += --without-getdns_query
 

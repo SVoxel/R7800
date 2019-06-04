@@ -25,10 +25,13 @@ PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CPPFLAGS:=-I$(STAGING_DIR)/usr/include/openssl-1.1.x $(TARGET_CPPFLAGS)
+TARGET_LDFLAGS:=-L$(STAGING_DIR)/usr/lib/openssl-1.1.x $(TARGET_LDFLAGS)
+
 define Package/unbound/Default
   TITLE:=Validating Recursive DNS Server
   URL:=http://www.unbound.net/
-  DEPENDS:=+libopenssl
+  DEPENDS:=+libopenssl-1.1.x
 endef
 
 define Package/unbound
@@ -77,7 +80,7 @@ define Package/unbound-control-setup
   CATEGORY:=Network
   SUBMENU:=IP Addresses and Names
   TITLE+= (control setup)
-  DEPENDS+= +unbound-control +openssl-util
+  DEPENDS+= +unbound-control +openssl-util-1.1.x
 endef
 
 define Package/unbound-control-setup/description
@@ -114,7 +117,6 @@ CONFIGURE_ARGS += \
 	--disable-gost \
 	--enable-allsymbols \
 	--with-libexpat="$(STAGING_DIR)/usr" \
-	--with-ssl="$(STAGING_DIR)/usr" \
 	--with-user=unbound \
 	--with-run-dir=/var/lib/unbound \
 	--with-conf-file=/var/lib/unbound/unbound.conf \

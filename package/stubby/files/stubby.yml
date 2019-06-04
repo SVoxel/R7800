@@ -19,6 +19,10 @@ round_robin_upstreams: 0
 
 idle_timeout: 10000
 
+tls_ciphersuites: "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256"
+
+tls_min_version: GETDNS_TLS1_3
+
 listen_addresses:
   - 127.0.0.1@64153
   -  0::1@64153
