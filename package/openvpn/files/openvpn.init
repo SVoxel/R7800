@@ -70,8 +70,8 @@ generate_server_conf_file() {
 			complz4="compress lz4-v2"
 			pushlz4="push \"compress lz4-v2\""
 			fastio="fast-io"
-			sndbuf=393216
-			rcvbuf=393216
+			sndbuf=786432
+			rcvbuf=786432
 		else
 			proto=tcp
 			cipher="AES-128-GCM"
@@ -113,6 +113,8 @@ $fastio
 client-connect "$push tap"
 sndbuf $sndbuf
 rcvbuf $rcvbuf
+push "sndbuf $sndbuf"
+push "rcvbuf $rcvbuf"
 EOF
 	else 
 		# Generate TUN server config
@@ -127,8 +129,8 @@ EOF
 			complz4="compress lz4-v2"
 			pushlz4="push \"compress lz4-v2\""
 			fastio="fast-io"
-			sndbuf=393216
-			rcvbuf=393216
+			sndbuf=786432
+			rcvbuf=786432
 		else
 			proto=tcp
 			cipher="AES-128-GCM"
@@ -170,6 +172,8 @@ push "dhcp-option DNS $lan_ipaddr"
 client-connect "$push tun"
 sndbuf $sndbuf
 rcvbuf $rcvbuf
+push "sndbuf $sndbuf"
+push "rcvbuf $rcvbuf"
 EOF
 	fi
 }

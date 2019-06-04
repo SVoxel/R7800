@@ -11,7 +11,7 @@ BRIDGE_MODE=$($CONFIG get bridge_mode)
 EXTENDER_MODE=$($CONFIG get extender_mode)
 OPENVPN_CONF_DIR=/etc/openvpn/config/client
 CHECK_HOST=www.google.com
-OPT_ARGS="--fast-io --nice -20 --auth-nocache --sndbuf 786432 --rcvbuf 786432 --tun-mtu 1500 --mssfix 1460 --txqueuelen 1000"
+OPT_ARGS="--dev tun21 --fast-io --nice -20 --auth-nocache --sndbuf 786432 --rcvbuf 786432 --tun-mtu 1500 --mssfix 1460 --txqueuelen 1000"
 
 start() {
 	# Check existence of /etc/openvpn/config/client/*.ovpn file
@@ -35,17 +35,10 @@ start() {
 		exit 1
 	fi
 
-	# Check if OpenVPN server is enabled
-	if [ "$($CONFIG get vpn_enable)" = "1" ]; then
-		echo "Error: OpenVPN server is enabled. Disable it to start OpenVPN client." | tee -a $LOG_FILE
-		ledcontrol -n wan -c red -s on
-		exit 1
-	fi
-
-	# Check if tun0 interface already exists
-	ifconfig | grep -q tun0
+	# Check if tun21 interface already exists
+	ifconfig | grep -q tun21
 	if [ $? -eq 0 ]; then
-		echo "Error: tun0 interface exists. OpenVPN client is probably already started." | tee -a $LOG_FILE
+		echo "Error: tun21 interface already exists. OpenVPN client is probably already started." | tee -a $LOG_FILE
 		exit 1
 	fi
 
@@ -66,12 +59,22 @@ start() {
 		count=$(($count+1))
 	done
 
+	# Create /tmp/openvpn directory
+	if [ ! -d /tmp/openvpn ]; then
+		mkdir /tmp/openvpn
+	fi
+
+	# Copy OVPN_CLIENT_CONF to /tmp/openvpn and change tun to tun21
+	cp -f $OVPN_CLIENT_CONF /tmp/openvpn/ovpnclient.ovpn
+	OVPN_CLIENT_CONF=/tmp/openvpn/ovpnclient.ovpn
+	sed -i 's/dev[[:space:]]\+tun[0-9]*/dev tun21/g' $OVPN_CLIENT_CONF
+
 	# Start OpenVPN client (assigned to CPU1)
 	taskset -c 1 $PROG $OPT_ARGS --writepid $PID_FILE --cd $OPENVPN_CONF_DIR --log-append $LOG_FILE --config $OVPN_CLIENT_CONF --script-security 2 --up /etc/openvpn/ovpnclient-up.sh --down /etc/openvpn/ovpnclient-down.sh --daemon --push "sndbuf 786432" --push "rcvbuf 786432"
 	echo "Please wait..."
 	sleep 15
 
-	ifconfig | grep -q tun0
+	ifconfig | grep -q tun21
 	if [ $? -ne 0 ]; then
 		echo "Error: OpenVPN client start failed." | tee -a $LOG_FILE
 		ledcontrol -n wan -c red -s on
@@ -113,9 +116,9 @@ stop() {
 	fi
 
 	# Kamoj: kill openvpn in those cases the pid_file didn't exist or contained wrong pid
-	while [[ $(ps | grep -vE "rc.common|grep" | grep -c "/usr/sbin/openvpn" ) -gt 0 ]] ; do
+	while [[ $(ps | grep -vE "rc.common|grep" | grep -c "/usr/sbin/openvpn --dev tun21" ) -gt 0 ]] ; do
 		echo  "`date` Voxel: Error: openvpn-client stop: process was not killed properly 2, try a new kill!" | tee -a $LOG_FILE
-		OPENVPN_PID=`ps | grep -vE "rc.common|grep" | grep "/usr/sbin/openvpn" | awk '{ print $1 }'`
+		OPENVPN_PID=`ps | grep -vE "rc.common|grep" | grep "/usr/sbin/openvpn --dev tun21" | awk '{ print $1 }'`
 		kill -9 $OPENVPN_PID
 	done
 
