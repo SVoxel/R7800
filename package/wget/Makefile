@@ -22,6 +22,8 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSI
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CPPFLAGS:=-I$(STAGING_DIR)/usr/include/openssl-1.1.x $(TARGET_CPPFLAGS)
+TARGET_LDFLAGS:=-L$(STAGING_DIR)/usr/lib/openssl-1.1.x $(TARGET_LDFLAGS)
 TARGET_CFLAGS += -ffunction-sections -fdata-sections
 TARGET_LDFLAGS += -Wl,--gc-sections
 
@@ -45,7 +47,7 @@ endef
 
 define Package/wget
 $(call Package/wget/Default)
-  DEPENDS+= +libopenssl +librt
+  DEPENDS+= +libopenssl-1.1.x +librt
   TITLE+= (with SSL support)
   VARIANT:=ssl
 endef
@@ -77,7 +79,7 @@ CONFIGURE_VARS += \
 ifeq ($(BUILD_VARIANT),ssl)
 	CONFIGURE_ARGS+= \
 		--with-ssl=openssl \
-		--with-libssl-prefix="$(STAGING_DIR)/usr"
+		--with-libssl-prefix="$(STAGING_DIR)/usr/lib/openssl-1.1.x"
 endif
 
 ifeq ($(BUILD_VARIANT),nossl)
