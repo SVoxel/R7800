@@ -1,4 +1,3 @@
-diff -Nuar a/lib/vtls/mbedtls.c b/lib/vtls/mbedtls.c
 --- a/lib/vtls/mbedtls.c	2019-03-25 11:42:50.000000000 +0300
 +++ b/lib/vtls/mbedtls.c	2019-04-04 12:09:53.600586600 +0300
 @@ -818,7 +818,7 @@
