@@ -1,9 +1,10 @@
 #!/bin/sh
 
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
 https_url="https://http.fw.updates1.netgear.com/sw-apps/ready-genie-cloud/r7800"
 ftp_url="ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800"
 version=`cat /cloud_version`
-cloud_url=http://www.voxel-firmware.com/Downloads/Voxel/R7800-Voxel-firmware/ReadyCLOUD/readygeniecloud-r7800new2-20180619-01.tar.gz
+cloud_url=https://http.fw.updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/readygeniecloud-r7800new2-20180619-01.tar.gz
 config=/bin/config
 sleep_time_1=60
 sleep_time_2=300
