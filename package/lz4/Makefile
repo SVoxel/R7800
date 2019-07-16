@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=lz4
-PKG_VERSION:=1.8.3
+PKG_VERSION:=1.9.1
 PKG_RELEASE:=1
 
 PKG_LICENSE:=BSD-2-Clause
@@ -18,7 +18,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/Cyan4973/lz4.git
 PKG_SOURCE_VERSION:=$(PKG_VERSION)
-PKG_MD5SUM:=d5ce78f7b1b76002bbfffa6f78a5fc4e
+PKG_MD5SUM:=a80f28f2a2e5fe59ebfe8407f793da22 
 
 include $(INCLUDE_DIR)/package.mk
 
