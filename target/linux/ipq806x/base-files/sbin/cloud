@@ -35,18 +35,18 @@ start() {
 }
 
 uninstall() {
-	[ -s /opt/filelist ] && cat /opt/filelist | xargs /bin/rm -f
+	[ -s /opt/filelist ] && cat /opt/filelist | xargs rm -f
 	if [ -f /opt/dirlist ]; then
-		/bin/mv -f /opt/dirlist /tmp/cloud_dirlist
+		mv -f /opt/dirlist /tmp/cloud_dirlist
 		while read line; do
-			/bin/rmdir $line
+			rmdir $line
 		done < /tmp/cloud_dirlist
 		if [ -d /opt ]; then
-			/bin/rmdir /opt
+			rmdir /opt
 		fi
 	fi
-	/bin/rm -f /tmp/cloud_dirlist
-	/bin/rm -f /tmp/.cloud_updated
+	rm -f /tmp/cloud_dirlist
+	rm -f /tmp/.cloud_updated
 }
 
 checkversion() {
@@ -58,32 +58,32 @@ backup() {
 	[ -s /overlay/opt/filelist ] || return 1
 	while read file; do
 		target="/tmp/clouddir$(dirname $file)"
-		/bin/mkdir -p $target
-		/bin/cp -f $file $target
+		mkdir -p $target
+		cp -f $file $target
 	done < /overlay/opt/filelist
 }
 
 restore() {
 	[ -d /tmp/clouddir ] || return 1
-	/bin/cp -fpR /tmp/clouddir/overlay/* /overlay
-	/bin/rm -rf /tmp/clouddir
+	cp -fpR /tmp/clouddir/overlay/* /overlay
+	rm -rf /tmp/clouddir
 }
 
 install_local() {
         [ -f /opt/version ] && return 1
-	/usr/bin/wget --no-check-certificate -T 10 $cloud_url -O /tmp/readygeniecloud-r7800new2-20180619-01.tar.gz
-	/bin/mkdir /tmp/clouddir
+	wget --no-check-certificate -T 10 $cloud_url -O /tmp/readygeniecloud-r7800new2-20180619-01.tar.gz
+	mkdir /tmp/clouddir
 	tar xzf /tmp/readygeniecloud-r7800new2-20180619-01.tar.gz -C /tmp/clouddir
 	echo readygeniecloud-r7800new2-20180619-01.tar.gz > /tmp/clouddir/opt/version
 	touch /tmp/clouddir/opt/filelist
 	find /tmp/clouddir -type f | sed 's/\/tmp\/clouddir/\/overlay/' > /tmp/clouddir/opt/filelist
 	find /tmp/clouddir/opt -type d | sed 's/\/tmp\/clouddir/\/overlay/' | sort -r > /tmp/clouddir/opt/dirlist
-	/bin/cp -fpR /tmp/clouddir/* /
-	/bin/rm -f /tmp/cloud_info
-	/bin/rm -f /tmp/cloud.tar.gz
-	/bin/rm -rf /tmp/clouddir
+	cp -fpR /tmp/clouddir/* /
+	rm -f /tmp/cloud_info
+	rm -f /tmp/cloud.tar.gz
+	rm -rf /tmp/clouddir
 	sed '2s/^/source \/etc\/profile\n/' /opt/rcagent/run_server.sh > /tmp/run_server.sh
-	/bin/cp /tmp/run_server.sh /opt/rcagent/run_server.sh
+	cp /tmp/run_server.sh /opt/rcagent/run_server.sh
 
 	start
 }
@@ -106,7 +106,7 @@ update() {
 	install_local
 	echo "$$" > $PID_file
 	start
-	/bin/rm -f $PID_file
+	rm -f $PID_file
 }
 
 case "$1" in
