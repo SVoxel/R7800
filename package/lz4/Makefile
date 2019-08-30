@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2015 OpenWrt.org
+# Copyright (C) 2019 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=lz4
-PKG_VERSION:=1.9.1
+PKG_VERSION:=1.9.2
 PKG_RELEASE:=1
 
 PKG_LICENSE:=BSD-2-Clause
@@ -18,7 +18,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_URL:=https://github.com/Cyan4973/lz4.git
 PKG_SOURCE_VERSION:=$(PKG_VERSION)
-PKG_MD5SUM:=a80f28f2a2e5fe59ebfe8407f793da22 
+PKG_MD5SUM:=3898c56c82fb3d9455aefd48db48eaad
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -34,8 +34,10 @@ define Package/liblz4/description
   even faster decoder. This package provides the liblz4 shared library.
 endef
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3
 TARGET_CFLAGS += $(FPIC) -DLZ4_FORCE_MEMORY_ACCESS=1 -DXXH_FORCE_MEMORY_ACCESS=1 \
-	-fhonour-copts -O3 -ffunction-sections -fdata-sections
+	-ffunction-sections -fdata-sections
+TARGET_LDFLAGS += -Wl,--gc-sections
 
 define Build/Compile
 	$(MAKE) -C "$(PKG_BUILD_DIR)/lib" $(MAKE_INSTALL_FLAGS) \
