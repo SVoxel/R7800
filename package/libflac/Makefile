@@ -8,59 +8,72 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=flac
-PKG_VERSION:=1.3.2
+PKG_VERSION:=1.3.3
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_SOURCE_URL:=http://downloads.xiph.org/releases/flac/
-PKG_MD5SUM:=454f1bfa3f93cc708098d7890d0499bd
+PKG_SOURCE_URL:=https://downloads.xiph.org/releases/flac/
+PKG_MD5SUM:=26703ed2858c1fc9ffc05136d13daa69
+
 PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>
+PKG_LICENSE:=GFDL-1.2 GPL-2 LGPL-2.1 BSD-3-Clause
+PKG_LICENSE_FILES:=README COPYING.FDL COPYING.GPL COPYING.LGPL COPYING.Xiph
+PKG_CPE_ID:=cpe:/a:flac_project:flac
+
+PKG_FIXUP:=autoreconf
+PKG_INSTALL:=1
+PKG_BUILD_PARALLEL:=1
+PKG_REMOVE_FILES:=autogen.sh aclocal.m4
 
 include $(INCLUDE_DIR)/package.mk
-PKG_BUILD_DEPENDS:=libogg
 
 define Package/libflac
   SECTION:=libs
   CATEGORY:=Libraries
-  TITLE:=libflac
-  URL:=http://www.xiph.org/
+  TITLE:=Free Lossless Audio Codec library
+  URL:=https://xiph.org/flac
 endef
 
-define Build/Configure
-	(cd $(PKG_BUILD_DIR); \
-		$(TARGET_CONFIGURE_OPTS) \
-		CFLAGS="$(TARGET_CFLAGS) $(EXTRA_CFLAGS)" \
-		CXXFLAGS="$(TARGET_CFLAGS) $(EXTRA_CFLAGS)" \
-		CPPFLAGS="$(TARGET_CPPFLAGS) $(EXTRA_CPPFLAGS)" \
-		LDFLAGS="$(TARGET_LDFLAGS)" \
-		PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
-		PKG_CONFIG_LIBDIR="$(STAGING_DIR)/usr/lib/pkgconfig" \
-		./configure \
-		--host=$(GNU_TARGET_NAME) \
-		--build=$(GNU_HOST_NAME) \
-		--prefix=$(PKG_INSTALL_DIR) \
-		--enable-debug)
-endef
+CONFIGURE_ARGS += \
+	--disable-cpplibs \
+	--disable-sse \
+	--disable-altivec \
+	--disable-doxgen-docs \
+	--disable-local-xmms-plugin \
+	--disable-xmms-plugin \
+	--disable-ogg \
+	--disable-oggtest \
+	--disable-thorough-tests \
+	--disable-examples \
+	--disable-rpath \
+	$(if $(CONFIG_DEBUG),--enable-debug) \
+	--enable-static \
+	--without-pic
 
-define Build/Compile
-	$(MAKE) -C $(PKG_BUILD_DIR) \
-		all install
-endef
+TARGET_CFLAGS += $(FPIC)
 
 define Build/InstallDev
-	mkdir -p $(1)/usr/include
-	$(CP) $(PKG_INSTALL_DIR)/include/FLAC $(1)/usr/include/
-	#$(CP) $(PKG_INSTALL_DIR)/include/FLAC++ $(1)/usr/include/
-	mkdir -p $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/lib/libFLAC.{la,so*} $(1)/usr/lib/
-	mkdir -p $(1)/usr/lib/pkgconfig
-	$(CP) $(PKG_INSTALL_DIR)/lib/pkgconfig/flac.pc $(1)/usr/lib/pkgconfig/
+	$(INSTALL_DIR) $(1)/usr/include
+	$(CP) \
+		$(PKG_INSTALL_DIR)/usr/include/FLAC \
+		$(1)/usr/include/
+	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
+	$(CP) \
+		$(PKG_INSTALL_DIR)/usr/lib/libFLAC.{a,so*,la} \
+		$(1)/usr/lib/
+	$(INSTALL_DATA) \
+		$(PKG_INSTALL_DIR)/usr/lib/pkgconfig/* \
+		$(1)/usr/lib/pkgconfig/
+
+	$(INSTALL_DIR) $(1)/usr/share/aclocal/
+	$(INSTALL_DATA) \
+		$(PKG_INSTALL_DIR)/usr/share/aclocal/* \
+		$(1)/usr/share/aclocal/
 endef
 
 define Package/libflac/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/lib/libFLAC.so* $(1)/usr/lib/
-	#$(CP) $(PKG_INSTALL_DIR)/lib/libFLAC*.so.* $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libFLAC.so* $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,libflac))
