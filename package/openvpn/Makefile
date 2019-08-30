@@ -26,7 +26,8 @@ include $(INCLUDE_DIR)/package.mk
 
 TARGET_CPPFLAGS:=-I$(STAGING_DIR)/usr/include/openssl-1.1.x $(TARGET_CPPFLAGS)
 TARGET_LDFLAGS:=-L$(STAGING_DIR)/usr/lib/openssl-1.1.x $(TARGET_LDFLAGS)
-TARGET_CFLAGS:=-O3 -pipe -mcpu=cortex-a15 -mfpu=neon-vfpv4 -funsafe-math-optimizations -mtune=cortex-a15 -mfloat-abi=softfp $(FPIC) -ffunction-sections -fdata-sections
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3
+TARGET_CFLAGS += -ffunction-sections -fdata-sections
 TARGET_LDFLAGS += -Wl,--gc-sections
 
 define Package/openvpn/Default
