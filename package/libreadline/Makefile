@@ -60,6 +60,7 @@ endef
 
 define Package/libreadline/install
 	$(INSTALL_DIR) $(1)/usr/lib
+	chmod +w $(PKG_INSTALL_DIR)/usr/lib/lib{history,readline}.{so,so.5,so.5.2}
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{history,readline}.{so,so.5,so.5.2} $(1)/usr/lib/
 endef
 
