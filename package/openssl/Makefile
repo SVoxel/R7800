@@ -37,7 +37,8 @@ PKG_CONFIG_DEPENDS:= \
 
 include $(INCLUDE_DIR)/package.mk
 
-TARGET_CFLAGS:=-O3 -pipe -mcpu=cortex-a15 -mfpu=neon-vfpv4 -funsafe-math-optimizations -mtune=cortex-a15 -mfloat-abi=softfp $(FPIC) -ffunction-sections -fdata-sections
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3
+TARGET_CFLAGS += $(FPIC) -ffunction-sections -fdata-sections
 TARGET_ASFLAGS=$(TARGET_CFLAGS)
 TARGET_LDFLAGS += -Wl,--gc-sections
 
