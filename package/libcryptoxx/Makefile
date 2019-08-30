@@ -39,6 +39,7 @@ CONFIGURE_ARGS += \
 	--enable-static \
 	--enable-shared
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 TARGET_CFLAGS += \
 	-ffunction-sections \
 	-fdata-sections

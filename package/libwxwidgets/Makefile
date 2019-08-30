@@ -30,6 +30,7 @@ define Package/libwxwidgets
   DEPENDS:=+libexpat +libstdcpp +zlib
 endef
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 TARGET_CFLAGS += $(FPIC)
 TARGET_CPPFLAGS += -I../uClibc++-0.2.2/include
 
