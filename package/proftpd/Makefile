@@ -1,83 +1,66 @@
-# 
-# Copyright (C) 2008 OpenWrt.org
 #
-#echo "#define NETGEAR_GUEST_ACCESS" >> config.h \
+# Copyright (C) 2009-2014 OpenWrt.org
+#
+# This is free software, licensed under the GNU General Public License v2.
+# See /LICENSE for more information.
+#
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=proftpd
-PKG_VERSION:=1.3.5V
+PKG_VERSION:=1.3.6
 PKG_RELEASE:=1
 
-PKG_GIT_TREEISH:=proftpd-1.3.5V
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=ftp://ftp.proftpd.org/distrib/source
+PKG_MD5SUM:=13270911c42aac842435f18205546a1b
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
+PKG_FIXUP:=autoreconf
+PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 TARGET_CFLAGS += -ffunction-sections -fdata-sections
 TARGET_LDFLAGS += -Wl,--gc-sections
 
 define Package/proftpd
+  SUBMENU:=File Transfer
   SECTION:=net
   CATEGORY:=Network
-  TITLE:=FTP Daemon
+  TITLE:=ProFTPD FTP server
   URL:=http://www.proftpd.org/
+  MAINTAINER:=Cezary Jackiewicz <cezary@eko.one.pl>
+  DEPENDS:=+libattr
 endef
 
-define Build/Prepare
-	$(CP) $(GIT_HOME)/proftpd.git/* $(PKG_BUILD_DIR)/
-endef
+MAKE_FLAGS += \
+	INSTALL_USER=$(shell id -u) \
+	INSTALL_GROUP=$(shell id -g)
 
-define Build/Configure
-	(cd $(PKG_BUILD_DIR) ; \
-		echo "ac_cv_func_setgrent_void=yes" > $(GNU_TARGET_NAME)-linux.cache ; \
-		echo "ac_cv_func_setpgrp_void=no" >> $(GNU_TARGET_NAME)-linux.cache ; \
-		CFLAGS="$(TARGET_CFLAGS) -I$(DEP_BUILD_DIR)/include -I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/include -I./include -I$(STAGING_DIR)/usr/lib/libiconv/include -I$(STAGING_DIR)/usr/lib/libintl/include"; \
-		./configure \
-			--with-includes=$(STAGING_DIR)/include:$(STAGING_DIR)/usr/include:$(STAGING_DIR)/usr/lib/libintl/include:$(STAGING_DIR)/usr/lib/libiconv/include \
-			--with-libraries=$(STAGING_DIR)/lib:$(STAGING_DIR)/usr/lib:$(STAGING_DIR)/usr/lib/libintl/lib:$(STAGING_DIR)/usr/lib/libiconv/lib \
-			--host=$(GNU_TARGET_NAME) \
-			--cache-file=$(GNU_TARGET_NAME)-linux.cache \
-			--sysconfdir=/etc \
-			--localstatedir=/var/run \
-			--enable-nls \
-			--enable-shadow \
-			--disable-cap \
-			--disable-auth-pam \
-			--disable-curses \
-			--disable-ncurses ;\
-		echo "#undef HAVE___PROGNAME" >> config.h ; \
-		echo "#undef HAVE_UTMPX_H" >> config.h ; \
-		echo "#undef HAVE_STROPTS_H" >> config.h ; \
-		echo "#undef HAVE_SYS_ACL_H" >> config.h ; \
-		echo "#undef HAVE_EXECINFO_H" >> config.h ; \
-		echo "#undef HAVE_FUTIMES" >> config.h ; \
-		echo "#define HAVE_NET_IF_H 1" >> config.h ; \
-		echo "#define LAN_IFNAME \"br0\"" >> config.h ; \
-		echo "#define WAN_IFNAME \"brwan\"" >> config.h ; \
-		echo "#define PPPOE_IFNAME \"ppp0\"" >> config.h ; \
-		echo "#define USB_NET_ACCESS_LOG" >> config.h ; \
-		echo "#define NETGEAR_GUEST_ACCESS" >> config.h ; \
-	);
-endef
+CONFIGURE_ARGS += \
+	--with-includes=$(STAGING_DIR)/include:$(STAGING_DIR)/usr/include:$(STAGING_DIR)/usr/lib/libintl/include:$(STAGING_DIR)/usr/lib/libiconv/include \
+	--with-libraries=$(STAGING_DIR)/lib:$(STAGING_DIR)/usr/lib:$(STAGING_DIR)/usr/lib/libintl/lib:$(STAGING_DIR)/usr/lib/libiconv/lib \
+	--disable-cap \
+	--disable-auth-pam \
+	--disable-strip \
+	--with-lastlog=/var/log \
+	--enable-autoshadow \
+	--enable-nls \
 
-define Build/Compile
-	$(MAKE) -C $(PKG_BUILD_DIR) \
-		$(TARGET_CONFIGURE_OPTS) \
-		CROSS="$(TARGET_CROSS)" \
-		CFLAGS="$(TARGET_CFLAGS) -I$(DEP_BUILD_DIR)/include -I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/include -I./include -I$(STAGING_DIR)/usr/lib/libiconv/include -I$(STAGING_DIR)/usr/lib/libintl/include" \
-                LDFLAGS="-L$(STAGING_DIR)/usr/lib -L$(STAGING_DIR)/lib -L./lib -L$(STAGING_DIR)/usr/lib/libintl/lib -L$(STAGING_DIR)/usr/lib/libiconv/lib -lintl -liconv" \
-		all
-endef
+CONFIGURE_VARS += \
+	ac_cv_header_curses_h=no \
+	ac_cv_header_ncurses_h=no
 
 define Package/proftpd/install
-	install -d -m0755 $(1)/usr/sbin
+	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/proftpd $(1)/usr/sbin/
-	install -m0755 $(PKG_BUILD_DIR)/ftptop $(1)/usr/sbin/
-	install -d -m0755 $(1)/sbin
-	install -m0755 ./files/cmdftp $(1)/sbin/
-	ln -sf /usr/sbin/ftptop $(1)/usr/sbin/ftpload
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ftptop $(1)/usr/sbin/
+	$(INSTALL_DIR) $(1)/sbin
+	$(INSTALL_BIN) ./files/cmdftp $(1)/sbin/
+	$(LN) /usr/sbin/ftptop $(1)/usr/sbin/ftpload
+	$(INSTALL_DIR) $(1)/usr/share
+	$(CP) $(PKG_INSTALL_DIR)/usr/share/locale $(1)/usr/share/
 endef
 
 $(eval $(call BuildPackage,proftpd))

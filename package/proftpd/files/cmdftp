@@ -762,6 +762,7 @@ generate_proftpd_conf()
 	cat << EOF >$proftpd_anony
 <Anonymous /tmp/ftpadmin>
 User guest
+Group guest
 UserAlias anonymous guest
 RequireValidShell off
 EOF

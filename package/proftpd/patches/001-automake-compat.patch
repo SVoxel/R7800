@@ -1,0 +1,40 @@
+--- a/configure.in
++++ b/configure.in
+@@ -718,24 +718,7 @@
+       ac_core_modules="$ac_core_modules mod_dso.o"
+       ac_build_core_modules="$ac_build_core_modules modules/mod_dso.o"
+ 
+-      MAIN_LDFLAGS="-L\$(top_srcdir)/lib/libltdl -dlopen self -export-dynamic"
+-      MAIN_LIBS="\$(LIBLTDL)"
+-
+-      MODULE_LDFLAGS="-avoid-version -export-dynamic -module"
+-
+-      INSTALL_DEPS="install-libltdl"
+-      LIB_DEPS="libltdl"
+-      MODULE_DEPS="libltdl"
+       AC_DEFINE(PR_USE_DSO, 1, [Define if using DSO support.])
+-
+-      dnl Run configure scripts in subdirectories
+-      LT_CONFIG_LTDL_DIR([lib/libltdl])
+-      LTDL_INIT([convenience])
+-
+-      dnl Even though this macro is deprecated, we need to use it to
+-      dnl specifically tell ltdl that it is NOT to use any system directories,
+-      dnl and ONLY to use this bundled location.
+-      LTDL_CONVENIENCE([lib/libltdl])
+     fi
+   ])
+
+--- a/Make.rules.in
++++ b/Make.rules.in
+@@ -18,7 +18,7 @@
+ PLATFORM=@OSREL@ @OSTYPE@
+ LDFLAGS=@LDFLAGS@ @LIBDIRS@
+ LIBEXECDIR=@LIBEXECDIR@
+-LIBS=@LIBS@ @LIBRARIES@ @LIBADD_DL@
++LIBS=@LIBS@ @LIBRARIES@
+ LIBTOOL=@LIBTOOL@
+ MAKEDEPEND=makedepend -Y
+ RANLIB=@RANLIB@
+
+ 
