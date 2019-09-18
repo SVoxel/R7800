@@ -54,6 +54,7 @@ UB_IP_DNS64="64:ff9b::/96"
 UB_N_EDNS_SIZE=1280
 UB_N_RX_PORT=53
 UB_N_ROOT_AGE=9
+UB_N_THREADS=1
 
 UB_TTL_MIN=120
 UB_TXT_DOMAIN=lan
@@ -112,14 +113,16 @@ bundle_all_networks() {
 
 bundle_lan_networks() {
   local cfg="$1"
-  local ifsubnet ifname ifdashname ignore
+  local interface ifsubnet ifname ifdashname ignore
 
   config_get_bool    ignore "$cfg" ignore 0
-  network_get_device ifname "$cfg"
+  config_get         interface "$cfg" interface ""
+  network_get_device ifname "$interface"
   ifdashname="${ifname//./-}"
 
 
-  if [ "$ignore" -eq 0 -a -n "$ifdashname" -a -n "$UB_LIST_NETW_ALL" ] ; then
+  if [ "$ignore" -eq 0 ] && [ -n "$ifdashname" ] \
+  && [ -n "$UB_LIST_NETW_ALL" ] ; then
     for ifsubnet in $UB_LIST_NETW_ALL ; do
       case $ifsubnet in
         "${ifdashname}"@*)
@@ -259,8 +262,8 @@ unbound_mkdir() {
   chmod 644 $UB_VARDIR/*
 
 
-  if [ -f $UB_CTLKEY_FILE -o -f $UB_CTLPEM_FILE \
-    -o -f $UB_SRVKEY_FILE -o -f $UB_SRVPEM_FILE ] ; then
+  if [ -f $UB_CTLKEY_FILE ] || [ -f $UB_CTLPEM_FILE ] \
+  || [ -f $UB_SRVKEY_FILE ] || [ -f $UB_SRVPEM_FILE ] ; then
     # Keys (some) exist already; do not create new ones
     chmod 640 $UB_CTLKEY_FILE $UB_CTLPEM_FILE \
               $UB_SRVKEY_FILE $UB_SRVPEM_FILE
@@ -311,8 +314,8 @@ unbound_control() {
 
 
   if [ "$UB_D_CONTROL" -gt 1 ] ; then
-    if [ ! -f $UB_CTLKEY_FILE -o ! -f $UB_CTLPEM_FILE \
-      -o ! -f $UB_SRVKEY_FILE -o ! -f $UB_SRVPEM_FILE ] ; then
+    if [ ! -f $UB_CTLKEY_FILE ] || [ ! -f $UB_CTLPEM_FILE ] \
+    || [ ! -f $UB_SRVKEY_FILE ] || [ ! -f $UB_SRVPEM_FILE ] ; then
       # Key files need to be present; if unbound-control-setup was found, then
       # they might have been made during unbound_makedir() above.
       UB_D_CONTROL=0
@@ -422,8 +425,8 @@ unbound_zone() {
 
   case $zone_type in
     auth_zone)
-      if [ "$UB_B_NTP_BOOT" -eq 0 -a -n "$UB_LIST_ZONE_NAMES" \
-           -a \( -n "$url_dir" -o -n "$UB_LIST_ZONE_SERVERS" \) ] ; then
+      if [ "$UB_B_NTP_BOOT" -eq 0 ] && [ -n "$UB_LIST_ZONE_NAMES" ] \
+      && { [ -n "$url_dir" ] || [ -n "$UB_LIST_ZONE_SERVERS" ] ; } ; then
         # Note AXFR may have large downloads. If NTP restart is configured,
         # then this can cause procd to force a process kill.
         for zone_name in $UB_LIST_ZONE_NAMES ; do
@@ -459,13 +462,13 @@ unbound_zone() {
       ;;
 
     forward_zone)
-      if [ ! -f $UB_TLS_FWD_FILE -a "$tls_upstream" = "yes" ] ; then
+      if [ ! -f $UB_TLS_FWD_FILE ] && [ "$tls_upstream" = "yes" ] ; then
         logger -p 4 -t unbound -s \
           "Forward-zone TLS benefits from authentication in package 'ca-bundle'"
       fi
 
 
-      if [ -n "$UB_LIST_ZONE_NAMES" -a -n "$UB_LIST_ZONE_SERVERS" ] ; then
+      if [ -n "$UB_LIST_ZONE_NAMES" ] && [ -n "$UB_LIST_ZONE_SERVERS" ] ; then
         for server in $UB_LIST_ZONE_SERVERS ; do
           if [ "$( valid_subnet_any $server )" = "not" ] ; then
             case $server in
@@ -520,7 +523,7 @@ unbound_zone() {
       ;;
 
     stub_zone)
-      if [ -n "$UB_LIST_ZONE_NAMES" -a -n "$UB_LIST_ZONE_SERVERS" ] ; then
+      if [ -n "$UB_LIST_ZONE_NAMES" ] && [ -n "$UB_LIST_ZONE_SERVERS" ] ; then
         for zonename in $UB_LIST_ZONE_NAMES ; do
           {
             # generate a stub-zone: or ensure short cut to authority NS
@@ -541,7 +544,7 @@ unbound_zone() {
 ##############################################################################
 
 unbound_conf() {
-  local rt_mem rt_conn rt_buff modulestring domain ifsubnet nsubnet
+  local rt_mem rt_conn rt_buff modulestring domain ifsubnet
 
   {
     # server: for this whole function
@@ -567,7 +570,7 @@ unbound_conf() {
   fi
 
 
-  if [ "$UB_B_DNSSEC" -gt 0 -a -f "$UB_RKEY_FILE" ] ; then
+  if [ "$UB_B_DNSSEC" -gt 0 ] && [ -f "$UB_RKEY_FILE" ] ; then
     {
       echo "  auto-trust-anchor-file: $UB_RKEY_FILE"
       echo
@@ -578,9 +581,18 @@ unbound_conf() {
   fi
 
 
+  if [ "$UB_N_THREADS" -gt 1 ] \
+  && $PROG -V | grep -q "Linked libs:.*libevent" ; then
+    # heavy variant using "threads" may need substantial resources
+    echo "  num-threads: 2" >> $UB_CORE_CONF
+  else
+    # light variant with one "process" is much more efficient with light traffic
+    echo "  num-threads: 1" >> $UB_CORE_CONF
+  fi
+
+
   {
-    # No threading
-    echo "  num-threads: 1"
+    # Limited threading (2) with one shared slab
     echo "  msg-cache-slabs: 1"
     echo "  rrset-cache-slabs: 1"
     echo "  infra-cache-slabs: 1"
@@ -593,7 +605,7 @@ unbound_conf() {
   } >> $UB_CORE_CONF
 
 
-  if [ "$UB_D_VERBOSE" -ge 0 -a "$UB_D_VERBOSE" -le 5 ] ; then
+  if [ "$UB_D_VERBOSE" -ge 0 ] && [ "$UB_D_VERBOSE" -le 5 ] ; then
     echo "  verbosity: $UB_D_VERBOSE" >> $UB_CORE_CONF
   fi
 
@@ -787,8 +799,7 @@ unbound_conf() {
     passive)
       {
         # Some query privacy but "strict" will break some servers
-        if [ "$UB_B_QRY_MINST" -gt 0 \
-          -a "$UB_B_QUERY_MIN" -gt 0 ] ; then
+        if [ "$UB_B_QRY_MINST" -gt 0 ] && [ "$UB_B_QUERY_MIN" -gt 0 ] ; then
           echo "  qname-minimisation: yes"
           echo "  qname-minimisation-strict: yes"
         elif [ "$UB_B_QUERY_MIN" -gt 0 ] ; then
@@ -811,8 +822,7 @@ unbound_conf() {
     aggressive)
       {
         # Some query privacy but "strict" will break some servers
-        if [ "$UB_B_QRY_MINST" -gt 0 \
-          -a "$UB_B_QUERY_MIN" -gt 0 ] ; then
+        if [ "$UB_B_QRY_MINST" -gt 0 ] && [ "$UB_B_QUERY_MIN" -gt 0 ] ; then
           echo "  qname-minimisation: yes"
           echo "  qname-minimisation-strict: yes"
         elif [ "$UB_B_QUERY_MIN" -gt 0 ] ; then
@@ -879,7 +889,7 @@ unbound_conf() {
   fi
 
 
-  if [ -n "$UB_LIST_NETW_LAN" -a "$UB_D_PRIV_BLCK" -gt 1 ] ; then
+  if [ -n "$UB_LIST_NETW_LAN" ] && [ "$UB_D_PRIV_BLCK" -gt 1 ] ; then
     {
       for ifsubnet in $UB_LIST_NETW_LAN ; do
         case $ifsubnet in
@@ -916,7 +926,7 @@ unbound_conf() {
   fi
 
 
-  if [ "$UB_B_LOCL_SERV" -gt 0 -a -n "$UB_LIST_NETW_ALL" ] ; then
+  if [ "$UB_B_LOCL_SERV" -gt 0 ] && [ -n "$UB_LIST_NETW_ALL" ] ; then
     {
       for ifsubnet in $UB_LIST_NETW_ALL ; do
         # Only respond to queries from subnets which have an interface.
@@ -954,8 +964,8 @@ unbound_hostname() {
       echo
     } >> $UB_HOST_CONF
 
-  elif [ -n "$UB_TXT_DOMAIN" \
-         -a \( "$UB_D_WAN_FQDN" -gt 0 -o "$UB_D_LAN_FQDN" -gt 0 \) ] ; then
+  elif [ -n "$UB_TXT_DOMAIN" ] \
+    && { [ "$UB_D_WAN_FQDN" -gt 0 ] || [ "$UB_D_LAN_FQDN" -gt 0 ] ; } ; then
     case "$UB_D_DOMAIN_TYPE" in
       deny|inform_deny|refuse|static)
         {
@@ -967,19 +977,16 @@ unbound_hostname() {
           echo "  local-data: \"$UB_TXT_DOMAIN. $UB_XNS\""
           echo "  local-data: '$UB_TXT_DOMAIN. $UB_XTXT'"
           echo
-          # avoid upstream involvement in RFC6762
-          echo "  domain-insecure: local"
-          echo "  private-domain: local"
-          echo "  local-zone: local $UB_D_DOMAIN_TYPE"
-          echo "  local-data: \"local. $UB_XSOA\""
-          echo "  local-data: \"local. $UB_XNS\""
-          echo "  local-data: 'local. $UB_LTXT'"
-          echo
+          if [ "$UB_TXT_DOMAIN" != "local" ] ; then
+            # avoid involvement in RFC6762, unless it is the local zone name
+            echo "  local-zone: local always_nxdomain"
+            echo
+          fi
         } >> $UB_HOST_CONF
         zonetype=2
         ;;
 
-      transparent|typetransparent)
+      inform|transparent|typetransparent)
         {
           # transparent will permit forward-zone: or stub-zone: clauses
           echo "  private-domain: $UB_TXT_DOMAIN"
@@ -1051,7 +1058,7 @@ unbound_hostname() {
               echo
             } >> $UB_HOST_CONF
 
-          elif [ "$zonetype" -eq 1 -a "$UB_D_PRIV_BLCK" -eq 0 ] ; then
+          elif [ "$zonetype" -eq 1 ] && [ "$UB_D_PRIV_BLCK" -eq 0 ] ; then
             {
               echo "  local-zone: $ifarpa transparent"
               echo
@@ -1073,7 +1080,7 @@ unbound_hostname() {
     fi
 
 
-    if [ "$UB_LIST_NETW_LAN" -a "$UB_D_LAN_FQDN" -gt 0 ] ; then
+    if [ "$UB_LIST_NETW_LAN" ] && [ "$UB_D_LAN_FQDN" -gt 0 ] ; then
       for ifsubnet in $UB_LIST_NETW_LAN ; do
         ifaddr=${ifsubnet#*@}
         ifaddr=${ifaddr%/*}
@@ -1125,7 +1132,7 @@ unbound_hostname() {
     fi
 
 
-    if [ -n "$UB_LIST_NETW_WAN" -a "$UB_D_WAN_FQDN" -gt 0 ] ; then
+    if [ -n "$UB_LIST_NETW_WAN" ] && [ "$UB_D_WAN_FQDN" -gt 0 ] ; then
       for ifsubnet in $UB_LIST_NETW_WAN ; do
         ifaddr=${ifsubnet#*@}
         ifaddr=${ifaddr%/*}
@@ -1182,7 +1189,7 @@ unbound_hostname() {
 
 unbound_uci() {
   local cfg="$1"
-  local dnsmasqpath hostnm
+  local hostnm
 
   hostnm=$( uci_get system.@system[0].hostname | awk '{print tolower($0)}' )
   UB_TXT_HOSTNAME=${hostnm:-thisrouter}
@@ -1205,6 +1212,7 @@ unbound_uci() {
   config_get UB_N_EDNS_SIZE "$cfg" edns_size 1280
   config_get UB_N_RX_PORT   "$cfg" listen_port 53
   config_get UB_N_ROOT_AGE  "$cfg" root_age 9
+  config_get UB_N_THREADS   "$cfg" num_threads 1
 
   config_get UB_D_CONTROL     "$cfg" unbound_control 0
   config_get UB_D_DOMAIN_TYPE "$cfg" domain_type static
@@ -1240,42 +1248,41 @@ unbound_uci() {
 
 
   if [ "$UB_D_DHCP_LINK" = "dnsmasq" ] ; then
-    if [ ! -x /usr/sbin/dnsmasq -o ! -x /etc/init.d/dnsmasq ] ; then
+    if [ ! -x /usr/sbin/dnsmasq ] || [ ! -x /etc/init.d/dnsmasq ] ; then
       UB_D_DHCP_LINK=none
     else
       /etc/init.d/dnsmasq enabled || UB_D_DHCP_LINK=none
     fi
 
 
-    if [ "$UB_B_READY" -eq 0 -a "$UB_D_DHCP_LINK" = "none" ] ; then
+    if [ "$UB_B_READY" -eq 0 ] && [ "$UB_D_DHCP_LINK" = "none" ] ; then
       logger -t unbound -s "cannot forward to dnsmasq"
     fi
   fi
 
 
   if [ "$UB_D_DHCP_LINK" = "odhcpd" ] ; then
-    if [ ! -x /usr/sbin/odhcpd -o ! -x /etc/init.d/odhcpd ] ; then
+    if [ ! -x /usr/sbin/odhcpd ] || [ ! -x /etc/init.d/odhcpd ] ; then
       UB_D_DHCP_LINK=none
     else
       /etc/init.d/odhcpd enabled || UB_D_DHCP_LINK=none
     fi
 
 
-    if [ "$UB_B_READY" -eq 0 -a "$UB_D_DHCP_LINK" = "none" ] ; then
+    if [ "$UB_B_READY" -eq 0 ] && [ "$UB_D_DHCP_LINK" = "none" ] ; then
       logger -t unbound -s "cannot receive records from odhcpd"
     fi
   fi
 
 
-  if [ "$UB_N_EDNS_SIZE" -lt 512 \
-    -o 4096 -lt "$UB_N_EDNS_SIZE" ] ; then
+  if [ "$UB_N_EDNS_SIZE" -lt 512 ] || [ 4096 -lt "$UB_N_EDNS_SIZE" ] ; then
     logger -t unbound -s "edns_size exceeds range, using default"
     UB_N_EDNS_SIZE=1280
   fi
 
 
-  if [ "$UB_N_RX_PORT" -ne 53 \
-      -a \( "$UB_N_RX_PORT" -lt 1024 -o 10240 -lt "$UB_N_RX_PORT" \) ] ; then
+  if [ "$UB_N_RX_PORT" -ne 53 ] \
+  && { [ "$UB_N_RX_PORT" -lt 1024 ] || [ 10240 -lt "$UB_N_RX_PORT" ] ; } ; then
     logger -t unbound -s "privileged port or in 5 digits, using default"
     UB_N_RX_PORT=53
   fi
@@ -1328,8 +1335,8 @@ unbound_include() {
   fi
 
 
-  if [ -z "$adb_files" \
-       -o  ! -x /usr/bin/adblock.sh -o ! -x /etc/init.d/adblock ] ; then
+  if [ -z "$adb_files" ] || [  ! -x /usr/bin/adblock.sh ] \
+  || [ ! -x /etc/init.d/adblock ] ; then
     adb_enabled=0
 
   elif /etc/init.d/adblock enabled ; then
