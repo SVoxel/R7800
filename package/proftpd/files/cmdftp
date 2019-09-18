@@ -436,7 +436,7 @@ get_vendor_from_disk()
 construct_volume()
 {
 	tmp_capacity=$2
-	if [ $tmp_capacity -ge 1024 ] ;then
+	if [ $tmp_capacity -ge 1024 ]; then
 		GByte=`expr $tmp_capacity / 1024`
 		left=`expr $tmp_capacity % 1024`
 		left=`expr $left \* 100`
