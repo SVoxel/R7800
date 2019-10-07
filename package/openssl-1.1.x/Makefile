@@ -267,8 +267,6 @@ else
   OPENSSL_11X_OPTIONS += -DOPENSSL_SMALL_FOOTPRINT
 endif
 
-TARGET_CFLAGS := $(filter-out -mfpu=neon-vfpv4,$(TARGET_CFLAGS)) -mfpu=neon
-
 ifdef CONFIG_OPENSSL_11X_ENGINE
   ifdef CONFIG_OPENSSL_11X_ENGINE_BUILTIN
     OPENSSL_11X_OPTIONS += disable-dynamic-engine
