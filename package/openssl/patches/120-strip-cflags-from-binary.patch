@@ -1,6 +1,5 @@
-diff -Nuar a/crypto/Makefile b/crypto/Makefile
 --- a/crypto/Makefile	2019-09-10 16:24:10.000000000 +0300
-+++ b/crypto/Makefile	2019-09-18 16:52:49.398201200 +0300
++++ b/crypto/Makefile	2019-10-03 11:29:19.341246800 +0300
 @@ -57,7 +57,7 @@
  all: shared
  

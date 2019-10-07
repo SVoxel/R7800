@@ -1,6 +1,6 @@
---- a/Makefile.shared
-+++ b/Makefile.shared
-@@ -95,7 +95,6 @@ LINK_APP=	\
+--- a/Makefile.shared	2019-09-10 16:24:10.000000000 +0300
++++ b/Makefile.shared	2019-10-03 11:39:21.991821700 +0300
+@@ -95,7 +95,6 @@
      LDCMD="$${LDCMD:-$(CC)}"; LDFLAGS="$${LDFLAGS:-$(CFLAGS)}"; \
      LIBPATH=`for x in $$LIBDEPS; do echo $$x; done | sed -e 's/^ *-L//;t' -e d | uniq`; \
      LIBPATH=`echo $$LIBPATH | sed -e 's/ /:/g'`; \
@@ -8,7 +8,7 @@
      $${LDCMD} $${LDFLAGS} -o $${APPNAME:=$(APPNAME)} $(OBJECTS) $${LIBDEPS} )
  
  LINK_SO=	\
-@@ -105,7 +104,6 @@ LINK_SO=	\
+@@ -105,7 +104,6 @@
      SHAREDFLAGS="$${SHAREDFLAGS:-$(CFLAGS) $(SHARED_LDFLAGS)}"; \
      LIBPATH=`for x in $$LIBDEPS; do echo $$x; done | sed -e 's/^ *-L//;t' -e d | uniq`; \
      LIBPATH=`echo $$LIBPATH | sed -e 's/ /:/g'`; \

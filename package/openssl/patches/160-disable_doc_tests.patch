@@ -1,6 +1,6 @@
---- a/Makefile
-+++ b/Makefile
-@@ -138,7 +138,7 @@ FIPSCANLIB=
+--- a/Makefile	2019-09-10 16:36:08.000000000 +0300
++++ b/Makefile	2019-10-03 11:37:18.032695200 +0300
+@@ -139,7 +139,7 @@
  
  BASEADDR=0xFB00000
  
@@ -9,7 +9,7 @@
  ENGDIRS= ccgost
  SHLIBDIRS= crypto ssl
  
-@@ -156,7 +156,7 @@ SDIRS=  \
+@@ -157,7 +157,7 @@
  
  # tests to perform.  "alltests" is a special word indicating that all tests
  # should be performed.
@@ -18,7 +18,7 @@
  
  MAKEFILE= Makefile
  
-@@ -170,7 +170,7 @@ SHELL=/bin/sh
+@@ -171,7 +171,7 @@
  
  TOP=    .
  ONEDIRS=out tmp
@@ -27,7 +27,7 @@
  WDIRS=  windows
  LIBS=   libcrypto.a libssl.a
  SHARED_CRYPTO=libcrypto$(SHLIB_EXT)
-@@ -273,7 +273,7 @@ reflect:
+@@ -276,7 +276,7 @@
  
  sub_all: build_all
  
@@ -36,7 +36,7 @@
  
  build_libs: build_libcrypto build_libssl openssl.pc
  
-@@ -530,7 +530,7 @@ dist:
+@@ -542,7 +542,7 @@
  	@$(MAKE) SDIRS='$(SDIRS)' clean
  	@$(MAKE) TAR='$(TAR)' TARFLAGS='$(TARFLAGS)' $(DISTTARVARS) tar
  
@@ -45,9 +45,10 @@
  
  install_sw:
  	@$(PERL) $(TOP)/util/mkdir-p.pl $(INSTALL_PREFIX)$(INSTALLTOP)/bin \
---- a/Makefile.org
-+++ b/Makefile.org
-@@ -528,7 +528,7 @@ dist:
+diff -Nuar a/Makefile.org b/Makefile.org
+--- a/Makefile.org	2019-10-03 11:35:12.127465200 +0300
++++ b/Makefile.org	2019-10-03 11:37:18.048288600 +0300
+@@ -540,7 +540,7 @@
  	@$(MAKE) SDIRS='$(SDIRS)' clean
  	@$(MAKE) TAR='$(TAR)' TARFLAGS='$(TARFLAGS)' $(DISTTARVARS) tar
  

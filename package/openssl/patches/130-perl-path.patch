@@ -1,61 +1,68 @@
---- a/Configure
-+++ b/Configure
+--- a/Configure	2019-10-03 11:13:23.317922900 +0300
++++ b/Configure	2019-10-03 11:33:42.730864400 +0300
 @@ -1,4 +1,4 @@
 -:
 +#!/usr/bin/perl
  eval 'exec perl -S $0 ${1+"$@"}'
      if $running_under_some_shell;
  ##
---- a/tools/c_rehash.in
-+++ b/tools/c_rehash.in
+diff -Nuar a/tools/c_rehash.in b/tools/c_rehash.in
+--- a/tools/c_rehash.in	2019-09-10 16:24:10.000000000 +0300
++++ b/tools/c_rehash.in	2019-10-03 11:33:42.730864400 +0300
 @@ -1,4 +1,4 @@
 -#!/usr/local/bin/perl
 +#!/usr/bin/perl
  
  # Perl c_rehash script, scan all files in a directory
  # and add symbolic links to their hash values.
---- a/util/clean-depend.pl
-+++ b/util/clean-depend.pl
+diff -Nuar a/util/clean-depend.pl b/util/clean-depend.pl
+--- a/util/clean-depend.pl	2019-09-10 16:24:10.000000000 +0300
++++ b/util/clean-depend.pl	2019-10-03 11:33:43.027668500 +0300
 @@ -1,4 +1,4 @@
 -#!/usr/local/bin/perl -w
 +#!/usr/bin/perl
  # Clean the dependency list in a makefile of standard includes...
  # Written by Ben Laurie <ben@algroup.co.uk> 19 Jan 1999
  
---- a/util/mkdef.pl
-+++ b/util/mkdef.pl
+diff -Nuar a/util/mkdef.pl b/util/mkdef.pl
+--- a/util/mkdef.pl	2019-09-10 16:24:10.000000000 +0300
++++ b/util/mkdef.pl	2019-10-03 11:33:43.027668500 +0300
 @@ -1,4 +1,4 @@
 -#!/usr/local/bin/perl -w
 +#!/usr/bin/perl
  #
  # generate a .def file
  #
---- a/util/mkerr.pl
-+++ b/util/mkerr.pl
+diff -Nuar a/util/mkerr.pl b/util/mkerr.pl
+--- a/util/mkerr.pl	2019-09-10 16:24:10.000000000 +0300
++++ b/util/mkerr.pl	2019-10-03 11:33:43.027668500 +0300
 @@ -1,4 +1,4 @@
 -#!/usr/local/bin/perl -w
 +#!/usr/bin/perl
  
  my $config = "crypto/err/openssl.ec";
  my $hprefix = "openssl/";
---- a/util/mkstack.pl
-+++ b/util/mkstack.pl
+diff -Nuar a/util/mkstack.pl b/util/mkstack.pl
+--- a/util/mkstack.pl	2019-09-10 16:24:10.000000000 +0300
++++ b/util/mkstack.pl	2019-10-03 11:33:43.043289400 +0300
 @@ -1,4 +1,4 @@
 -#!/usr/local/bin/perl -w
 +#!/usr/bin/perl
  
  # This is a utility that searches out "DECLARE_STACK_OF()"
  # declarations in .h and .c files, and updates/creates/replaces
---- a/util/pod2man.pl
-+++ b/util/pod2man.pl
+diff -Nuar a/util/pod2man.pl b/util/pod2man.pl
+--- a/util/pod2man.pl	2019-09-10 16:24:10.000000000 +0300
++++ b/util/pod2man.pl	2019-10-03 11:33:43.043289400 +0300
 @@ -1,4 +1,4 @@
 -: #!/usr/bin/perl-5.005
 +#!/usr/bin/perl
      eval 'exec /usr/bin/perl -S $0 ${1+"$@"}'
  	if $running_under_some_shell;
  
---- a/util/selftest.pl
-+++ b/util/selftest.pl
+diff -Nuar a/util/selftest.pl b/util/selftest.pl
+--- a/util/selftest.pl	2019-09-10 16:24:10.000000000 +0300
++++ b/util/selftest.pl	2019-10-03 11:33:43.043289400 +0300
 @@ -1,4 +1,4 @@
 -#!/usr/local/bin/perl -w
 +#!/usr/bin/perl

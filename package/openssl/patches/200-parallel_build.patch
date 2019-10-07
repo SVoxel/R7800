@@ -1,6 +1,6 @@
---- a/Makefile.org
-+++ b/Makefile.org
-@@ -279,17 +279,17 @@ build_libcrypto: build_crypto build_engi
+--- a/Makefile.org	2019-10-03 11:40:11.489320100 +0300
++++ b/Makefile.org	2019-10-03 11:41:03.251013800 +0300
+@@ -282,17 +282,17 @@
  build_libssl: build_ssl libssl.pc
  
  build_crypto:
@@ -24,7 +24,7 @@
  
  all_testapps: build_libs build_testapps
  build_testapps:
-@@ -461,7 +461,7 @@ update: errors stacks util/libeay.num ut
+@@ -473,7 +473,7 @@
  	@set -e; target=update; $(RECURSIVE_BUILD_CMD)
  
  depend:
@@ -33,7 +33,7 @@
  
  lint:
  	@set -e; target=lint; $(RECURSIVE_BUILD_CMD)
-@@ -523,9 +523,9 @@ dist:
+@@ -535,9 +535,9 @@
  	@$(MAKE) SDIRS='$(SDIRS)' clean
  	@$(MAKE) TAR='$(TAR)' TARFLAGS='$(TARFLAGS)' $(DISTTARVARS) tar
  
@@ -45,7 +45,7 @@
  	@$(PERL) $(TOP)/util/mkdir-p.pl $(INSTALL_PREFIX)$(INSTALLTOP)/bin \
  		$(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR) \
  		$(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines \
-@@ -534,12 +534,19 @@ install_sw:
+@@ -546,12 +546,19 @@
  		$(INSTALL_PREFIX)$(OPENSSLDIR)/misc \
  		$(INSTALL_PREFIX)$(OPENSSLDIR)/certs \
  		$(INSTALL_PREFIX)$(OPENSSLDIR)/private
@@ -66,7 +66,7 @@
  	@set -e; liblist="$(LIBS)"; for i in $$liblist ;\
  	do \
  		if [ -f "$$i" ]; then \
-@@ -623,12 +630,7 @@ install_html_docs:
+@@ -635,12 +642,7 @@
  		done; \
  	done
  
@@ -80,9 +80,10 @@
  	@pod2man="`cd ./util; ./pod2mantest $(PERL)`"; \
  	here="`pwd`"; \
  	filecase=; \
---- a/Makefile.shared
-+++ b/Makefile.shared
-@@ -120,6 +120,7 @@ SYMLINK_SO=	\
+diff -Nuar a/Makefile.shared b/Makefile.shared
+--- a/Makefile.shared	2019-10-03 11:39:21.991821700 +0300
++++ b/Makefile.shared	2019-10-03 11:41:03.251013800 +0300
+@@ -120,6 +120,7 @@
  			done; \
  		fi; \
  		if [ -n "$$SHLIB_SOVER" ]; then \
@@ -90,9 +91,10 @@
  			( $(SET_X); rm -f $$SHLIB$$SHLIB_SUFFIX; \
  			  ln -s $$prev $$SHLIB$$SHLIB_SUFFIX ); \
  		fi; \
---- a/crypto/Makefile
-+++ b/crypto/Makefile
-@@ -85,11 +85,11 @@ testapps:
+diff -Nuar a/crypto/Makefile b/crypto/Makefile
+--- a/crypto/Makefile	2019-10-03 11:29:19.341246800 +0300
++++ b/crypto/Makefile	2019-10-03 11:41:03.266611000 +0300
+@@ -87,11 +87,11 @@
  	@if [ -z "$(THIS)" ]; then $(MAKE) -f $(TOP)/Makefile reflect THIS=$@; fi
  
  subdirs:
@@ -106,7 +108,7 @@
  
  links:
  	@$(PERL) $(TOP)/util/mklink.pl ../include/openssl $(EXHEADER)
-@@ -100,7 +100,7 @@ links:
+@@ -102,7 +102,7 @@
  # lib: $(LIB): are splitted to avoid end-less loop
  lib:	$(LIB)
  	@touch lib
@@ -115,7 +117,7 @@
  	$(AR) $(LIB) $(LIBOBJ)
  	test -z "$(FIPSLIBDIR)" || $(AR) $(LIB) $(FIPSLIBDIR)fipscanister.o
  	$(RANLIB) $(LIB) || echo Never mind.
-@@ -111,7 +111,7 @@ shared: buildinf.h lib subdirs
+@@ -113,7 +113,7 @@
  	fi
  
  libs:
@@ -124,7 +126,7 @@
  
  install:
  	@[ -n "$(INSTALLTOP)" ] # should be set by top Makefile...
-@@ -120,7 +120,7 @@ install:
+@@ -122,7 +122,7 @@
  	(cp $$i $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i; \
  	chmod 644 $(INSTALL_PREFIX)$(INSTALLTOP)/include/openssl/$$i ); \
  	done;
@@ -133,9 +135,10 @@
  
  lint:
  	@target=lint; $(RECURSIVE_MAKE)
---- a/engines/Makefile
-+++ b/engines/Makefile
-@@ -72,7 +72,7 @@ top:
+diff -Nuar a/engines/Makefile b/engines/Makefile
+--- a/engines/Makefile	2019-09-10 16:24:10.000000000 +0300
++++ b/engines/Makefile	2019-10-03 11:41:03.282231300 +0300
+@@ -72,7 +72,7 @@
  
  all:	lib subdirs
  
@@ -144,7 +147,7 @@
  	@if [ -n "$(SHARED_LIBS)" ]; then \
  		set -e; \
  		for l in $(LIBNAMES); do \
-@@ -89,7 +89,7 @@ lib:	$(LIBOBJ)
+@@ -89,7 +89,7 @@
  
  subdirs:
  	echo $(EDIRS)
@@ -153,7 +156,7 @@
  
  files:
  	$(PERL) $(TOP)/util/files.pl Makefile >> $(TOP)/MINFO
-@@ -128,7 +128,7 @@ install:
+@@ -128,7 +128,7 @@
  			  mv -f $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$$pfx$$l$$sfx.new $(INSTALL_PREFIX)$(INSTALLTOP)/$(LIBDIR)/engines/$$pfx$$l$$sfx ); \
  		done; \
  	fi
@@ -162,9 +165,10 @@
  
  tags:
  	ctags $(SRC)
---- a/test/Makefile
-+++ b/test/Makefile
-@@ -139,7 +139,7 @@ install:
+diff -Nuar a/test/Makefile b/test/Makefile
+--- a/test/Makefile	2019-09-10 16:24:10.000000000 +0300
++++ b/test/Makefile	2019-10-03 11:41:03.282231300 +0300
+@@ -145,7 +145,7 @@
  tags:
  	ctags $(SRC)
  
@@ -173,7 +177,7 @@
  
  apps:
  	@(cd ..; $(MAKE) DIRS=apps all)
-@@ -557,7 +557,7 @@ $(SSLV2CONFTEST)$(EXE_EXT): $(SSLV2CONFT
+@@ -593,7 +593,7 @@
  #	fi
  
  dummytest$(EXE_EXT): dummytest.o $(DLIBCRYPTO)

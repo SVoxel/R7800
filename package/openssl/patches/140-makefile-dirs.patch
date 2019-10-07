@@ -1,6 +1,6 @@
---- a/Makefile.org
-+++ b/Makefile.org
-@@ -136,7 +136,7 @@ FIPSCANLIB=
+--- a/Makefile.org	2019-09-10 16:24:10.000000000 +0300
++++ b/Makefile.org	2019-10-03 11:35:12.127465200 +0300
+@@ -137,7 +137,7 @@
  
  BASEADDR=
  
