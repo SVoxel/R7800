@@ -150,6 +150,11 @@ FFMPEG_MINI_DEMUXERS:= \
 	mpegvideo \
 	ogg \
 
+FFMPEG_MINI_PARSERS:= \
+	aac \
+	flac \
+	ac3 \
+
 FFMPEG_MINI_PROTOCOLS:= \
 	file
 
@@ -362,7 +367,6 @@ $(call Package/ffmpeg/Default/description)
  .
  This package contains minimal-featured FFmpeg shared libraries.
 endef
-
 
 FFMPEG_CONFIGURE:= \
 	CFLAGS="$(TARGET_CFLAGS) $(TARGET_CPPFLAGS) $(FPIC)" \
@@ -579,15 +583,21 @@ ifeq ($(BUILD_VARIANT),mini)
 	--disable-everything \
 	$(call FFMPEG_ENABLE,decoder,$(FFMPEG_MINI_DECODERS)) \
 	$(call FFMPEG_ENABLE,demuxer,$(FFMPEG_MINI_DEMUXERS)) \
+	$(call FFMPEG_ENABLE,parser,$(FFMPEG_MINI_PARSERS),CONFIG_FFMPEG_MINI_PARSER) \
 	$(call FFMPEG_ENABLE,protocol,$(FFMPEG_MINI_PROTOCOLS))
 endif
 
 ifneq ($(CONFIG_TARGET_x86),)
-  TARGET_CFLAGS+= -fomit-frame-pointer
+  TARGET_CFLAGS += -fomit-frame-pointer
 endif
 
+# Post-configure actions by 'sed':
+# Resolve Cortex-A15 specifics: conflict of "-march-armv7-a" with "-mcpu=cortex-a15"
+# Optimization flag "-O2"->"-Os"
 define Build/Configure
 	( cd $(PKG_BUILD_DIR); $(FFMPEG_CONFIGURE) )
+	sed -i 's/-march=armv7-a/-mcpu=cortex-a15/g' $(PKG_BUILD_DIR)/ffbuild/config.mak
+	sed -i 's/-O2/-Os/g' $(PKG_BUILD_DIR)/ffbuild/config.mak
 endef
 
 define Build/Compile
