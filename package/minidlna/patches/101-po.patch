@@ -1,0 +1,20 @@
+--- a/po/ru.po	2018-05-05 02:11:25.000000000 +0300
++++ b/po/ru.po	2017-10-16 17:14:49.000000000 +0300
+@@ -95,7 +95,7 @@
+ 
+ #: scanner.c:537
+ msgid "All Video"
+-msgstr "Всё Видео"
++msgstr "Все Фильмы"
+ 
+ #: scanner.c:540
+ msgid "Pictures"
+@@ -115,7 +115,7 @@
+ 
+ #: scanner.c:546
+ msgid "Browse Folders"
+-msgstr "Просмотреть Папки"
++msgstr "Выбор Папки"
+ 
+ #: scanner.c:690
+ #, c-format
