@@ -1,0 +1,20 @@
+--- a/squashfs-tools/mksquashfs.c	2011-03-01 01:24:09.000000000 +0300
++++ b/squashfs-tools/mksquashfs.c	2019-10-11 18:37:54.013407400 +0300
+@@ -43,6 +43,7 @@
+ #include <setjmp.h>
+ #include <sys/ioctl.h>
+ #include <sys/types.h>
++#include <sys/sysmacros.h>
+ #include <sys/mman.h>
+ #include <pthread.h>
+ #include <math.h>
+--- a/squashfs-tools/unsquashfs.c	2011-03-01 01:27:06.000000000 +0300
++++ b/squashfs-tools/unsquashfs.c	2019-10-11 18:38:50.143481000 +0300
+@@ -31,6 +31,7 @@
+ 
+ #include <sys/sysinfo.h>
+ #include <sys/types.h>
++#include <sys/sysmacros.h>
+ 
+ struct cache *fragment_cache, *data_cache;
+ struct queue *to_reader, *to_deflate, *to_writer, *from_writer;
