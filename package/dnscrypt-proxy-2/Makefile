@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 BASENAME:=dnscrypt-proxy
 PKG_NAME:=$(BASENAME)-2
-PKG_VERSION:=2.0.27
+PKG_VERSION:=2.0.28
 PKG_RELEASE:=1
 PKG_SOURCE=$(BASENAME)-linux_arm-$(PKG_VERSION).tar.gz
 PKG_BUILD_DIR:=$(BUILD_DIR)/linux-arm
