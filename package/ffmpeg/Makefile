@@ -154,6 +154,11 @@ FFMPEG_MINI_PARSERS:= \
 	aac \
 	flac \
 	ac3 \
+	h264 \
+	hevc \
+	mpeg4video \
+	mpegvideo \
+	vc1 \
 
 FFMPEG_MINI_PROTOCOLS:= \
 	file
@@ -596,8 +601,8 @@ endif
 # Optimization flag "-O2"->"-Os"
 define Build/Configure
 	( cd $(PKG_BUILD_DIR); $(FFMPEG_CONFIGURE) )
-	sed -i 's/-march=armv7-a/-mcpu=cortex-a15/g' $(PKG_BUILD_DIR)/ffbuild/config.mak
-	sed -i 's/-O2/-Os/g' $(PKG_BUILD_DIR)/ffbuild/config.mak
+	$(SED) 's/-march=armv7-a/-mcpu=cortex-a15/g' $(PKG_BUILD_DIR)/ffbuild/config.mak
+	$(SED) 's/-O2/-Os/g' $(PKG_BUILD_DIR)/ffbuild/config.mak
 endef
 
 define Build/Compile
