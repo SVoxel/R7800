@@ -1,4 +1,4 @@
-/* dnsmasq is Copyright (c) 2000-2017 Simon Kelley
+/* dnsmasq is Copyright (c) 2000-2018 Simon Kelley
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -160,6 +160,12 @@ struct myoption {
 #define LOPT_DHCPTTL       348
 #define LOPT_TFTP_MTU      349
 #define LOPT_REPLY_DELAY   350
+#define LOPT_RAPID_COMMIT  351
+#define LOPT_DUMPFILE      352
+#define LOPT_DUMPMASK      353
+#define LOPT_UBUS          354
+#define LOPT_NAME_MATCH    355
+#define LOPT_CAA           356
  
 #define LOPT_TRY_ALL_NS    351
 
@@ -242,8 +248,10 @@ static const struct myoption opts[] =
     { "srv-host", 1, 0, 'W' },
     { "localise-queries", 0, 0, 'y' },
     { "txt-record", 1, 0, 'Y' },
+    { "caa-record", 1, 0 , LOPT_CAA },
     { "dns-rr", 1, 0, LOPT_RR },
     { "enable-dbus", 2, 0, '1' },
+    { "enable-ubus", 0, 0, LOPT_UBUS },
     { "bootp-dynamic", 2, 0, '3' },
     { "dhcp-mac", 1, 0, '4' },
     { "no-ping", 0, 0, '5' },
@@ -282,7 +290,8 @@ static const struct myoption opts[] =
     { "stop-dns-rebind", 0, 0, LOPT_REBIND },
     { "rebind-domain-ok", 1, 0, LOPT_NO_REBIND },
     { "all-servers", 0, 0, LOPT_NOLAST }, 
-    { "dhcp-match", 1, 0, LOPT_MATCH }, 
+    { "dhcp-match", 1, 0, LOPT_MATCH },
+    { "dhcp-name-match", 1, 0, LOPT_NAME_MATCH },
     { "dhcp-broadcast", 2, 0, LOPT_BROADCAST },
     { "neg-ttl", 1, 0, LOPT_NEGTTL },
     { "max-ttl", 1, 0, LOPT_MAXTTL },
@@ -324,7 +333,7 @@ static const struct myoption opts[] =
     { "dnssec", 0, 0, LOPT_SEC_VALID },
     { "trust-anchor", 1, 0, LOPT_TRUST_ANCHOR },
     { "dnssec-debug", 0, 0, LOPT_DNSSEC_DEBUG },
-    { "dnssec-check-unsigned", 0, 0, LOPT_DNSSEC_CHECK },
+    { "dnssec-check-unsigned", 2, 0, LOPT_DNSSEC_CHECK },
     { "dnssec-no-timecheck", 0, 0, LOPT_DNSSEC_TIME },
     { "dnssec-timestamp", 1, 0, LOPT_DNSSEC_STAMP },
 #ifdef OPTION6_PREFIX_CLASS 
@@ -339,6 +348,9 @@ static const struct myoption opts[] =
     { "script-arp", 0, 0, LOPT_SCRIPT_ARP },
     { "dhcp-ttl", 1, 0 , LOPT_DHCPTTL },
     { "dhcp-reply-delay", 1, 0, LOPT_REPLY_DELAY },
+    { "dhcp-rapid-commit", 0, 0, LOPT_RAPID_COMMIT },
+    { "dumpfile", 1, 0, LOPT_DUMPFILE },
+    { "dumpmask", 1, 0, LOPT_DUMPMASK },
 
 #ifdef DNI_PARENTAL_CTL
 	{"parental-control", 2, 0, LOPT_PARENTAL_CONTROL},
@@ -443,6 +455,7 @@ static struct {
   { 'z', OPT_NOWILD, NULL, gettext_noop("Bind only to interfaces in use."), NULL },
   { 'Z', OPT_ETHERS, NULL, gettext_noop("Read DHCP static host information from %s."), ETHERSFILE },
   { '1', ARG_ONE, "[=<busname>]", gettext_noop("Enable the DBus interface for setting upstream servers, etc."), NULL },
+  { LOPT_UBUS, OPT_UBUS, NULL, gettext_noop("Enable the UBus interface."), NULL },
   { '2', ARG_DUP, "<interface>", gettext_noop("Do not provide DHCP on this interface, only provide DNS."), NULL },
   { '3', ARG_DUP, "[=tag:<tag>]...", gettext_noop("Enable dynamic address allocation for bootp."), NULL },
   { '4', ARG_DUP, "set:<tag>,<mac address>", gettext_noop("Map MAC address (with wildcards) to option set."), NULL },
@@ -476,6 +489,7 @@ static struct {
   { LOPT_NO_REBIND, ARG_DUP, "/<domain>/", gettext_noop("Inhibit DNS-rebind protection on this domain."), NULL },
   { LOPT_NOLAST, OPT_ALL_SERVERS, NULL, gettext_noop("Always perform DNS queries to all servers."), NULL },
   { LOPT_MATCH, ARG_DUP, "set:<tag>,<optspec>", gettext_noop("Set tag if client includes matching option in request."), NULL },
+  { LOPT_NAME_MATCH, ARG_DUP, "set:<tag>,<string>[*]", gettext_noop("Set tag if client provides given name."), NULL },
   { LOPT_ALTPORT, ARG_ONE, "[=<ports>]", gettext_noop("Use alternative ports for DHCP."), NULL },
   { LOPT_NAPTR, ARG_DUP, "<name>,<naptr>", gettext_noop("Specify NAPTR DNS record."), NULL },
   { LOPT_MINPORT, ARG_ONE, "<port>", gettext_noop("Specify lowest port available for DNS query transmission."), NULL },
@@ -498,6 +512,7 @@ static struct {
   { LOPT_RA, OPT_RA, NULL, gettext_noop("Send router-advertisements for interfaces doing DHCPv6"), NULL },
   { LOPT_DUID, ARG_ONE, "<enterprise>,<duid>", gettext_noop("Specify DUID_EN-type DHCPv6 server DUID"), NULL },
   { LOPT_HOST_REC, ARG_DUP, "<name>,<address>[,<ttl>]", gettext_noop("Specify host (A/AAAA and PTR) records"), NULL },
+  { LOPT_CAA, ARG_DUP, "<name>,<flags>,<tag>,<value>", gettext_noop("Specify certification authority authorization record"), NULL },  
   { LOPT_RR, ARG_DUP, "<name>,<RR-number>,[<data>]", gettext_noop("Specify arbitrary DNS resource record"), NULL },
   { LOPT_CLVERBIND, OPT_CLEVERBIND, NULL, gettext_noop("Bind to interfaces in use - check for new interfaces"), NULL },
   { LOPT_AUTHSERV, ARG_ONE, "<NS>,<interface>", gettext_noop("Export local names to global DNS"), NULL },
@@ -511,7 +526,7 @@ static struct {
   { LOPT_SEC_VALID, OPT_DNSSEC_VALID, NULL, gettext_noop("Activate DNSSEC validation"), NULL },
   { LOPT_TRUST_ANCHOR, ARG_DUP, "<domain>,[<class>],...", gettext_noop("Specify trust anchor key digest."), NULL },
   { LOPT_DNSSEC_DEBUG, OPT_DNSSEC_DEBUG, NULL, gettext_noop("Disable upstream checking for DNSSEC debugging."), NULL },
-  { LOPT_DNSSEC_CHECK, OPT_DNSSEC_NO_SIGN, NULL, gettext_noop("Ensure answers without DNSSEC are in unsigned zones."), NULL },
+  { LOPT_DNSSEC_CHECK, ARG_DUP, NULL, gettext_noop("Ensure answers without DNSSEC are in unsigned zones."), NULL },
   { LOPT_DNSSEC_TIME, OPT_DNSSEC_TIME, NULL, gettext_noop("Don't check DNSSEC signature timestamps until first cache-reload"), NULL },
   { LOPT_DNSSEC_STAMP, ARG_ONE, "<path>", gettext_noop("Timestamp file to verify system clock for DNSSEC"), NULL },
 #ifdef OPTION6_PREFIX_CLASS 
@@ -526,6 +541,9 @@ static struct {
   { LOPT_IGNORE_ADDR, ARG_DUP, "<ipaddr>", gettext_noop("Ignore DNS responses containing ipaddr."), NULL }, 
   { LOPT_DHCPTTL, ARG_ONE, "<ttl>", gettext_noop("Set TTL in DNS responses with DHCP-derived addresses."), NULL }, 
   { LOPT_REPLY_DELAY, ARG_ONE, "<integer>", gettext_noop("Delay DHCP replies for at least number of seconds."), NULL },
+  { LOPT_RAPID_COMMIT, OPT_RAPID_COMMIT, NULL, gettext_noop("Enables DHCPv4 Rapid Commit option."), NULL },
+  { LOPT_DUMPFILE, ARG_ONE, "<path>", gettext_noop("Path to debug packet dump file"), NULL },
+  { LOPT_DUMPMASK, ARG_ONE, "<hex>", gettext_noop("Mask which packets to dump"), NULL },
 
 #ifdef DNI_PARENTAL_CTL
   { LOPT_PARENTAL_CONTROL, ARG_ONE, "    --parental-control[=<file>]", gettext_noop("Enable Parental Control and specify deviceid file(default to /tmp/parentalcontrol.conf)."), NULL },
@@ -837,7 +855,7 @@ char *parse_server(char *arg, union mysockaddr *addr, union mysockaddr *source_a
     if (interface_opt)
       {
 #if defined(SO_BINDTODEVICE)
-	strncpy(interface, interface_opt, IF_NAMESIZE - 1);
+	safe_strncpy(interface, interface_opt, IF_NAMESIZE);
 #else
 	return _("interface binding not supported");
 #endif
@@ -866,7 +884,7 @@ char *parse_server(char *arg, union mysockaddr *addr, union mysockaddr *source_a
 		return _("interface can only be specified once");
 	      
 	      source_addr->in.sin_addr.s_addr = INADDR_ANY;
-	      strncpy(interface, source, IF_NAMESIZE - 1);
+	      safe_strncpy(interface, source, IF_NAMESIZE);
 #else
 	      return _("interface binding not supported");
 #endif
@@ -901,7 +919,7 @@ char *parse_server(char *arg, union mysockaddr *addr, union mysockaddr *source_a
 		return _("interface can only be specified once");
 	      
 	      source_addr->in6.sin6_addr = in6addr_any;
-	      strncpy(interface, source, IF_NAMESIZE - 1);
+	      safe_strncpy(interface, source, IF_NAMESIZE);
 #else
 	      return _("interface binding not supported");
 #endif
@@ -1208,7 +1226,7 @@ static int parse_dhcp_opt(char *errstr, char *arg, int flags)
 	    case 'd':
 	    case 'D':
 	      fac *= 24;
-	      /* fall though */
+	      /* fall through */
 	    case 'h':
 	    case 'H':
 	      fac *= 60;
@@ -1782,7 +1800,7 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
 #endif
 	}
       break;
-      
+
     case 'x': /* --pid-file */
       daemon->runfile = opt_string_alloc(arg);
       break;
@@ -1854,6 +1872,14 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
 	ret_err(_("bad MX target"));
       break;
 
+    case LOPT_DUMPFILE:  /* --dumpfile */
+      daemon->dump_file = opt_string_alloc(arg);
+      break;
+
+    case LOPT_DUMPMASK:  /* --dumpmask */
+      daemon->dump_mask = strtol(arg, NULL, 0);
+      break;
+      
 #ifdef HAVE_DHCP      
     case 'l':  /* --dhcp-leasefile */
       daemon->lease_file = opt_string_alloc(arg);
@@ -1921,47 +1947,43 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
 	break;
       }
       
-
-#ifdef HAVE_AUTH
     case LOPT_AUTHSERV: /* --auth-server */
-      if (!(comma = split(arg)))
-	ret_err(gen_err);
+      comma = split(arg);
       
       daemon->authserver = opt_string_alloc(arg);
-      arg = comma;
-      do {
-	struct iname *new = opt_malloc(sizeof(struct iname));
-	comma = split(arg);
-	new->name = NULL;
-	unhide_metas(arg);
-	if (inet_pton(AF_INET, arg, &new->addr.in.sin_addr) > 0)
-	  new->addr.sa.sa_family = AF_INET;
+      
+      while ((arg = comma))
+	{
+	  struct iname *new = opt_malloc(sizeof(struct iname));
+	  comma = split(arg);
+	  new->name = NULL;
+	  unhide_metas(arg);
+	  if (inet_pton(AF_INET, arg, &new->addr.in.sin_addr) > 0)
+	    new->addr.sa.sa_family = AF_INET;
 #ifdef HAVE_IPV6
-	else if (inet_pton(AF_INET6, arg, &new->addr.in6.sin6_addr) > 0)
-	  new->addr.sa.sa_family = AF_INET6;
+	  else if (inet_pton(AF_INET6, arg, &new->addr.in6.sin6_addr) > 0)
+	    new->addr.sa.sa_family = AF_INET6;
 #endif
-	else
-	  {
-	    char *fam = split_chr(arg, '/');
-	    new->name = opt_string_alloc(arg);
-	    new->addr.sa.sa_family = 0;
-	    if (fam)
-	      {
-		if (strcmp(fam, "4") == 0)
-		  new->addr.sa.sa_family = AF_INET;
+	  else
+	    {
+	      char *fam = split_chr(arg, '/');
+	      new->name = opt_string_alloc(arg);
+	      new->addr.sa.sa_family = 0;
+	      if (fam)
+		{
+		  if (strcmp(fam, "4") == 0)
+		    new->addr.sa.sa_family = AF_INET;
 #ifdef HAVE_IPV6
-		else if (strcmp(fam, "6") == 0)
-		  new->addr.sa.sa_family = AF_INET6;
+		  else if (strcmp(fam, "6") == 0)
+		    new->addr.sa.sa_family = AF_INET6;
 #endif
-		else
-		  ret_err(gen_err);
-	      } 
-	  }
-	new->next = daemon->authinterface;
-	daemon->authinterface = new;
-	
-	arg = comma;
-      } while (arg);
+		  else
+		    ret_err(gen_err);
+		} 
+	    }
+	  new->next = daemon->authinterface;
+	  daemon->authinterface = new;
+	};
             
       break;
 
@@ -2097,7 +2119,6 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
 	}
 
       break;
-#endif
 
     case 's':         /* --domain */
     case LOPT_SYNTH:  /* --synth-domain */
@@ -2117,7 +2138,8 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
 		  char *netpart;
 		  
 		  new->prefix = NULL;
-
+		  new->indexed = 0;
+		  
 		  unhide_metas(comma);
 		  if ((netpart = split_chr(comma, '/')))
 		    {
@@ -2254,8 +2276,16 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
 		    }
 		  else
 		    {
+		      char *star;
 		      new->next = daemon->synth_domains;
 		      daemon->synth_domains = new;
+		      if (new->prefix &&
+			  (star = strrchr(new->prefix, '*'))
+			  && *(star+1) == 0)
+			{
+			  *star = 0;
+			  new->indexed = 1;
+			}
 		    }
 		}
 	      else if (option == 's')
@@ -2439,7 +2469,7 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
 		if (strcmp(arg, "#") == 0)
 		  domain = "";
 		else if (strlen (arg) != 0 && !(domain = canonicalise_opt(arg)))
-		  option = '?';
+		  ret_err(gen_err);
 		serv = opt_malloc(sizeof(struct server));
 		memset(serv, 0, sizeof(struct server));
 		serv->next = newlist;
@@ -2481,11 +2511,7 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
 	  }
 
 	else if (strcmp(arg, "#") == 0)
-	  {
-	    newlist->flags |= SERV_USE_RESOLV; /* treat in ordinary way */
-	    if (newlist->flags & SERV_LITERAL_ADDRESS)
-	      ret_err(gen_err);
-	  }
+	  newlist->flags |= SERV_USE_RESOLV; /* treat in ordinary way */
 	else
 	  {
 	    char *err = parse_server(arg, &newlist->addr, &newlist->source_addr, newlist->interface, &newlist->flags);
@@ -2571,7 +2597,7 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
 		 if (strcmp(arg, "#") == 0 || !*arg)
 		   domain = "";
 		 else if (strlen(arg) != 0 && !(domain = canonicalise_opt(arg)))
-		   option = '?';
+		   ret_err(gen_err);
 		 ipsets->next = opt_malloc(sizeof(struct ipsets));
 		 ipsets = ipsets->next;
 		 memset(ipsets, 0, sizeof(struct ipsets));
@@ -2586,13 +2612,11 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
 	     memset(ipsets, 0, sizeof(struct ipsets));
 	     ipsets->domain = "";
 	   }
+	 
 	 if (!arg || !*arg)
-	   {
-	     option = '?';
-	     break;
-	   }
-	 size = 2;
-	 for (end = arg; *end; ++end) 
+	   ret_err(gen_err);
+	 
+	 for (size = 2, end = arg; *end; ++end) 
 	   if (*end == ',')
 	       ++size;
      
@@ -2625,8 +2649,6 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
 	    
 	    if (size < 0)
 	      size = 0;
-	    else if (size > 10000)
-	      size = 10000;
 	    
 	    daemon->cachesize = size;
 	  }
@@ -2779,15 +2801,24 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
 	      
     case LOPT_BRIDGE:   /* --bridge-interface */
       {
-	struct dhcp_bridge *new = opt_malloc(sizeof(struct dhcp_bridge));
+	struct dhcp_bridge *new;
+
 	if (!(comma = split(arg)) || strlen(arg) > IF_NAMESIZE - 1 )
 	  ret_err(_("bad bridge-interface"));
-	
-	strcpy(new->iface, arg);
-	new->alias = NULL;
-	new->next = daemon->bridges;
-	daemon->bridges = new;
 
+	for (new = daemon->bridges; new; new = new->next)
+	  if (strcmp(new->iface, arg) == 0)
+	    break;
+
+	if (!new)
+	  {
+	     new = opt_malloc(sizeof(struct dhcp_bridge));
+	     strcpy(new->iface, arg);
+	     new->alias = NULL;
+	     new->next = daemon->bridges;
+	     daemon->bridges = new;
+	  }
+	
 	do {
 	  arg = comma;
 	  comma = split(arg);
@@ -2812,12 +2843,6 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
 	
 	memset (new, 0, sizeof(*new));
 	new->lease_time = DEFLEASE;
-	
-	if (!arg)
-	  {
-	    option = '?';
-	    break;
-	  }
 	
 	while(1)
 	  {
@@ -3007,7 +3032,7 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
 		      case 'd':
 		      case 'D':
 			fac *= 24;
-			/* fall though */
+			/* fall through */
 		      case 'h':
 		      case 'H':
 			fac *= 60;
@@ -3307,7 +3332,33 @@ static int one_opt(int option, char *arg, char *errstr, char *gen_err, int comma
 			    option == LOPT_FORCE ? DHOPT_FORCE : 
 			    (option == LOPT_MATCH ? DHOPT_MATCH :
 			     (option == LOPT_OPTS ? DHOPT_BANK : 0)));
-     
+
+    case LOPT_NAME_MATCH: /* --dhcp-name-match */
+      {
+	struct dhcp_match_name *new = opt_malloc(sizeof(struct dhcp_match_name));
+	struct dhcp_netid *id = opt_malloc(sizeof(struct dhcp_netid));
+	ssize_t len;
+	
+	if (!(comma = split(arg)) || (len = strlen(comma)) == 0)
+	  ret_err(gen_err);
+
+	new->wildcard = 0;
+	new->netid = id;
+	id->net = opt_string_alloc(set_prefix(arg));
+
+	if (comma[len-1] == '*')
+	  {
+	    comma[len-1] = 0;
+	    new->wildcard = 1;
+	  }
+	new->name = opt_string_alloc(comma);
+
+	new->next = daemon->dhcp_name_match;
+	daemon->dhcp_name_match = new;
+
+	break;
+      }
+      
     case 'M': /* --dhcp-boot */
       {
 	struct dhcp_netid *id = NULL;
@@ -3820,11 +3871,9 @@ err:
 
 	if ((k < 2) || 
 	    (!(inet_pton(AF_INET, a[0], &new->in) > 0)) ||
-	    (!(inet_pton(AF_INET, a[1], &new->out) > 0)))
-	  option = '?';
-	
-	if (k == 3 && !inet_pton(AF_INET, a[2], &new->mask))
-	  option = '?';
+	    (!(inet_pton(AF_INET, a[1], &new->out) > 0)) ||
+	    (k == 3 && !inet_pton(AF_INET, a[2], &new->mask)))
+	  ret_err(_("missing address in alias"));
 	
 	if (dash && 
 	    (!(inet_pton(AF_INET, dash, &new->end) > 0) ||
@@ -3893,6 +3942,7 @@ err:
 
 	while (arg != last)
 	  {
+	    int arglen = strlen(arg);
 	    alias = canonicalise_opt(arg);
 
 	    if (!alias || !target)
@@ -3908,7 +3958,7 @@ err:
 	    new->target = target;
 	    new->ttl = ttl;
 
-	    arg += strlen(arg)+1;
+	    for (arg += arglen+1; *arg && isspace(*arg); arg++);
 	  }
       
 	break;
@@ -3995,7 +4045,7 @@ err:
 	
 	if (data)
 	  {
-	    new->txt=opt_malloc(len);
+	    new->txt = opt_malloc(len);
 	    new->len = len;
 	    memcpy(new->txt, data, len);
 	  }
@@ -4003,6 +4053,37 @@ err:
 	break;
       }
 
+    case LOPT_CAA: /* --caa-record */
+      {
+       	struct txt_record *new;
+	char *tag, *value;
+	int flags;
+	
+	comma = split(arg);
+	tag = split(comma);
+	value = split(tag);
+	
+	new = opt_malloc(sizeof(struct txt_record));
+	new->next = daemon->rr;
+	daemon->rr = new;
+
+	if (!atoi_check(comma, &flags) || !tag || !value || !(new->name = canonicalise_opt(arg)))
+	  ret_err(_("bad CAA record"));
+	
+	unhide_metas(tag);
+	unhide_metas(value);
+
+	new->len = strlen(tag) + strlen(value) + 2;
+	new->txt = opt_malloc(new->len);
+	new->txt[0] = flags;
+	new->txt[1] = strlen(tag);
+	memcpy(&new->txt[2], tag, strlen(tag));
+	memcpy(&new->txt[2 + strlen(tag)], value, strlen(value));
+	new->class = T_CAA;
+	
+	break;
+      }
+	
     case 'Y':  /* --txt-record */
       {
 	struct txt_record *new;
@@ -4161,11 +4242,21 @@ err:
       }
 
 #ifdef HAVE_DNSSEC
-    case LOPT_DNSSEC_STAMP:
+    case LOPT_DNSSEC_STAMP: /* --dnssec-timestamp */
       daemon->timestamp_file = opt_string_alloc(arg); 
       break;
 
-    case LOPT_TRUST_ANCHOR:
+    case LOPT_DNSSEC_CHECK: /* --dnssec-check-unsigned */
+      if (arg)
+	{
+	  if (strcmp(arg, "no") == 0)
+	    set_option_bool(OPT_DNSSEC_IGN_NS);
+	  else
+	    ret_err(_("bad value for dnssec-check-unsigned"));
+	}
+      break;
+      
+    case LOPT_TRUST_ANCHOR: /* --trust-anchor */
       {
 	struct ds_config *new = opt_malloc(sizeof(struct ds_config));
       	char *cp, *cp1, *keyhex, *digest, *algo = NULL;
@@ -4391,7 +4482,7 @@ static void read_file(char *file, FILE *f, int hard_opt)
       if (errmess)
 	strcpy(daemon->namebuff, errmess);
 	  
-      if (errmess || !one_opt(option, arg, buff, _("error"), 0, hard_opt == LOPT_REV_SERV))
+      if (errmess || !one_opt(option, arg, daemon->namebuff, _("error"), 0, hard_opt == LOPT_REV_SERV))
 	{
 	  sprintf(daemon->namebuff + strlen(daemon->namebuff), _(" at line %d of %s"), lineno, file);
 	  if (hard_opt != 0)
@@ -4405,7 +4496,7 @@ static void read_file(char *file, FILE *f, int hard_opt)
   fclose(f);
 }
 
-#ifdef HAVE_DHCP
+#if defined(HAVE_DHCP) && defined(HAVE_INOTIFY)
 int option_read_dynfile(char *file, int flags)
 {
   my_syslog(MS_DHCP | LOG_INFO, _("read %s"), file);
@@ -4606,86 +4697,99 @@ void read_servers_file(void)
  
 
 #ifdef HAVE_DHCP
+static void clear_dynamic_conf(void)
+{
+  struct dhcp_config *configs, *cp, **up;
+  
+  /* remove existing... */
+  for (up = &daemon->dhcp_conf, configs = daemon->dhcp_conf; configs; configs = cp)
+    {
+      cp = configs->next;
+      
+      if (configs->flags & CONFIG_BANK)
+	{
+	  struct hwaddr_config *mac, *tmp;
+	  struct dhcp_netid_list *list, *tmplist;
+	  
+	  for (mac = configs->hwaddr; mac; mac = tmp)
+	    {
+	      tmp = mac->next;
+	      free(mac);
+	    }
+	  
+	  if (configs->flags & CONFIG_CLID)
+	    free(configs->clid);
+	  
+	  for (list = configs->netid; list; list = tmplist)
+	    {
+	      free(list->list);
+	      tmplist = list->next;
+	      free(list);
+	    }
+	  
+	  if (configs->flags & CONFIG_NAME)
+	    free(configs->hostname);
+	  
+	  *up = configs->next;
+	  free(configs);
+	}
+      else
+	up = &configs->next;
+    }
+}
+
+static void clear_dynamic_opt(void)
+{
+  struct dhcp_opt *opts, *cp, **up;
+  struct dhcp_netid *id, *next;
+
+  for (up = &daemon->dhcp_opts, opts = daemon->dhcp_opts; opts; opts = cp)
+    {
+      cp = opts->next;
+      
+      if (opts->flags & DHOPT_BANK)
+	{
+	  if ((opts->flags & DHOPT_VENDOR))
+	    free(opts->u.vendor_class);
+	  free(opts->val);
+	  for (id = opts->netid; id; id = next)
+	    {
+	      next = id->next;
+	      free(id->net);
+	      free(id);
+	    }
+	  *up = opts->next;
+	  free(opts);
+	}
+      else
+	up = &opts->next;
+    }
+}
+
 void reread_dhcp(void)
 {
-  struct hostsfile *hf;
+   struct hostsfile *hf;
 
-  if (daemon->dhcp_hosts_file)
+   /* Do these even if there is no daemon->dhcp_hosts_file or
+      daemon->dhcp_opts_file since entries may have been created by the
+      inotify dynamic file reading system. */
+   
+   clear_dynamic_conf();
+   clear_dynamic_opt();
+
+   if (daemon->dhcp_hosts_file)
     {
-      struct dhcp_config *configs, *cp, **up;
-  
-      /* remove existing... */
-      for (up = &daemon->dhcp_conf, configs = daemon->dhcp_conf; configs; configs = cp)
-	{
-	  cp = configs->next;
-	  
-	  if (configs->flags & CONFIG_BANK)
-	    {
-	      struct hwaddr_config *mac, *tmp;
-	      struct dhcp_netid_list *list, *tmplist;
-	      
-	      for (mac = configs->hwaddr; mac; mac = tmp)
-		{
-		  tmp = mac->next;
-		  free(mac);
-		}
-
-	      if (configs->flags & CONFIG_CLID)
-		free(configs->clid);
-
-	      for (list = configs->netid; list; list = tmplist)
-		{
-		  free(list->list);
-		  tmplist = list->next;
-		  free(list);
-		}
-	      
-	      if (configs->flags & CONFIG_NAME)
-		free(configs->hostname);
-	      
-	      *up = configs->next;
-	      free(configs);
-	    }
-	  else
-	    up = &configs->next;
-	}
-      
       daemon->dhcp_hosts_file = expand_filelist(daemon->dhcp_hosts_file);
       for (hf = daemon->dhcp_hosts_file; hf; hf = hf->next)
-	 if (!(hf->flags & AH_INACTIVE))
-	   {
-	     if (one_file(hf->fname, LOPT_BANK))  
-	       my_syslog(MS_DHCP | LOG_INFO, _("read %s"), hf->fname);
-	   }
+	if (!(hf->flags & AH_INACTIVE))
+	  {
+	    if (one_file(hf->fname, LOPT_BANK))  
+	      my_syslog(MS_DHCP | LOG_INFO, _("read %s"), hf->fname);
+	  }
     }
 
   if (daemon->dhcp_opts_file)
     {
-      struct dhcp_opt *opts, *cp, **up;
-      struct dhcp_netid *id, *next;
-
-      for (up = &daemon->dhcp_opts, opts = daemon->dhcp_opts; opts; opts = cp)
-	{
-	  cp = opts->next;
-	  
-	  if (opts->flags & DHOPT_BANK)
-	    {
-	      if ((opts->flags & DHOPT_VENDOR))
-		free(opts->u.vendor_class);
-	      free(opts->val);
-	      for (id = opts->netid; id; id = next)
-		{
-		  next = id->next;
-		  free(id->net);
-		  free(id);
-		}
-	      *up = opts->next;
-	      free(opts);
-	    }
-	  else
-	    up = &opts->next;
-	}
-      
       daemon->dhcp_opts_file = expand_filelist(daemon->dhcp_opts_file);
       for (hf = daemon->dhcp_opts_file; hf; hf = hf->next)
 	if (!(hf->flags & AH_INACTIVE))
@@ -4694,11 +4798,18 @@ void reread_dhcp(void)
 	      my_syslog(MS_DHCP | LOG_INFO, _("read %s"), hf->fname);
 	  }
     }
+
+#  ifdef HAVE_INOTIFY
+  /* Setup notify and read pre-existing files. */
+  set_dynamic_inotify(AH_DHCP_HST | AH_DHCP_OPT, 0, NULL, 0);
+#  endif
 }
 #endif
-    
+
 void read_opts(int argc, char **argv, char *compile_opts)
 {
+  size_t argbuf_size = MAXDNAME;
+  char *argbuf = opt_malloc(argbuf_size);
   char *buff = opt_malloc(MAXDNAME);
   int option, conffile_opt = '7', testmode = 0;
   char *arg, *conffile = CONFFILE;
@@ -4729,6 +4840,7 @@ void read_opts(int argc, char **argv, char *compile_opts)
   daemon->soa_retry = SOA_RETRY;
   daemon->soa_expiry = SOA_EXPIRY;
   daemon->max_port = MAX_PORT;
+  daemon->min_port = MIN_PORT;
 
 #ifdef SUP_STATIC_PPTP
   daemon->static_pptp_enable = 0;
@@ -4774,9 +4886,14 @@ void read_opts(int argc, char **argv, char *compile_opts)
       /* Copy optarg so that argv doesn't get changed */
       if (optarg)
 	{
-	  strncpy(buff, optarg, MAXDNAME);
-	  buff[MAXDNAME-1] = 0;
-	  arg = buff;
+	  if (strlen(optarg) >= argbuf_size)
+	    {
+	      free(argbuf);
+	      argbuf_size = strlen(optarg) + 1;
+	      argbuf = opt_malloc(argbuf_size);
+	    }
+	  safe_strncpy(argbuf, optarg, argbuf_size);
+	  arg = argbuf;
 	}
       else
 	arg = NULL;
@@ -4823,6 +4940,8 @@ void read_opts(int argc, char **argv, char *compile_opts)
 	    die(_("bad command line options: %s"), daemon->namebuff, EC_BADCONF);
 	}
     }
+
+  free(argbuf);
 
   if (conffile)
     {

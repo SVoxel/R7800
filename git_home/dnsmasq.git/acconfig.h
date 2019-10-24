@@ -340,6 +340,11 @@ typedef unsigned long in_addr_t;
  */
 #undef BIND_SRVSOCK_TO_WAN
 
+/*
+ * define ENABLE_INSIGHT_LOG to enable insight log
+ */
+#undef ENABLE_INSIGHT_LOG
+
 @BOTTOM@
 
 #endif

@@ -69,7 +69,7 @@ start() {
 	fi
 	# end static pptp config
 
-	/usr/sbin/dnsmasq --except-interface=lo -u root -r $resolv_file $opt_argv
+	/usr/sbin/dnsmasq --except-interface=lo -r $resolv_file $opt_argv
 
 	[ "$($CONFIG get dns_hijack)" = "1" ] && set_hijack &
 }

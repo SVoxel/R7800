@@ -1,4 +1,4 @@
-/* dnsmasq is Copyright (c) 2000-2017 Simon Kelley
+/* dnsmasq is Copyright (c) 2000-2018 Simon Kelley
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -246,14 +246,16 @@ unsigned char *do_rfc1035_name(unsigned char *p, char *sval, char *limit)
   
   while (sval && *sval)
     {
-      if (limit && p + 1 > (unsigned char*)limit)
-        return p;
-
       unsigned char *cp = p++;
+
+      if (limit && p > (unsigned char*)limit)
+        return NULL;
+
       for (j = 0; *sval && (*sval != '.'); sval++, j++)
 	{
           if (limit && p + 1 > (unsigned char*)limit)
-            return p;
+            return NULL;
+
 #ifdef HAVE_DNSSEC
 	  if (option_bool(OPT_DNSSEC_VALID) && *sval == NAME_ESCAPE)
 	    *p++ = (*(++sval))-1;
@@ -261,10 +263,12 @@ unsigned char *do_rfc1035_name(unsigned char *p, char *sval, char *limit)
 #endif		
 	    *p++ = *sval;
 	}
+      
       *cp  = j;
       if (*sval)
 	sval++;
     }
+  
   return p;
 }
 
@@ -277,7 +281,18 @@ void *safe_malloc(size_t size)
     die(_("could not get memory"), NULL, EC_NOMEM);
       
   return ret;
-}    
+}
+
+/* Ensure limited size string is always terminated.
+ * Can be replaced by (void)strlcpy() on some platforms */
+void safe_strncpy(char *dest, const char *src, size_t size)
+{
+  if (size != 0)
+    {
+      dest[size-1] = '\0';
+      strncpy(dest, src, size-1);
+    }
+}
 
 void safe_pipe(int *fd, int read_noblock)
 {
@@ -351,6 +366,44 @@ int hostname_isequal(const char *a, const char *b)
   return 1;
 }
 
+/* is b equal to or a subdomain of a return 2 for equal, 1 for subdomain */
+int hostname_issubdomain(char *a, char *b)
+{
+  char *ap, *bp;
+  unsigned int c1, c2;
+  
+  /* move to the end */
+  for (ap = a; *ap; ap++); 
+  for (bp = b; *bp; bp++);
+
+  /* a shorter than b or a empty. */
+  if ((bp - b) < (ap - a) || ap == a)
+    return 0;
+
+  do
+    {
+      c1 = (unsigned char) *(--ap);
+      c2 = (unsigned char) *(--bp);
+  
+       if (c1 >= 'A' && c1 <= 'Z')
+	 c1 += 'a' - 'A';
+       if (c2 >= 'A' && c2 <= 'Z')
+	 c2 += 'a' - 'A';
+
+       if (c1 != c2)
+	 return 0;
+    } while (ap != a);
+
+  if (bp == b)
+    return 2;
+
+  if (*(--bp) == '.')
+    return 1;
+
+  return 0;
+}
+ 
+  
 time_t dnsmasq_time(void)
 {
 #ifdef HAVE_BROKEN_RTC

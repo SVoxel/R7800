@@ -1335,6 +1335,20 @@ _ACEOF
 
 fi;
 
+# Check whether --enable-insight_log was given.
+if test "${enable_insight_log+set}" = set; then
+	enableval="$enable_insight_log"
+
+		if test x"$enableval" = xyes ; then
+			cat >>confdefs.h <<\_ACEOF
+#define ENABLE_INSIGHT_LOG 1
+_ACEOF
+
+		fi
+
+
+fi;
+
 # Check whether --enable-start_dnsmasq_when_boot_up or --disable-start_dnsmasq_when_boot_up was given.
 if test "${enable_start_dnsmasq_when_boot_up+set}" = set; then
   enableval="$enable_start_dnsmasq_when_boot_up"

@@ -96,6 +96,13 @@ AC_ARG_ENABLE(start_dnsmasq_when_boot_up,
 	],
 )
 
+AC_ARG_ENABLE(insight_log,
+   [AC_HELP_STRING(
+	   [--enable-insight_log],
+	   [enable insight log])
+   ],
+)
+
 if test x"${enable_parental_ctl_support}" != xyes; then
 	sed -i "{:a;N;/\n\t# start parental ctl config.*# end parental ctl config\n/s///;t;ba}" dnsmasq.init
 fi

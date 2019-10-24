@@ -1,4 +1,4 @@
-/* dnsmasq is Copyright (c) 2000-2017 Simon Kelley
+/* dnsmasq is Copyright (c) 2000-2018 Simon Kelley
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -150,10 +150,10 @@ int iface_enumerate(int family, void *parm, int (*callback)())
     struct rtgenmsg g; 
   } req;
 
+  memset(&req, 0, sizeof(req));
+  memset(&addr, 0, sizeof(addr));
+
   addr.nl_family = AF_NETLINK;
-  addr.nl_pad = 0;
-  addr.nl_groups = 0;
-  addr.nl_pid = 0; /* address to kernel */
  
  again: 
   if (family == AF_UNSPEC)

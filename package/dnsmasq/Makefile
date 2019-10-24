@@ -9,11 +9,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dnsmasq
-PKG_VERSION:=2.78
+PKG_VERSION:=2.80
 PKG_RELEASE:=1
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 include $(INCLUDE_DIR)/package.mk
+
+TARGET_CFLAGS += -ffunction-sections -fdata-sections
+TARGET_LDFLAGS += -Wl,--gc-sections
 
 config-$(CONFIG_DNSMASQ_SUP_PARENTAL_CTL)		+= --enable-parental_ctl_support
 config-$(CONFIG_DNSMASQ_SUP_STATIC_PPTP)		+= --enable-static_pptp_support
@@ -30,7 +33,7 @@ define Package/dnsmasq
 endef
 
 define Package/dnsmasq/conffiles
-/etc/dnsmasq.conf
+/etc/dnsmasq-resolv.conf
 endef
 
 define Package/dnsmasq/description
@@ -55,26 +58,13 @@ define Build/Configure
 	);
 endef
 
-TARGET_CFLAGS += -ffunction-sections -fdata-sections
-TARGET_LDFLAGS += -Wl,--gc-sections
-
-COPTS = $(if $(CONFIG_IPV6),,-DNO_IPV6)
-
-COPTS += -DNO_DHCP6 -DNO_AUTH -DHAVE_IPSET
-
-MAKE_FLAGS := \
-	$(TARGET_CONFIGURE_OPTS) \
-	CFLAGS="$(TARGET_CFLAGS)" \
-	LDFLAGS="$(TARGET_LDFLAGS)" \
-	COPTS="$(COPTS)" \
-	PREFIX="/usr"
-
 define Build/Compile
 	$(MAKE) -C $(PKG_BUILD_DIR) \
 		$(TARGET_CONFIGURE_OPTS) \
 		CFLAGS="$(TARGET_CFLAGS)" \
 		LDFLAGS="-L$(STAGING_DIR)/usr/lib -L$(STAGING_DIR)/lib -lconfig" \
 		BINDIR="/usr/sbin" MANDIR="/usr/man" \
+		COPTS=-DNO_INOTIFY \
 		all
 endef
 
