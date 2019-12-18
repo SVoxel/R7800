@@ -9,11 +9,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=uci
-PKG_VERSION:=2019-09-01-415f9e48
+PKG_VERSION:=2019-11-14-8dd50da2
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_MD5SUM:=0b02010be03b4f1c55e0fc57390e0460 
+PKG_MD5SUM:=39b1d05b6877d81aeb7957be87e000af
 
 PKG_LICENSE:=LGPL-2.1
 PKG_LICENSE_FILES:=
@@ -49,7 +49,9 @@ define Package/libuci-lua
   TITLE:=Lua plugin for UCI
 endef
 
-TARGET_CFLAGS += -I$(STAGING_DIR)/usr/include
+TARGET_CFLAGS += -I$(STAGING_DIR)/usr/include \
+		 -Wno-error=missing-field-initializers \
+		 -Wno-error=clobbered
 TARGET_LDFLAGS += -L$(STAGING_DIR)/usr/lib
 
 CMAKE_OPTIONS = \
