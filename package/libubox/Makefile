@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libubox
-PKG_VERSION:=2019-10-21-eb30a030
+PKG_VERSION:=2019-11-24-07413cce
 PKG_RELEASE=1
 
 PKG_SOURCE_PROTO:=git
@@ -9,7 +9,7 @@ PKG_SOURCE_URL:=https://git.lede-project.org/project/libubox.git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_VERSION:=4382c76d
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_MIRROR_MD5SUM:=c8b87fe6a335b12f7a0a078de5402ffd 
+PKG_MIRROR_MD5SUM:=078bd734dee81528ee5bad1a2cb39028
 CMAKE_INSTALL:=1
 
 PKG_LICENSE:=ISC
@@ -47,7 +47,7 @@ define Package/jshn/description
   Library for parsing and generating JSON from shell scripts
 endef
 
-TARGET_CFLAGS += -I$(STAGING_DIR)/usr/include
+TARGET_CFLAGS += -I$(STAGING_DIR)/usr/include -Wno-error=missing-field-initializers
 CMAKE_OPTIONS = \
 	-DLUAPATH=/usr/lib/lua
 
@@ -70,4 +70,3 @@ endef
 $(eval $(call BuildPackage,libubox))
 $(eval $(call BuildPackage,libblobmsg-json))
 $(eval $(call BuildPackage,jshn))
-
