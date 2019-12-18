@@ -18,7 +18,11 @@ if [ "$1" = "rule" ]; then
 
 	cat /tmp/netwall-rules.tmp >> /tmp/netwall-rules
 	rm -f /tmp/netwall-rules.tmp
-elif [ "$1" = "start" ] || [ "$1" = "restart" ]; then
+else
+	[ "$1" = "-6" ] && shift
+fi
+
+if [ "$1" = "start" ] || [ "$1" = "restart" ]; then
 	# iptables rules for OpenVPN client
 	if [ -f /var/run/openvpn-client.pid ]; then
 		iptables -I INPUT -i tun21 -j ACCEPT
