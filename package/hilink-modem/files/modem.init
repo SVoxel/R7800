@@ -1,0 +1,56 @@
+#!/bin/sh /etc/rc.common
+START=99
+
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+CONFIG=/bin/config
+AP_MODE=$($CONFIG get ap_mode)
+BRIDGE_MODE=$($CONFIG get bridge_mode)
+EXTENDER_MODE=$($CONFIG get extender_mode)
+KVER=$(uname -r | cut -f 1)
+MODULE_PATH=/lib/modules/$KVER
+
+start() {
+	# Check: is router mode, exit if "no"
+	if [ "$AP_MODE" != "0" ] || [ "$BRIDGE_MODE" != "0" ] || [ "$EXTENDER_MODE" != "0" ]; then
+		exit 0
+	fi
+
+	# Check: is cable attached to WAN port, exit if "yes"
+	detcable show | grep "WAN  : Plug in" > /dev/null
+	if [ $? -eq 0 ]; then
+		exit 0
+	fi
+
+	# Try to load kernel object, switch modem mode and up interface eth0
+	insmod $MODULE_PATH/rndis_host.ko
+	usbmode -s
+	sleep 10
+	ifconfig eth0 up
+
+	# Check: is modem attached
+	if [ $? -eq 0 ]; then
+		# Attached, rename eth0 to brwan
+		ifconfig eth0 down
+		ip link delete brwan
+		ip link set eth0 name brwan
+		ifconfig brwan up
+
+		# Stop services
+		/etc/init.d/net-wan stop
+		/etc/init.d/detcable stop
+		/etc/init.d/watchdog stop
+		/etc/init.d/ntpclient stop
+		echo modem > /tmp/modem
+		echo -n 1 > /tmp/port_status
+
+		# Start services and restart firewall
+		/etc/init.d/net-wan start
+		net-wall restart
+		killall ntpclient
+		sleep 15
+		/etc/init.d/ntpclient start
+	else
+		# No modem found, just unload kernel objects
+		rmmod rndis_host
+	fi
+}

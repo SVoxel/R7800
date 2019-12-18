@@ -1435,6 +1435,7 @@ CONFIG_GREENDOWNLOAD_GIT_REPOSITORY="greendownload.git"
 CONFIG_GREENDOWNLOAD_GIT_URL="ssh://dniserver/scm/dnigit/common/apps/greendownlowd.git"
 # CONFIG_TRAFFICMETER_PLATFORM_PATCH is not set
 CONFIG_PACKAGE_igmpproxy=y
+CONFIG_PACKAGE_iperf3=y
 CONFIG_PACKAGE_minidlna=y
 
 #
@@ -2894,6 +2895,10 @@ CONFIG_PACKAGE_radardetect=y
 CONFIG_PACKAGE_coreutils-sort=y
 CONFIG_PACKAGE_patch=y
 CONFIG_PACKAGE_etherwake=y
+
+# HiLink modem support
+CONFIG_PACKAGE_hilink-modem-init=y
+CONFIG_PACKAGE_kmod-hilink-modem=y
 
 # Optional packages
 # CONFIG_PACKAGE_kmod-uvc-video is not set
