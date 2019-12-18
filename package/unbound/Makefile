@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=unbound
-PKG_VERSION:=1.9.4
+PKG_VERSION:=1.9.5
 PKG_RELEASE:=1
 
 PKG_LICENSE:=BSD-3-Clause
@@ -17,7 +17,7 @@ PKG_MAINTAINER:=Eric Luehrsen <ericluehrsen@gmail.com>
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://www.unbound.net/downloads
-PKG_MD5SUM:=c4d6305f6187deca9e579d4cc5abeaea 
+PKG_MD5SUM:=deb7a3c52fec66323b508c0be4be4849
 
 PKG_BUILD_PARALLEL:=1
 PKG_FIXUP:=autoreconf
