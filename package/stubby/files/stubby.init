@@ -9,7 +9,7 @@ STUBBY_ON=$($CONFIG get stubby)
 CONFIG_FILE=/etc/stubby/stubby.yml
 PID_FILE=/var/run/stubby.pid
 LOG_FILE=/var/log/stubby.log
-LOG_LEVEL=5
+LOG_LEVEL=3
 PORT=64153
 PROG=/usr/sbin/stubby
 
