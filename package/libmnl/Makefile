@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libmnl
 PKG_VERSION:=1.0.4
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:= \
@@ -17,10 +17,11 @@ PKG_SOURCE_URL:= \
 	ftp://ftp.netfilter.org/pub/libmnl
 PKG_MD5SUM:=be9b4b5328c6da1bda565ac5dffadb2d
 
-PKG_MAINTAINER:=Jo-Philipp Wich <jow@openwrt.org>
+PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
 
 PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
+PKG_LICENSE:=LGPL-2.1+
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -29,6 +30,7 @@ define Package/libmnl
   CATEGORY:=Libraries
   TITLE:=Minimalistic user-space library for Netlink
   URL:=http://www.netfilter.org/projects/libmnl/
+  ABI_VERSION:=0
 endef
 
 define Package/libmnl/description
