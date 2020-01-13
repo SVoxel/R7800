@@ -683,6 +683,7 @@ if [ "$wla_exist" = "on" ]; then
     uci set wireless.${a_device}.country=${country_code}
     uci set wireless.${a_device}.ODM=dni
     uci set wireless.${a_device}.sys_bridge=${lan_ifname}
+    uci set wireless.${a_device}.set_ch_144=3
     generate_wifi_hw_button_state "$a_device"
     generate_mac "wla"
     generate_channel "wla"

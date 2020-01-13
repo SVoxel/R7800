@@ -110,6 +110,24 @@ wifi_updateconf() {
 	fi
 }
 
+wifi_prepare_bdf() {
+	echo "===!!!!=============time:`date +%s` wlan prepare_bdf start======" >/dev/console
+	[ ! -f /etc/config/wireless ] && echo "=== wireless configuration is not exist, abort ===" && exit
+	for device in ${2:-$DEVICES}; do
+		config_get type $device type
+		# as factory request, we should prepare BDF first before factory do calibration test
+		if [ "$type" = "qcawifi" ]; then
+			if [ "x$(/bin/config get factory_mode)" = "x1" -a "x$(/bin/config get cal)" = "x0" ]; then
+				if eval "type set_boarddata" 2>/dev/null >/dev/null; then
+					config_get country "$device" country
+					set_boarddata $country
+				fi
+			fi
+		fi
+	done
+	echo "===!!!!=============time:`date +%s` wlan prepare_bdf end======" >/dev/console
+}
+
 wifi_apscan() {
 	for device in ${2:-$DEVICES}; do
 		config_get iftype "$device" type
@@ -173,6 +191,8 @@ wifi_updown() {
 				echo "$driver: Interface type not supported force_off_led function"
 			fi
 		); done
+		
+		sleep 5 # wait for all vaps are down
 	fi
 }
 
@@ -477,6 +497,7 @@ NEW_WIRELESS_CONF=$CONF_FOLDER/wireless.new
 
 case "$1" in
 	updateconf) wifi_updateconf "$2";;
+	prepare_bdf) wifi_prepare_bdf "$2";;
 	down) wifi_updown "disable" "$2";;
 	detect) wifi_detect "$2";;
 	wps) wifi_wps "$@";;

@@ -11,7 +11,7 @@ start()    # don't use this command unless you know what it means
 {
         wlan updateconf
         if [ "$(/bin/config get factory_mode)" = "1" -a "$(/bin/config get cal)" = "0" ]; then
-            wlan down
+            wlan prepare_bdf
             /bin/mv /lib/firmware/QCA9984/hw.1/otp.bin lib/firmware/QCA9984/hw.1/otp123.bin
             /bin/sync
             /etc/init.d/qcmbr start
