@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2006-2012 OpenWrt.org
+# Copyright (C) 2006-2016 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,25 +8,36 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=logrotate
-PKG_VERSION:=3.8.1
-PKG_RELEASE:=1
+PKG_VERSION:=3.15.0
+PKG_RELEASE:=2
 
-PKG_SOURCE:=$(PKG_NAME)_$(PKG_VERSION).orig.tar.gz
-PKG_SOURCE_URL:= \
-	http://ftp.debian.org/debian/pool/main/l/logrotate \
-	http://ftp.de.debian.org/debian/pool/main/l/logrotate \
-	http://ftp.fr.debian.org/debian/pool/main/l/logrotate \
-	http://ftp.us.debian.org/debian/pool/main/l/logrotate
-PKG_MD5SUM:=bd2e20d8dc644291b08f9215397d28a5
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
+PKG_SOURCE_URL:= https://github.com/logrotate/logrotate/releases/download/$(PKG_VERSION)
+PKG_MD5SUM:=320046f0b9fc38337e8827d4c5a866a0
+
+PKG_MAINTAINER:=Christian Beier <cb@shoutrlabs.com>
+PKG_LICENSE:=GPL-2.0-or-later
+PKG_LICENSE_FILES:=COPYING
+PKG_CPE_ID:=cpe:/a:gentoo:logrotate
 
 include $(INCLUDE_DIR)/package.mk
 
 define Package/logrotate
   SECTION:=utils
   CATEGORY:=Utilities
-  DEPENDS:=+libpopt
+  DEPENDS:=+libpopt +LOGROTATE_ACL:libacl
   TITLE:=rotates, compresses, and mails system logs
-  URL:=http://packages.debian.org/unstable/admin/logrotate
+  URL:=https://github.com/logrotate/logrotate
+  MENU:=1
+endef
+
+define Package/logrotate/config
+	if PACKAGE_logrotate
+		config LOGROTATE_ACL
+			bool
+			prompt "Enable ACL support"
+			default y if USE_FS_ACL_ATTR
+	endif
 endef
 
 define Package/logrotate/description
@@ -40,18 +51,17 @@ define Package/logrotate/conffiles
 /etc/logrotate.conf
 endef
 
-EXTRA_CFLAGS += $(TARGET_CPPFLAGS)
-EXTRA_LDFLAGS += $(TARGET_LDFLAGS)
+CONFIGURE_ARGS += $(if $(CONFIG_LOGROTATE_ACL),--with,--without)-acl
 
 define Build/Compile
 	$(call Build/Compile/Default, \
-		RPM_OPT_FLAGS:="$(TARGET_CFLAGS) $(EXTRA_CFLAGS)" \
-		LDFLAGS="$(EXTRA_LDFLAGS)" \
+		RPM_OPT_FLAGS:="$(TARGET_CFLAGS) $(TARGET_CPPFLAGS)" \
+		LDFLAGS="$(TARGET_LDFLAGS)" \
 		logrotate \
 	)
 endef
 
-define Package/logrotate/install	
+define Package/logrotate/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) ${PKG_BUILD_DIR}/logrotate $(1)/usr/sbin/
 	$(INSTALL_DIR) $(1)/etc
