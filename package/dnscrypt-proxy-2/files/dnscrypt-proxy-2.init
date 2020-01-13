@@ -14,7 +14,7 @@ PROG=/usr/sbin/dnscrypt-proxy-2
 
 start() {
 	# Check if dnscrypt-proxy-2 is enabled
-	if [ ! "$DNSCRYPTPROXY2_ON" == "1" ]; then
+	if [ ! "$DNSCRYPTPROXY2_ON" = "1" ]; then
 		echo "DNSCrypt-Proxy-2 is not enabled in nvram. Exit."
 		exit 1
 	fi
@@ -55,7 +55,7 @@ start() {
 
 stop() {
 	# Check if dnscrypt-proxy-2 is enabled
-	if [ ! "$DNSCRYPTPROXY2_ON" == "1" ]; then
+	if [ ! "$DNSCRYPTPROXY2_ON" = "1" ]; then
 		echo "DNSCrypt-Proxy-2 is not enabled in nvram. Exit."
 		exit 1
 	fi
