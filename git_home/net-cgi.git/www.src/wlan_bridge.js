@@ -140,7 +140,8 @@ function setSecurity(num)
 
                 var keyno=wl_get_keyno;
                 var keylength=wl_get_keylength;
-                form.wep_key_no[eval(keyno)-1].checked = true;
+		if(parseInt(keyno)>0)
+                	form.wep_key_no[parseInt(keyno)-1].checked = true;
                 form.KEY1.value=wl_key1;
                 form.KEY2.value=wl_key2;
                 form.KEY3.value=wl_key3;
@@ -222,7 +223,8 @@ function setSecurity_an(num)
 
                 var keyno=wla_get_keyno;
                 var keylength=wla_get_keylength;
-                form.wep_key_no_an[eval(keyno)-1].checked = true;
+		if(parseInt(keyno)>0)
+                	form.wep_key_no_an[parseInt(keyno)-1].checked = true;
                 form.KEY1_an.value=wla_key1;
                 form.KEY2_an.value=wla_key2;
                 form.KEY3_an.value=wla_key3;
