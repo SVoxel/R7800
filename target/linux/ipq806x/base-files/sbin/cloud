@@ -4,7 +4,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin
 https_url="https://http.fw.updates1.netgear.com/sw-apps/ready-genie-cloud/r7800"
 ftp_url="ftp://updates1.netgear.com/sw-apps/ready-genie-cloud/r7800"
 version=`cat /cloud_version`
-cloud_url=https://http.fw.updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/readygeniecloud-r7800new2-20180619-01.tar.gz
+cloud_url=https://http.fw.updates1.netgear.com/sw-apps/ready-genie-cloud/r7800/readygeniecloud-r7800new2-20191014.tar.gz
 config=/bin/config
 sleep_time_1=60
 sleep_time_2=300
@@ -71,10 +71,10 @@ restore() {
 
 install_local() {
         [ -f /opt/version ] && return 1
-	wget --no-check-certificate -T 10 $cloud_url -O /tmp/readygeniecloud-r7800new2-20180619-01.tar.gz
+	wget --no-check-certificate -T 10 $cloud_url -O /tmp/readygeniecloud-r7800new2-20191014.tar.gz
 	mkdir /tmp/clouddir
-	tar xzf /tmp/readygeniecloud-r7800new2-20180619-01.tar.gz -C /tmp/clouddir
-	echo readygeniecloud-r7800new2-20180619-01.tar.gz > /tmp/clouddir/opt/version
+	tar xzf /tmp/readygeniecloud-r7800new2-20191014.tar.gz -C /tmp/clouddir
+	echo 20191014 > /tmp/clouddir/opt/version
 	touch /tmp/clouddir/opt/filelist
 	find /tmp/clouddir -type f | sed 's/\/tmp\/clouddir/\/overlay/' > /tmp/clouddir/opt/filelist
 	find /tmp/clouddir/opt -type d | sed 's/\/tmp\/clouddir/\/overlay/' | sort -r > /tmp/clouddir/opt/dirlist
