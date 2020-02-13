@@ -1,5 +1,5 @@
 #!/bin/sh /etc/rc.common
-START=99
+START=93
 
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
 CONFIG=/bin/config
@@ -22,6 +22,7 @@ start() {
 	fi
 
 	# Try to load kernel object, switch modem mode and up interface eth0
+	insmod $MODULE_PATH/cdc_ether.ko
 	insmod $MODULE_PATH/rndis_host.ko
 	usbmode -s
 	sleep 10
@@ -38,10 +39,11 @@ start() {
 		# Stop services
 		/etc/init.d/net-wan stop
 		/etc/init.d/detcable stop
-		/etc/init.d/watchdog stop
 		/etc/init.d/ntpclient stop
 		echo modem > /tmp/modem
 		echo -n 1 > /tmp/port_status
+		/etc/init.d/stubby stop
+		/etc/init.d/dnscrypt-proxy-2 stop
 
 		# Start services and restart firewall
 		/etc/init.d/net-wan start
@@ -49,8 +51,11 @@ start() {
 		killall ntpclient
 		sleep 15
 		/etc/init.d/ntpclient start
+		/etc/init.d/dnscrypt-proxy-2 start
+		/etc/init.d/stubby start
 	else
 		# No modem found, just unload kernel objects
 		rmmod rndis_host
+		rmmod cdc_ether
 	fi
 }
