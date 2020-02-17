@@ -1,5 +1,7 @@
 #!/bin/sh
 
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+
 # Run original firewall
 /usr/sbin/net-wall-bin $*
 
@@ -7,7 +9,7 @@ if [ "$1" = "rule" ]; then
 	# Store rules of original firewall
 	cat /tmp/netwall-rules > /tmp/netwall-rules.tmp
 
-	# Check config file existence, add own rules if exists
+	# Check config file existence, add own rules if file exists
 	if [ -f /etc/netwall.conf ]; then
 		cat /etc/netwall.conf > /tmp/netwall-rules
 	elif [ -f /root/netwall-rules ]; then
@@ -31,6 +33,15 @@ if [ "$1" = "start" ] || [ "$1" = "restart" ]; then
 		iptables -I FORWARD -i br0 -o tun21 -j ACCEPT
 		iptables -I FORWARD -i tun21 -o br0 -j ACCEPT
 		iptables -t nat -A POSTROUTING -o tun21 -j MASQUERADE
+	fi
+
+	# Check if tun0 interface exists: open access to LAN for client of TUN server
+	ifconfig | grep -q tun0
+	if [ $? -eq 0 ]; then
+		iptables -I FORWARD -j ACCEPT
+		iptables -I FORWARD -i tun0 -o br0 -j ACCEPT
+		iptables -I FORWARD -i br0 -o tun0 -j ACCEPT
+		iptables -t nat -A POSTROUTING -o br0 -j MASQUERADE
 	fi
 
 	# Run own script with own iptables rules providing backward compatibility

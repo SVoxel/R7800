@@ -1,33 +1,49 @@
 #
-# Copyright (C) 2011-2019 Entware
-#
-# This is free software, licensed under the GNU General Public License v2.
-# See /LICENSE for more information.
+# Copyright (C) 2019-2020 Voxel
 #
 
 include $(TOPDIR)/rules.mk
 
 BASENAME:=dnscrypt-proxy
 PKG_NAME:=$(BASENAME)-2
-PKG_VERSION:=2.0.36
+PKG_VERSION:=2.0.39
 PKG_RELEASE:=1
-PKG_SOURCE=$(BASENAME)-linux_arm-$(PKG_VERSION).tar.gz
-PKG_BUILD_DIR:=$(BUILD_DIR)/linux-arm
+PKG_SOURCE=$(BASENAME)-$(PKG_VERSION).tar.gz
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(BASENAME)-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 
 define Package/dnscrypt-proxy-2
-	TITLE:=A flexible DNS proxy, with support for modern encrypted DNS protocols such as DNSCrypt v2 and DNS-over-HTTP/2
-	URL:=https://github.com/jedisct1/dnscrypt-proxy
+  SECTION:=net
+  CATEGORY:=Network
+  TITLE:=Flexible DNS proxy with encrypted DNS protocols
+  URL:=https://github.com/DNSCrypt/dnscrypt-proxy
+  DEPENDS:=+libpthread
 endef
 
 define Package/dnscrypt-proxy-2/description
-	DNSCrypt is a network protocol designed by Frank Denis and Yecheng Fu,
-	which authenticates Domain Name System (DNS) traffic between the user's
-	computer and recursive name servers
+  A flexible DNS proxy, with support for modern encrypted DNS protocols
+  such as DNSCrypt v2 and DNS-over-HTTPS.
 endef
 
 define Build/Compile
+	( \
+		cd $(PKG_BUILD_DIR)/$(BASENAME); \
+		CC=$(TOOLCHAIN_DIR)/bin/arm-openwrt-linux-gcc \
+		CCX=$(TOOLCHAIN_DIR)/bin/arm-openwrt-linux-g++ \
+		GOOS=linux \
+		GOARCH=arm \
+		GOARM=7 \
+		CGO_ENABLED=1 \
+		GOPATH=$(PKG_BUILD_DIR)/$(BASENAME) \
+		CGO_CFLAGS="$(TARGET_CFLAGS)" \
+		CGO_CXXFLAGS="$(TARGET_CFLAGS)" \
+		$(HOME)/go/bin/go build \
+		-gcflags=-trimpath=$(PKG_BUILD_DIR)/$(BASENAME) \
+		-asmflags=-trimpath=$(PKG_BUILD_DIR)/$(BASENAME) \
+		-ldflags "-s -w"; \
+	)
+	chmod -R u+w $(PKG_BUILD_DIR)/$(BASENAME)
 endef
 
 define Package/dnscrypt-proxy-2/conffiles
@@ -36,7 +52,7 @@ endef
 
 define Package/dnscrypt-proxy-2/install
 	$(INSTALL_DIR)  $(1)/usr/sbin
-	$(INSTALL_BIN)  $(PKG_BUILD_DIR)/dnscrypt-proxy $(1)/usr/sbin/dnscrypt-proxy-2
+	$(INSTALL_BIN)  $(PKG_BUILD_DIR)/$(BASENAME)/dnscrypt-proxy $(1)/usr/sbin/dnscrypt-proxy-2
 	$(INSTALL_DIR)  $(1)/etc/init.d
 	$(INSTALL_BIN)  files/dnscrypt-proxy-2.init $(1)/etc/init.d/dnscrypt-proxy-2
 	$(INSTALL_DATA) files/example-dnscrypt-proxy.toml $(1)/etc/dnscrypt-proxy-2.toml

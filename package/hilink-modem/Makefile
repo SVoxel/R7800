@@ -66,8 +66,9 @@ endef
 define KernelPackage/hilink-modem
   SECTION:=kernel
   CATEGORY:=Kernel modules
-  TITLE:= rndis_host kernel module
-  FILES:=$(LINUX_DIR)/drivers/net/usb/rndis_host.$(LINUX_KMOD_SUFFIX)
+  TITLE:= cdc_ether, rndis_host kernel modules
+  FILES:=$(LINUX_DIR)/drivers/net/usb/cdc_ether.$(LINUX_KMOD_SUFFIX) \
+         $(LINUX_DIR)/drivers/net/usb/rndis_host.$(LINUX_KMOD_SUFFIX)
 endef
 
 define KernelPackage/hilink-modem/description
