@@ -41,6 +41,7 @@ define Package/libxml2/description
   A library for manipulating XML and HTML resources.
 endef
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 TARGET_CFLAGS += $(FPIC)
 
 CONFIGURE_ARGS += \
