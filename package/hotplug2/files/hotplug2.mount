@@ -130,6 +130,13 @@ if [ -d /mnt/$1/openvpn-client ]; then
 	fi
 fi		
 
+# Trick with WireGuard client config files stored as wireguard.conf on the root of USB
+if [ -f /mnt/$mount_part/wireguard.conf ]; then
+	cp -f /mnt/$mount_part/wireguard.conf /etc
+	dos2unix /etc/wireguard.conf
+	chmod 0644 /etc/wireguard.conf
+fi
+
 diskname=$(echo $1 | sed 's/[0-9].*//')
 lastpartition=$(cat /proc/partitions | grep $diskname | awk '{print $4}' | tail -1)
 echo "disk name is $diskname last partition is $lastpartition"
