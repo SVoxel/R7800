@@ -8,11 +8,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=minidlna
-PKG_VERSION:=2018-04-10-799e6cf5
+PKG_VERSION:=2019-12-09-0763719f
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_MD5SUM:=0e18fd365167e6988404b6e8d88ff258 
+PKG_MD5SUM:=cf0953bf00b289ce23a034f6a0d11956
 
 PKG_LICENSE:=GPL-2.0 BSD-3-Clause
 PKG_LICENSE_FILES:=COPYING LICENCE.miniupnpd
@@ -69,7 +69,6 @@ CONFIGURE_ARGS +=\
 	--with-os-version="$(LINUX_VERSION)" \
 	--with-os-url="https://www.voxel-firmware.com/" \
 	--enable-tivo \
-	--enable-netgear \
 
 define Package/minidlna/install
 	$(INSTALL_DIR) $(1)/usr/sbin
