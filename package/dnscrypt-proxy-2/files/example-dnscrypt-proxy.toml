@@ -27,7 +27,7 @@
 ## The proxy will automatically pick the fastest, working servers from the list.
 ## Remove the leading # first to enable this; lines starting with # are ignored.
 
-server_names = ['cloudflare', 'ipredator', 'scaleway-fr', 'dnscrypt.eu-nl', 'dnscrypt.eu-dk']
+server_names = ['cloudflare', 'scaleway-fr', 'dnscrypt.eu-nl', 'dnscrypt.eu-dk']
 
 
 ## List of local addresses and ports to listen to. Can be IPv4 and/or IPv6.
