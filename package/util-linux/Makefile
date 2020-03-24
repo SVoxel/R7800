@@ -516,6 +516,7 @@ CONFIGURE_ARGS += \
 	--disable-more			\
 	--with-ncursesw
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 TARGET_CFLAGS += $(FPIC) -std=gnu99 -ffunction-sections -fdata-sections
 TARGET_LDFLAGS += -Wl,--gc-sections
 

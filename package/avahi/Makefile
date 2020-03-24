@@ -17,13 +17,13 @@ endif
 
 
 PKG_NAME:=avahi
-PKG_VERSION:=0.7
+PKG_VERSION:=0.8
 PKG_RELEASE:=1
 
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://avahi.org/download/
-PKG_MD5SUM:=d76c59d0882ac6c256d70a2a585362a6
+PKG_MD5SUM:=229c6aa30674fc43c202b22c5f8c2be7
 
 PKG_FIXUP:=autoreconf
 PKG_REMOVE_FILES:=autogen.sh
@@ -190,14 +190,17 @@ CONFIGURE_ARGS+= \
 	--enable-static \
 	--disable-glib \
 	--disable-gobject \
+	--disable-introspection \
 	--disable-qt3 \
 	--disable-qt4 \
+	--disable-qt5 \
 	--disable-gtk \
 	--disable-gtk3 \
 	--with-xml=expat \
 	--disable-dbm \
 	--enable-gdbm \
 	--enable-libdaemon \
+	--disable-libevent \
 	--disable-python \
 	--disable-pygtk \
 	--disable-python-dbus \
@@ -213,7 +216,9 @@ CONFIGURE_ARGS+= \
 	--disable-doxygen-html \
 	--disable-doxygen-ps \
 	--disable-doxygen-pdf \
+	--disable-manpages \
 	--disable-xmltoman \
+	--disable-tests \
 	--with-distro=none \
 	--with-avahi-user=root \
 	--with-avahi-group=root \
@@ -312,4 +317,3 @@ $(eval $(call BuildPackage,libavahi))
 $(eval $(call BuildPackage,avahi-autoipd))
 $(eval $(call BuildPackage,avahi-daemon))
 $(eval $(call BuildPackage,avahi-dnsconfd))
-

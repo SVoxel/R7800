@@ -35,13 +35,17 @@ if [ "$1" = "start" ] || [ "$1" = "restart" ]; then
 		iptables -t nat -A POSTROUTING -o tun21 -j MASQUERADE
 	fi
 
-	# Check if tun0 interface exists: open access to LAN for client of TUN server
-	ifconfig | grep -q tun0
+	# Check if wg0 interface exists (WireGuard client), appply rules if yes
+	ifconfig | grep -q wg0
 	if [ $? -eq 0 ]; then
-		iptables -I FORWARD -j ACCEPT
-		iptables -I FORWARD -i tun0 -o br0 -j ACCEPT
-		iptables -I FORWARD -i br0 -o tun0 -j ACCEPT
-		iptables -t nat -A POSTROUTING -o br0 -j MASQUERADE
+		iptables -I INPUT -i wg0 -j ACCEPT
+		iptables -I OUTPUT -j ACCEPT
+		iptables -I FORWARD -i wg0 -j ACCEPT
+		iptables -I FORWARD -i br0 -o wg0 -j ACCEPT
+		iptables -I FORWARD -i wg0 -o br0 -j ACCEPT
+		iptables -t mangle -I FORWARD -o wg0 -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+		iptables -t mangle -I FORWARD -i wg0 -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+		iptables -t nat -A POSTROUTING -o wg0 -j MASQUERADE
 	fi
 
 	# Run own script with own iptables rules providing backward compatibility
