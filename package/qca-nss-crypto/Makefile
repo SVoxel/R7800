@@ -65,13 +65,13 @@ EXTRA_CFLAGS+= \
 HDR_EXPORTS = nss_crypto_if.h
 
 define Build/Compile
-	$(MAKE) -C "$(LINUX_DIR)" \
-		CC="$(TARGET_CC)" \
-		CROSS_COMPILE="$(TARGET_CROSS)" \
-		ARCH="$(LINUX_KARCH)" \
-		SUBDIRS="$(PKG_BUILD_DIR)" \
-		EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
-		modules
+#	$(MAKE) -C "$(LINUX_DIR)" \
+#		CC="$(TARGET_CC)" \
+#		CROSS_COMPILE="$(TARGET_CROSS)" \
+#		ARCH="$(LINUX_KARCH)" \
+#		SUBDIRS="$(PKG_BUILD_DIR)" \
+#		EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
+#		modules
 endef
 
 $(eval $(call KernelPackage,qca-nss-crypto))
