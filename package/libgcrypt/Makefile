@@ -50,6 +50,7 @@ CONFIGURE_ARGS += \
 	--disable-doc \
 	--with-gpg-error-prefix="$(STAGING_DIR)/usr"
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 TARGET_CFLAGS += $(FPIC)
 
 define Build/InstallDev
