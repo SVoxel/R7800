@@ -1,5 +1,5 @@
-# 
-# Copyright (C) 2006 OpenWrt.org
+#
+# Copyright (C) 2006-2014 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,12 +8,19 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=readline
-PKG_VERSION:=5.2
-PKG_RELEASE:=2
+PKG_VERSION:=6.3
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GNU/readline
-PKG_MD5SUM:=e39331f32ad14009b9ff49cc10c5e751
+PKG_MD5SUM:=33c8fb279e981274f485fd91da77e94a
+
+PKG_LICENSE:=GPL-3.0
+PKG_LICENSE_FILES:=COPYING
+
+PKG_BUILD_PARALLEL:=1
+PKG_FIXUP:=autoreconf
+PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -33,35 +40,32 @@ define Package/libreadline/description
 	history expansion on previous commands.
 endef
 
-define Build/Configure
-	$(call Build/Configure/Default, \
-		--enable-shared \
-		--enable-static \
-		--without-curses \
-	)
-endef
+# prevent "autoreconf" from removing "aclocal.m4"
+PKG_REMOVE_FILES:=
+
+CONFIGURE_ARGS += \
+	--enable-shared \
+	--enable-static \
+	--with-curses \
+
+CONFIGURE_VARS += \
+	bash_cv_wcwidth_broken=no \
+	bash_cv_func_sigsetjmp=yes \
 
 TARGET_CPPFLAGS:=-I. -I.. $(TARGET_CPPFLAGS)
 
 TARGET_CFLAGS += $(FPIC)
 
-define Build/Compile
-	$(MAKE) -C $(PKG_BUILD_DIR) \
-		DESTDIR="$(PKG_INSTALL_DIR)" \
-		all install
-endef
-
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/readline $(1)/usr/include/
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{history,readline}.{a,so,so.5,so.5.2} $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{history,readline}.{a,so,so.6,so.6.3} $(1)/usr/lib/
 endef
 
 define Package/libreadline/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	chmod +w $(PKG_INSTALL_DIR)/usr/lib/lib{history,readline}.{so,so.5,so.5.2}
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{history,readline}.{so,so.5,so.5.2} $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{history,readline}.{so,so.6,so.6.3} $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,libreadline))
