@@ -37,7 +37,7 @@ define Build/Compile
 	CFLAGS="$(TARGET_CPPFLAGS) $(TARGET_CFLAGS)" \
 	$(MAKE) -C $(PKG_BUILD_DIR) \
 		$(TARGET_CONFIGURE_OPTS) \
-		LIBS="$(TARGET_LDFLAGS) -lnl-genl-3 -lnl-3 -lm -luci"
+		LIBS="$(TARGET_LDFLAGS) -lnl-genl-3 -lnl-3 -lm -luci -lubox"
 endef
 
 define Package/swconfig/install
