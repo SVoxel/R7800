@@ -12,7 +12,7 @@ CFLAGS += -Wall -Wunused -g -O2
 all : net-scan dev-scan
 
 net-scan : $(FILES)
-	$(CC) $(CFLAGS) $(FILES) -o $@ -lconfig
+	$(CC) $(CFLAGS) $(FILES) -o $@ -L$(STAGING_DIR)/usr/lib -lconfig
 	@echo "make $@ finished on `date`"
 
 dev-scan : $(FILES2)
