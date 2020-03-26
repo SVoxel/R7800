@@ -1,6 +1,6 @@
 #
 # Copyright (C) 2009, 2010 Stefan Monnier
-# Copyright (C) 2011 OpenWrt.org
+# Copyright (C) 2011-2014 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v3+.
 # See /LICENSE for more information.
@@ -9,12 +9,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=LVM2
-PKG_VERSION:=2.02.91
+PKG_VERSION:=2.02.119
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME).$(PKG_VERSION).tgz
 PKG_SOURCE_URL:=ftp://sources.redhat.com/pub/lvm2
-PKG_MD5SUM:=03ed8dc20c3a65079aedcedc0ec33192
+PKG_MD5SUM:=93d15d76ab78fbcec4721c4b44284bbb
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME).$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
@@ -24,8 +24,7 @@ define Package/libdevmapper
   CATEGORY:=Libraries
   TITLE:=The Linux Kernel Device Mapper userspace library
   URL:=http://sourceware.org/dm/
-  DEPENDS:=+kmod-dm
-  MAINTAINER:=Luka Perkov <openwrt@lukaperkov.net>
+  DEPENDS:=+kmod-dm +libpthread
 endef
 
 define Package/libdevmapper/description
@@ -39,8 +38,7 @@ define Package/lvm2
   SUBMENU:=disc
   TITLE:=The Linux Logical Volume Manager
   URL:=http://sourceware.org/lvm2/
-  DEPENDS:=+libdevmapper +libreadline +libncurses
-  MAINTAINER:=Luka Perkov <openwrt@lukaperkov.net>
+  DEPENDS:=+libdevmapper +libblkid +libreadline +libncurses
 endef
 
 define Package/lvm2/description
