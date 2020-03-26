@@ -106,12 +106,12 @@ define Build/Prepare
 endef
 
 define Build/Compile
-        $(MAKE) -C "$(LINUX_DIR)" \
-                CROSS_COMPILE="$(TARGET_CROSS)" \
-                ARCH="$(LINUX_KARCH)" \
-                SUBDIRS="$(PKG_BUILD_DIR)" \
-                EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
-                modules
+#        $(MAKE) -C "$(LINUX_DIR)" \
+#                CROSS_COMPILE="$(TARGET_CROSS)" \
+#                ARCH="$(LINUX_KARCH)" \
+#                SUBDIRS="$(PKG_BUILD_DIR)" \
+#                EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
+#                modules
 endef
 
 $(eval $(call KernelPackage,qca-nss-drv-profile))
