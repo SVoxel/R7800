@@ -29,7 +29,7 @@ clean	:
 igmpproxy : build.h igmpproxy.o config.o confread.o request.o udpsock.o mcgroup.o rttable.o \
 			igmp.o ifvc.o callout.o kern.o syslog.o lib.o mroute-api.o \
 			igmpsnooping.o fdbtable.o switch-api.o set_comp.o igmpv3.o bt_igmp.o
-	        $(CC) -lconfig -lpcap igmpproxy.o config.o confread.o request.o udpsock.o mcgroup.o rttable.o \
+	        $(CC) -L$(STAGING_DIR)/usr/lib -lconfig -lpcap igmpproxy.o config.o confread.o request.o udpsock.o mcgroup.o rttable.o \
 				igmpsnooping.o fdbtable.o switch-api.o set_comp.o igmpv3.o bt_igmp.o \
                 igmp.o ifvc.o callout.o kern.o syslog.o lib.o mroute-api.o -o igmpproxy
 
