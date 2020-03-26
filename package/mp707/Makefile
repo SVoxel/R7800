@@ -23,7 +23,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/mp707
 	SECTION:=utils
 	CATEGORY:=Utilities
-	DEPENDS:=+libusb-compat +libstdcpp
+	DEPENDS:=+libusb-compat +libusb +libstdcpp
 	TITLE:=USB thermometer RODOS-5 (MP707) utility
 	URL:=$(PKG_SOURCE_URL)
 	MAINTAINER:=Entware team, http://entware.net
@@ -36,7 +36,7 @@ endef
 
 define Build/Compile
 	$(TARGET_CXX) $(TARGET_CXXFLAGS) -c -I$(STAGING_DIR)/usr/include -o $(PKG_BUILD_DIR)/$(PKG_NAME).o $(PKG_BUILD_DIR)/package/bmtemp/src/bmtemp.cpp
-	$(TARGET_CXX) $(TARGET_LDFLAGS) -L$(STAGING_DIR)/usr/lib -o $(PKG_BUILD_DIR)/bmtemp $(PKG_BUILD_DIR)/$(PKG_NAME).o -lusb
+	$(TARGET_CXX) $(TARGET_LDFLAGS) -L$(STAGING_DIR)/usr/lib -o $(PKG_BUILD_DIR)/bmtemp $(PKG_BUILD_DIR)/$(PKG_NAME).o -lusb -lusb-1.0
 endef
 
 define Package/mp707/install
