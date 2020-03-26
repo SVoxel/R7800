@@ -36,7 +36,7 @@ INCLUDES := -I$(CURDIR) \
 export EXTRA_CFLAGS += $(INCLUDES)
 
 # Module extra compilation flags
-EXTRA_CFLAGS += -Werror -Wall -g
+EXTRA_CFLAGS += -Werror -Wall -g -Wno-error=array-bounds -Wno-error=stringop-overflow -Wno-error=missing-attributes -Wno-error=address-of-packed-member
 
 ifeq ($(strip ${MC_SUPPORT_MLD}),1)
 ccflags-y+=-DMC_SUPPORT_MLD

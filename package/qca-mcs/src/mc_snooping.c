@@ -401,8 +401,8 @@ static struct mc_fdb_group *mc_fdb_group_create(struct mc_port_group *pg,
 		fg->ageing_timer = jiffies;
 		hlist_add_head_rcu(&fg->fslist, &pg->fslist);
 
-	if (atomic_inc_return(&pg->mdb->users) == 1)
-		fg->pg->mdb->mc->active_group_count++;
+		if (atomic_inc_return(&pg->mdb->users) == 1)
+			fg->pg->mdb->mc->active_group_count++;
 
 		mod_timer(&pg->mdb->mc->evtimer, jiffies + msecs_to_jiffies(MC_EVENT_DELAY_MS));
 	}
