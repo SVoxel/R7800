@@ -57,7 +57,7 @@ ifdef DEBUG
 CFLAGS += -g -DDEBUG
 STRIP=true
 else
-CFLAGS += -Os -fomit-frame-pointer
+CFLAGS += -O2 -fomit-frame-pointer
 STRIP=$(CROSS_COMPILE)strip
 endif
 

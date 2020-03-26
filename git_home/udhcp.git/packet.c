@@ -114,7 +114,7 @@ u_int16_t checksum(void *addr, int count)
 }
 
 #ifdef DHCP_PACKET_RESIZE
-inline int udhcp_get_payload_len(struct dhcpMessage *payload)
+extern inline int udhcp_get_payload_len(struct dhcpMessage *payload)
 {
 	return sizeof(struct dhcpMessage) - sizeof(payload->options) + end_option(payload->options) + sizeof(payload->options[0]);
 }
