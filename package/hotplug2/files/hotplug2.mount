@@ -133,7 +133,7 @@ fi
 # Trick with WireGuard client config files stored as wireguard.conf on the root of USB
 if [ -f /mnt/$mount_part/wireguard.conf ]; then
 	cp -f /mnt/$mount_part/wireguard.conf /etc
-	dos2unix /etc/wireguard.conf
+	dos2unix -u /etc/wireguard.conf
 	chmod 0644 /etc/wireguard.conf
 fi
 

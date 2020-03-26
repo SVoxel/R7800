@@ -1,0 +1,34 @@
+diff -Nur hotplug2-201-org/xmemutils.c hotplug2-201/xmemutils.c
+--- hotplug2-201-org/xmemutils.c	2017-08-25 20:00:42.225819433 +0800
++++ hotplug2-201/xmemutils.c	2017-08-25 20:02:27.441819645 +0800
+@@ -8,7 +8,7 @@
+  *
+  * Returns: Pointer to freshly allocated memory
+  */
+-inline void *xmalloc(size_t size) {
++void *xmalloc(size_t size) {
+ 	void *ptr;
+ 	ptr = malloc(size);
+ 	if (ptr == NULL) {
+@@ -26,7 +26,7 @@
+  *
+  * Returns: Pointer to reallocated memory
+  */
+-inline void *xrealloc(void *inptr, size_t size) {
++void *xrealloc(void *inptr, size_t size) {
+ 	void *ptr;
+ 	ptr = realloc(inptr, size);
+ 	if (ptr == NULL) {
+diff -Nur hotplug2-201-org/xmemutils.h hotplug2-201/xmemutils.h
+--- hotplug2-201-org/xmemutils.h	2017-08-25 20:00:42.221819433 +0800
++++ hotplug2-201/xmemutils.h	2017-08-25 20:03:01.121819712 +0800
+@@ -1,7 +1,7 @@
+ #ifndef XMEMUTILS_H
+ #define XMEMUTILS_H 1
+ 
+-inline void *xmalloc(size_t);
+-inline void *xrealloc(void *, size_t);
++void *xmalloc(size_t);
++void *xrealloc(void *, size_t);
+ 
+ #endif /* XMEMUTILS */
