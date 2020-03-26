@@ -49,10 +49,10 @@ CONFIGURE_ARGS+= \
 	--cache-file=$(CONFIG_CACHE_FILE)
 export CONFIGURE_ARGS
 
-#define Build/Compile
-#	cp ./files/config.cache $(CONFIG_CACHE_FILE)
-#	$(call Build/Compile/Default)
-#endef
+define Build/Compile
+	cp ./files/config.cache $(CONFIG_CACHE_FILE)
+	$(call Build/Compile/Default)
+endef
 
 define Package/redis-server/install
 	$(INSTALL_DIR) $(1)/usr/bin

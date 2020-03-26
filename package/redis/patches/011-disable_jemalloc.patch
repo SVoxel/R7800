@@ -1,0 +1,11 @@
+--- a/src/Makefile	2013-12-11 17:35:52.000000000 +0300
++++ b/src/Makefile	2019-11-12 17:36:10.043264500 +0300
+@@ -42,6 +42,8 @@
+   MALLOC=jemalloc
+ endif
+ 
++MALLOC=libc
++
+ # Override default settings if possible
+ -include .make-settings
+ 
