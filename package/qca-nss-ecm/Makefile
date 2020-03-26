@@ -83,12 +83,12 @@ define Build/Prepare
 endef
 
 define Build/Compile
-	$(MAKE) -C "$(LINUX_DIR)" \
-		CROSS_COMPILE="$(TARGET_CROSS)" \
-		ARCH="$(LINUX_KARCH)" \
-		SUBDIRS="$(PKG_BUILD_DIR)" \
-		EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
-		modules
+#	$(MAKE) -C "$(LINUX_DIR)" \
+#		CROSS_COMPILE="$(TARGET_CROSS)" \
+#		ARCH="$(LINUX_KARCH)" \
+#		SUBDIRS="$(PKG_BUILD_DIR)" \
+#		EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
+#		modules
 endef
 
 define KernelPackage/qca-nss-ecm/config/Default
