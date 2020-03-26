@@ -2894,8 +2894,9 @@ CONFIG_PACKAGE_radardetect=y
 # Additional utilities
 #
 CONFIG_PACKAGE_coreutils-sort=y
-CONFIG_PACKAGE_patch=y
 CONFIG_PACKAGE_etherwake=y
+CONFIG_PACKAGE_nano=y
+CONFIG_PACKAGE_patch=y
 
 # HiLink modem support
 CONFIG_PACKAGE_hilink-modem-init=y
