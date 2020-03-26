@@ -37,7 +37,7 @@ config ED
 
 config PATCH
 	bool "patch"
-	default n
+	default y
 	help
 	  Apply a unified diff formatted patch.
 

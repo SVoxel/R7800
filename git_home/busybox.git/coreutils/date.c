@@ -48,7 +48,7 @@ static char * get_time_zone()
 {
 #define TIME_ZONE_FILE "/tmp/time_zone"
 	int  i = 0;
-	char buf[256];
+	static char buf[256];
 	FILE *fp;
 
 	buf[0] = '\0';

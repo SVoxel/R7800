@@ -183,7 +183,7 @@ config DIRNAME
 
 config DOS2UNIX
 	bool "dos2unix/unix2dos"
-	default n
+	default y
 	help
 	  dos2unix is used to convert a text file from DOS format to
 	  UNIX format, and vice versa.
