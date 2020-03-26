@@ -66,17 +66,17 @@ HDR_EXPORTS +=  nss_ipsecmgr.h
 HDR_EXPORTS +=  nss_ipv4.h
 
 define Build/Prepare
-	mkdir -p $(PKG_BUILD_DIR)
-	$(CP) ./src/* $(PKG_BUILD_DIR)/
+#	mkdir -p $(PKG_BUILD_DIR)
+#	$(CP) ./src/* $(PKG_BUILD_DIR)/
 endef
 
 define Build/Compile
-	$(MAKE) -C "$(LINUX_DIR)" \
-		CROSS_COMPILE="$(TARGET_CROSS)" \
-		ARCH="$(LINUX_KARCH)" \
-		SUBDIRS="$(PKG_BUILD_DIR)" \
-		EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
-		modules;
+#	$(MAKE) -C "$(LINUX_DIR)" \
+#		CROSS_COMPILE="$(TARGET_CROSS)" \
+#		ARCH="$(LINUX_KARCH)" \
+#		SUBDIRS="$(PKG_BUILD_DIR)" \
+#		EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
+#		modules;
 endef
 
 $(eval $(call KernelPackage,qca-nss-drv))
