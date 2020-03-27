@@ -131,10 +131,10 @@ int should_decrease(void)
 #define IPV6_TYPE "/tmp/ipv6_type"
 #define IPV6_AUTODET "/tmp/ipv6_auto_output"
 	char *type = get_type(IPV6_TYPE);
+	if (type == NULL) return 0;
 	if(!strcmp(type, "autoDetect"))
 		type = get_type(IPV6_AUTODET);
 	if(!strcmp(type, "dhcp") || !strcmp(type, "pppoe") || !strcmp(type, "autoConfig"))
                         return 1;
         return 0;
 }
-
