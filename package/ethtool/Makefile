@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2006-2017 OpenWrt.org
+# Copyright (C) 2006-2014 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ethtool
-PKG_VERSION:=4.19
+PKG_VERSION:=5.4
 PKG_RELEASE:=1
 
-PKG_MAINTAINER:=Matthias Schiffer <mschiffer@universe-factory.net>
+PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@KERNEL/software/network/ethtool
-PKG_MD5SUM:=c0c3e3339a40cbefed7033b3c7c10df1
+PKG_MD5SUM:=3d4bbf2be9fb25059186691918eaffe9
 
 PKG_LICENSE:=GPL-2.0
 PKG_LICENSE_FILES:=COPYING
@@ -23,7 +23,7 @@ PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
 
-PKG_CONFIG_DEPENDS:=ETHTOOL_PRETTY_DUMP
+PKG_CONFIG_DEPENDS:=CONFIG_ETHTOOL_PRETTY_DUMP
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -40,7 +40,9 @@ define Package/ethtool/description
 endef
 
 define Package/ethtool/config
-	source "$(SOURCE)/Config.in"
+	config ETHTOOL_PRETTY_DUMP
+		depends on PACKAGE_ethtool
+		bool "Enable pretty printing"
 endef
 
 ifeq ($(CONFIG_ETHTOOL_PRETTY_DUMP),y)
