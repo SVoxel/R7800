@@ -1,6 +1,6 @@
---- a/src/openvpn/options.c	2016-12-26 14:51:00.000000000 +0300
-+++ b/src/openvpn/options.c	2017-01-24 11:41:08.750970300 +0300
-@@ -107,7 +107,6 @@
+--- a/src/openvpn/options.c	2020-04-16 16:26:45.000000000 +0300
++++ b/src/openvpn/options.c	2020-04-20 10:23:58.096127900 +0300
+@@ -106,7 +106,6 @@
  #ifdef HAVE_AEAD_CIPHER_MODES
      " [AEAD]"
  #endif
