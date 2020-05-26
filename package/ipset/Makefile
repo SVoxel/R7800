@@ -9,12 +9,12 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=ipset
-PKG_VERSION:=6.24
+PKG_VERSION:=2020-03-09-87131f28
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=http://ipset.netfilter.org
-PKG_MD5SUM:=8831b8f01458bf2abacc222884195a62
+PKG_MD5SUM:=7d289f9f1711825440df5236a81d530c
 
 PKG_MAINTAINER:=Jo-Philipp Wich <jow@openwrt.org>
 
@@ -68,10 +68,10 @@ define Build/Compile
 endef
 
 define Package/ipset/install
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/ipset $(1)/usr/bin/
-	$(INSTALL_DIR) $(1)/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libipset*.so* $(1)/lib/
+	$(INSTALL_DIR) $(1)/usr/sbin
+	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/ipset $(1)/usr/sbin/
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libipset*.so* $(1)/usr/lib/
 endef
 
 define KernelPackage/ipt-ipset
