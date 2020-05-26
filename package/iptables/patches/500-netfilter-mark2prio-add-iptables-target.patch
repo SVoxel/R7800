@@ -7,17 +7,31 @@ This target unconditionally copies mark to priority
 
 Signed-off-by: Matthew McClintock <mmcclint@codeaurora.org>
 ---
- extensions/libxt_mark2prio.c | 32 ++++++++++++++++++++++++++++++++
- 1 file changed, 32 insertions(+)
+ extensions/libxt_mark2prio.c | 46 ++++++++++++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
  create mode 100644 extensions/libxt_mark2prio.c
 
 diff --git a/extensions/libxt_mark2prio.c b/extensions/libxt_mark2prio.c
 new file mode 100644
 index 0000000..e76fcc9
 --- /dev/null
-+++ b/extensions/libxt_mark2prio.c
-@@ -0,0 +1,32 @@
-+/* Copyright (c) 2013, The Linux Foundation. All rights reserved. */
++++ libxt_mark2prio.c
+@@ -0,0 +1,46 @@
++/*
++ * Copyright (c) 2013,2016 The Linux Foundation. All rights reserved.
++ *
++ * Permission to use, copy, modify, and/or distribute this software for any
++ * purpose with or without fee is hereby granted, provided that the above
++ * copyright notice and this permission notice appear in all copies.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
++ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
++ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
++ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
++ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
++ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
++ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
++ */
 +
 +#include <stdbool.h>
 +#include <stdio.h>
@@ -49,6 +63,5 @@ index 0000000..e76fcc9
 +	xtables_register_targets(mark2prio_targets,
 +				ARRAY_SIZE(mark2prio_targets));
 +}
--- 
 1.8.4.2
 
