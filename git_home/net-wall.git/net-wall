@@ -1,6 +1,7 @@
 #!/bin/sh
 
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
+tun=tun21
 
 # Run original firewall
 /usr/sbin/net-wall-bin $*
@@ -25,27 +26,42 @@ else
 fi
 
 if [ "$1" = "start" ] || [ "$1" = "restart" ]; then
-	# iptables rules for OpenVPN client
-	if [ -f /var/run/openvpn-client.pid ]; then
-		iptables -I INPUT -i tun21 -j ACCEPT
-		iptables -I OUTPUT -j ACCEPT
-		iptables -I FORWARD -i tun21 -j ACCEPT
-		iptables -I FORWARD -i br0 -o tun21 -j ACCEPT
-		iptables -I FORWARD -i tun21 -o br0 -j ACCEPT
-		iptables -t nat -A POSTROUTING -o tun21 -j MASQUERADE
+	# Get WAN interface name
+	ifconfig ppp0 >/dev/null 2>&1 && WAN_IF='ppp0' || WAN_IF="$(nvram get wan_ifname)"
+
+	# Check for active VPN tunnel
+	if ifconfig | grep -qF "$tun" && kill -0 "$(cat /var/run/openvpn-client.pid 2>/dev/null)" >/dev/null 2>&1; then
+		# OpenVPN client
+		TUN_IF=$tun
+	elif ifconfig | grep -qF 'wg0'; then
+		# WireGuard client
+		TUN_IF="wg0"
+	else
+		# No tunnel
+		TUN_IF=""
 	fi
 
-	# Check if wg0 interface exists (WireGuard client), appply rules if yes
-	ifconfig | grep -q wg0
-	if [ $? -eq 0 ]; then
-		iptables -I INPUT -i wg0 -j ACCEPT
-		iptables -I OUTPUT -j ACCEPT
-		iptables -I FORWARD -i wg0 -j ACCEPT
-		iptables -I FORWARD -i br0 -o wg0 -j ACCEPT
-		iptables -I FORWARD -i wg0 -o br0 -j ACCEPT
+	if [ "$TUN_IF" != "" ]; then
+		# Find position of rule "brwan_in   all  --  brwan" or "ppp0_in   all  --  ppp0"
+		pos=$(iptables -L -v -n --line-numbers | grep -E """$WAN_IF""_in[ ]+all[ -]+""$WAN_IF""" | awk '{print $1}')
+		iptables -I INPUT "$pos" -i "$TUN_IF" -p 2 -j ACCEPT
+		iptables -I INPUT $((pos+2)) -i "$TUN_IF" -j "$WAN_IF"_in
+
+		# Find position of rule "fw2net     all  --  *      brwan " or "fw2net     all  --  *      ppp0"
+		pos=$(iptables -L -v -n --line-numbers | grep -E "fw2net[ ]+all[ -]+[* ]+""$WAN_IF""" | awk '{print $1}')
+		iptables -I OUTPUT $((pos-3)) -o "$TUN_IF" -p udp -m udp --dport 67:68 -j ACCEPT
+		iptables -I OUTPUT $((pos-1)) -o "$TUN_IF" -p 2 -j ACCEPT
+		iptables -I OUTPUT $((pos+3)) -o "$TUN_IF" -j fw2net
+
+		iptables -I FORWARD 2 -i "$TUN_IF" -j "$WAN_IF"_fwd
+		iptables -I br0_fwd 2 -o "$TUN_IF" -j loc2net
+		iptables -t nat -A POSTROUTING -o "$TUN_IF" -j MASQUERADE
+	fi
+
+	# If WireGuard client, then set clamp-mss-to-pmtu
+	if [ "$TUN_IF" = "wg0" ]; then
 		iptables -t mangle -I FORWARD -o wg0 -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
 		iptables -t mangle -I FORWARD -i wg0 -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
-		iptables -t nat -A POSTROUTING -o wg0 -j MASQUERADE
 	fi
 
 	# Run own script with own iptables rules providing backward compatibility
