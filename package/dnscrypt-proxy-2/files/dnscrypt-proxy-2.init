@@ -6,16 +6,74 @@ STOP=10
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
 CONFIG=/bin/config
 DNSCRYPTPROXY2_ON=$($CONFIG get dnscrypt2)
+SETTIME_OFF=$($CONFIG get dnscrypt2_disable_settime)
 CONFIG_FILE=/tmp/etc/dnscrypt-proxy-2.toml
 PID_FILE=/var/run/dnscrypt-proxy-2.pid
 LOG_FILE=/var/log/dnscrypt-proxy-2.log
 PORT=64153
 PROG=/usr/sbin/dnscrypt-proxy-2
 
+logmsg () {
+	txt="[$(date +'%F %T')] [DNSCRYPT] $$: $(awk '{print $1}' /proc/uptime):$*"
+	echo "$txt" | tee -a $LOG_FILE
+	echo "$txt" >>/var/log/messages
+}
+
+settime () {
+	#------------------------------------------------------------------------------
+	# Check that NTP time service is working:
+	# It's needed for dnscrypt to work
+	#------------------------------------------------------------------------------
+	logmsg "Information: Checking that time is synchronized."
+	rm -f /tmp/dnscrypt_curl_time >/dev/null
+	count=0
+	while true; do
+		if [ -e /tmp/ntp_updated ]; then
+			logmsg "Information: NTP time service is working!"
+			break
+		elif [ "$(grep -c "\[Time synchronized with NTP server]" /var/log/log-message)" -ne "0" ]; then
+			logmsg "Information: NTP time service is working!"
+			break
+		else
+			if which curl >/dev/null; then
+				timeproviders="\
+				cloudflare.com
+				google.com
+				facebook.com
+				yandex.com
+				amazon.com
+				yahoo.com
+				baidu.com
+				youtube.com
+				"
+				for i in $timeproviders; do
+				T=$(curl -silent --insecure --max-time 1 --connect-timeout 1 --head "http://$i" | awk '/Date:/ { print $4" "$3" "$6" "$5 }' | tr ":" " "); #Apr 25 09 42 31 2020
+				if [ $? -eq 0 ] && [ -n "$T" ]; then
+					SecsTZadjusted=$(echo "$(date -d "$T" -D '%b %d %H %M %S %Y' +'%s') $(date +%z | awk '{print ($1*3600/100) }')" | awk '{print ($1+$2)}'); #1587807751
+					date -s "$(date -d "$SecsTZadjusted" -D '%s' +'%m%d%H%M%Y.%S')"
+					touch /tmp/dnscrypt_curl_time
+					logmsg "Information: Using $i time: $(date -d "$SecsTZadjusted" -D '%s' +'%F %T')."
+					break
+				fi
+				done
+				[ -e /tmp/dnscrypt_curl_time ] && break
+			fi
+		fi
+		count=$((count+1))
+		logmsg "Information: Time is not working after $count tries. Still trying to get it."
+		if [ $count -ge 30 ]; then
+			logmsg "ERROR: Time is not working after $count tries!"
+			exit 1
+		fi
+		sleep 1
+	done
+	logmsg "Information: Time is OK."
+}
+
 start() {
 	# Check if dnscrypt-proxy-2 is enabled
 	if [ ! "$DNSCRYPTPROXY2_ON" = "1" ]; then
-		echo "DNSCrypt-Proxy-2 is not enabled in nvram. Exit."
+		logmsg "DNSCrypt-Proxy-2 is not enabled in nvram. Exit."
 		exit 1
 	fi
 
@@ -43,6 +101,15 @@ start() {
 		ln -sf /etc/dnscrypt-proxy-2.toml /tmp/etc/dnscrypt-proxy-2.toml
 	fi
 
+	# Set time from NTP server if not disabled in NVRAM
+	if [ ! "$SETTIME_OFF" = "1" ]; then
+		if ! settime; then
+			logmsg "Time can not be set. Exit."
+			stop
+			exit 1
+		fi
+	fi
+
 	# Start service
 	$PROG -config=$CONFIG_FILE -pidfile=$PID_FILE -logfile=$LOG_FILE &
 
@@ -50,13 +117,13 @@ start() {
 	/etc/init.d/dnsmasq stop 2> /dev/null
 	/etc/init.d/dnsmasq start 2> /dev/null
 
-	echo Started.
+	logmsg "Started."
 }
 
 stop() {
 	# Check if dnscrypt-proxy-2 is enabled
 	if [ ! "$DNSCRYPTPROXY2_ON" = "1" ]; then
-		echo "DNSCrypt-Proxy-2 is not enabled in nvram. Exit."
+		logmsg "DNSCrypt-Proxy-2 is not enabled in nvram. Exit."
 		exit 1
 	fi
 
@@ -73,5 +140,5 @@ stop() {
 	/etc/init.d/dnsmasq stop 2> /dev/null
 	/etc/init.d/dnsmasq start 2> /dev/null
 
-	echo Terminated.
+	logmsg "Terminated."
 }
