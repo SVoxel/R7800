@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=readline
-PKG_VERSION:=6.3
+PKG_VERSION:=8.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
@@ -27,6 +27,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/libreadline
   SECTION:=libs
   CATEGORY:=Libraries
+  DEPENDS:=+libncurses
   TITLE:=Command lines edition library
   URL:=http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 endef
@@ -43,10 +44,7 @@ endef
 # prevent "autoreconf" from removing "aclocal.m4"
 PKG_REMOVE_FILES:=
 
-CONFIGURE_ARGS += \
-	--enable-shared \
-	--enable-static \
-	--with-curses \
+CONFIGURE_ARGS += --with-curses --disable-install-examples
 
 CONFIGURE_VARS += \
 	bash_cv_wcwidth_broken=no \
@@ -60,12 +58,12 @@ define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/readline $(1)/usr/include/
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{history,readline}.{a,so,so.6,so.6.3} $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{history,readline}.{a,so*} $(1)/usr/lib/
 endef
 
 define Package/libreadline/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{history,readline}.{so,so.6,so.6.3} $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{history,readline}.so.* $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,libreadline))
