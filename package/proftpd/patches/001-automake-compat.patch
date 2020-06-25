@@ -1,6 +1,18 @@
---- a/configure.in
-+++ b/configure.in
-@@ -718,24 +718,7 @@
+--- a/Make.rules.in	2020-05-31 00:20:10.000000000 +0300
++++ b/Make.rules.in	2020-06-17 10:56:40.741668500 +0300
+@@ -18,7 +18,7 @@
+ PLATFORM=@OSREL@ @OSTYPE@
+ LDFLAGS=@LDFLAGS@ @LIBDIRS@
+ LIBEXECDIR=@LIBEXECDIR@
+-LIBS=@LIBS@ @LIBRARIES@ @LIBADD_DL@
++LIBS=@LIBS@ @LIBRARIES@
+ LIBTOOL=@LIBTOOL@
+ MAKEDEPEND=makedepend -Y
+ RANLIB=@RANLIB@
+diff -Nuar a/configure.in b/configure.in
+--- a/configure.in	2020-05-31 00:20:10.000000000 +0300
++++ b/configure.in	2020-06-17 10:56:40.733914200 +0300
+@@ -723,24 +723,7 @@
        ac_core_modules="$ac_core_modules mod_dso.o"
        ac_build_core_modules="$ac_build_core_modules modules/mod_dso.o"
  
@@ -24,17 +36,4 @@
 -      LTDL_CONVENIENCE([lib/libltdl])
      fi
    ])
-
---- a/Make.rules.in
-+++ b/Make.rules.in
-@@ -18,7 +18,7 @@
- PLATFORM=@OSREL@ @OSTYPE@
- LDFLAGS=@LDFLAGS@ @LIBDIRS@
- LIBEXECDIR=@LIBEXECDIR@
--LIBS=@LIBS@ @LIBRARIES@ @LIBADD_DL@
-+LIBS=@LIBS@ @LIBRARIES@
- LIBTOOL=@LIBTOOL@
- MAKEDEPEND=makedepend -Y
- RANLIB=@RANLIB@
-
  
