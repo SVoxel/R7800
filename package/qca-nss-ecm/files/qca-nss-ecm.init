@@ -8,6 +8,8 @@
 
 #START=70
 
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+
 support_bridge() {
 	#NSS support bridge acceleration
 	[ -d /sys/kernel/debug/ecm/ecm_nss_conntrack_notifier ] && return 0
