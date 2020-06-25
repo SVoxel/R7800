@@ -18,6 +18,8 @@ PKG_MD5SUM:=073ab7f20d24b3872a51ca762f5090e7
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
+
 define Package/libdb47
   SECTION:=libs
   CATEGORY:=Libraries
