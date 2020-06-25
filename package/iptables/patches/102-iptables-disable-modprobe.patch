@@ -1,6 +1,6 @@
---- a/libxtables/xtables.c
-+++ b/libxtables/xtables.c
-@@ -360,6 +360,7 @@ static char *get_modprobe(void)
+--- a/libxtables/xtables.c	2020-06-03 13:32:01.000000000 +0300
++++ b/libxtables/xtables.c	2020-06-05 14:05:35.088541500 +0300
+@@ -397,6 +397,7 @@
  
  int xtables_insmod(const char *modname, const char *modprobe, bool quiet)
  {
@@ -8,7 +8,7 @@
  	char *buf = NULL;
  	char *argv[4];
  	int status;
-@@ -394,6 +395,7 @@ int xtables_insmod(const char *modname,
+@@ -431,6 +432,7 @@
  	free(buf);
  	if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
  		return 0;
