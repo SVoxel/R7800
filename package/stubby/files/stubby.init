@@ -15,7 +15,7 @@ PROG=/usr/sbin/stubby
 
 start() {
 	# Check if stubby is enabled
-	if [ ! "$STUBBY_ON" == "1" ]; then
+	if [ ! "$STUBBY_ON" = "1" ]; then
 		echo "Stubby is not enabled in nvram. Exit."
 		exit 1
 	fi
@@ -57,7 +57,7 @@ start() {
 
 stop() {
 	# Check if stubby is enabled
-	if [ ! "$STUBBY_ON" == "1" ]; then
+	if [ ! "$STUBBY_ON" = "1" ]; then
 		echo "Stubby is not enabled in nvram. Exit."
 		exit 1
 	fi

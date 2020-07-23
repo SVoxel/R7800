@@ -5,47 +5,48 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=stubby
-PKG_VERSION:=0.2.6
+PKG_VERSION:=0.3.0
 PKG_RELEASE:=1
 
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
+PKG_SOURCE_URL:=https://getdnsapi.net/dist/
+PKG_MD5SUM:=179cde258159177fb6aa14a7b4e7a73b
+
+PKG_MAINTAINER:=Jonathan Underwood <jonathan.underwood@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=COPYING
-PKG_MAINTAINER:=David Mora <iamperson347+public@gmail.com>
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_SOURCE_URL:=https://github.com/getdnsapi/$(PKG_NAME)
-PKG_MD5SUM:=5b9022092e8f2a540a6935e20b873ac8
-
-PKG_FIXUP:=autoreconf
-
-PKG_INSTALL:=1
+CMAKE_INSTALL:=1
+PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/cmake.mk
 
 TARGET_CPPFLAGS:=-I$(STAGING_DIR)/usr/include/openssl-1.1.x $(TARGET_CPPFLAGS)
 TARGET_LDFLAGS:=-L$(STAGING_DIR)/usr/lib/openssl-1.1.x $(TARGET_LDFLAGS) -lunbound -lcrypto -lssl
-TARGET_CFLAGS += -std=gnu99
-
-
 
 define Package/stubby/Default
-	TITLE:=stubby
-	URL:=https://dnsprivacy.org/wiki/display/DP/DNS+Privacy+Daemon+-+Stubby
-endef
-
-define Package/stubby/description
-	This package contains the Stubby daemon (which utilizes the getdns library).
-
-	See https://github.com/openwrt/packages/blob/master/net/stubby/files/README.md for more details.
+  TITLE:=stubby
+  URL:=https://dnsprivacy.org/wiki/display/DP/DNS+Privacy+Daemon+-+Stubby
 endef
 
 define Package/stubby
-	$(call Package/stubby/Default)
-	SECTION:=net
-	CATEGORY:=Network
-	SUBMENU:=IP Addresses and Names
-	TITLE+= - (daemon that uses getdns)
-	DEPENDS:= +libyaml +getdns
+  $(call Package/stubby/Default)
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=IP Addresses and Names
+  TITLE+= - (daemon that uses getdns)
+  USERID:=stubby=410:stubby=410
+  DEPENDS:= +libyaml +getdns +ca-certificates
+endef
+
+define Package/stubby/description
+  This package contains the Stubby daemon (which utilizes the getdns library).
+  See https://github.com/openwrt/packages/blob/master/net/stubby/files/README.md for more details.
+endef
+
+define Package/stubby/conffiles
+/etc/stubby/stubby.yml
 endef
 
 define Package/stubby/install
@@ -56,11 +57,6 @@ define Package/stubby/install
 	$(INSTALL_DIR) $(1)/etc/stubby
 	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/etc/stubby/stubby.yml $(1)/etc/stubby/stubby.yml.default
 	$(INSTALL_DATA) ./files/stubby.yml $(1)/etc/stubby/stubby.yml
-endef
-
-
-define Package/stubby/conffiles
-	/etc/stubby/stubby.yml
 endef
 
 $(eval $(call BuildPackage,stubby))
