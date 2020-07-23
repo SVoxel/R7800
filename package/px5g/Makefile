@@ -14,7 +14,7 @@ PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
-TARGET_CFLAGS += -Wno-error=format-truncation
+TARGET_CFLAGS += -Wno-error=format-truncation -Wno-error=stringop-overflow
 
 define Package/px5g
   SECTION:=utils
