@@ -8,45 +8,40 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=json-c
-PKG_VERSION:=0.13.1
+PKG_VERSION:=0.14
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-nodoc.tar.gz
 PKG_SOURCE_URL:=https://s3.amazonaws.com/json-c_releases/releases/
-PKG_MD5SUM:=429de1acd9722975a010d1a12cef740d
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)
+PKG_MD5SUM:=4c1073eaf4b5acaee302933b78cf41b2
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING
+PKG_CPE_ID:=cpe:/a:json-c_project:json-c
 
-PKG_FIXUP:=autoreconf
-PKG_INSTALL:=1
+CMAKE_INSTALL:=1
+CMAKE_OPTIONS += -DCMAKE_INSTALL_INCLUDEDIR=$(STAGING_DIR)/usr/include
 
 PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/host-build.mk
+include $(INCLUDE_DIR)/cmake.mk
 
-TARGET_CFLAGS += $(FPIC)
+TARGET_CFLAGS += $(FPIC) -Wno-implicit-fallthrough
+HOST_CFLAGS += -Wno-implicit-fallthrough
+HOST_BUILD_PREFIX:=$(STAGING_DIR_HOST)
 
 define Package/libjson-c
   SECTION:=libs
   CATEGORY:=Libraries
   TITLE:=javascript object notation
-  URL:=http://oss.metaparadigm.com/json-c/
+  URL:=https://json-c.github.io/json-c/
+  ABI_VERSION:=5
 endef
 
 define Package/libjson-c/description
  This package contains a library for javascript object notation backends.
-endef
-
-define Build/InstallDev
-	$(INSTALL_DIR) $(1)/usr/include
-	$(CP) $(PKG_INSTALL_DIR)/usr/include/json-c $(1)/usr/include/
-	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libjson-c.{a,so*} $(1)/usr/lib/
-	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/json-c.pc $(1)/usr/lib/pkgconfig/
 endef
 
 define Package/libjson-c/install
@@ -55,3 +50,4 @@ define Package/libjson-c/install
 endef
 
 $(eval $(call BuildPackage,libjson-c))
+$(eval $(call HostBuild))
