@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=curl
-PKG_VERSION:=7.71.0
+PKG_VERSION:=7.71.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
@@ -16,7 +16,7 @@ PKG_SOURCE_URL:=https://dl.uxnr.de/mirror/curl/ \
 	http://curl.mirror.anstey.ca/ \
 	http://curl.askapache.com/download/ \
 	https://curl.haxx.se/download/
-PKG_MD5SUM:=9a1f04044df1ddb0d764b2ccb4353215
+PKG_MD5SUM:=b54b386057846ce3edd3584b19741569
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING
