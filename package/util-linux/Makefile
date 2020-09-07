@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=util-linux
-PKG_VERSION:=2.35.2
+PKG_VERSION:=2.36
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_SOURCE_URL:=@KERNEL/linux/utils/$(PKG_NAME)/v2.35
-PKG_MD5SUM:=248a4d0810c9193e0e9a4bb3f26b93d8
+PKG_SOURCE_URL:=@KERNEL/linux/utils/$(PKG_NAME)/v2.36
+PKG_MD5SUM:=fe7c0f7e439f08970e462c9d44599903
 PKG_CPE_ID:=cpe:/a:kernel:util-linux
 
 PKG_LICENSE:=GPL-2.0
@@ -381,6 +381,16 @@ define Package/partx-utils/description
  contains partx, addpart, delpart
 endef
 
+define Package/renice
+$(call Package/util-linux/Default)
+  TITLE:=core utilities for embedded Linux
+  SUBMENU=Schedutils
+endef
+
+define Package/renice/description
+ alter priority of running processes
+endef
+
 define Package/script-utils
 $(call Package/util-linux/Default)
   TITLE:=make and replay typescript of terminal session
@@ -428,12 +438,12 @@ endef
 
 define Package/taskset
 $(call Package/util-linux/Default)
-  TITLE:=Core utilities for embedded Linux
-  SUBMENU=schedutils
+  TITLE:=core utilities for embedded Linux
+  SUBMENU=Schedutils
 endef
 
 define Package/taskset/description
- Retrieve or set a processes's CPU affinity.
+ retrieve or set a processes's CPU affinity
 endef
 
 define Package/unshare
@@ -721,6 +731,11 @@ define Package/partx-utils/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/delpart $(1)/usr/sbin/
 endef
 
+define Package/renice/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/renice $(1)/usr/bin/
+endef
+
 define Package/script-utils/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/script $(1)/usr/bin/
@@ -808,6 +823,7 @@ $(eval $(call BuildPackage,namei))
 $(eval $(call BuildPackage,nsenter))
 $(eval $(call BuildPackage,prlimit))
 $(eval $(call BuildPackage,rename))
+$(eval $(call BuildPackage,renice))
 $(eval $(call BuildPackage,partx-utils))
 $(eval $(call BuildPackage,script-utils))
 $(eval $(call BuildPackage,setterm))

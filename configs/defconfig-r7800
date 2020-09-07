@@ -2341,8 +2341,9 @@ CONFIG_PACKAGE_dni-libmtd=y
 CONFIG_PACKAGE_at=y
 
 #
-# schedutils
+# Schedutils
 #
+CONFIG_PACKAGE_renice=y
 CONFIG_PACKAGE_taskset=y
 
 #

@@ -1,0 +1,69 @@
+--- a/sys-utils/unshare.c	2020-07-22 11:06:47.023691600 +0300
++++ b/sys-utils/unshare.c	2020-08-21 12:13:22.458804900 +0300
+@@ -355,7 +355,9 @@
+ 		OPT_KILLCHILD,
+ 		OPT_KEEPCAPS,
+ 		OPT_MONOTONIC,
++#ifdef CLOCK_BOOTTIME
+ 		OPT_BOOTTIME,
++#endif
+ 		OPT_MAPUSER,
+ 		OPT_MAPGROUP,
+ 	};
+@@ -387,7 +389,9 @@
+ 		{ "root",	   required_argument, NULL, 'R'		    },
+ 		{ "wd",		   required_argument, NULL, 'w'		    },
+ 		{ "monotonic",     required_argument, NULL, OPT_MONOTONIC   },
++#ifdef CLOCK_BOOTTIME
+ 		{ "boottime",      required_argument, NULL, OPT_BOOTTIME    },
++#endif
+ 		{ NULL, 0, NULL, 0 }
+ 	};
+ 
+@@ -412,7 +416,9 @@
+ 	time_t monotonic = 0;
+ 	time_t boottime = 0;
+ 	int force_monotonic = 0;
++#ifdef CLOCK_BOOTTIME
+ 	int force_boottime = 0;
++#endif
+ 
+ 	setlocale(LC_ALL, "");
+ 	bindtextdomain(PACKAGE, LOCALEDIR);
+@@ -524,10 +530,12 @@
+ 			monotonic = strtoul_or_err(optarg, _("failed to parse monotonic offset"));
+ 			force_monotonic = 1;
+ 			break;
++#ifdef CLOCK_BOOTTIME
+                 case OPT_BOOTTIME:
+ 			boottime = strtoul_or_err(optarg, _("failed to parse boottime offset"));
+ 			force_boottime = 1;
+ 			break;
++#endif
+ 
+ 		case 'h':
+ 			usage();
+@@ -538,7 +546,11 @@
+ 		}
+ 	}
+ 
+-	if ((force_monotonic || force_boottime) && !(unshare_flags & CLONE_NEWTIME))
++	if ((force_monotonic
++#ifdef CLOCK_BOOTTIME
++				|| force_boottime
++#endif
++				) && !(unshare_flags & CLONE_NEWTIME))
+ 		errx(EXIT_FAILURE, _("options --monotonic and --boottime require "
+ 			"unsharing of a time namespace (-t)"));
+ 
+@@ -548,8 +560,10 @@
+ 	if (-1 == unshare(unshare_flags))
+ 		err(EXIT_FAILURE, _("unshare failed"));
+ 
++#ifdef CLOCK_BOOTTIME
+ 	if (force_boottime)
+ 		settime(boottime, CLOCK_BOOTTIME);
++#endif
+ 
+ 	if (force_monotonic)
+ 		settime(monotonic, CLOCK_MONOTONIC);
