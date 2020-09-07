@@ -88,7 +88,7 @@ define Package/openssl-util
 endef
 
 define Package/openssl-util/conffiles
-/etc/ssl/openssl.cnf
+/etc/ssl/1.0.2/openssl.cnf
 endef
 
 define Package/openssl-util/description
@@ -151,7 +151,7 @@ define Build/Configure
 	(cd $(PKG_BUILD_DIR); \
 		./Configure $(OPENSSL_TARGET) \
 			--prefix=/usr \
-			--openssldir=/etc/ssl \
+			--openssldir=/etc/ssl/1.0.2 \
 			-D__ARM_MAX_ARCH__=7 \
 			$(TARGET_CPPFLAGS) \
 			$(TARGET_LDFLAGS) -ldl \
@@ -220,11 +220,10 @@ define Package/libopenssl/install
 endef
 
 define Package/openssl-util/install
-	$(INSTALL_DIR) $(1)/etc/ssl
-	$(CP) $(PKG_INSTALL_DIR)/etc/ssl/openssl.cnf $(1)/etc/ssl/
-	$(INSTALL_DIR) $(1)/etc/ssl/certs
-	$(INSTALL_DIR) $(1)/etc/ssl/private
-	chmod 0700 $(1)/etc/ssl/private
+	$(INSTALL_DIR) $(1)/etc/ssl/1.0.2
+	$(CP) $(PKG_INSTALL_DIR)/etc/ssl/1.0.2/openssl.cnf $(1)/etc/ssl/1.0.2
+	$(LN) ../certs $(1)/etc/ssl/1.0.2/certs
+	$(LN) ../private $(1)/etc/ssl/1.0.2/private
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/openssl $(1)/usr/bin/
 endef
