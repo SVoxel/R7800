@@ -157,25 +157,37 @@ static int uh_tls_client_ctx_setup(SSL *ssl, int socket)
 }
 #endif /* TLS_IS_OPENSSL */
 
-
 SSL_CTX * uh_tls_ctx_init()
 {
 	SSL_CTX *c;
-
+	EC_KEY *ecdh;
 	SSL_load_error_strings();
 	SSL_library_init();
 
-	if ((c = SSL_CTX_new(TLSv1_server_method())) != NULL)
+	if ((c = SSL_CTX_new(SSLv23_server_method())) != NULL)
 		uh_tls_ctx_setup(c);
+
+	if (SSL_CTX_set_cipher_list(c, "EECDH+AESGCM:EDH+AESGCM:AES128+EDH") <=0)
+	{
+		return NULL;
+	}
+	ecdh = EC_KEY_new_by_curve_name(OBJ_sn2nid("prime256v1"));
+	if (ecdh == NULL) {
+		return NULL;
+	}
+	//SSL_CTX_set_options(c, SSL_OP_CIPHER_SERVER_PREFERENCE);
+	SSL_CTX_set_tmp_ecdh(c,ecdh);
+	SSL_CTX_set_options(c,SSL_OP_SINGLE_ECDH_USE);
+	EC_KEY_free(ecdh);
+	//SSL_CTX_set_ecdh_auto(c, 1);
 
 	return c;
 }
-
 int uh_tls_ctx_cert(SSL_CTX *c, const char *file)
 {
 	int rv;
 
-	if( (rv = SSL_CTX_use_certificate_file(c, file, SSL_FILETYPE_PEM)) < 1 )
+	if( (rv = SSL_CTX_use_certificate_chain_file(c, file)) < 1 )
 		rv = SSL_CTX_use_certificate_file(c, file, SSL_FILETYPE_ASN1);
 
 	return rv;
