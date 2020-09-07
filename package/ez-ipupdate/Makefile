@@ -36,6 +36,7 @@ endef
 
 define Build/Prepare
 	$(CP) $(GIT_HOME)/ez-ipupdate.git/* $(PKG_BUILD_DIR)/
+	touch -t 201705170001.01 $(PKG_BUILD_DIR)/*
 endef
 
 define Package/ez-ipupdate/install
