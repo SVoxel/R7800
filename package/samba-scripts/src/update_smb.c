@@ -197,14 +197,14 @@ static void add_smbd_global(FILE *fp)
 			"  map hidden = no\n"
 			"  map read only = no\n"
 			"  map system = no\n"
-			"  store dos attributes = yes\n"
+			"  store dos attributes = no\n"
 			"  dos filemode = yes\n"
 			"  oplocks = yes\n"
 			"  level2 oplocks = yes\n"
 			"  kernel oplocks = no\n"
 			"  wide links = no\n"
 			"  min receivefile size = 16384\n"
-			"  socket options = IPTOS_LOWDELAY TCP_NODELAY SO_KEEPALIVE SO_RCVBUF=131072 SO_SNDBUF=131072\n"
+			"  socket options = IPTOS_LOWDELAY TCP_NODELAY SO_KEEPALIVE\n"
 			"\n");
 }
 
