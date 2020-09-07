@@ -27,6 +27,7 @@ endef
 
 define Build/Prepare
 	$(CP) $(GIT_HOME)/phddns.git/* $(PKG_BUILD_DIR)/
+	find $(PKG_BUILD_DIR)/ -type f -exec touch -t 201705170001.01 {} \;
 endef
 
 define Package/phddns/install
