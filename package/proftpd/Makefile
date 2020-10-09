@@ -47,6 +47,7 @@ CONFIGURE_ARGS += \
 	--with-lastlog=/var/log \
 	--enable-autoshadow \
 	--enable-nls \
+	--enable-largefile \
 
 CONFIGURE_VARS += \
 	ac_cv_header_curses_h=no \
