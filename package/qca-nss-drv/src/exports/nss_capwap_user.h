@@ -97,7 +97,11 @@ struct nss_capwap_metaheader {
 	uint16_t type;		/**< Type of CAPWAP packet & What was there in CAPWAP header */
 	uint16_t nwireless;	/**< Number of wireless info sections in CAPWAP header */
 	uint16_t magic;		/**< Magic for verification purpose. Use only for debugging */
+#if __GNUC__ < 5
 } __attribute__((packed aligned(4)));
+#else
+} __attribute__((packed, aligned(4)));
+#endif
 
 /**
  * IPv4/IPv6 structure

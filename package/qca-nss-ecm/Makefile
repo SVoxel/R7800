@@ -75,7 +75,8 @@ EXTRA_CFLAGS+= \
 	-I$(STAGING_DIR)/usr/include/hyfibr \
 	-I$(STAGING_DIR)/usr/include/qca-mcs \
 	-I$(STAGING_DIR)/usr/include/qca-nss-drv \
-	-I$(STAGING_DIR)/usr/include/shortcut-fe
+	-I$(STAGING_DIR)/usr/include/shortcut-fe \
+	-I$(CURDIR)/../qca-nss-drv/src/exports
 
 define Build/Prepare
 	mkdir -p $(PKG_BUILD_DIR)
@@ -83,12 +84,12 @@ define Build/Prepare
 endef
 
 define Build/Compile
-#	$(MAKE) -C "$(LINUX_DIR)" \
-#		CROSS_COMPILE="$(TARGET_CROSS)" \
-#		ARCH="$(LINUX_KARCH)" \
-#		SUBDIRS="$(PKG_BUILD_DIR)" \
-#		EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
-#		modules
+	$(MAKE) -C "$(LINUX_DIR)" \
+		CROSS_COMPILE="$(TARGET_CROSS)" \
+		ARCH="$(LINUX_KARCH)" \
+		SUBDIRS="$(PKG_BUILD_DIR)" \
+		EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
+		modules
 endef
 
 define KernelPackage/qca-nss-ecm/config/Default

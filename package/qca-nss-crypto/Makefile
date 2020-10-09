@@ -59,19 +59,20 @@ EXTRA_CFLAGS+= \
 	-DCONFIG_NSS_DEBUG_LEVEL=4 \
 	-I$(STAGING_DIR)/usr/include/qca-nss-crypto \
 	-I$(STAGING_DIR)/usr/include/qca-nss-drv \
+	-I$(CURDIR)/../qca-nss-drv/src/exports \
 	-I$(PKG_BUILD_DIR)/include \
 	-I$(PKG_BUILD_DIR)/src
 
 HDR_EXPORTS = nss_crypto_if.h
 
 define Build/Compile
-#	$(MAKE) -C "$(LINUX_DIR)" \
-#		CC="$(TARGET_CC)" \
-#		CROSS_COMPILE="$(TARGET_CROSS)" \
-#		ARCH="$(LINUX_KARCH)" \
-#		SUBDIRS="$(PKG_BUILD_DIR)" \
-#		EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
-#		modules
+	$(MAKE) -C "$(LINUX_DIR)" \
+		CC="$(TARGET_CC)" \
+		CROSS_COMPILE="$(TARGET_CROSS)" \
+		ARCH="$(LINUX_KARCH)" \
+		SUBDIRS="$(PKG_BUILD_DIR)" \
+		EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
+		modules
 endef
 
 $(eval $(call KernelPackage,qca-nss-crypto))
