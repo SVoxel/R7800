@@ -8,8 +8,12 @@ proftpd_anony=/tmp/ftp_anony.conf
 TMP_DEVICE_NAME=/tmp/tmp_device_name_xyz
 TMP_LOCK_FILE=/tmp/tmp_lock_abc123xyz
 
-# ftp_passwd_enable=`${config} get usb_passwdFvia`
-ftp_passwd_enable=0
+# Fix by R. Gerrits
+if [ "$($config get usb_passwdFvia)" = "1" -o "$($config get usb_passwdFtp)" = "1" ]; then
+	ftp_passwd_enable=1
+else
+	ftp_passwd_enable=0
+fi
 
 check_all_folder_limit()
 {
