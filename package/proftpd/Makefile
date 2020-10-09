@@ -53,6 +53,11 @@ CONFIGURE_VARS += \
 	ac_cv_header_curses_h=no \
 	ac_cv_header_ncurses_h=no
 
+define Build/Configure
+	$(call Build/Configure/Default)
+	$(SED) 's/HAVE_LU/HAVE_LLU/g' $(PKG_BUILD_DIR)/config.h
+endef
+
 define Package/proftpd/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/proftpd $(1)/usr/sbin/
