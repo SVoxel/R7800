@@ -132,10 +132,17 @@ define Package/coreutils/install
 	true
 endef
 
+# Define and use prefix for list of target utils
+GNU_PREFIX:="gnu-"
+GNU_PREFIX_LIST:="date"
+
 define BuildPlugin
   define Package/$(1)/install
 	$(INSTALL_DIR) $$(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/$(2) $$(1)/usr/bin/$(if $(ALTS_$(2)),gnu-$(2),$(2))
+  ifeq ($(findstring $(2),$(GNU_PREFIX_LIST)),$(2))
+	mv $$(1)/usr/bin/$(2) $$(1)/usr/bin/$(GNU_PREFIX)$(2)
+  endif
 	$(foreach f,$(FILES_$(2)),
 		$(INSTALL_DIR) $$(1)/$(dir $(f))
 		$(INSTALL_BIN) $(PKG_INSTALL_DIR)/$(f) $$(1)/$(f)
