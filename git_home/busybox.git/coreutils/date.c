@@ -117,15 +117,16 @@ int date_main(int argc, char **argv)
 		struct stat statbuf;
 		xstat(filename, &statbuf);
 		tm = statbuf.st_mtime;
-	} else
+	} else {
 		time(&tm);
-	/* Get local time value according to time zone setting */
-	time_zone = get_time_zone();
-	if (*time_zone != '\0') {
-		time(&tm);
-		setenv("TZ", time_zone, 1);
+		time_zone = get_time_zone();
+		if (*time_zone != '\0') {
+			setenv("TZ", time_zone, 1);
+		}
 	}
-	memcpy(&tm_time, localtime(&tm), sizeof(tm_time));
+	/* Get local time value according to time zone setting */
+	localtime_r(&tm, &tm_time);
+
 	/* Zero out fields - take her back to midnight! */
 	if (date_str != NULL) {
 		tm_time.tm_sec = 0;
