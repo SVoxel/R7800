@@ -21,4 +21,6 @@ alias rm='rm -i'
 [ -x /usr/bin/arp ] || arp() { cat /proc/net/arp; }
 [ -x /usr/bin/ldd ] || ldd() { LD_TRACE_LOADED_OBJECTS=1 $*; }
 
+export TZ=`cat /etc/TZ`
+
 umask 0022
