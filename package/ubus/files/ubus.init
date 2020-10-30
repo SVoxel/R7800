@@ -6,9 +6,16 @@ SERVICE_DAEMONIZE=1
 SERVICE_WRITE_PID=1
 
 start() {
+	# Create /var/run/ubus directory needed for ubus.sock
+	if [ ! -d /var/run/ubus ]; then
+		mkdir /var/run/ubus
+	fi
+
+	# Start ubusd service
 	service_start /sbin/ubusd
 }
 
 stop() {
+	# Stop ubusd service
 	service_stop /sbin/ubusd
 }
