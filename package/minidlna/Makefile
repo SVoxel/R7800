@@ -8,11 +8,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=minidlna
-PKG_VERSION:=2019-12-09-0763719f
+PKG_VERSION:=1.3.0
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_MD5SUM:=cf0953bf00b289ce23a034f6a0d11956
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_MD5SUM:=89e92d1938ee3066631d4ca9fbf31507
 
 PKG_LICENSE:=GPL-2.0 BSD-3-Clause
 PKG_LICENSE_FILES:=COPYING LICENCE.miniupnpd
@@ -33,7 +33,7 @@ define Package/minidlna
   TITLE:=UPnP A/V & DLNA Media Server
   URL:=http://minidlna.sourceforge.net/
   DEPENDS:= +libpthread +libexif +libjpeg +libsqlite3 +libffmpeg \
-  	+libid3tag +libflac +libvorbis +libuuid \
+  	+libid3tag +libflac +libogg +libvorbis +libuuid \
   	$(ICONV_DEPENDS) $(INTL_DEPENDS)
   USERID:=minidlna:minidlna
 endef
