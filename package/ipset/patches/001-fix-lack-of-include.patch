@@ -1,0 +1,10 @@
+--- a/kernel/include/linux/jhash.h	2020-11-20 00:42:19.000000000 +0300
++++ b/kernel/include/linux/jhash.h	2020-11-21 13:20:20.999538900 +0300
+@@ -1,5 +1,7 @@
+ #ifndef _LINUX_JHASH_H
+ #define _LINUX_JHASH_H
++#include <net/netlink.h>
++#include <linux/sched.h>
+ #include <linux/netfilter/ipset/ip_set_compat.h>
+ 
+ /* jhash.h: Jenkins hash support.
