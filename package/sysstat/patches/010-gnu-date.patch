@@ -1,0 +1,14 @@
+--- a/sa2.in	2020-07-29 10:12:46.000000000 +0300
++++ b/sa2.in	2020-10-29 16:31:21.498338600 +0300
+@@ -43,9 +43,9 @@
+ 
+ if [ ${HISTORY} -gt 28 ]
+ then
+-	DATE=`date ${DATE_OPTS} +%Y%m%d`
++	DATE=`gnu-date ${DATE_OPTS} +%Y%m%d`
+ else
+-	DATE=`date ${DATE_OPTS} +%d`
++	DATE=`gnu-date ${DATE_OPTS} +%d`
+ fi
+ CURRENTFILE=sa${DATE}
+ CURRENTRPT=sar${DATE}
