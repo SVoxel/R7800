@@ -1,6 +1,6 @@
---- a/configure.ac	2020-07-23 12:23:58.179635600 +0300
-+++ b/configure.ac	2020-08-21 12:37:28.135961700 +0300
-@@ -2586,18 +2586,23 @@
+--- a/configure.ac	2020-11-16 13:51:02.118672600 +0300
++++ b/configure.ac	2020-11-16 19:39:14.994385000 +0300
+@@ -2522,18 +2522,23 @@
  #
  AC_CONFIG_FILES([
  Makefile
@@ -24,9 +24,8 @@
  po/Makefile.in
  ])
  
-diff -Nuar a/libblkid/Makemodule.am b/libblkid/Makemodule.am
 --- a/libblkid/Makemodule.am	2020-02-27 12:26:34.566141200 +0300
-+++ b/libblkid/Makemodule.am	2020-08-21 12:37:28.144260600 +0300
++++ b/libblkid/Makemodule.am	2020-11-16 19:39:15.003698300 +0300
 @@ -9,7 +9,6 @@
  endif
  
@@ -35,9 +34,8 @@ diff -Nuar a/libblkid/Makemodule.am b/libblkid/Makemodule.am
  dist_man_MANS  += libblkid/libblkid.3
  EXTRA_DIST     += libblkid/COPYING
  
-diff -Nuar a/libfdisk/Makemodule.am b/libfdisk/Makemodule.am
 --- a/libfdisk/Makemodule.am	2020-02-10 13:33:31.303715100 +0300
-+++ b/libfdisk/Makemodule.am	2020-08-21 12:37:28.159508500 +0300
++++ b/libfdisk/Makemodule.am	2020-11-16 19:39:15.008042600 +0300
 @@ -9,7 +9,6 @@
  endif
  
@@ -46,9 +44,8 @@ diff -Nuar a/libfdisk/Makemodule.am b/libfdisk/Makemodule.am
  EXTRA_DIST     += libfdisk/COPYING
  
  endif # BUILD_LIBFDISK
-diff -Nuar a/libmount/Makemodule.am b/libmount/Makemodule.am
 --- a/libmount/Makemodule.am	2020-07-22 11:06:46.914692300 +0300
-+++ b/libmount/Makemodule.am	2020-08-21 12:37:28.149488300 +0300
++++ b/libmount/Makemodule.am	2020-11-16 19:39:15.011901200 +0300
 @@ -9,7 +9,6 @@
  endif
  
@@ -57,9 +54,8 @@ diff -Nuar a/libmount/Makemodule.am b/libmount/Makemodule.am
  EXTRA_DIST     += libmount/COPYING
  
  endif # BUILD_LIBMOUNT
-diff -Nuar a/libsmartcols/Makemodule.am b/libsmartcols/Makemodule.am
 --- a/libsmartcols/Makemodule.am	2020-02-10 13:33:31.313715000 +0300
-+++ b/libsmartcols/Makemodule.am	2020-08-21 12:37:28.154382500 +0300
++++ b/libsmartcols/Makemodule.am	2020-11-16 19:39:15.015710900 +0300
 @@ -9,7 +9,6 @@
  endif
  
@@ -68,9 +64,8 @@ diff -Nuar a/libsmartcols/Makemodule.am b/libsmartcols/Makemodule.am
  EXTRA_DIST     += libsmartcols/COPYING
  
  endif # BUILD_LIBSMARTCOLS
-diff -Nuar a/libuuid/Makemodule.am b/libuuid/Makemodule.am
 --- a/libuuid/Makemodule.am	2017-09-18 12:48:03.574891400 +0300
-+++ b/libuuid/Makemodule.am	2020-08-21 12:37:28.129750600 +0300
++++ b/libuuid/Makemodule.am	2020-11-16 19:39:15.021455600 +0300
 @@ -4,7 +4,6 @@
  include libuuid/src/Makemodule.am
  

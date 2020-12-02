@@ -1,0 +1,32 @@
+--- a/configure.ac	2020-11-16 19:39:14.994385000 +0300
++++ b/configure.ac	2020-11-16 19:40:36.091980200 +0300
+@@ -531,6 +531,8 @@
+ ])
+ AC_FUNC_FSEEKO
+ 
++AC_CHECK_FUNCS([mkostemp])
++
+ AC_CHECK_FUNCS([openat fstatat unlinkat], [have_openat=yes], [have_openat=no])
+ AC_CHECK_FUNCS([ioperm iopl], [have_io=yes])
+ AC_CHECK_FUNCS([futimens], [have_futimens=yes])
+--- a/include/c.h	2020-11-13 13:43:48.299690500 +0300
++++ b/include/c.h	2020-11-16 19:40:36.098735100 +0300
+@@ -424,4 +424,18 @@
+ # define MAP_ANONYMOUS  (MAP_ANON)
+ #endif
+ 
++/*
++ * mkostemp() may be missing with older version of uClibc
++ */
++#ifndef HAVE_MKOSTEMP
++static inline int mkostemp(char *template, int flags)
++{
++ int fd;
++ fd = mkstemp(template);
++ if (flags & O_CLOEXEC && fd >= 0)
++ fcntl(fd, F_SETFD, FD_CLOEXEC);
++ return fd;
++}
++#endif
++
+ #endif /* UTIL_LINUX_C_H */
