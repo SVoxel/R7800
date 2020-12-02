@@ -1,5 +1,5 @@
---- a/libxtables/xtables.c	2020-06-03 13:32:01.000000000 +0300
-+++ b/libxtables/xtables.c	2020-06-09 10:30:28.068911700 +0300
+--- a/libxtables/xtables.c	2020-10-31 20:27:07.000000000 +0300
++++ b/libxtables/xtables.c	2020-11-17 12:11:56.244966828 +0300
 @@ -21,7 +21,6 @@
  #include <fcntl.h>
  #include <inttypes.h>
@@ -8,7 +8,7 @@
  #include <stdarg.h>
  #include <stdbool.h>
  #include <stdio.h>
-@@ -400,7 +399,6 @@
+@@ -406,7 +405,6 @@
  	char *buf = NULL;
  	char *argv[4];
  	int status;
@@ -16,7 +16,7 @@
  
  	/* If they don't explicitly set it, read out of kernel */
  	if (!modprobe) {
-@@ -410,22 +408,33 @@
+@@ -416,22 +414,33 @@
  		modprobe = buf;
  	}
  

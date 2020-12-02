@@ -1,6 +1,6 @@
---- a/extensions/GNUmakefile.in
-+++ b/extensions/GNUmakefile.in
-@@ -86,7 +86,7 @@ pfx_symlink_files := $(patsubst %,libxt_
+--- a/extensions/GNUmakefile.in	2020-11-16 22:39:54.566095373 +0300
++++ b/extensions/GNUmakefile.in	2020-11-16 22:43:03.703814820 +0300
+@@ -86,7 +86,7 @@
  #
  # Building blocks
  #
@@ -9,7 +9,7 @@
  targets_install :=
  libext_objs := ${pfx_objs}
  libext_ebt_objs := ${pfb_objs}
-@@ -119,7 +119,7 @@ clean:
+@@ -132,7 +132,7 @@
  distclean: clean
  
  init%.o: init%.c
@@ -18,7 +18,7 @@
  
  -include .*.d
  
-@@ -151,22 +151,22 @@ xt_connlabel_LIBADD = @libnetfilter_conn
+@@ -164,22 +164,22 @@
  #	handling code in the Makefiles.
  #
  lib%.o: ${srcdir}/lib%.c
@@ -52,9 +52,9 @@
  
  initext_func  := $(addprefix xt_,${pfx_build_static})
  initextb_func := $(addprefix ebt_,${pfb_build_static})
---- a/iptables/Makefile.am
-+++ b/iptables/Makefile.am
-@@ -7,19 +7,22 @@ BUILT_SOURCES =
+--- a/iptables/Makefile.am	2020-10-31 20:27:07.000000000 +0300
++++ b/iptables/Makefile.am	2020-11-16 22:43:03.707814773 +0300
+@@ -7,19 +7,22 @@
  
  xtables_legacy_multi_SOURCES  = xtables-legacy-multi.c iptables-xml.c
  xtables_legacy_multi_CFLAGS   = ${AM_CFLAGS}
@@ -80,7 +80,7 @@
  endif
  xtables_legacy_multi_SOURCES += xshared.c iptables-restore.c iptables-save.c
  xtables_legacy_multi_LDADD   += ../libxtables/libxtables.la -lm
-@@ -28,7 +31,8 @@ xtables_legacy_multi_LDADD   += ../libxt
+@@ -28,7 +31,8 @@
  if ENABLE_NFTABLES
  xtables_nft_multi_SOURCES  = xtables-nft-multi.c iptables-xml.c
  xtables_nft_multi_CFLAGS   = ${AM_CFLAGS}
@@ -90,7 +90,7 @@
  if ENABLE_STATIC
  xtables_nft_multi_CFLAGS  += -DALL_INCLUSIVE
  endif
-@@ -42,7 +46,8 @@ xtables_nft_multi_SOURCES += xtables-sav
+@@ -42,7 +46,8 @@
  				xtables-eb-standalone.c xtables-eb.c \
  				xtables-eb-translate.c \
  				xtables-translate.c
