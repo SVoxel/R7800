@@ -1,6 +1,6 @@
---- a/Makefile.am	2020-06-28 01:03:53.000000000 +0300
-+++ b/Makefile.am	2020-07-02 09:52:34.119246600 +0300
-@@ -192,7 +192,7 @@
+--- a/Makefile.am	2020-10-13 08:53:51.000000000 +0300
++++ b/Makefile.am	2020-11-23 15:21:49.998516400 +0300
+@@ -195,7 +195,7 @@
  bin_SCRIPTS = curl-config
  
  SUBDIRS = lib src
@@ -9,7 +9,7 @@
  
  pkgconfigdir = $(libdir)/pkgconfig
  pkgconfig_DATA = libcurl.pc
-@@ -303,8 +303,8 @@
+@@ -306,8 +306,8 @@
  # We extend the standard install with a custom hook:
  install-data-hook:
  	(cd include && $(MAKE) install)
