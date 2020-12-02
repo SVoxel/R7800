@@ -32,7 +32,7 @@ if [ "$wanname" != "brwan" ]; then
 	$CONFIG set wan_ifname="brwan"
 	$CONFIG set lan_ifnames="ethlan ath0"
 	$CONFIG set wan_ifnames="brwan"
-	$CONFIG commits
+	$CONFIG commit
 fi
 
 web_tcbw_value=`$CONFIG get web_tcbw_value`
