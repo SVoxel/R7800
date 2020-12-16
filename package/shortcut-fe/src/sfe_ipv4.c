@@ -547,12 +547,11 @@ static inline unsigned int sfe_ipv4_get_connection_match_hash(struct net_device 
  *
  * On entry we must be holding the lock that protects the hash table.
  */
-/* static struct sfe_ipv4_connection_match *
+static struct sfe_ipv4_connection_match *
 sfe_ipv4_find_sfe_ipv4_connection_match(struct sfe_ipv4 *si, struct net_device *dev, uint8_t protocol,
 					__be32 src_ip, __be16 src_port,
 					__be32 dest_ip, __be16 dest_port) __attribute__((always_inline));
-*/
-static inline struct sfe_ipv4_connection_match *
+static struct sfe_ipv4_connection_match *
 sfe_ipv4_find_sfe_ipv4_connection_match(struct sfe_ipv4 *si, struct net_device *dev, uint8_t protocol,
 					__be32 src_ip, __be16 src_port,
 					__be32 dest_ip, __be16 dest_port)
@@ -1462,10 +1461,9 @@ static int sfe_ipv4_recv_udp(struct sfe_ipv4 *si, struct sk_buff *skb, struct ne
  * sfe_ipv4_process_tcp_option_sack()
  *	Parse TCP SACK option and update ack according
  */
-/* static bool sfe_ipv4_process_tcp_option_sack(const struct sfe_ipv4_tcp_hdr *th, const uint32_t data_offs,
+static bool sfe_ipv4_process_tcp_option_sack(const struct sfe_ipv4_tcp_hdr *th, const uint32_t data_offs,
 					     uint32_t *ack) __attribute__((always_inline));
-*/
-static inline bool sfe_ipv4_process_tcp_option_sack(const struct sfe_ipv4_tcp_hdr *th, const uint32_t data_offs,
+static bool sfe_ipv4_process_tcp_option_sack(const struct sfe_ipv4_tcp_hdr *th, const uint32_t data_offs,
 					     uint32_t *ack)
 {
 	uint32_t length = sizeof(struct sfe_ipv4_tcp_hdr);

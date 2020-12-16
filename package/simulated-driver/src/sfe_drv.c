@@ -141,7 +141,7 @@ static inline void sfe_drv_incr_exceptions(sfe_drv_exception_t except)
  * @param dev network device to check
  * @param check_v4 check ipv4 layer 3 interface(which have ipv4 address) or ipv6 layer 3 interface(which have ipv6 address)
  */
-static inline bool sfe_drv_dev_is_layer_3_interface(struct net_device *dev, bool check_v4)
+inline bool sfe_drv_dev_is_layer_3_interface(struct net_device *dev, bool check_v4)
 {
 	struct in_device *in4_dev;
 	struct inet6_dev *in6_dev;

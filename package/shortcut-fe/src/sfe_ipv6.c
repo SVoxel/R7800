@@ -603,12 +603,11 @@ static inline unsigned int sfe_ipv6_get_connection_match_hash(struct net_device 
  *
  * On entry we must be holding the lock that protects the hash table.
  */
-/* static struct sfe_ipv6_connection_match *
+static struct sfe_ipv6_connection_match *
 sfe_ipv6_find_connection_match(struct sfe_ipv6 *si, struct net_device *dev, uint8_t protocol,
 					struct sfe_ipv6_addr *src_ip, __be16 src_port,
 					struct sfe_ipv6_addr *dest_ip, __be16 dest_port) __attribute__((always_inline));
-*/
-static inline struct sfe_ipv6_connection_match *
+static struct sfe_ipv6_connection_match *
 sfe_ipv6_find_connection_match(struct sfe_ipv6 *si, struct net_device *dev, uint8_t protocol,
 					struct sfe_ipv6_addr *src_ip, __be16 src_port,
 					struct sfe_ipv6_addr *dest_ip, __be16 dest_port)
@@ -1515,10 +1514,9 @@ static int sfe_ipv6_recv_udp(struct sfe_ipv6 *si, struct sk_buff *skb, struct ne
  * sfe_ipv6_process_tcp_option_sack()
  *	Parse TCP SACK option and update ack according
  */
-/* static bool sfe_ipv6_process_tcp_option_sack(const struct sfe_ipv6_tcp_hdr *th, const uint32_t data_offs,
+static bool sfe_ipv6_process_tcp_option_sack(const struct sfe_ipv6_tcp_hdr *th, const uint32_t data_offs,
 					     uint32_t *ack) __attribute__((always_inline));
-*/
-static inline bool sfe_ipv6_process_tcp_option_sack(const struct sfe_ipv6_tcp_hdr *th, const uint32_t data_offs,
+static bool sfe_ipv6_process_tcp_option_sack(const struct sfe_ipv6_tcp_hdr *th, const uint32_t data_offs,
 					     uint32_t *ack)
 {
 	uint32_t length = sizeof(struct sfe_ipv6_tcp_hdr);
