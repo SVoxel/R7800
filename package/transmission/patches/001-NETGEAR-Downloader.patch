@@ -1,0 +1,399 @@
+--- a/libtransmission/session.c	2020-05-22 14:04:23.391804800 +0300
++++ b/libtransmission/session.c	2020-12-09 17:55:03.815351500 +0300
+@@ -344,7 +344,7 @@
+     tr_variantDictAddBool(d, TR_KEY_idle_seeding_limit_enabled, false);
+     tr_variantDictAddStr(d, TR_KEY_incomplete_dir, tr_getDefaultDownloadDir());
+     tr_variantDictAddBool(d, TR_KEY_incomplete_dir_enabled, false);
+-    tr_variantDictAddInt(d, TR_KEY_message_level, TR_LOG_INFO);
++    tr_variantDictAddInt(d, TR_KEY_message_level, TR_LOG_ERROR);
+     tr_variantDictAddInt(d, TR_KEY_download_queue_size, 5);
+     tr_variantDictAddBool(d, TR_KEY_download_queue_enabled, true);
+     tr_variantDictAddInt(d, TR_KEY_peer_limit_global, atoi(TR_DEFAULT_PEER_LIMIT_GLOBAL_STR));
+@@ -361,8 +361,8 @@
+     tr_variantDictAddInt(d, TR_KEY_peer_id_ttl_hours, 6);
+     tr_variantDictAddBool(d, TR_KEY_queue_stalled_enabled, true);
+     tr_variantDictAddInt(d, TR_KEY_queue_stalled_minutes, 30);
+-    tr_variantDictAddReal(d, TR_KEY_ratio_limit, 2.0);
+-    tr_variantDictAddBool(d, TR_KEY_ratio_limit_enabled, false);
++    tr_variantDictAddReal(d, TR_KEY_ratio_limit, 0.0);
++    tr_variantDictAddBool(d, TR_KEY_ratio_limit_enabled, true);
+     tr_variantDictAddBool(d, TR_KEY_rename_partial_files, true);
+     tr_variantDictAddBool(d, TR_KEY_rpc_authentication_required, false);
+     tr_variantDictAddStr(d, TR_KEY_rpc_bind_address, "0.0.0.0");
+--- a/libtransmission/utils.c	2020-05-22 14:04:23.394804800 +0300
++++ b/libtransmission/utils.c	2020-12-09 17:56:45.546613400 +0300
+@@ -2005,7 +2005,7 @@
+         precision = 1;
+     }
+ 
+-    tr_snprintf(buf, buflen, "%.*f %s", precision, value, units);
++    tr_snprintf(buf, buflen, "%.*f%s", precision, value, units);
+     return buf;
+ }
+ 
+--- a/utils/remote.c	2020-05-22 14:04:23.487805500 +0300
++++ b/utils/remote.c	2020-12-09 18:28:06.019659800 +0300
+@@ -6,12 +6,17 @@
+  *
+  */
+ 
++#include <fcntl.h>
++#include <sys/types.h>
++#include <sys/stat.h>
+ #include <assert.h>
+ #include <ctype.h> /* isspace */
++#include <errno.h>
+ #include <math.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h> /* strcmp */
++#include <unistd.h>
+ 
+ #include <event2/buffer.h>
+ #include <event2/util.h>
+@@ -58,6 +63,10 @@
+ #define SPEED_G_STR "GB/s"
+ #define SPEED_T_STR "TB/s"
+ 
++char *statfile = "/tmp/greendownload/statfifo/bt";
++int stat_fd = -1,nwrite;
++char buf_t[32],f_buf[32];
++
+ /***
+ ****
+ ****  Display Utilities
+@@ -72,19 +81,19 @@
+     }
+     else if (eta < 60)
+     {
+-        tr_snprintf(buf, buflen, "%" PRId64 " sec", eta);
++        tr_snprintf(buf, buflen, "%" PRId64 "sec", eta);
+     }
+     else if (eta < (60 * 60))
+     {
+-        tr_snprintf(buf, buflen, "%" PRId64 " min", eta / 60);
++        tr_snprintf(buf, buflen, "%" PRId64 "min", eta / 60);
+     }
+     else if (eta < (60 * 60 * 24))
+     {
+-        tr_snprintf(buf, buflen, "%" PRId64 " hrs", eta / (60 * 60));
++        tr_snprintf(buf, buflen, "%" PRId64 "hrs", eta / (60 * 60));
+     }
+     else
+     {
+-        tr_snprintf(buf, buflen, "%" PRId64 " days", eta / (60 * 60 * 24));
++        tr_snprintf(buf, buflen, "%" PRId64 "days", eta / (60 * 60 * 24));
+     }
+ }
+ 
+@@ -259,6 +268,7 @@
+ static tr_option opts[] =
+ {
+     { 'a', "add", "Add torrent files by filename or URL", "a", false, NULL },
++    { 'L', "print-size", "print total sizes of files in a torrent file", "L",  0, NULL },
+     { 970, "alt-speed", "Use the alternate Limits", "as", false, NULL },
+     { 971, "no-alt-speed", "Don't use the alternate Limits", "AS", false, NULL },
+     { 972, "alt-speed-downlimit", "max alternate download speed (in "SPEED_K_STR ")", "asd", true, "<speed>" },
+@@ -291,7 +301,7 @@
+     { 920, "session-info", "Show the session's details", "si", false, NULL },
+     { 921, "session-stats", "Show the session's statistics", "st", false, NULL },
+     { 'l', "list", "List all torrents", "l", false, NULL },
+-    { 'L', "labels", "Set the current torrents' labels", "L", true, "<label[,label...]>" },
++    { 'T', "labels", "Set the current torrents' labels/tags", "T", true, "<label[,label...]>" },
+     { 960, "move", "Move current torrent's data to a new folder", NULL, true, "<path>" },
+     { 961, "find", "Tell Transmission where to find a torrent's data", NULL, true, "<path>" },
+     { 'm', "portmap", "Enable portmapping via NAT-PMP or UPnP", "m", false, NULL },
+@@ -398,6 +408,7 @@
+     case TR_OPT_ERR:
+     case TR_OPT_UNK:
+     case 'a': /* add torrent */
++    case 'L': /* print total sizes of files in a torrent */
+     case 'b': /* debug */
+     case 'n': /* auth */
+     case 810: /* authenv */
+@@ -444,7 +455,7 @@
+     case 993: /* no-trash-torrent */
+         return MODE_SESSION_SET;
+ 
+-    case 'L': /* labels */
++    case 'T': /* labels/tags */
+     case 712: /* tracker-remove */
+     case 950: /* seedratio */
+     case 951: /* seedratio-default */
+@@ -776,6 +787,8 @@
+     TR_KEY_rateUpload,
+     TR_KEY_sizeWhenDone,
+     TR_KEY_status,
++    TR_KEY_totalSize,
++    TR_KEY_bandwidthPriority,
+     TR_KEY_uploadRatio
+ };
+ 
+@@ -837,16 +850,17 @@
+         case TR_STATUS_DOWNLOAD_WAIT:
+         case TR_STATUS_SEED_WAIT:
+             tr_strlcpy(buf, "Queued", buflen);
++	    tr_strlcpy(buf, "Downloading", buflen);
+             break;
+ 
+         case TR_STATUS_STOPPED:
+             if (tr_variantDictFindBool(t, TR_KEY_isFinished, &boolVal) && boolVal)
+             {
+-                tr_strlcpy(buf, "Finished", buflen);
++                tr_strlcpy(buf, "Completed", buflen);
+             }
+             else
+             {
+-                tr_strlcpy(buf, "Stopped", buflen);
++                tr_strlcpy(buf, "Paused", buflen);
+             }
+ 
+             break;
+@@ -854,6 +868,9 @@
+         case TR_STATUS_CHECK_WAIT:
+         case TR_STATUS_CHECK:
+             {
++	        tr_strlcpy( buf, "Downloading", buflen);
++#if 0
++                const char * str = status == TR_STATUS_CHECK_WAIT
+                 char const* str = status == TR_STATUS_CHECK_WAIT ? "Will Verify" : "Verifying";
+                 double percent;
+ 
+@@ -865,12 +882,12 @@
+                 {
+                     tr_strlcpy(buf, str, buflen);
+                 }
++#endif
+ 
+                 break;
+             }
+ 
+         case TR_STATUS_DOWNLOAD:
+-        case TR_STATUS_SEED:
+             {
+                 int64_t fromUs = 0;
+                 int64_t toUs = 0;
+@@ -879,7 +896,7 @@
+ 
+                 if (fromUs != 0 && toUs != 0)
+                 {
+-                    tr_strlcpy(buf, "Up & Down", buflen);
++                    tr_strlcpy(buf, "Downloading", buflen);
+                 }
+                 else if (toUs != 0)
+                 {
+@@ -892,21 +909,26 @@
+ 
+                     if (leftUntilDone > 0)
+                     {
+-                        tr_strlcpy(buf, "Uploading", buflen);
++                        tr_strlcpy(buf, "Downloading", buflen);
+                     }
+                     else
+                     {
+-                        tr_strlcpy(buf, "Seeding", buflen);
++                        tr_strlcpy(buf, "Complete", buflen);
+                     }
+                 }
+                 else
+                 {
+-                    tr_strlcpy(buf, "Idle", buflen);
++                    tr_strlcpy(buf, "Downloading", buflen);
+                 }
+ 
+                 break;
+             }
+ 
++        case TR_STATUS_SEED:
++	{
++                tr_strlcpy( buf, "Complete", buflen );
++            break;
++        }
+         default:
+             tr_strlcpy(buf, "Unknown", buflen);
+             break;
+@@ -924,6 +946,14 @@
+     "Invalid"
+ };
+ 
++static char const* bandwidthPriorityNum[] =
++{
++    "-10",
++    "0",
++    "10",
++    "Invalid"
++};
++
+ static void printDetails(tr_variant* top)
+ {
+     tr_variant* args;
+@@ -1447,6 +1477,15 @@
+         double total_up = 0;
+         double total_down = 0;
+         char haveStr[32];
++        FILE *fp;
++        int suc = 1;
++
++        fp = fopen("/tmp/transbt_list","w+");
++        if (fp==NULL)
++        {
++                perror("dni:fopen failure");
++                suc = 0;
++        }
+ 
+         printf("%6s   %-4s  %9s  %-8s  %6s  %6s  %-5s  %-11s  %s\n", "ID", "Done", "Have", "ETA", "Up", "Down", "Ratio",
+             "Status", "Name");
+@@ -1458,6 +1497,7 @@
+             int64_t status;
+             int64_t up;
+             int64_t down;
++            int64_t jj;
+             int64_t sizeWhenDone;
+             int64_t leftUntilDone;
+             double ratio;
+@@ -1478,6 +1518,7 @@
+                 char statusStr[64];
+                 char ratioStr[32];
+                 char doneStr[8];
++		char buf[32];
+                 int64_t error;
+                 char errorMark;
+ 
+@@ -1510,16 +1551,34 @@
+                     errorMark = ' ';
+                 }
+ 
++                if (tr_variantDictFindInt( d, TR_KEY_totalSize, &jj) )
++                        strlsize( buf, jj, sizeof( buf ) );
++                if (tr_variantDictFindInt (d, TR_KEY_bandwidthPriority, &jj))
++                        printf ("  Bandwidth Priority: %s\n",bandwidthPriorityNames[(jj + 1) & 3]);
+                 printf("%6d%c  %4s  %9s  %-8s  %6.1f  %6.1f  %5s  %-11s  %s\n", (int)id, errorMark, doneStr, haveStr, etaStr,
+                     up / (double)tr_speed_K, down / (double)tr_speed_K, strlratio2(ratioStr, ratio, sizeof(ratioStr)),
+                     getStatusString(d, statusStr, sizeof(statusStr)), name);
+ 
++                if (suc) {
++                        fprintf(fp,"%03d*%s*%s*%-8s*%6.1f*%6.1f*%5s*%s*%s*%s\n",
++                                        (int)id,
++                                        doneStr,
++                                        buf,
++                                        etaStr,
++                                        up/(double)tr_speed_K,
++                                        down/(double)tr_speed_K,
++                                        strlratio2( ratioStr, ratio, sizeof( ratioStr ) ),
++                                        getStatusString( d, statusStr, sizeof( statusStr ) ),
++                                        name,bandwidthPriorityNum[(jj + 1) & 3] );
++                }
+                 total_up += up;
+                 total_down += down;
+                 total_size += sizeWhenDone - leftUntilDone;
+             }
+         }
+ 
++        if (suc)
++                fclose(fp);
+         printf("Sum:           %9s            %6.1f  %6.1f\n", strlsize(haveStr, total_size, sizeof(haveStr)),
+             total_up / (double)tr_speed_K, total_down / (double)tr_speed_K);
+     }
+@@ -2053,6 +2112,7 @@
+                             tr_variantDictFindInt(b, TR_KEY_id, &i))
+                         {
+                             tr_snprintf(id, sizeof(id), "%" PRId64, i);
++			    sprintf(buf_t,"%03lld",i);
+                         }
+ 
+                         /* fall-through to default: to give success or failure msg */
+@@ -2262,6 +2322,12 @@
+     tr_variant* tset = NULL;
+     tr_variant* tadd = NULL;
+ 
++    /* for print sizes of files in a torrent */
++    tr_info inf;
++    tr_ctor * ctor;
++    char buf[128];
++    char temp[2048];
++
+     *id = '\0';
+ 
+     while ((c = tr_getopt(getUsage(), argc, argv, opts, &optarg)) != TR_OPT_DONE)
+@@ -2296,6 +2362,34 @@
+                 tr_variantDictAddDict(tadd, ARGUMENTS, 0);
+                 break;
+ 
++            case 'L': /* print total sizes of files in a torrent */
++                tr_getopt( getUsage( ), argc, argv, opts, &optarg );
++                if( !optarg )
++                {
++                        fprintf( stderr, "ERROR: No .torrent file specified.\n" );
++                        fprintf( stderr, "\n" );
++                        return EXIT_FAILURE;
++                }
++
++		/* Voxel: remove tail '\n' */
++		strcpy(temp, optarg);
++		for (int i = 0; i < strlen(temp); i++)
++			    if (temp[i] == '\n')
++				    temp[i] = '\0';
++
++                ctor = tr_ctorNew( NULL );
++                tr_ctorSetMetainfoFromFile( ctor, temp );
++                if( tr_torrentParse( ctor, &inf ) )
++                {
++                        fprintf( stderr, "Error parsing .torrent file \"%s\"\n", temp );
++                        return 1;
++                }
++                tr_ctorFree( ctor );
++                printf( "Name:%s\n", inf.name);
++                printf( "Total Size:%llu\n", inf.totalSize);
++                /* for that we don't need to call flush in rest code ousite while loop */
++                return 0;
++
+             case 'b': /* debug */
+                 debug = true;
+                 break;
+@@ -2696,7 +2790,7 @@
+ 
+             switch (c)
+             {
+-            case 'L':
++            case 'T':
+                 addLabels(args, optarg);
+                 break;
+ 
+@@ -3067,7 +3161,7 @@
+     if (argc < 2)
+     {
+         showUsage();
+-        return EXIT_FAILURE;
++	exit_status = EXIT_FAILURE;
+     }
+ 
+     tr_formatter_mem_init(MEM_K, MEM_K_STR, MEM_M_STR, MEM_G_STR, MEM_T_STR);
+@@ -3086,8 +3180,28 @@
+         rpcurl = tr_strdup_printf("%s:%d%s", host, port, DEFAULT_URL);
+     }
+ 
++    if((stat_fd = open(statfile,O_WRONLY|O_NONBLOCK)) < 0) {
++           printf("open error\n");
++           exit_status = EXIT_FAILURE;
++    }
++
++    memset(buf_t,0,sizeof(buf_t));
++    memset(f_buf,0,sizeof(f_buf));
++    buf_t[0]='\0';
++
+     exit_status = processArgs(rpcurl, argc, (char const* const*)argv);
+ 
++    if(buf_t[0] != '\0')
++           sprintf(f_buf,"%d %s",exit_status,buf_t);
++    else
++           sprintf(f_buf,"%d",exit_status);
++    if((nwrite = write(stat_fd,f_buf,strlen(f_buf))) < 0) {
++           if(errno == EAGAIN){
++                   printf("fifo has not been read yeat\n");
++           }
++    }
++    close(stat_fd);
++
+     tr_free(host);
+     tr_free(rpcurl);
+     return exit_status;
