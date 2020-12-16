@@ -42,11 +42,11 @@ CONFIGURE_ARGS += \
 TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 TARGET_CFLAGS += \
 	-ffunction-sections \
-	-fdata-sections
+	-fdata-sections -flto
 
 TARGET_LDFLAGS += \
 	-lpthread \
-	-Wl,--gc-sections
+	-Wl,--gc-sections -flto
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include/crypto++
