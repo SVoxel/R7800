@@ -9,12 +9,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ffmpeg
-PKG_VERSION:=3.4.8
+PKG_VERSION:=4.3.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://ffmpeg.org/releases/
-PKG_MD5SUM:=0e79a0b516f786a268ba54e2599d8447
+PKG_MD5SUM:=5d1956bb552e91dc3b8287db346d0d58
 PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>, \
 		Ian Leonard <antonlacon@gmail.com>
 
@@ -232,6 +232,9 @@ PKG_BUILD_DEPENDS:= \
 	PACKAGE_libopus:libopus
 
 include $(INCLUDE_DIR)/package.mk
+
+TARGET_CFLAGS += -ffunction-sections -fdata-sections -flto
+TARGET_LDFLAGS += -Wl,--gc-sections -flto
 
 define Package/ffmpeg/Default
  TITLE:=FFmpeg
