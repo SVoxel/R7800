@@ -1,5 +1,5 @@
---- a/Make.rules.in	2020-05-31 00:20:10.000000000 +0300
-+++ b/Make.rules.in	2020-06-17 10:56:40.741668500 +0300
+--- a/Make.rules.in	2020-07-21 20:25:51.000000000 +0300
++++ b/Make.rules.in	2020-12-04 10:39:24.109422700 +0300
 @@ -18,7 +18,7 @@
  PLATFORM=@OSREL@ @OSTYPE@
  LDFLAGS=@LDFLAGS@ @LIBDIRS@
@@ -9,15 +9,14 @@
  LIBTOOL=@LIBTOOL@
  MAKEDEPEND=makedepend -Y
  RANLIB=@RANLIB@
-diff -Nuar a/configure.in b/configure.in
---- a/configure.in	2020-05-31 00:20:10.000000000 +0300
-+++ b/configure.in	2020-06-17 10:56:40.733914200 +0300
-@@ -723,24 +723,7 @@
+--- a/configure.in	2020-07-21 20:25:51.000000000 +0300
++++ b/configure.in	2020-12-04 10:41:09.128999100 +0300
+@@ -727,24 +727,7 @@
        ac_core_modules="$ac_core_modules mod_dso.o"
        ac_build_core_modules="$ac_build_core_modules modules/mod_dso.o"
  
 -      MAIN_LDFLAGS="-L\$(top_srcdir)/lib/libltdl -dlopen self -export-dynamic"
--      MAIN_LIBS="\$(LIBLTDL)"
+-      MAIN_LIBS="$MAIN_LIBS \$(LIBLTDL)"
 -
 -      MODULE_LDFLAGS="-avoid-version -export-dynamic -module"
 -
