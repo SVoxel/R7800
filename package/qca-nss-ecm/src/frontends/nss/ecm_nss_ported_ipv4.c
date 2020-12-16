@@ -84,6 +84,7 @@
 #include "ecm_nss_ipv4.h"
 #include "ecm_nss_common.h"
 
+extern int blocksite_enable;
 /*
  * Magic numbers
  */
@@ -1767,9 +1768,12 @@ unsigned int ecm_nss_ported_ipv4_process(struct net_device *out_dev, struct net_
 			return NF_ACCEPT;
 		}
 		//DNI need these port pkt directly for blocksite.
-		if (ntohs(tcp_hdr->source) == 80 || ntohs(tcp_hdr->dest) == 80 ||
-			ntohs(tcp_hdr->source) == 119 || ntohs(tcp_hdr->dest) == 119) {
-			return NF_ACCEPT;
+		// only pkt directly when blocksite is enable
+		if(blocksite_enable){
+			if (ntohs(tcp_hdr->source) == 80 || ntohs(tcp_hdr->dest) == 80 ||
+				ntohs(tcp_hdr->source) == 119 || ntohs(tcp_hdr->dest) == 119) {
+				return NF_ACCEPT;
+			}
 		}
 
 
