@@ -65,7 +65,7 @@ generate_server_conf_file() {
 		port=$($CONFIG get vpn_serv_port)
 		proto=$($CONFIG get vpn_serv_type)
 		if [ "$proto" = "udp" ]; then
-			cipher="AES-128-GCM"
+			cipher="CHACHA20-POLY1305"
 			proto=udp
 			complz4="compress lz4-v2"
 			pushlz4="push \"compress lz4-v2\""
@@ -74,7 +74,7 @@ generate_server_conf_file() {
 			rcvbuf=786432
 		else
 			proto=tcp
-			cipher="AES-128-GCM"
+			cipher="CHACHA20-POLY1305"
 			complz4="compress lz4-v2"
 			pushlz4="push \"compress lz4-v2\""
 			fastio=";fast-io"
@@ -101,7 +101,7 @@ status /tmp/openvpnd.status
 mtu-disc yes
 topology subnet
 script-security 2
-ncp-ciphers AES-128-GCM:AES-256-GCM:AES-128-CBC:AES-256-CBC
+ncp-ciphers CHACHA20-POLY1305:AES-128-GCM:AES-256-GCM:AES-128-CBC:AES-256-CBC
 cipher $cipher
 auth sha1
 tls-server
@@ -125,7 +125,7 @@ EOF
 		subnet=$(tun_net $lan_ipaddr $lan_netmask)
 		if [ "$proto" = "udp" ]; then
 			proto=udp
-			cipher="AES-128-GCM"
+			cipher="CHACHA20-POLY1305"
 			complz4="compress lz4-v2"
 			pushlz4="push \"compress lz4-v2\""
 			fastio="fast-io"
@@ -133,7 +133,7 @@ EOF
 			rcvbuf=786432
 		else
 			proto=tcp
-			cipher="AES-128-GCM"
+			cipher="CHACHA20-POLY1305"
 			complz4="compress lz4-v2"
 			pushlz4="push \"compress lz4-v2\""
 			fastio=";fast-io"
@@ -160,7 +160,7 @@ status /tmp/openvpnd_tun.status
 mtu-disc yes
 topology subnet
 script-security 2
-ncp-ciphers AES-128-GCM:AES-256-GCM:AES-128-CBC:AES-256-CBC
+ncp-ciphers CHACHA20-POLY1305:AES-128-GCM:AES-256-GCM:AES-128-CBC:AES-256-CBC
 cipher $cipher
 auth sha1
 client-to-client

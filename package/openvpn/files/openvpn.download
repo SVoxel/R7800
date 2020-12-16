@@ -27,13 +27,13 @@ generate_client_conf_file(){
 	proto=$($CONFIG get vpn_serv_type)
 	if [ "$proto" = "udp" ]; then
 		proto=udp
-		cipher="AES-128-GCM"
+		cipher="CHACHA20-POLY1305"
 		complz4="compress lz4-v2"
 		sndbuf=786432
 		rcvbuf=786432
 	else
 		proto=tcp
-		cipher="AES-128-GCM"
+		cipher="CHACHA20-POLY1305"
 		complz4="compress lz4-v2"
 		sndbuf=0
 		rcvbuf=0
