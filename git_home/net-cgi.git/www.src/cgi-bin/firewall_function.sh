@@ -2,6 +2,7 @@
 
 nvram="/bin/config"
 netwall="/usr/sbin/net-wall"
+ecm="/etc/init.d/qca-nss-ecm"
 
 blk_site_start()
 {
@@ -37,6 +38,11 @@ blk_sched_start()
 	build_sched_rule
 	
 	$netwall start
+
+	if_ecm=`lsmod | grep ecm`
+	[ "x$if_ecm" = "x" ] && exit
+	$ecm stop
+	$ecm start
 }
 
 blk_sched_stop()
@@ -64,4 +70,3 @@ if [ "$1" = "blk_site" -o "$1" = "blk_svc" -o "$1" = "blk_sched" ] ; then
 elif [ "$1" = "sched_rule" ] ; then
 	build_sched_rule
 fi
-

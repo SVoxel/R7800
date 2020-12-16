@@ -30,4 +30,3 @@ case "$1" in
 		logger -- "usage: $0 start|stop|restart"
 	;;
 esac
-

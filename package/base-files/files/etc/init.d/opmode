@@ -15,7 +15,7 @@ vlan_iptv_wl_enable()
 	vlan)
 		for i in 1 2 3 4 5 6 7 8 9 10; do
 			value=$($CONFIG get vlan_tag_$i)
-			if [ "x$value" = "x" ] ;then
+			if [ "x$value" = "x" ]; then
 				break
 			fi
 			wl=`echo $value|awk '{print $6}'`
@@ -37,7 +37,7 @@ vlan_iptv_wl_enable()
 bridge_stop_nss()
 {
 	case "$($CONFIG get i_opmode)" in
-	apmode|extmode)
+	extmode)
 		return 0
 		;;
 	*)

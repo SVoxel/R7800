@@ -41,4 +41,3 @@ case "$1" in
 		logger -- "I donnt know what you want the firewall to do"
 	;;
 esac
-

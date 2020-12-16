@@ -31,8 +31,10 @@ load_ecm() {
 	}
 
 	support_bridge && {
-		sysctl -w net.bridge.bridge-nf-call-ip6tables=1
-		sysctl -w net.bridge.bridge-nf-call-iptables=1
+		if [ "$(/bin/config get i_opmode)" != "apmode" ]; then
+			sysctl -w net.bridge.bridge-nf-call-ip6tables=1
+			sysctl -w net.bridge.bridge-nf-call-iptables=1
+		fi
 	}
 
 	# Expect nf_conntrack_tcp_no_window_check=1
@@ -94,8 +96,10 @@ start() {
 	load_ecm
 
 	support_bridge && {
-		echo 'net.bridge.bridge-nf-call-ip6tables=1' >> /etc/sysctl.d/qca-nss-ecm.conf
-		echo 'net.bridge.bridge-nf-call-iptables=1' >> /etc/sysctl.d/qca-nss-ecm.conf
+		if [ "$(/bin/config get i_opmode)" != "apmode" ]; then
+			echo 'net.bridge.bridge-nf-call-ip6tables=1' >> /etc/sysctl.d/qca-nss-ecm.conf
+			echo 'net.bridge.bridge-nf-call-iptables=1' >> /etc/sysctl.d/qca-nss-ecm.conf
+		fi
 	}
 }
 
