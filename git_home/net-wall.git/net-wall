@@ -21,10 +21,9 @@ if [ "$1" = "rule" ]; then
 
 	cat /tmp/netwall-rules.tmp >> /tmp/netwall-rules
 	rm -f /tmp/netwall-rules.tmp
-else
-	[ "$1" = "-6" ] && shift
 fi
 
+# IPv4 case: commands 'net-wall start' or 'net-wall restart'
 if [ "$1" = "start" ] || [ "$1" = "restart" ]; then
 	# Get WAN interface name
 	ifconfig ppp0 >/dev/null 2>&1 && WAN_IF='ppp0' || WAN_IF="$(nvram get wan_ifname)"
@@ -69,5 +68,17 @@ if [ "$1" = "start" ] || [ "$1" = "restart" ]; then
 		/opt/scripts/firewall-start.sh
 	elif [ -x /root/firewall-start.sh ]; then
 		/root/firewall-start.sh
+	fi
+
+# IPv6 case: commands 'net-wall -6 start' or 'net-wall -6 restart'
+elif  [ "$1" = "-6" ]; then
+	if [ "$2" = "start" ] || [ "$2" = "restart" ]; then
+
+		# Run own script with own ip6tables rules providing backward compatibility
+		if [ -x /opt/scripts/firewall6-start.sh ]; then
+			/opt/scripts/firewall6-start.sh
+		elif [ -x /root/firewall6-start.sh ]; then
+			/root/firewall6-start.sh
+		fi
 	fi
 fi
