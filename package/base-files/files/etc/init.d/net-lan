@@ -135,7 +135,7 @@ start()
 	if [ "$($CONFIG get readycloud_enable)" = "1" ]; then
 		local name=$($CONFIG get netbiosname)
 		[ "x$name" = "x" ] && name=$($CONFIG get Device_name)
-		/opt/rcagent/scripts/alish.sh $name
+		/opt/rcagent/scripts/alias.sh $name
 	fi
 }
 
