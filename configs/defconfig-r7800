@@ -421,7 +421,7 @@ CONFIG_DEFAULT_kmod-qca-nss-tunipip6=y
 CONFIG_DEFAULT_kmod-qca-ssdk-nohnat=y
 CONFIG_DEFAULT_kmod-qca-wifi=y
 CONFIG_DEFAULT_kmod-qca-wifi-akronite-perf=y
-CONFIG_DEFAULT_kmod-sound-core=y
+# CONFIG_DEFAULT_kmod-sound-core is not set
 CONFIG_DEFAULT_kmod-sound-soc-ipq806x=y
 CONFIG_DEFAULT_kmod-usb-core=y
 CONFIG_DEFAULT_kmod-usb-gadget=y
@@ -2134,14 +2134,14 @@ CONFIG_PACKAGE_kmod-urlblock=y
 #
 # Sound Support
 #
-CONFIG_PACKAGE_kmod-sound-core=y
+# CONFIG_PACKAGE_kmod-sound-core is not set
 # CONFIG_PACKAGE_kmod-ac97 is not set
 # CONFIG_PACKAGE_kmod-pcspkr is not set
 # CONFIG_PACKAGE_kmod-sound-cs5535audio is not set
 # CONFIG_PACKAGE_kmod-sound-i8x0 is not set
 # CONFIG_PACKAGE_kmod-sound-seq is not set
 # CONFIG_PACKAGE_kmod-sound-soc-ac97 is not set
-CONFIG_PACKAGE_kmod-sound-soc-core=y
+# CONFIG_PACKAGE_kmod-sound-soc-core is not set
 # CONFIG_PACKAGE_kmod-sound-soc-ipq806x is not set
 # CONFIG_PACKAGE_kmod-usb-audio is not set
 
