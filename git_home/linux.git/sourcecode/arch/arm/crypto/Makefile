@@ -2,6 +2,8 @@
 # Arch-specific CryptoAPI modules.
 #
 
+KBUILD_CFLAGS := $(filter-out -O%,$(KBUILD_CFLAGS)) -O3
+
 obj-$(CONFIG_CRYPTO_AES_ARM) += aes-arm.o
 obj-$(CONFIG_CRYPTO_SHA1_ARM) += sha1-arm.o
 
