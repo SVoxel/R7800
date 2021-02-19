@@ -37,6 +37,9 @@ export EXTRA_CFLAGS += $(INCLUDES)
 
 # Module extra compilation flags
 EXTRA_CFLAGS += -Werror -Wall -g -Wno-error=array-bounds -Wno-error=stringop-overflow -Wno-error=missing-attributes -Wno-error=address-of-packed-member
+KBUILD_CFLAGS := $(filter-out -O%,$(KBUILD_CFLAGS)) -O3
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3
+ccflags-y := $(filter-out -O%,$(ccflags-y)) -O3
 
 ifeq ($(strip ${MC_SUPPORT_MLD}),1)
 ccflags-y+=-DMC_SUPPORT_MLD

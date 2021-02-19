@@ -14,6 +14,9 @@
 # Makefile for Shortcut FE.
 #
 
+KBUILD_CFLAGS := $(filter-out -O%,$(KBUILD_CFLAGS)) -O3
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3
+
 obj-m += shortcut-fe.o
 
 ifdef SFE_SUPPORT_IPV6

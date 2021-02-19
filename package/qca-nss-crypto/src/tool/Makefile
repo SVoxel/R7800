@@ -18,5 +18,8 @@ obj-m	+= $(TOOL_MOD_NAME).o
 $(TOOL_MOD_NAME)-objs = nss_crypto_bench.o
 
 obj ?= .
-#ccflags-y += -DCONFIG_NSS_CRYPTO_TOOL_DBG
+
 ccflags-y += -I$(obj)/../include -I$(obj)/../src -I$(obj)/
+KBUILD_CFLAGS := $(filter-out -O%,$(KBUILD_CFLAGS)) -O3
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3
+ccflags-y := $(filter-out -O%,$(ccflags-y)) -O3

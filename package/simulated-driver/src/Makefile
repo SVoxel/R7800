@@ -14,8 +14,10 @@
 # Makefile for Shortcut FE simulated driver.
 #
 
+KBUILD_CFLAGS := $(filter-out -O%,$(KBUILD_CFLAGS)) -O3
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3
+
 obj-m += shortcut-fe-drv.o
 
 shortcut-fe-drv-objs := \
 	sfe_drv.o
-
