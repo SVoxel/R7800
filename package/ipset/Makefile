@@ -9,12 +9,12 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=ipset
-PKG_VERSION:=7.10
+PKG_VERSION:=7.11
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=http://ipset.netfilter.org
-PKG_MD5SUM:=1f500b5300184964cbacc3cbca6e5bb1
+PKG_MD5SUM:=7c17aca72bcf852f5bc95582aaa60408
 
 PKG_MAINTAINER:=Jo-Philipp Wich <jow@openwrt.org>
 
