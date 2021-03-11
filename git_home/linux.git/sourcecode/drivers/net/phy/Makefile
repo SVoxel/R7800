@@ -1,5 +1,7 @@
 # Makefile for Linux PHY drivers
 
+KBUILD_CFLAGS := $(filter-out -O%,$(KBUILD_CFLAGS)) -O3
+
 libphy-objs			:= phy.o phy_device.o mdio_bus.o
 
 obj-$(CONFIG_MDIO_BOARDINFO)	+= mdio-boardinfo.o

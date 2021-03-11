@@ -2,6 +2,8 @@
 # Makefile for some libs needed in the kernel.
 #
 
+KBUILD_CFLAGS := $(filter-out -O%,$(KBUILD_CFLAGS)) -O3
+
 ifdef CONFIG_JFFS2_ZLIB
 	CONFIG_ZLIB_INFLATE:=y
 	CONFIG_ZLIB_DEFLATE:=y
