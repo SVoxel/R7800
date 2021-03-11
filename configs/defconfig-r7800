@@ -1348,6 +1348,7 @@ CONFIG_PACKAGE_iptables-mod-nat-extra=y
 # CONFIG_PACKAGE_iptables-mod-psd is not set
 # CONFIG_PACKAGE_iptables-mod-quota2 is not set
 CONFIG_PACKAGE_iptables-mod-rawnat=y
+CONFIG_PACKAGE_iptables-mod-rpfilter=y
 # CONFIG_PACKAGE_iptables-mod-sctp is not set
 # CONFIG_PACKAGE_iptables-mod-steal is not set
 # CONFIG_PACKAGE_iptables-mod-sysrq is not set
