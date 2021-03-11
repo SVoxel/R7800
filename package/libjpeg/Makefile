@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=jpeg
-PKG_VERSION:=9c
+PKG_VERSION:=9d
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)src.v$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://www.ijg.org/files
-PKG_MD5SUM:=93c62597eeef81a84d988bccbda1e990
+PKG_MD5SUM:=ad7e40dedc268f97c44e7ee3cd54548a
 
 PKG_MAINTAINER:=Jo-Philipp Wich <jow@openwrt.org>
 PKG_LICENSE:=IJG
