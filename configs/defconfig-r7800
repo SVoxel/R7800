@@ -1936,6 +1936,7 @@ CONFIG_PACKAGE_kmod-ipt-nathelper-extra=y
 # CONFIG_PACKAGE_kmod-ipt-quota2 is not set
 CONFIG_PACKAGE_kmod-ipt-rawnat=y
 # CONFIG_PACKAGE_kmod-ipt-rawpost is not set
+CONFIG_PACKAGE_kmod-ipt-rpfilter=y
 # CONFIG_PACKAGE_kmod-ipt-steal is not set
 # CONFIG_PACKAGE_kmod-ipt-sysrq is not set
 # CONFIG_PACKAGE_kmod-ipt-tarpit is not set
