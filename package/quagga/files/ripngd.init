@@ -1,0 +1,35 @@
+#!/bin/sh /etc/rc.common
+
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+PROG=/usr/sbin/ripngd
+PID_FILE=/var/run/quagga/ripngd.pid
+CONF_FILE=/etc/quagga/ripngd.conf
+
+start() {
+	if [ ! -d /var/run/quagga ]; then
+		mkdir /var/run/quagga
+	fi
+	local retval
+	echo -n "Starting ripngd: "
+	$PROG -d -f $CONF_FILE
+	retval=$?
+	[ $retval -eq 0 ] && touch /tmp/ripngd
+	echo
+}
+
+stop() {
+	local retval
+	echo -n "Shutting down ripngd: "
+	if [ -f $PID_FILE ]; then
+		kill `cat $PID_FILE` 
+		rm -f $PID_FILE
+	fi
+	retval=$?
+	[ $retval -eq 0 ] && rm -f /tmp/ripngd
+	echo
+}
+
+restart() {
+	stop
+	start
+}

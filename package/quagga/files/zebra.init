@@ -1,0 +1,35 @@
+#!/bin/sh /etc/rc.common
+
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+PROG=/usr/sbin/zebra
+PID_FILE=/var/run/quagga/zebra.pid
+CONF_FILE=/etc/quagga/zebra.conf
+
+start() {
+	if [ ! -d /var/run/quagga ]; then
+		mkdir /var/run/quagga
+	fi
+	local retval
+	echo -n "Starting zebra: "
+	$PROG -dk -f $CONF_FILE
+	retval=$?
+	[ $retval -eq 0 ] && touch /tmp/zebra
+	echo
+}
+
+stop() {
+	local retval
+	echo -n "Shutting down zebra: "
+	if [ -f $PID_FILE ]; then
+		kill `cat $PID_FILE` 
+		rm -f $PID_FILE
+	fi
+	retval=$?
+	[ $retval -eq 0 ] && rm -f /tmp/zebra
+	echo
+}
+
+restart() {
+	stop
+	start
+}
