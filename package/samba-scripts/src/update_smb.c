@@ -61,26 +61,27 @@ struct share_info
 };
 
 #define USB_SESSION		"[USB Storage]"
-#define USB_INFO_FILE	".NETGEAR_disk_share_info"
-#define USB_SMB_CONF	"/etc/samba/smb.conf"
-#define USB_SMB_NAME	"NETGEAR R7800"
-#define TMP_SAMBA_LOCK  "/tmp/tmp_samba_lock"
-#define SHARE_FILE_INFO "shared_usb_folder"
-#define SHARE_AUTH_INFO "shared_usb_folder_users"
-#define APPROVED_DISK	"USB_approved_device"
-#define READYCLOUD_ACCESS "readycloud_access"
-#define READYCLOUD_ENABLE "readycloud_enable"
+#define USB_INFO_FILE		".NETGEAR_disk_share_info"
+#define USB_SMB_CONF		"/etc/samba/smb.conf"
+#define USB_USR_CONF		"/etc/config/samba/user.conf"
+#define USB_SMB_NAME		"NETGEAR R7800"
+#define TMP_SAMBA_LOCK		"/tmp/tmp_samba_lock"
+#define SHARE_FILE_INFO		"shared_usb_folder"
+#define SHARE_AUTH_INFO		"shared_usb_folder_users"
+#define APPROVED_DISK		"USB_approved_device"
+#define READYCLOUD_ACCESS	"readycloud_access"
+#define READYCLOUD_ENABLE	"readycloud_enable"
 
-#define USER_ROOT "root"
-#define USER_ADMIN "admin"
-#define USER_GUEST "guest"
-#define USER_ANONYMOUS "anonymous"
-#define USER_EVERYONE "everyone"
+#define USER_ROOT		"root"
+#define USER_ADMIN		"admin"
+#define USER_GUEST		"guest"
+#define USER_ANONYMOUS		"anonymous"
+#define USER_EVERYONE		"everyone"
 #ifdef USB_CONFIG_ADD
-#define USER_ALL "all-no password"
+#define USER_ALL		"all-no password"
 #endif
 #define USB_PATH_SIZE	4096
-#define USB_STORAGE_KEYWORD "/dev/sd"
+#define USB_STORAGE_KEYWORD	"/dev/sd"
 
 extern char *config_get(char* name);
 extern void config_set(char *name, char *value);
@@ -153,22 +154,18 @@ static void add_smbd_global(FILE *fp)
 {
 	char *p;
 
-	/* Readycloud app need to listen to LeafNets */
-	//fprintf(fp, "[global]\n"
-	//		"  interfaces=lo br0 LeafNets\n"); 
-
-	fprintf(fp, "[global]\n");
+	fprintf(fp,	"[global]\n");
 	p = config_get("usb_workGroup");
 	if (*p == '\0')
 		p = "Workgroup";
-	fprintf(fp, "  workgroup = %s\n", p);
+	fprintf(fp,	"  workgroup = %s\n", p);
 
 	p = config_get("Readyshare_name");
 	if (*p == '\0')
 		p = config_get("usb_deviceName");
-	fprintf(fp, "  netbios name = %s\n", p);
+	fprintf(fp,	"  netbios name = %s\n", p);
 
-	fprintf(fp, "  bind interfaces only = yes\n"
+	fprintf(fp,	"  bind interfaces only = yes\n"
 			"  server string = " USB_SMB_NAME "\n"
 			"  unix charset = UTF8\n"
 			"  display charset = UTF8\n"
@@ -1158,7 +1155,7 @@ void check_sd_card_dev(void)
 
 int main(int argc, char**argv)
 {
-	FILE *fp, *filp;
+	FILE *fp, *filp, *fpuser;
 	char *diskname = NULL;
 	struct timeval currenttime, newtime;
 
@@ -1194,8 +1191,19 @@ int main(int argc, char**argv)
 	if (argc == 2 && strlen(argv[1]) == 3 && strncmp(argv[1], "sd", 2) == 0)
 		diskname = argv[1];	/* sd[a-z] */
 
-	add_smbd_global(fp);
-	load_share_info(fp, diskname);
+	fpuser = fopen(USB_USR_CONF, "r");
+	if (fpuser == NULL) {	/* No user's config exists, generate new smb.conf */
+		add_smbd_global(fp);
+		load_share_info(fp, diskname);
+	} else {		/* Copy user's config to smb.conf */
+		char buffer[512];
+		int n;
+
+		while ((n = fread(buffer, 1, sizeof(buffer), fpuser)) > 0)
+			fwrite(buffer, 1, n, fp);
+		
+		fclose(fpuser);
+	}
 
 	fclose(fp);
 
@@ -1205,4 +1213,3 @@ unlock:
 	unlink(TMP_SAMBA_LOCK);
 	return 0;
 }
-
