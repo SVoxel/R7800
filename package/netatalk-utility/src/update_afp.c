@@ -993,7 +993,7 @@ int main(int argc, char**argv)
 
 	reload_services();
 
-	system("/etc/init.d/forked-daapd stop");
+	system("/etc/init.d/forked-daapd stop > /dev/null 2>&1");
 	if (config_match("endis_itunes", "1") && itunes_share_floders[0] != 0 && (fp = fopen("/etc/forked-daapd.conf", "w")) != NULL) {
 		device_name  = config_get("upnp_serverName");
 		if (*device_name != '\0')
@@ -1011,7 +1011,7 @@ int main(int argc, char**argv)
 			sprintf(filename, "%s/forked-daapd.db", itunes_db_folder);
 			unlink(filename);
 		}
-		system("/etc/init.d/forked-daapd start");
+		system("/etc/init.d/forked-daapd start > /dev/null 2>&1");
 	}
 unlock:	
 	unlink(TMP_AFP_LOCK);
