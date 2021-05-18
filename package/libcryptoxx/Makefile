@@ -41,8 +41,10 @@ CONFIGURE_ARGS += \
 
 TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 TARGET_CFLAGS += \
+	-std=gnu++14 \
 	-ffunction-sections \
-	-fdata-sections -flto
+	-fdata-sections \
+	-flto
 
 TARGET_LDFLAGS += \
 	-lpthread \

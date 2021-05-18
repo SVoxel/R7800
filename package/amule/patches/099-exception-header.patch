@@ -1,0 +1,10 @@
+--- a/src/libs/common/MuleDebug.cpp	2011-10-08 03:08:36.000000000 +0300
++++ b/src/libs/common/MuleDebug.cpp	2021-05-11 21:49:36.000000000 +0300
+@@ -24,6 +24,7 @@
+ //
+ 
+ #include <cstdlib>			// Needed for std::abort()
++#include <exception>
+ 
+ #ifdef HAVE_CONFIG_H
+ #	include "config.h"		// Needed for HAVE_CXXABI and HAVE_EXECINFO
