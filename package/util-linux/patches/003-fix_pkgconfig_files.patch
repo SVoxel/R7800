@@ -1,6 +1,6 @@
---- a/configure.ac	2020-11-16 13:51:02.118672600 +0300
-+++ b/configure.ac	2020-11-16 19:39:14.994385000 +0300
-@@ -2522,18 +2522,23 @@
+--- a/configure.ac	2021-06-01 10:50:39.898388100 +0300
++++ b/configure.ac	2021-06-03 08:56:52.138321300 +0300
+@@ -2632,18 +2632,23 @@
  #
  AC_CONFIG_FILES([
  Makefile
@@ -22,20 +22,20 @@
  libsmartcols/src/libsmartcols.h
 +libuuid/uuid.pc
  po/Makefile.in
+ po-man/Makefile
  ])
- 
---- a/libblkid/Makemodule.am	2020-02-27 12:26:34.566141200 +0300
-+++ b/libblkid/Makemodule.am	2020-11-16 19:39:15.003698300 +0300
+--- a/libblkid/Makemodule.am	2021-05-24 14:39:52.712045500 +0300
++++ b/libblkid/Makemodule.am	2021-06-03 08:58:10.901360400 +0300
 @@ -9,7 +9,6 @@
  endif
  
  pkgconfig_DATA += libblkid/blkid.pc
--PATHFILES      += libblkid/blkid.pc
- dist_man_MANS  += libblkid/libblkid.3
- EXTRA_DIST     += libblkid/COPYING
+-PATHFILES += libblkid/blkid.pc
  
---- a/libfdisk/Makemodule.am	2020-02-10 13:33:31.303715100 +0300
-+++ b/libfdisk/Makemodule.am	2020-11-16 19:39:15.008042600 +0300
+ MANPAGES += libblkid/libblkid.3
+ dist_noinst_DATA += libblkid/libblkid.3.adoc
+--- a/libfdisk/Makemodule.am	2021-05-04 13:18:58.650508500 +0300
++++ b/libfdisk/Makemodule.am	2021-06-03 08:56:52.153947200 +0300
 @@ -9,7 +9,6 @@
  endif
  
@@ -44,8 +44,8 @@
  EXTRA_DIST     += libfdisk/COPYING
  
  endif # BUILD_LIBFDISK
---- a/libmount/Makemodule.am	2020-07-22 11:06:46.914692300 +0300
-+++ b/libmount/Makemodule.am	2020-11-16 19:39:15.011901200 +0300
+--- a/libmount/Makemodule.am	2021-05-04 13:18:58.650508500 +0300
++++ b/libmount/Makemodule.am	2021-06-03 08:56:52.153947200 +0300
 @@ -9,7 +9,6 @@
  endif
  
@@ -54,8 +54,8 @@
  EXTRA_DIST     += libmount/COPYING
  
  endif # BUILD_LIBMOUNT
---- a/libsmartcols/Makemodule.am	2020-02-10 13:33:31.313715000 +0300
-+++ b/libsmartcols/Makemodule.am	2020-11-16 19:39:15.015710900 +0300
+--- a/libsmartcols/Makemodule.am	2021-05-04 13:18:58.648508600 +0300
++++ b/libsmartcols/Makemodule.am	2021-06-03 08:56:52.153947200 +0300
 @@ -9,7 +9,6 @@
  endif
  
@@ -64,8 +64,8 @@
  EXTRA_DIST     += libsmartcols/COPYING
  
  endif # BUILD_LIBSMARTCOLS
---- a/libuuid/Makemodule.am	2017-09-18 12:48:03.574891400 +0300
-+++ b/libuuid/Makemodule.am	2020-11-16 19:39:15.021455600 +0300
+--- a/libuuid/Makemodule.am	2021-05-04 13:18:58.648508600 +0300
++++ b/libuuid/Makemodule.am	2021-06-03 08:56:52.169570200 +0300
 @@ -4,7 +4,6 @@
  include libuuid/src/Makemodule.am
  
