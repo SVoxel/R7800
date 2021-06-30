@@ -6,12 +6,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=expat
-PKG_VERSION:=2.2.10
+PKG_VERSION:=2.4.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@SF/expat
-PKG_MD5SUM:=e0fe49a6b3480827c9455e4cfc799133
+PKG_MD5SUM:=a4fb91a9441bcaec576d4c4a56fa3aa6
 
 PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>
 PKG_LICENSE:=MIT
@@ -37,6 +37,7 @@ define Package/libexpat/description
 endef
 
 TARGET_CFLAGS += $(FPIC)
+TARGET_LDFLAGS += -lm
 
 CONFIGURE_ARGS += \
 	--enable-shared \
