@@ -2,12 +2,9 @@ OpenWrt (modification):
 Patch the default configuration file with the tiny memory
 configuration example from Unbound documentation. This is the best
 starting point for embedded routers if one is not going to use UCI.
-
-Index: doc/example.conf.in
-===================================================================
---- a/doc/example.conf.in	2021-02-09 10:28:38.000000000 +0300
-+++ b/doc/example.conf.in	2021-02-17 13:26:36.262814900 +0300
-@@ -19,6 +19,76 @@
+--- a/doc/example.conf.in
++++ b/doc/example.conf.in
+@@ -19,6 +19,76 @@ server:
  	# verbosity number, 0 is least verbose. 1 is default.
  	verbosity: 1
  
