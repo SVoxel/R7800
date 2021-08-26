@@ -14,7 +14,7 @@ start() {
 		mkdir -p /tmp/avahi/services
 	fi
 	for i in /usr/config/avahi/services/*; do
-		if [ ! "`basename $i`" == "adisk.service" ]; then
+		if [ ! "`basename $i`" = "adisk.service" ]; then
 			cp -f $i /etc/avahi/services
 		fi
 	done
