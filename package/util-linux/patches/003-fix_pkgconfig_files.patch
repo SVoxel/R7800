@@ -1,6 +1,6 @@
---- a/configure.ac	2021-06-01 10:50:39.898388100 +0300
-+++ b/configure.ac	2021-06-03 08:56:52.138321300 +0300
-@@ -2632,18 +2632,23 @@
+--- a/configure.ac	2021-07-22 16:59:03.001205500 +0300
++++ b/configure.ac	2021-08-02 10:38:32.510596200 +0300
+@@ -2631,18 +2631,23 @@
  #
  AC_CONFIG_FILES([
  Makefile
@@ -25,7 +25,7 @@
  po-man/Makefile
  ])
 --- a/libblkid/Makemodule.am	2021-05-24 14:39:52.712045500 +0300
-+++ b/libblkid/Makemodule.am	2021-06-03 08:58:10.901360400 +0300
++++ b/libblkid/Makemodule.am	2021-08-02 10:38:32.537974100 +0300
 @@ -9,7 +9,6 @@
  endif
  
@@ -35,7 +35,7 @@
  MANPAGES += libblkid/libblkid.3
  dist_noinst_DATA += libblkid/libblkid.3.adoc
 --- a/libfdisk/Makemodule.am	2021-05-04 13:18:58.650508500 +0300
-+++ b/libfdisk/Makemodule.am	2021-06-03 08:56:52.153947200 +0300
++++ b/libfdisk/Makemodule.am	2021-08-02 10:38:32.565699000 +0300
 @@ -9,7 +9,6 @@
  endif
  
@@ -45,7 +45,7 @@
  
  endif # BUILD_LIBFDISK
 --- a/libmount/Makemodule.am	2021-05-04 13:18:58.650508500 +0300
-+++ b/libmount/Makemodule.am	2021-06-03 08:56:52.153947200 +0300
++++ b/libmount/Makemodule.am	2021-08-02 10:38:32.569638700 +0300
 @@ -9,7 +9,6 @@
  endif
  
@@ -55,7 +55,7 @@
  
  endif # BUILD_LIBMOUNT
 --- a/libsmartcols/Makemodule.am	2021-05-04 13:18:58.648508600 +0300
-+++ b/libsmartcols/Makemodule.am	2021-06-03 08:56:52.153947200 +0300
++++ b/libsmartcols/Makemodule.am	2021-08-02 10:38:32.574760700 +0300
 @@ -9,7 +9,6 @@
  endif
  
@@ -65,7 +65,7 @@
  
  endif # BUILD_LIBSMARTCOLS
 --- a/libuuid/Makemodule.am	2021-05-04 13:18:58.648508600 +0300
-+++ b/libuuid/Makemodule.am	2021-06-03 08:56:52.169570200 +0300
++++ b/libuuid/Makemodule.am	2021-08-02 10:38:32.579245700 +0300
 @@ -4,7 +4,6 @@
  include libuuid/src/Makemodule.am
  
