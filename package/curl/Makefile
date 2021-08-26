@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=curl
-PKG_VERSION:=7.77.0
+PKG_VERSION:=7.78.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
@@ -16,7 +16,7 @@ PKG_SOURCE_URL:=https://dl.uxnr.de/mirror/curl/ \
 	http://curl.mirror.anstey.ca/ \
 	http://curl.askapache.com/download/ \
 	https://curl.haxx.se/download/
-PKG_MD5SUM:=3cf78c539cae019cf96ba38571706e06
+PKG_MD5SUM:=419c2461366cf404160a820f7a902b7e
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING
@@ -76,7 +76,7 @@ endef
 define Package/curl
   $(call Package/curl/Default)
   SUBMENU:=File Transfer
-  DEPENDS:=+libcurl
+  DEPENDS:=+libcurl +libpthread
   TITLE:=A client-side URL transfer utility
 endef
 
@@ -106,7 +106,6 @@ CONFIGURE_ARGS += \
 	--enable-static \
 	--disable-manual \
 	--without-nss \
-	--without-libmetalink \
 	--without-librtmp \
 	\
 	$(call autoconf_bool,CONFIG_IPV6,ipv6) \
