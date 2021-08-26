@@ -1,6 +1,6 @@
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -14,10 +14,7 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
+--- a/Makefile.am	2021-02-09 13:11:25.000000000 +0300
++++ b/Makefile.am	2021-08-05 13:10:43.402800400 +0300
+@@ -15,10 +15,7 @@
  
  ACLOCAL_AMFLAGS = -I m4
  SUBDIRS = \
@@ -12,9 +12,9 @@
  
  AM_CFLAGS = -Iproc
  LDADD = ./proc/libprocps.la $(CYGWINFLAGS)
---- a/configure.ac
-+++ b/configure.ac
-@@ -292,8 +292,5 @@ AC_CHECK_FUNCS([__fpending alarm atexit dup2 gethostname getpagesize gettimeofda
+--- a/configure.ac	2021-02-09 13:11:25.000000000 +0300
++++ b/configure.ac	2021-08-05 13:10:43.434072600 +0300
+@@ -323,8 +323,5 @@
  
  AC_CONFIG_FILES([Makefile
                   include/Makefile
