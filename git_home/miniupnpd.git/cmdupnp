@@ -62,11 +62,15 @@ upnp_start() {
 	sleep 2
 
 	if [ ! -f /sbin/kwilt ] && [ "$upnp_enable" = "0" ]; then
-		echo "No kwilt and upnp disable, so not start miniupnpd." > /dev/console
+		echo "There is no kwilt and upnp is disabled, so do not start miniupnpd." > /dev/console
 	else
 		/usr/sbin/miniupnpd &
 	fi
-	[ "$upnp_enable" = "0" ] && killall miniupnpd
+
+	if [ "$upnp_enable" = "0" ]; then
+		sleep 2
+		killall miniupnpd
+	fi
 }
 
 case "$1" in
