@@ -30,7 +30,7 @@ start() {
 	fi
 
 	# Check if not router mode
-	if [ "$AP_MODE" == "1" ] || [ "$BRIDGE_MODE" == "1" ] || [ "$EXTENDER_MODE" == "1" ]; then
+	if [ "$AP_MODE" = "1" ] || [ "$BRIDGE_MODE" = "1" ] || [ "$EXTENDER_MODE" = "1" ]; then
 		echo "Error: Not router mode." | tee -a $LOG_FILE
 		exit 1
 	fi
