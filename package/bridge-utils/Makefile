@@ -9,12 +9,12 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=bridge-utils
-PKG_VERSION:=1.7
+PKG_VERSION:=1.7.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@KERNEL/linux/kernel/people/shemminger/bridge-utils
-PKG_MD5SUM:=d596d51e2ed51444d37c9928c3b499ff
+PKG_MD5SUM:=3e1fee4dc22cac5457c2f6ffb990a518
 
 PKG_MAINTAINER:=Nikolay Martynov <mar.kolya@gmail.com>
 PKG_LICENSE:=GPL-2.0-or-later
