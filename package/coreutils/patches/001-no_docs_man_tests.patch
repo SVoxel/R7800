@@ -9,7 +9,7 @@
  
  EXTRA_DIST =				\
    .mailmap				\
-@@ -210,6 +210,3 @@ AM_CPPFLAGS = -Ilib -I$(top_srcdir)/lib
+@@ -210,6 +210,3 @@
  
  include $(top_srcdir)/lib/local.mk
  include $(top_srcdir)/src/local.mk
@@ -18,7 +18,7 @@
 -include $(top_srcdir)/tests/local.mk
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -2651,11 +2651,7 @@ RECURSIVE_TARGETS = all-recursive check-
+@@ -3232,11 +3232,7 @@
  	install-ps-recursive install-recursive installcheck-recursive \
  	installdirs-recursive pdf-recursive ps-recursive \
  	tags-recursive uninstall-recursive
@@ -31,7 +31,7 @@
  am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
  am__vpath_adj = case $$p in \
      $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-@@ -2905,11 +2901,11 @@ am__DIST_COMMON = $(doc_coreutils_TEXINF
+@@ -3486,11 +3482,11 @@
  	$(top_srcdir)/build-aux/missing \
  	$(top_srcdir)/build-aux/test-driver \
  	$(top_srcdir)/build-aux/texinfo.tex \
@@ -43,19 +43,19 @@
  	$(top_srcdir)/src/local.mk $(top_srcdir)/src/single-binary.mk \
 -	$(top_srcdir)/tests/local.mk ABOUT-NLS AUTHORS COPYING \
 +	ABOUT-NLS AUTHORS COPYING \
- 	ChangeLog INSTALL NEWS README THANKS TODO build-aux/ar-lib \
- 	build-aux/compile build-aux/config.guess \
- 	build-aux/config.rpath build-aux/config.sub build-aux/depcomp \
-@@ -3009,7 +3005,7 @@ EOVERFLOW_HIDDEN = @EOVERFLOW_HIDDEN@
- EOVERFLOW_VALUE = @EOVERFLOW_VALUE@
+ 	ChangeLog INSTALL NEWS README THANKS TODO build-aux/compile \
+ 	build-aux/config.guess build-aux/config.rpath \
+ 	build-aux/config.sub build-aux/depcomp build-aux/install-sh \
+@@ -3596,7 +3592,7 @@
  ERRNO_H = @ERRNO_H@
+ ETAGS = @ETAGS@
  EXEEXT = @EXEEXT@
 -EXTRA_MANS = @EXTRA_MANS@
 +EXTRA_MANS =
  FLOAT_H = @FLOAT_H@
  FNMATCH_H = @FNMATCH_H@
  GETADDRINFO_LIB = @GETADDRINFO_LIB@
-@@ -4316,7 +4312,7 @@ libexecdir = @libexecdir@
+@@ -5158,7 +5154,7 @@
  lispdir = @lispdir@
  localedir = @localedir@
  localstatedir = @localstatedir@
@@ -64,7 +64,7 @@
  mandir = @mandir@
  mkdir_p = @mkdir_p@
  oldincludedir = @oldincludedir@
-@@ -4339,7 +4335,7 @@ top_build_prefix = @top_build_prefix@
+@@ -5181,7 +5177,7 @@
  top_builddir = @top_builddir@
  top_srcdir = @top_srcdir@
  ALL_RECURSIVE_TARGETS = distcheck-hook check-root
@@ -73,7 +73,7 @@
  
  #if GNU_MAKE
  #	[nicer features that work only with GNU Make]
-@@ -6354,7 +6350,7 @@ all: $(BUILT_SOURCES)
+@@ -7389,7 +7385,7 @@
  .SUFFIXES: .1 .c .dvi .log .o .obj .pl .pl$(EXEEXT) .ps .sh .sh$(EXEEXT) .trs .x .xpl .xpl$(EXEEXT) .y
  am--refresh: Makefile
  	@:
@@ -82,9 +82,9 @@
  	@for dep in $?; do \
  	  case '$(am__configure_deps)' in \
  	    *$$dep*) \
-@@ -6376,7 +6372,7 @@ Makefile: $(srcdir)/Makefile.in $(top_bu
- 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe)'; \
- 	    cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe);; \
+@@ -7411,7 +7407,7 @@
+ 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__maybe_remake_depfiles)'; \
+ 	    cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__maybe_remake_depfiles);; \
  	esac;
 -$(top_srcdir)/lib/local.mk $(srcdir)/lib/gnulib.mk $(top_srcdir)/src/local.mk $(srcdir)/src/cu-progs.mk $(top_srcdir)/src/single-binary.mk $(top_srcdir)/doc/local.mk $(top_srcdir)/man/local.mk $(top_srcdir)/tests/local.mk $(am__empty):
 +$(top_srcdir)/lib/local.mk $(srcdir)/lib/gnulib.mk $(top_srcdir)/src/local.mk $(srcdir)/src/cu-progs.mk $(top_srcdir)/src/single-binary.mk $(am__empty):
