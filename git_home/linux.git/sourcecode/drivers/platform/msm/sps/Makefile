@@ -1,2 +1,3 @@
-obj-y += bam.o sps_bam.o sps.o sps_dma.o sps_map.o sps_mem.o sps_rm.o
+KBUILD_CFLAGS := $(filter-out -O%,$(KBUILD_CFLAGS)) -O3
 
+obj-y += bam.o sps_bam.o sps.o sps_dma.o sps_map.o sps_mem.o sps_rm.o

@@ -4,6 +4,8 @@
 
 # Object files in subdirectories
 
+KBUILD_CFLAGS := $(filter-out -O%,$(KBUILD_CFLAGS)) -O3
+
 obj-$(CONFIG_USB)		+= core/
 
 obj-$(CONFIG_USB_OTG_UTILS)	+= otg/
