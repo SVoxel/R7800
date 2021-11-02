@@ -566,9 +566,7 @@ ifeq ($(GENIECLOUD),1)
 	$(INSTALL_BIN)	remote_share_conf	$(INS_BIN_DIR)
 	$(INSTALL_BIN)	readycloud_unregister	$(INS_BIN_DIR)
 endif
-ifeq ($(SECURITY_ENHANCE),1)
 	$(INSTALL_BIN)  hash-data      $(INS_BIN_DIR)
-endif
 
 clean:
 	rm -f *.o 
