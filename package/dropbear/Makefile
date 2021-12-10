@@ -42,8 +42,10 @@ endef
 
 define Package/dropbear/conffiles
 /etc/dropbear/dropbear_ecdsa_host_key
+/etc/dropbear/dropbear_ed25519_host_key
 /etc/dropbear/dropbear_rsa_host_key
 /etc/dropbear/ssh_host_ecdsa_key.pub
+/etc/dropbear/ssh_host_ed25519_key.pub
 /etc/dropbear/ssh_host_rsa_key.pub
 endef
 
