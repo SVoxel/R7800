@@ -1,7 +1,4 @@
 #
-# Copyright (c) 2013 The Linux Foundation. All rights reserved.
-# Copyright (C) 2007-2011 OpenWrt.org
-#
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
@@ -9,32 +6,35 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fcgi
-PKG_VERSION:=2.4.0
+PKG_VERSION:=2.4.2
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://www.fastcgi.com/dist/
-PKG_MD5SUM:=d15060a813b91383a9f3c66faf84867e
+PKG_SOURCE:=$(PKG_NAME)2-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/FastCGI-Archives/fcgi2/tar.gz/$(PKG_VERSION)?
+PKG_MD5SUM:=146376d5c5c059b9184755db76505fab
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)2-$(PKG_VERSION)
 
-PKG_FIXUP:=libtool-ucxx
+PKG_MAINTAINER:=Jacob Siverskog <jacob@teenageengineering.com>
+PKG_LICENSE:=MIT
+PKG_LICENSE_FILES:=LICENSE.TERMS
 
+PKG_FIXUP:=autoreconf
+PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
-ifeq ($(CONFIG_INSTALL_LIBSTDCPP),y)
 include $(INCLUDE_DIR)/uclibc++.mk
-endif
 include $(INCLUDE_DIR)/package.mk
 
 define Package/fcgi/Default
   SECTION:=libs
   CATEGORY:=Libraries
-  URL:=http://www.fastcgi.com/
+  URL:=https://fastcgi-archives.github.io/
 endef
 
 define Package/fcgi
   $(call Package/fcgi/Default)
   MENU:=1
-  DEPENDS:= +libpthread
+  DEPENDS:=+libpthread
   TITLE:=Shared library of FastCGI
 endef
 
@@ -50,21 +50,15 @@ define Package/fcgi/description
  server specific APIs.
 endef
 
-TARGET_CFLAGS += $(FPIC)
-
-CONFIGURE_ARGS += \
-	--enable-shared \
-	--enable-static \
-
-CONFIGURE_VARS += \
-	LIBS="-lm" \
+TARGET_CXXFLAGS += -fno-rtti -flto
+TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed -lm
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/fastcgi.h $(1)/usr/include/
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/fcgi{app,_config,misc,o,os,_stdio}.h $(1)/usr/include/
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libfcgi*.{a,so*} $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libfcgi{,++}.{a,so*} $(1)/usr/lib/
 endef
 
 define Package/fcgi/install
