@@ -1,0 +1,10 @@
+--- a/extensions/xt_ECHO.c
++++ b/extensions/xt_ECHO.c
+@@ -21,6 +21,7 @@
+ #include <net/ip6_checksum.h>
+ #include <net/ip6_route.h>
+ #include <net/route.h>
++#include <net/ip6_checksum.h>
+ #include "compat_xtables.h"
+ 
+ static unsigned int

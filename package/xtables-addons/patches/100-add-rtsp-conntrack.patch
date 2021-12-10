@@ -1,11 +1,21 @@
---- /dev/null
+--- a/extensions/Kbuild
++++ b/extensions/Kbuild
+@@ -35,6 +35,7 @@
+ obj-${build_pknock}      += pknock/
+ obj-${build_psd}         += xt_psd.o
+ obj-${build_quota2}      += xt_quota2.o
++obj-${build_rtsp}        += rtsp/
+ 
+ -include ${M}/*.Kbuild
+ -include ${M}/Kbuild.*
+--- a/extensions/rtsp/Kbuild
 +++ b/extensions/rtsp/Kbuild
 @@ -0,0 +1,4 @@
 +# -*- Makefile -*-
 +
 +obj-m += nf_nat_rtsp.o
 +obj-m += nf_conntrack_rtsp.o
---- /dev/null
+--- a/extensions/rtsp/netfilter_helpers.h
 +++ b/extensions/rtsp/netfilter_helpers.h
 @@ -0,0 +1,133 @@
 +/*
@@ -141,7 +151,7 @@
 +#endif /* __KERNEL__ */
 +
 +#endif /* _NETFILTER_HELPERS_H */
---- /dev/null
+--- a/extensions/rtsp/netfilter_mime.h
 +++ b/extensions/rtsp/netfilter_mime.h
 @@ -0,0 +1,89 @@
 +/*
@@ -233,7 +243,7 @@
 +#endif /* __KERNEL__ */
 +
 +#endif /* _NETFILTER_MIME_H */
---- /dev/null
+--- a/extensions/rtsp/nf_conntrack_rtsp.c
 +++ b/extensions/rtsp/nf_conntrack_rtsp.c
 @@ -0,0 +1,519 @@
 +/*
@@ -755,7 +765,7 @@
 +
 +EXPORT_SYMBOL(nf_nat_rtsp_hook_expectfn);
 +
---- /dev/null
+--- a/extensions/rtsp/nf_conntrack_rtsp.h
 +++ b/extensions/rtsp/nf_conntrack_rtsp.h
 @@ -0,0 +1,63 @@
 +/*
@@ -821,7 +831,7 @@
 +#endif /* __KERNEL__ */
 +
 +#endif /* _IP_CONNTRACK_RTSP_H */
---- /dev/null
+--- a/extensions/rtsp/nf_nat_rtsp.c
 +++ b/extensions/rtsp/nf_nat_rtsp.c
 @@ -0,0 +1,491 @@
 +/*
@@ -1315,19 +1325,9 @@
 +
 +module_init(init);
 +module_exit(fini);
---- a/extensions/Kbuild
-+++ b/extensions/Kbuild
-@@ -33,6 +33,7 @@ obj-${build_lscan}       += xt_lscan.o
- obj-${build_pknock}      += pknock/
- obj-${build_psd}         += xt_psd.o
- obj-${build_quota2}      += xt_quota2.o
-+obj-${build_rtsp}        += rtsp/
- 
- -include ${M}/*.Kbuild
- -include ${M}/Kbuild.*
 --- a/mconfig
 +++ b/mconfig
-@@ -26,3 +26,4 @@ build_lscan=m
+@@ -26,3 +26,4 @@
  build_pknock=m
  build_psd=m
  build_quota2=m

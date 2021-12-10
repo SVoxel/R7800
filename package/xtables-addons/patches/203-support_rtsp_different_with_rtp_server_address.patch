@@ -1,6 +1,6 @@
---- a/extensions/rtsp/nf_conntrack_rtsp.c	2013-05-20 16:17:00.884015399 +0800
-+++ b/extensions/rtsp/nf_conntrack_rtsp.c	2013-05-20 16:05:14.040510343 +0800
-@@ -300,6 +300,35 @@
+--- a/extensions/rtsp/nf_conntrack_rtsp.c
++++ b/extensions/rtsp/nf_conntrack_rtsp.c
+@@ -303,6 +303,35 @@
  
  /*** conntrack functions ***/
  
@@ -36,7 +36,7 @@
  /* outbound packet: client->server */
  
  static inline int
-@@ -333,6 +362,8 @@
+@@ -336,6 +365,8 @@
  		uint    transoff = 0;
  		uint    translen = 0;
  		uint    off;
@@ -45,7 +45,7 @@
  		
  		if (!rtsp_parse_message(pdata, datalen, &dataoff,
  					&hdrsoff, &hdrslen,
-@@ -350,6 +381,11 @@
+@@ -353,6 +384,11 @@
  			continue;   /* not a SETUP message */
  		pr_debug("found a setup message\n");
  
@@ -57,7 +57,7 @@
  		off = 0;
  		if(translen) {
  			rtsp_parse_transport(pdata+transoff, translen, &expinfo);
-@@ -372,7 +408,7 @@
+@@ -375,7 +411,7 @@
  		be_loport = htons(expinfo.loport);
  
  		nf_ct_expect_init(exp, NF_CT_EXPECT_CLASS_DEFAULT, nf_ct_l3num(ct),
@@ -66,8 +66,8 @@
  			IPPROTO_UDP, NULL, &be_loport); 
  
  		exp->master = ct;
---- a/extensions/rtsp/nf_conntrack_rtsp.h	2013-05-20 16:17:00.884015399 +0800
-+++ b/extensions/rtsp/nf_conntrack_rtsp.h	2013-05-20 16:00:48.843195310 +0800
+--- a/extensions/rtsp/nf_conntrack_rtsp.h
++++ b/extensions/rtsp/nf_conntrack_rtsp.h
 @@ -42,6 +42,7 @@
      portblock_t pbtype;     /* Type of port block that was requested */
      u_int16_t   loport;     /* Port that was requested, low or first */
@@ -76,9 +76,9 @@
  #if 0
      uint        method;     /* RTSP method */
      uint        cseq;       /* CSeq from request */
---- a/extensions/rtsp/nf_nat_rtsp.c	2013-05-20 16:17:00.884015399 +0800
-+++ b/extensions/rtsp/nf_nat_rtsp.c	2013-05-20 16:16:08.003753175 +0800
-@@ -84,7 +84,7 @@
+--- a/extensions/rtsp/nf_nat_rtsp.c
++++ b/extensions/rtsp/nf_nat_rtsp.c
+@@ -86,7 +86,7 @@
      *pptcpdata = (char*)tcph +  tcph->doff*4;
      *ptcpdatalen = ((char*)skb_transport_header(skb) + skb->len) - *pptcpdata;
  }
@@ -87,7 +87,7 @@
  /*** nat functions ***/
  
  /*
-@@ -149,7 +149,6 @@
+@@ -151,7 +151,6 @@
      t->dst.u3.ip = newip;
  
      exp->saved_proto.udp.port = exp->tuple.dst.u.udp.port;
@@ -95,7 +95,7 @@
      exp->dir = !dir;
  
      extaddrlen = extip ? sprintf(szextaddr, "%u.%u.%u.%u", NIPQUAD(extip))
-@@ -188,14 +187,14 @@
+@@ -190,14 +189,14 @@
                  rtcp_exp = nf_ct_expect_alloc(ct);
  
                  nf_ct_expect_init(rtcp_exp, NF_CT_EXPECT_CLASS_DEFAULT, nf_ct_l3num(ct),
@@ -112,7 +112,7 @@
                  rtcp_exp->dir = !CTINFO2DIR(ctinfo);
  
  
-@@ -467,26 +466,23 @@
+@@ -469,26 +468,23 @@
  
  static void expected(struct nf_conn* ct, struct nf_conntrack_expect *exp)
  {
