@@ -3,6 +3,10 @@
 
 START=61
 
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+CONFIG=/bin/config
+DNSMASQ_DISABLED=$($CONFIG get disable_dnsmasq)
+
 set_hijack() {
 	sleep 2
 	# TRY TO MAKE SURE the `dnsmasq` got the siginal
@@ -12,6 +16,11 @@ set_hijack() {
 }
 
 start() {
+	if [ "$($CONFIG get ap_mode)" = "1" ] && [  "$DNSMASQ_DISABLED" = "1" ]; then
+		echo "DNSMASQ is disabled in nvram."
+		exit
+	fi
+
 	if [ "$($CONFIG get wds_endis_fun)" = "1" -a "$($CONFIG get wds_repeater_basic)" = "0" -o "$($CONFIG get wla_wds_endis_fun)" = "1" -a "$($CONFIG get wds_repeater_basic_a)" = "0" ]; then
 		# should not start dnsmasq in WDS repeater mode
 		exit
