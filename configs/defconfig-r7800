@@ -1372,7 +1372,7 @@ CONFIG_PACKAGE_avahi-utils=y
 #
 # Routing and Redirection
 #
-CONFIG_PACKAGE_ip=y
+CONFIG_PACKAGE_ip-full=y
 
 #
 # VPN
