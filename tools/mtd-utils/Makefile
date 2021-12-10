@@ -10,21 +10,18 @@ PKG_NAME:=mtd-utils
 PKG_VERSION:=1.5.2
 
 PKG_SOURCE_VERSION:=aea36417067dade75192bafa03af70b6eb2677b1
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=git://git.infradead.org/mtd-utils.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_MIRROR_MD5SUM:=e5bd45c3a9cb5041ca155051e2921dac
-PKG_CAT:=zcat
-
-HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/$(PKG_NAME)-$(PKG_VERSION)
+PKG_MIRROR_HASH:=e11b342b85a36b2e438a8412ec52f87621d3046aec1a93039f8c72de9990b2a7
 
 include $(INCLUDE_DIR)/host-build.mk
 
 HOST_CFLAGS += -I$(STAGING_DIR_HOST)/include/e2fsprogs
 CFLAGS := $(HOST_CFLAGS) -I$(HOST_BUILD_DIR)/include -L$(HOST_BUILD_DIR) -L$(STAGING_DIR_HOST)/lib -DNO_NATIVE_SUPPORT
 ifneq ($(HOST_OS),Linux)
-CFLAGS += -Dloff_t=off_t -D__BYTE_ORDER=BYTE_ORDER -include getline.h -include endian.h -I$(CURDIR)/include -include fls.h
+CFLAGS += -Dloff_t=off_t -D__BYTE_ORDER=BYTE_ORDER -include endian.h -I$(CURDIR)/include -include fls.h
 MTD_STATIC := 0
 else
 MTD_STATIC := 1
