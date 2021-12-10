@@ -1,7 +1,7 @@
---- mtd-utils-1.5.0/Makefile.orig	2014-01-27 16:59:07.207319544 +0800
-+++ mtd-utils-1.5.0/Makefile	2014-01-27 16:59:49.787319565 +0800
-@@ -30,7 +30,7 @@
- 	ubidetach ubinize ubiformat ubirename mtdinfo ubirsvol
+--- a/Makefile
++++ b/Makefile
+@@ -31,7 +31,7 @@
+ 	ubidetach ubinize ubiformat ubirename mtdinfo ubirsvol ubiblock
  
  BINS = $(MTD_BINS)
 -BINS += mkfs.ubifs/mkfs.ubifs

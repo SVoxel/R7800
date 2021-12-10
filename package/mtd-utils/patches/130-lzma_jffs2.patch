@@ -2,14 +2,14 @@
 +++ b/Makefile
 @@ -3,7 +3,7 @@
  
- VERSION = 1.5.1
+ VERSION = 1.5.2
  
 -CPPFLAGS += -D_GNU_SOURCE -I./include -I$(BUILDDIR)/include -I./ubi-utils/include $(ZLIBCPPFLAGS) $(LZOCPPFLAGS) $(UUIDCPPFLAGS)
 +CPPFLAGS += -D_GNU_SOURCE -I./include -I$(BUILDDIR)/include -I./ubi-utils/include $(ZLIBCPPFLAGS) $(LZOCPPFLAGS) $(UUIDCPPFLAGS) -I./include/linux/lzma
  
  ifeq ($(WITHOUT_XATTR), 1)
    CPPFLAGS += -DWITHOUT_XATTR
-@@ -84,7 +84,7 @@ $(BUILDDIR)/include/version.h.tmp:
+@@ -84,7 +84,7 @@
  #
  # Utils in top level
  #
@@ -20,7 +20,7 @@
  
 --- a/compr.c
 +++ b/compr.c
-@@ -520,6 +520,9 @@ int jffs2_compressors_init(void)
+@@ -520,6 +520,9 @@
  #ifdef CONFIG_JFFS2_LZO
  	jffs2_lzo_init();
  #endif
@@ -30,7 +30,7 @@
  	return 0;
  }
  
-@@ -534,5 +537,8 @@ int jffs2_compressors_exit(void)
+@@ -534,5 +537,8 @@
  #ifdef CONFIG_JFFS2_LZO
  	jffs2_lzo_exit();
  #endif
@@ -59,7 +59,7 @@
  
  #define JFFS2_COMPR_MODE_NONE       0
  #define JFFS2_COMPR_MODE_PRIORITY   1
-@@ -115,5 +116,10 @@ void jffs2_rtime_exit(void);
+@@ -115,5 +116,10 @@
  int jffs2_lzo_init(void);
  void jffs2_lzo_exit(void);
  #endif
@@ -70,7 +70,7 @@
 +
  
  #endif /* __JFFS2_COMPR_H__ */
---- /dev/null
+--- a/compr_lzma.c
 +++ b/compr_lzma.c
 @@ -0,0 +1,128 @@
 +/*
@@ -211,71 +211,7 @@
  /* Compatibility flags. */
  #define JFFS2_COMPAT_MASK 0xc000      /* What do to if an unknown nodetype is found */
  #define JFFS2_NODE_ACCURATE 0x2000
---- /dev/null
-+++ b/include/linux/lzma.h
-@@ -0,0 +1,61 @@
-+#ifndef __LZMA_H__
-+#define __LZMA_H__
-+
-+#ifdef __KERNEL__
-+	#include <linux/kernel.h>
-+	#include <linux/sched.h>
-+	#include <linux/slab.h>
-+	#include <linux/vmalloc.h>
-+	#include <linux/init.h>
-+	#define LZMA_MALLOC vmalloc
-+	#define LZMA_FREE vfree
-+	#define PRINT_ERROR(msg) printk(KERN_WARNING #msg)
-+	#define INIT __init
-+	#define STATIC static
-+#else
-+	#include <stdint.h>
-+	#include <stdlib.h>
-+	#include <stdio.h>
-+	#include <unistd.h>
-+	#include <string.h>
-+	#include <errno.h>
-+	#include <linux/jffs2.h>
-+	#ifndef PAGE_SIZE
-+		extern int page_size;
-+		#define PAGE_SIZE page_size
-+	#endif
-+	#define LZMA_MALLOC malloc
-+	#define LZMA_FREE free
-+	#define PRINT_ERROR(msg) fprintf(stderr, msg)
-+	#define INIT
-+	#define STATIC
-+#endif
-+
-+#include "lzma/LzmaDec.h"
-+#include "lzma/LzmaEnc.h"
-+
-+#define LZMA_BEST_LEVEL (9)
-+#define LZMA_BEST_LC    (0)
-+#define LZMA_BEST_LP    (0)
-+#define LZMA_BEST_PB    (0)
-+#define LZMA_BEST_FB  (273)
-+
-+#define LZMA_BEST_DICT(n) (((int)((n) / 2)) * 2)
-+
-+static void *p_lzma_malloc(void *p, size_t size)
-+{
-+	if (size == 0)
-+		return NULL;
-+
-+	return LZMA_MALLOC(size);
-+}
-+
-+static void p_lzma_free(void *p, void *address)
-+{
-+	if (address != NULL)
-+		LZMA_FREE(address);
-+}
-+
-+static ISzAlloc lzma_alloc = {p_lzma_malloc, p_lzma_free};
-+
-+#endif
---- /dev/null
+--- a/include/linux/lzma/LzFind.h
 +++ b/include/linux/lzma/LzFind.h
 @@ -0,0 +1,116 @@
 +/* LzFind.h  -- Match finder for LZ algorithms
@@ -394,7 +330,7 @@
 +void Hc3Zip_MatchFinder_Skip(CMatchFinder *p, UInt32 num);
 +
 +#endif
---- /dev/null
+--- a/include/linux/lzma/LzHash.h
 +++ b/include/linux/lzma/LzHash.h
 @@ -0,0 +1,56 @@
 +/* LzHash.h  -- HASH functions for LZ algorithms
@@ -453,7 +389,7 @@
 +  hash4Value = (temp ^ ((UInt32)cur[2] << 8) ^ (p->crc[cur[3]] << 5)) & (kHash4Size - 1); }
 +
 +#endif
---- /dev/null
+--- a/include/linux/lzma/LzmaDec.h
 +++ b/include/linux/lzma/LzmaDec.h
 @@ -0,0 +1,232 @@
 +/* LzmaDec.h -- LZMA Decoder
@@ -688,7 +624,7 @@
 +    ELzmaStatus *status, ISzAlloc *alloc);
 +
 +#endif
---- /dev/null
+--- a/include/linux/lzma/LzmaEnc.h
 +++ b/include/linux/lzma/LzmaEnc.h
 @@ -0,0 +1,74 @@
 +/*  LzmaEnc.h -- LZMA Encoder
@@ -765,7 +701,7 @@
 +    ICompressProgress *progress, ISzAlloc *alloc, ISzAlloc *allocBig);
 +
 +#endif
---- /dev/null
+--- a/include/linux/lzma/Types.h
 +++ b/include/linux/lzma/Types.h
 @@ -0,0 +1,130 @@
 +/* Types.h -- Basic types
@@ -898,7 +834,71 @@
 +#define IAlloc_Free(p, a) (p)->Free((p), a)
 +
 +#endif
---- /dev/null
+--- a/include/linux/lzma.h
++++ b/include/linux/lzma.h
+@@ -0,0 +1,61 @@
++#ifndef __LZMA_H__
++#define __LZMA_H__
++
++#ifdef __KERNEL__
++	#include <linux/kernel.h>
++	#include <linux/sched.h>
++	#include <linux/slab.h>
++	#include <linux/vmalloc.h>
++	#include <linux/init.h>
++	#define LZMA_MALLOC vmalloc
++	#define LZMA_FREE vfree
++	#define PRINT_ERROR(msg) printk(KERN_WARNING #msg)
++	#define INIT __init
++	#define STATIC static
++#else
++	#include <stdint.h>
++	#include <stdlib.h>
++	#include <stdio.h>
++	#include <unistd.h>
++	#include <string.h>
++	#include <errno.h>
++	#include <linux/jffs2.h>
++	#ifndef PAGE_SIZE
++		extern int page_size;
++		#define PAGE_SIZE page_size
++	#endif
++	#define LZMA_MALLOC malloc
++	#define LZMA_FREE free
++	#define PRINT_ERROR(msg) fprintf(stderr, msg)
++	#define INIT
++	#define STATIC
++#endif
++
++#include "lzma/LzmaDec.h"
++#include "lzma/LzmaEnc.h"
++
++#define LZMA_BEST_LEVEL (9)
++#define LZMA_BEST_LC    (0)
++#define LZMA_BEST_LP    (0)
++#define LZMA_BEST_PB    (0)
++#define LZMA_BEST_FB  (273)
++
++#define LZMA_BEST_DICT(n) (((int)((n) / 2)) * 2)
++
++static void *p_lzma_malloc(void *p, size_t size)
++{
++	if (size == 0)
++		return NULL;
++
++	return LZMA_MALLOC(size);
++}
++
++static void p_lzma_free(void *p, void *address)
++{
++	if (address != NULL)
++		LZMA_FREE(address);
++}
++
++static ISzAlloc lzma_alloc = {p_lzma_malloc, p_lzma_free};
++
++#endif
+--- a/lzma/LzFind.c
 +++ b/lzma/LzFind.c
 @@ -0,0 +1,753 @@
 +/* LzFind.c  -- Match finder for LZ algorithms
@@ -1654,7 +1654,7 @@
 +    vTable->Skip = (Mf_Skip_Func)Bt4_MatchFinder_Skip;
 +  }
 +}
---- /dev/null
+--- a/lzma/LzmaDec.c
 +++ b/lzma/LzmaDec.c
 @@ -0,0 +1,1014 @@
 +/* LzmaDec.c -- LZMA Decoder
@@ -2671,7 +2671,7 @@
 +  LzmaDec_FreeProbs(&p, alloc);
 +  return res;
 +}
---- /dev/null
+--- a/lzma/LzmaEnc.c
 +++ b/lzma/LzmaEnc.c
 @@ -0,0 +1,2335 @@
 +/* LzmaEnc.c -- LZMA Encoder
@@ -5011,7 +5011,7 @@
 +}
 --- a/mkfs.jffs2.c
 +++ b/mkfs.jffs2.c
-@@ -1659,11 +1659,11 @@ int main(int argc, char **argv)
+@@ -1659,11 +1659,11 @@
  						  }
  						  erase_block_size *= units;
  

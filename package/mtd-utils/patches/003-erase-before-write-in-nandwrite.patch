@@ -1,5 +1,3 @@
-diff --git a/nandwrite.c b/nandwrite.c
-index 9c3fe8f..694e840 100644
 --- a/nandwrite.c
 +++ b/nandwrite.c
 @@ -421,6 +421,25 @@ int main(int argc, char * const argv[])
