@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=stubby
-PKG_VERSION:=0.3.0
+PKG_VERSION:=0.4.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://getdnsapi.net/dist/
-PKG_MD5SUM:=179cde258159177fb6aa14a7b4e7a73b
+PKG_MD5SUM:=691d409e7c19730a38022c1603311e80
 
 PKG_MAINTAINER:=Jonathan Underwood <jonathan.underwood@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
@@ -37,7 +37,7 @@ define Package/stubby
   SUBMENU:=IP Addresses and Names
   TITLE+= - (daemon that uses getdns)
   USERID:=stubby=410:stubby=410
-  DEPENDS:= +libyaml +getdns +ca-certificates
+  DEPENDS:= libopenssl-1.1.x +libyaml +getdns +ca-certificates
 endef
 
 define Package/stubby/description
@@ -48,6 +48,10 @@ endef
 define Package/stubby/conffiles
 /etc/stubby/stubby.yml
 endef
+
+CMAKE_OPTIONS += -DOPENSSL_INCLUDE_DIR=$(STAGING_DIR)/usr/include/openssl-1.1.x
+CMAKE_OPTIONS += -DOPENSSL_CRYPTO_LIBRARY=$(STAGING_DIR)/usr/lib/openssl-1.1.x/libcrypto.so
+CMAKE_OPTIONS += -DOPENSSL_SSL_LIBRARY=$(STAGING_DIR)/usr/lib/openssl-1.1.x/libssl.so
 
 define Package/stubby/install
 	$(INSTALL_DIR) $(1)/usr/sbin
