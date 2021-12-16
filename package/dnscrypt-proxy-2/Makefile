@@ -11,7 +11,7 @@ PKG_RELEASE:=1
 PKG_SOURCE=$(BASENAME)-$(PKG_VERSION).tar.gz
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(BASENAME)-$(PKG_VERSION)
 
-INSTALL_UPX:=upx -9 -o
+INSTALL_UPX:=upx --ultra-brute -o
 
 include $(INCLUDE_DIR)/package.mk
 
