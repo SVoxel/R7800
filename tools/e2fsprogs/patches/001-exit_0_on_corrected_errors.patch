@@ -1,6 +1,6 @@
---- a/e2fsck/e2fsck.h	2021-03-01 05:46:44.000000000 +0300
-+++ b/e2fsck/e2fsck.h	2021-03-01 12:14:12.593621800 +0300
-@@ -74,7 +74,7 @@
+--- a/e2fsck/e2fsck.h
++++ b/e2fsck/e2fsck.h
+@@ -81,7 +81,7 @@
   * Exit codes used by fsck-type programs
   */
  #define FSCK_OK          0	/* No errors */
