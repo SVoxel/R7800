@@ -1,8 +1,6 @@
-diff --git a/hd-idle.c b/hd-idle.c
-index 82356f7..371c968 100644
 --- a/hd-idle.c
 +++ b/hd-idle.c
-@@ -392,6 +392,11 @@ static void spindown_disk(const char *name)
+@@ -403,6 +403,11 @@
    unsigned char sense_buf[255];
    char dev_name[100];
    int fd;
