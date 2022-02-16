@@ -106,7 +106,6 @@ start_stage0() # $1: boot/start
 	# Set Hairpin mode on br0:ethlan
 	brctl hairpin $BR_IF $LAN_IF on
 
-	[ "$1" = "boot" ] && /data/funjsq/bin/funjsq.sh init & 
 	start_dhcpd   
 	check_wlanboot
 

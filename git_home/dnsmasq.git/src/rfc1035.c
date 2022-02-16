@@ -2115,7 +2115,6 @@ size_t answer_request(struct dns_header *header, char *limit, size_t qlen,
 			  "www.routerlogin.net",
 			  "routerlogin.com",
 			  "routerlogin.net",
-			  "mini-app.funjsq.com",
 
 #if defined(USBSHARE_DOMAIN_SUPPORT)
 			  "readyshare.routerlogin.net",

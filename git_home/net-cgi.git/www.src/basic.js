@@ -171,18 +171,6 @@ function basic_menu_class_default()
 		wds_div.className = wds_div.className + "_grey";
 	}
 
-	if( top.funjsq_flag==1 && (top.enable_ap_flag== 1 || top.enable_bridge_flag== 1 || top.enable_extender_flag == "1") && top.gui_region=="Chinese" && top.netgear_region=="PR")
-	{
-		var wds_div = top.document.getElementById("funjsq");
-		wds_div.className = wds_div.className + "_grey";
-	}
-
-	if( top.funjsq_mul_flag==1 && (top.enable_ap_flag== 1 || top.enable_bridge_flag== 1 || top.enable_extender_flag == "1") && top.gui_region=="Chinese" && top.netgear_region=="PR")
-        {
-                var wds_div = top.document.getElementById("funjsq");
-                wds_div.className = wds_div.className + "_grey";
-        }
-	
 	/*if(top.have_broadband == 1 && top.is_ru_version == 1 && top.is_pr_version == 1)
 	{
 		menu_div = top.document.getElementById("internet_bt");
@@ -462,14 +450,6 @@ function click_action(id)
 			top.click_lte_sim=0;
 			basic_menu_color_change('internet');
 			goto_formframe('check_mobile_internet_wait.htm');
-		}
-		else if( id == "funjsq" && top.enable_ap_flag != 1 && top.enable_bridge_flag == 0 && top.enable_extender_flag == "0" )
-		{
-			basic_menu_color_change('funjsq');
-			if(funjsq_no_need_login != "1")
-				goto_formframe("funjsq.htm");
-			else
-				goto_formframe("funjsq.htm");
 		}
                 else if( id == "vpn_client" && top.vpn_client_flag == "1")
 		{

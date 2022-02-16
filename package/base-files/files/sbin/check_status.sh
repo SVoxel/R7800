@@ -13,7 +13,7 @@ while :; do
 		fi
 	fi
 
-###work around for  [16/05][14 days endurance test][Model: R7800-Funjsq][V1.0.2.50]  , datalib crash 
+###work around for  [16/05][14 days endurance test][Model: R7800][V1.0.2.50]  , datalib crash 
 	if [ "x$(ps |grep datalib |grep -v grep)" = "x" ];then
 		/bin/datalib 
 	fi
