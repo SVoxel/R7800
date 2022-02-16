@@ -1,0 +1,20 @@
+--- a/iptables/ip6tables.c
++++ b/iptables/ip6tables.c
+@@ -846,7 +846,6 @@
+ 			fprintf(stderr,
+ 				"Can't find library for match `%s'\n",
+ 				name);
+-			exit(1);
+ 		}
+ 	}
+ 	return 0;
+--- a/iptables/iptables.c
++++ b/iptables/iptables.c
+@@ -843,7 +843,6 @@
+ 			fprintf(stderr,
+ 				"Can't find library for match `%s'\n",
+ 				name);
+-			exit(1);
+ 		}
+ 	}
+ 	return 0;
