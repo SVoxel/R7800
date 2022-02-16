@@ -1,5 +1,7 @@
 #!/bin/sh
-# Copyright (C) 2006 OpenWrt.org 
+
+CONFIG=/bin/config
+AWS_DISABLED=$($CONFIG get noaws)
 rae_partion=/usr/rae.tar.gz
 panic_partion=/dev/mtd9
 RAE_DIR=/tmp/router-analytics
@@ -223,6 +225,13 @@ disable()
 	killall -9 icqm
 	rm /var/run/icqm_check.pid
 }
+
+# Check if AWS is disabled
+if [ "$AWS_DISABLED" = "1" ]; then
+	exit 0
+fi
+
+# Process arguments
 case "$1" in 
 	"boot")
 		boot $2
