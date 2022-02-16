@@ -1,6 +1,6 @@
 #!/bin/sh /etc/rc.common
 
-START=70
+START=98
 STOP=10
 
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
