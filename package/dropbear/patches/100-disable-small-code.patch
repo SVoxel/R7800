@@ -1,6 +1,6 @@
---- a/default_options.h	2020-06-15 18:38:08.000000000 +0300
-+++ b/default_options.h	2020-06-17 11:09:07.977452700 +0300
-@@ -45,7 +45,7 @@
+--- a/default_options.h
++++ b/default_options.h
+@@ -57,7 +57,7 @@
   * several kB in binary size however will make the symmetrical ciphers and hashes
   * slower, perhaps by 50%. Recommended for small systems that aren't doing
   * much traffic. */
