@@ -40,7 +40,7 @@ define Build/Compile
 		GOPATH=$(PKG_BUILD_DIR)/$(BASENAME) \
 		CGO_CFLAGS="$(TARGET_CFLAGS)" \
 		CGO_CXXFLAGS="$(TARGET_CFLAGS)" \
-		$(HOME)/go/bin/go build \
+		go build \
 		-gcflags=-trimpath=$(PKG_BUILD_DIR)/$(BASENAME) \
 		-asmflags=-trimpath=$(PKG_BUILD_DIR)/$(BASENAME) \
 		-ldflags "-s -w"; \
