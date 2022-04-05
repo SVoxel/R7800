@@ -8,14 +8,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libxml2
-PKG_VERSION:=2.9.12
+PKG_VERSION:=2.9.13
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://gd.tuwien.ac.at/languages/libxml/ \
 	http://xmlsoft.org/sources/ \
 	ftp://fr.rpmfind.net/pub/libxml/
-PKG_MD5SUM:=f433a39be087a9f0b197eb2307ad9f75
+PKG_MD5SUM:=f21079e9254def82c94676224a9e9dc3
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING
@@ -41,7 +41,6 @@ define Package/libxml2/description
   A library for manipulating XML and HTML resources.
 endef
 
-TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 TARGET_CFLAGS += $(FPIC)
 
 CONFIGURE_ARGS += \
