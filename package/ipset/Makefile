@@ -44,7 +44,6 @@ CONFIGURE_ARGS += \
 MAKE_FLAGS += \
 	ARCH="$(LINUX_KARCH)" \
 	KSOURCEDIR=$(LINUX_DIR)/sourcecode
-	SHELL="$(BASH)"
 
 IPSET_MODULES:= \
 	ipset/ip_set \
