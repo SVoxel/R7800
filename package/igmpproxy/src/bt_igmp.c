@@ -1,4 +1,5 @@
 #include "defs.h"
+#include <pcap.h>
 
 static int bt_socket; //the socket for sending igmp packet to wan2
 static int g_ifindex;

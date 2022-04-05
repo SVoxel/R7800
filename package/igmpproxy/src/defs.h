@@ -48,7 +48,6 @@
 #include <net/if.h>
 #include <sys/types.h>
 #include <sys/ioctl.h>
-#include <pcap.h>
 #include <linux/if_ether.h>
 #include <linux/if_packet.h>
 #include "bt_igmp.h"
