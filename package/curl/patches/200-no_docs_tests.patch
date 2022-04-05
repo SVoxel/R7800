@@ -1,6 +1,6 @@
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -195,7 +195,7 @@
+@@ -156,7 +156,7 @@
  bin_SCRIPTS = curl-config
  
  SUBDIRS = lib src
@@ -9,7 +9,7 @@
  
  pkgconfigdir = $(libdir)/pkgconfig
  pkgconfig_DATA = libcurl.pc
-@@ -309,8 +309,8 @@
+@@ -270,8 +270,8 @@
  # We extend the standard install with a custom hook:
  install-data-hook:
  	(cd include && $(MAKE) install)
