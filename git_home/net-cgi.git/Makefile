@@ -30,7 +30,7 @@ FILES_DIR:="files"
 SCRIPT_DIR:="scripts"
 WWW_DIR:="www"
 
-all %::
+%::
 	$(MAKE) -C $(SOURCE_DIR) $@
 	$(MAKE) -C $(SCRIPT_DIR) $@
 	$(MAKE) -C $(FILES_DIR) $@
