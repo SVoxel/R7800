@@ -1,5 +1,5 @@
---- a/libmount/src/context_umount.c	2020-11-10 12:25:56.567810000 +0300
-+++ b/libmount/src/context_umount.c	2020-11-16 18:56:39.302707000 +0300
+--- a/libmount/src/context_umount.c
++++ b/libmount/src/context_umount.c
 @@ -24,6 +24,12 @@
  #include "strutils.h"
  #include "mountP.h"
@@ -13,3 +13,16 @@
  /*
   * umount2 flags
   */
+--- a/sys-utils/fstrim.c
++++ b/sys-utils/fstrim.c
+@@ -50,6 +50,10 @@
+ 
+ #include <libmount.h>
+ 
++/* Define O_PATH if not defined */
++#ifndef O_PATH
++#define O_PATH		010000000
++#endif
+ 
+ #ifndef FITRIM
+ struct fstrim_range {

@@ -1,0 +1,10 @@
+--- a/libmount/src/utils.c
++++ b/libmount/src/utils.c
+@@ -22,6 +22,7 @@
+ #include <blkid.h>
+ 
+ #include "strutils.h"
++#include "namespace.h"
+ #include "pathnames.h"
+ #include "mountP.h"
+ #include "mangle.h"

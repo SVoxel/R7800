@@ -1,6 +1,6 @@
---- a/configure.ac	2021-08-18 10:58:53.447776400 +0300
-+++ b/configure.ac	2021-08-18 10:59:15.870460400 +0300
-@@ -576,6 +576,8 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -585,6 +585,8 @@
  ])
  AC_FUNC_FSEEKO
  
@@ -9,9 +9,9 @@
  AC_CHECK_FUNCS([futimens], [have_futimens=yes])
  AC_CHECK_FUNCS([getusershell], [have_getusershell=yes],[have_getusershell=no])
  AC_CHECK_FUNCS([inotify_init1], [have_inotify_init1=yes])
---- a/include/c.h	2021-07-29 22:39:18.340926100 +0300
-+++ b/include/c.h	2021-08-18 10:59:15.878299400 +0300
-@@ -476,4 +476,18 @@
+--- a/include/c.h
++++ b/include/c.h
+@@ -502,4 +502,18 @@
  # define MAP_ANONYMOUS  (MAP_ANON)
  #endif
  
