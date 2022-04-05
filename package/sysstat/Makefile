@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sysstat
-PKG_VERSION:=12.4.3
+PKG_VERSION:=12.4.5
 PKG_RELEASE:=1
 
 PKG_LICENSE:=GPL-2.0
@@ -16,7 +16,7 @@ PKG_MAINTAINER:=Marko Ratkaj <marko.ratkaj@sartura.hr>
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=http://pagesperso-orange.fr/sebastien.godard/
-PKG_MD5SUM:=d9fcef20d735a20f4e3d5c22bb6c0c34
+PKG_MD5SUM:=d6fe5551c06da13bb81e6a7859c4ab5c
 
 PKG_INSTALL:=1
 
@@ -46,9 +46,7 @@ CONFIGURE_VARS+= \
 
 CONFIGURE_ARGS+= \
 	--disable-documentation \
-	--disable-largefile \
 	--disable-sensors \
-	--disable-nls
 
 define Package/sysstat/install
 	$(INSTALL_DIR) $(1)/usr/lib/sysstat
