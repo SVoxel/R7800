@@ -1,15 +1,15 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ubus
-PKG_VERSION:=2021-08-09-a72457b6
+PKG_VERSION:=2022-02-28-584f56a2
 PKG_RELEASE=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL=$(PROJECT_GIT)/project/ubus.git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=a72457b6
+PKG_SOURCE_VERSION:=584f56a2
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_MIRROR_MD5SUM:=221b1b2c8c8eab08ce55d4b73655b573
+PKG_MIRROR_MD5SUM:=462b3b8678041fd02b2fe118a607f8f6
 CMAKE_INSTALL:=1
 
 PKG_LICENSE:=LGPLv2.1
@@ -82,4 +82,3 @@ $(eval $(call BuildPackage,ubus))
 $(eval $(call BuildPackage,ubusd))
 $(eval $(call BuildPackage,libubus))
 $(eval $(call BuildPackage,libubus-lua))
-
