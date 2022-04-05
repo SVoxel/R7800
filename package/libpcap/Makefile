@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2006-2011 OpenWrt.org
+# Copyright (C) 2006-2013 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,18 +8,23 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libpcap
-PKG_VERSION:=1.1.1
-PKG_RELEASE:=2
+PKG_VERSION:=1.10.1
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://www.tcpdump.org/release/
-PKG_MD5SUM:=1bca27d206970badae248cfa471bbb47
+PKG_SOURCE_URL:=http://www.us.tcpdump.org/release/ \
+        http://www.tcpdump.org/release/
+PKG_MD5SUM:=28e17495004036567c2cc884b51eba45 
 
-PKG_INSTALL:=1
+PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
+PKG_LICENSE:=BSD-3-Clause
+PKG_LICENSE_FILES:=LICENSE
+
+PKG_ASLR_PIE_REGULAR:=1
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
-include $(INCLUDE_DIR)/kernel.mk
+include $(INCLUDE_DIR)/cmake.mk
 
 define Package/libpcap
   SECTION:=libs
@@ -27,6 +32,7 @@ define Package/libpcap
   TITLE:=Low-level packet capture library
   URL:=http://www.tcpdump.org/
   MENU:=1
+  ABI_VERSION:=1
 endef
 
 define Package/libpcap/description
@@ -38,46 +44,43 @@ define Package/libpcap/config
 	source "$(SOURCE)/Config.in"
 endef
 
-TARGET_CFLAGS += \
-	-ffunction-sections \
-	-fdata-sections
+CMAKE_OPTIONS += \
+	-DBUILD_SHARED_LIBS=ON \
+	-DBUILD_WITH_LIBNL=OFF \
+	-DINET6=O$(if $(CONFIG_IPV6),N,FF) \
+	-DPCAP_SUPPORT_NETFILTER=O$(if $(CONFIG_PCAP_HAS_NETFILTER),N,FF)
 
-CONFIGURE_VARS += \
-	ac_cv_linux_vers=$(LINUX_VERSION)
+# grep 'option(DISABLE_' CMakeLists.txt | cut -f2 -d'(' | cut -f1 -d' ' | sort --unique
+CMAKE_OPTIONS += \
+	-DDISABLE_BLUETOOTH=O$(if $(CONFIG_PCAP_HAS_BT),FF,N) \
+	-DDISABLE_DAG=ON \
+	-DDISABLE_DBUS=ON \
+	-DDISABLE_DPDK=ON \
+	-DDISABLE_LINUX_USBMON=O$(if $(CONFIG_PCAP_HAS_USB),FF,N) \
+	-DDISABLE_NETMAP=ON \
+	-DDISABLE_RDMA=ON \
+	-DDISABLE_SEPTEL=ON \
+	-DDISABLE_SNF=ON \
+	-DDISABLE_TC=ON \
 
-CONFIGURE_ARGS += \
-	--enable-shared \
-	--enable-static \
-	--disable-yydebug \
-	--enable-ipv6 \
-	--with-build-cc="$(HOSTCC)" \
-	--with-pcap=linux \
-	--without-septel \
-	--without-dag \
-	--without-libnl
-
-MAKE_FLAGS += \
-	CCOPT="$(TARGET_CFLAGS) -I$(BUILD_DIR)/linux/include"
-
-define Build/Configure
-	$(call Build/Configure/Default)
-	$(if $(CONFIG_PCAP_HAS_USB),,$(SED) '/^#define PCAP_SUPPORT_USB/D' $(PKG_BUILD_DIR)/config.h)
-	$(if $(CONFIG_PCAP_HAS_USB),,$(SED) 's/pcap-usb-linux.c *//' $(PKG_BUILD_DIR)/Makefile)
-	$(if $(CONFIG_PCAP_HAS_BT),,$(SED) '/^#define PCAP_SUPPORT_BT/D' $(PKG_BUILD_DIR)/config.h)
-	$(if $(CONFIG_PCAP_HAS_BT),,$(SED) 's/pcap-bt-linux.c *//' $(PKG_BUILD_DIR)/Makefile)
-endef
+# Debugging options
+CMAKE_OPTIONS += \
+	-DBDEBUG=OFF \
+	-DYYDEBUG=OFF \
 
 define Build/InstallDev
-	$(INSTALL_DIR) $(1)/usr/include
-	$(CP) $(PKG_INSTALL_DIR)/usr/include/pcap* $(1)/usr/include/
-
-	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libpcap.{a,so*} $(1)/usr/lib/
+	$(call Build/InstallDev/cmake,$(1))
+	$(SED) \
+		's,^\(prefix\|exec_prefix\)=.*,\1=$(STAGING_DIR)/usr,g' \
+		$(1)/usr/bin/pcap-config
+	$(INSTALL_DIR) $(2)/bin
+	$(LN) ../../usr/bin/pcap-config $(2)/bin/pcap-config
 endef
 
 define Package/libpcap/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libpcap.so* $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libpcap.so.* $(1)/usr/lib/
+	$(CP) ./files/libpcap.so.* $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,libpcap))
