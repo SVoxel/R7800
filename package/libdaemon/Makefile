@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2006 OpenWrt.org
+# Copyright (C) 2006-2014 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -9,13 +9,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libdaemon
 PKG_VERSION:=0.14
-PKG_RELEASE:=2
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://0pointer.de/lennart/projects/libdaemon/
 PKG_MD5SUM:=509dc27107c21bcd9fbf2f95f5669563
+PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>
 
-#PKG_FIXUP:=libtool
+PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
@@ -40,61 +41,32 @@ define Package/libdaemon/description
 	simple to get it done right and code duplication is not a goal.
 endef
 
-
 define Build/Configure
-	(cd $(PKG_BUILD_DIR); \
-		$(TARGET_CONFIGURE_OPTS) \
-		CFLAGS="$(TARGET_CFLAGS) $(EXTRA_CFLAGS)" \
-		CXXFLAGS="$(TARGET_CFLAGS) $(EXTRA_CFLAGS)" \
-		CPPFLAGS="$(TARGET_CPPFLAGS) $(EXTRA_CPPFLAGS)" \
-		LDFLAGS="$(TARGET_LDFLAGS)" \
-		PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
-		PKG_CONFIG_LIBDIR="$(STAGING_DIR)/usr/lib/pkgconfig" \
-		./configure \
-		ac_cv_func_setpgrp_void=no \
-			ac_cv_func_setpgrp_void=yes \
-			ac_cv_func_memcmp_working=yes \
-			rb_cv_binary_elf=no \
-			rb_cv_negative_time_t=no \
-		--host=$(GNU_TARGET_NAME) \
-		--build=$(GNU_HOST_NAME) \
-		--prefix=$(PKG_INSTALL_DIR))
+	$(call Build/Configure/Default, \
+		--enable-shared \
+		--enable-static \
+		--disable-lynx \
+		--disable-examples \
+		, \
+		ac_cv_func_setpgrp_void=yes \
+	)
 endef
-
-
-#
-#define Build/Configure
-#	$(call Build/Configure/Default, \
-#		--enable-shared \
-#		--enable-static \
-#		--disable-lynx \
-#		--prefix=$(PKG_INSTALL_DIR))
-#endef
-#
-
-
-define Build/Compile
-	$(MAKE) -C $(PKG_BUILD_DIR) \
-		install
-endef
-
-
 
 TARGET_CFLAGS += $(FPIC)
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
-	$(CP) $(PKG_INSTALL_DIR)/include/libdaemon $(1)/usr/include/
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/libdaemon $(1)/usr/include/
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/lib/libdaemon.a $(1)/usr/lib/
-	$(CP) $(PKG_INSTALL_DIR)/lib/libdaemon.so* $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libdaemon.a $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libdaemon.so* $(1)/usr/lib/
 	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
-	$(CP) $(PKG_INSTALL_DIR)/lib/pkgconfig/libdaemon.pc $(1)/usr/lib/pkgconfig/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/libdaemon.pc $(1)/usr/lib/pkgconfig/
 endef
 
 define Package/libdaemon/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/lib/libdaemon.so.* $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libdaemon.so.* $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,libdaemon))
