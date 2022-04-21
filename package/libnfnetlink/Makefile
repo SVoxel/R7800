@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libnfnetlink
-PKG_VERSION:=1.0.1
+PKG_VERSION:=1.0.2
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
@@ -16,7 +16,7 @@ PKG_SOURCE_URL:= \
 	http://www.netfilter.org/projects/libnfnetlink/files/ \
 	ftp://ftp.netfilter.org/pub/libnfnetlink/ \
 	http://mirrors.evolva.ro/netfilter.org/libnfnetlink/
-PKG_MD5SUM:=98927583d2016a9fb1936fed992e2c5e
+PKG_MD5SUM:=39d65185e2990562c64de05a08de8771
 PKG_MAINTAINER:=Jo-Philipp Wich <jow@openwrt.org>
 PKG_LICENSE:=GPL-2.0+
 
