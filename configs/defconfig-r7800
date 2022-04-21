@@ -393,7 +393,7 @@ CONFIG_DEFAULT_iputils-tracepath=y
 CONFIG_DEFAULT_iputils-tracepath6=y
 CONFIG_DEFAULT_kmod-art2=y
 CONFIG_DEFAULT_kmod-button-hotplug=y
-CONFIG_DEFAULT_kmod-fs-ext4=y
+# CONFIG_DEFAULT_kmod-fs-ext4 is not set
 CONFIG_DEFAULT_kmod-fs-msdos=y
 CONFIG_DEFAULT_kmod-fs-ntfs=y
 CONFIG_DEFAULT_kmod-fs-vfat=y
@@ -423,11 +423,11 @@ CONFIG_DEFAULT_kmod-qca-wifi=y
 CONFIG_DEFAULT_kmod-qca-wifi-akronite-perf=y
 # CONFIG_DEFAULT_kmod-sound-core is not set
 CONFIG_DEFAULT_kmod-sound-soc-ipq806x=y
-CONFIG_DEFAULT_kmod-usb-core=y
-CONFIG_DEFAULT_kmod-usb-gadget=y
+# CONFIG_DEFAULT_kmod-usb-core is not set
+# CONFIG_DEFAULT_kmod-usb-gadget is not set
 CONFIG_DEFAULT_kmod-usb-gadget-dwc3=y
 CONFIG_DEFAULT_kmod-usb-gadget-dwc3-ipq=y
-CONFIG_DEFAULT_kmod-usb-storage=y
+# CONFIG_DEFAULT_kmod-usb-storage is not set
 CONFIG_DEFAULT_kmod-usb-xhci=y
 CONFIG_DEFAULT_kmod-usb2=y
 CONFIG_DEFAULT_libc=y
@@ -603,7 +603,7 @@ CONFIG_NEED_TOOLCHAIN=y
 CONFIG_EXTRA_BINUTILS_CONFIG_OPTIONS=""
 CONFIG_BINUTILS_VERSION_2_38=y
 CONFIG_BINUTILS_VERSION="2.38"
-CONFIG_GCC_VERSION_10_2_0=y
+CONFIG_GCC_VERSION_11_3_0=y
 CONFIG_EXTRA_GCC_CONFIG_OPTIONS=""
 CONFIG_SSP_SUPPORT=y
 # CONFIG_TLS_SUPPORT is not set
@@ -614,9 +614,9 @@ CONFIG_USE_UCLIBC=y
 CONFIG_UCLIBC_VERSION_0_9_33=y
 CONFIG_GDB=y
 # CONFIG_INSIGHT is not set
-CONFIG_GCC_DEFAULT_VERSION_10_2_0=y
-CONFIG_GCC_VERSION="10.2.0"
-CONFIG_GCC_VERSION_10_2=y
+CONFIG_GCC_DEFAULT_VERSION_11_3_0=y
+CONFIG_GCC_VERSION="11.3.0"
+CONFIG_GCC_VERSION_11_3=y
 CONFIG_UCLIBC_VERSION="0.9.33.2"
 CONFIG_LIBC="uClibc"
 CONFIG_LIBC_VERSION="0.9.33.2"
@@ -1280,6 +1280,9 @@ CONFIG_PACKAGE_opkg=y
 CONFIG_PACKAGE_opkg-curl=y
 CONFIG_PACKAGE_proccgi=y
 # CONFIG_PACKAGE_psmisc is not set
+CONFIG_PACKAGE_quagga-libzebra=y
+CONFIG_PACKAGE_quagga-ripngd=y
+CONFIG_PACKAGE_quagga-zebra=y
 CONFIG_PACKAGE_swconfig=y
 CONFIG_PACKAGE_trafficmeter=y
 CONFIG_PACKAGE_uci=y
@@ -1287,7 +1290,6 @@ CONFIG_PACKAGE_udevtrigger=y
 CONFIG_PACKAGE_usb-modeswitch=y
 CONFIG_PACKAGE_utelnetd=y
 CONFIG_PACKAGE_wireless-tools=y
-CONFIG_PACKAGE_zebra=y
 
 #
 # Network
@@ -1814,7 +1816,7 @@ CONFIG_PACKAGE_kmod-dnisip=y
 # CONFIG_PACKAGE_kmod-fs-btrfs is not set
 CONFIG_PACKAGE_kmod-fs-cifs=y
 CONFIG_PACKAGE_kmod-fs-exportfs=y
-CONFIG_PACKAGE_kmod-fs-ext4=y
+# CONFIG_PACKAGE_kmod-fs-ext4 is not set
 # CONFIG_PACKAGE_kmod-fs-hfs is not set
 # CONFIG_PACKAGE_kmod-fs-hfsplus is not set
 # CONFIG_PACKAGE_kmod-fs-isofs is not set
@@ -1864,18 +1866,18 @@ CONFIG_PACKAGE_kmod-fuse=y
 # CONFIG_PACKAGE_kmod-lib-cordic is not set
 CONFIG_PACKAGE_kmod-lib-crc-ccitt=y
 # CONFIG_PACKAGE_kmod-lib-crc-itu-t is not set
-CONFIG_PACKAGE_kmod-lib-crc16=y
+# CONFIG_PACKAGE_kmod-lib-crc16 is not set
 # CONFIG_PACKAGE_kmod-lib-crc32c is not set
 # CONFIG_PACKAGE_kmod-lib-crc7 is not set
 # CONFIG_PACKAGE_kmod-lib-crc8 is not set
 # CONFIG_PACKAGE_kmod-lib-lzo is not set
-CONFIG_PACKAGE_kmod-lib-textsearch=y
+# CONFIG_PACKAGE_kmod-lib-textsearch is not set
 # CONFIG_PACKAGE_kmod-lib-zlib is not set
 
 #
 # Native Language Support
 #
-CONFIG_PACKAGE_kmod-nls-base=y
+# CONFIG_PACKAGE_kmod-nls-base is not set
 # CONFIG_PACKAGE_kmod-nls-cp1250 is not set
 # CONFIG_PACKAGE_kmod-nls-cp1251 is not set
 CONFIG_PACKAGE_kmod-nls-cp437=y
@@ -1947,7 +1949,7 @@ CONFIG_PACKAGE_kmod-ipt-rpfilter=y
 # CONFIG_PACKAGE_kmod-ipt-u32 is not set
 # CONFIG_PACKAGE_kmod-ipt-ulog is not set
 CONFIG_PACKAGE_kmod-nf-conntrack-netlink=y
-CONFIG_PACKAGE_kmod-nfnetlink=y
+# CONFIG_PACKAGE_kmod-nfnetlink is not set
 # CONFIG_PACKAGE_kmod-nfnetlink-log is not set
 # CONFIG_PACKAGE_kmod-nfnetlink-queue is not set
 
@@ -2029,7 +2031,7 @@ CONFIG_PACKAGE_kmod-bonding=y
 # CONFIG_PACKAGE_kmod-ipsec is not set
 # CONFIG_PACKAGE_kmod-iptunnel4 is not set
 # CONFIG_PACKAGE_kmod-iptunnel6 is not set
-CONFIG_PACKAGE_kmod-ipv6=y
+# CONFIG_PACKAGE_kmod-ipv6 is not set
 # CONFIG_PACKAGE_kmod-isdn4linux is not set
 CONFIG_PACKAGE_kmod-l2tp=y
 # CONFIG_PACKAGE_kmod-l2tp-eth is not set
@@ -2066,7 +2068,7 @@ CONFIG_PACKAGE_kmod-sched-core=y
 # CONFIG_PACKAGE_kmod-sit is not set
 # CONFIG_PACKAGE_kmod-slip is not set
 # CONFIG_PACKAGE_kmod-stp is not set
-CONFIG_PACKAGE_kmod-tun=y
+# CONFIG_PACKAGE_kmod-tun is not set
 
 #
 # Other modules
@@ -2085,7 +2087,7 @@ CONFIG_PACKAGE_kmod-ftp-alg=y
 # CONFIG_PACKAGE_kmod-gpio-dev is not set
 # CONFIG_PACKAGE_kmod-gpio-nxp-74hc164 is not set
 # CONFIG_PACKAGE_kmod-hid is not set
-CONFIG_PACKAGE_kmod-input-core=y
+# CONFIG_PACKAGE_kmod-input-core is not set
 # CONFIG_PACKAGE_kmod-input-evdev is not set
 # CONFIG_PACKAGE_kmod-input-gpio-buttons is not set
 # CONFIG_PACKAGE_kmod-input-gpio-encoder is not set
@@ -2154,9 +2156,9 @@ CONFIG_PACKAGE_kmod-urlblock=y
 # CONFIG_PACKAGE_kmod-usb-acm is not set
 # CONFIG_PACKAGE_kmod-usb-atm is not set
 # CONFIG_PACKAGE_kmod-usb-cm109 is not set
-CONFIG_PACKAGE_kmod-usb-core=y
+# CONFIG_PACKAGE_kmod-usb-core is not set
 # CONFIG_PACKAGE_kmod-usb-eth-gadget is not set
-CONFIG_PACKAGE_kmod-usb-gadget=y
+# CONFIG_PACKAGE_kmod-usb-gadget is not set
 CONFIG_PACKAGE_kmod-usb-gadget-dwc3=y
 CONFIG_PACKAGE_kmod-usb-gadget-dwc3-ipq=y
 # CONFIG_PACKAGE_kmod-usb-hid is not set
@@ -2164,11 +2166,11 @@ CONFIG_PACKAGE_kmod-usb-gadget-dwc3-ipq=y
 # CONFIG_PACKAGE_kmod-usb-ohci is not set
 # CONFIG_PACKAGE_kmod-usb-printer is not set
 # CONFIG_PACKAGE_kmod-usb-serial is not set
-CONFIG_PACKAGE_kmod-usb-storage=y
+# CONFIG_PACKAGE_kmod-usb-storage is not set
 # CONFIG_PACKAGE_kmod-usb-storage-extras is not set
 # CONFIG_PACKAGE_kmod-usb-test is not set
 # CONFIG_PACKAGE_kmod-usb-uhci is not set
-CONFIG_PACKAGE_kmod-usb-xhci=y
+# CONFIG_PACKAGE_kmod-usb-xhci is not set
 # CONFIG_PACKAGE_kmod-usb-yealink is not set
 CONFIG_PACKAGE_kmod-usb2=y
 # CONFIG_PACKAGE_kmod-usbip is not set
