@@ -1,24 +1,26 @@
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -80,7 +80,7 @@ SYSCONFIG_FILE = @SYSCONFIG_FILE@
- # Compiler flags
- CFLAGS = @CFLAGS@ -Wall -Wstrict-prototypes -pipe -O2
- DFLAGS = @DFLAGS@
--LFLAGS = @STRIP@
-+LDFLAGS += @STRIP@
- DFLAGS += -DSA_DIR=\"$(SA_DIR)\" -DSADC_PATH=\"$(SADC_PATH)\"
- DFLAGS += $(DFSENSORS)
- DFLAGS += $(DFPCP)
-@@ -120,7 +120,7 @@ ifeq ($(SYSPARAM),y)
- 	DFLAGS += -DHAVE_SYS_PARAM_H
+@@ -109,8 +109,8 @@
+ DFLAGS += $(TFLAGS)
  endif
+ 
+-ifndef LFLAGS
+-LFLAGS = @STRIP@
++ifndef LDFLAGS
++LDFLAGS += @STRIP@
+ endif
+ 
+ # Commands
+@@ -152,7 +152,7 @@
+ ifndef NLS
  NLS = @NLS@
+ endif
 -LFLAGS += @LFINTL@
 +LDFLAGS += @LFINTL@
  ifeq ($(NLS),y)
  REQUIRE_NLS = -DUSE_NLS -DPACKAGE=\"$(PACKAGE)\" -DLOCALEDIR=\"$(NLS_DIR)\"
  endif
-@@ -198,7 +198,7 @@ NLSPOT= $(NLSPO:.po=.pot)
+@@ -248,7 +248,7 @@
  	$(CC) -o $@ -c $(CFLAGS) $(DFLAGS) $<
  
  % : %.o
@@ -27,16 +29,16 @@
  
  all: sadc sar sadf iostat tapestat mpstat pidstat cifsiostat locales
  
-@@ -286,7 +286,7 @@ librdsensors.a: rd_sensors.o
+@@ -336,7 +336,7 @@
  
  sadc.o: sadc.c sa.h version.h common.h rd_stats.h rd_sensors.h
  
 -sadc: LFLAGS += $(LFSENSORS)
 +sadc: LDFLAGS += $(LFSENSORS)
  
- sadc: sadc.o act_sadc.o sa_wrap.o sa_common_sadc.o common_sadc.o systest.o librdstats.a librdsensors.a
+ sadc: sadc.o act_sadc.o sa_wrap.o sa_common_light.o common_light.o systest.o librdstats.a librdsensors.a
  
-@@ -296,7 +296,7 @@ sar: sar.o act_sar.o format_sar.o sa_com
+@@ -346,7 +346,7 @@
  
  sadf.o: sadf.c sadf.h version.h sa.h common.h rd_stats.h rd_sensors.h
  
@@ -44,4 +46,13 @@
 +sadf: LDFLAGS += $(LFPCP)
  
  sadf: sadf.o act_sadf.o format_sadf.o sadf_misc.o pcp_def_metrics.o sa_conv.o rndr_stats.o xml_stats.o json_stats.o svg_stats.o raw_stats.o pcp_stats.o sa_common.o librdstats_light.a libsyscom.a
+ 
+@@ -465,7 +465,7 @@
+ tests/32bits/rd_sensors32.o: rd_sensors.c common.h rd_sensors.h rd_stats.h
+ 	$(CC) -o $@ -c $(CFLAGS) $(DFLAGS) $<
+ 
+-tests/32bits/sadc32: LFLAGS += $(LFSENSORS32)
++tests/32bits/sadc32: LDFLAGS += $(LFSENSORS32)
+ 
+ tests/32bits/sadc32: tests/32bits/sadc32.o tests/32bits/act_sadc32.o tests/32bits/sa_wrap32.o tests/32bits/sa_common_light32.o tests/32bits/common_light32.o tests/32bits/systest32.o tests/32bits/librdstats32.a tests/32bits/librdsensors32.a
  
