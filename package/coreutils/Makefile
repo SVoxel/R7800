@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=coreutils
-PKG_VERSION:=9.0
+PKG_VERSION:=9.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNU/coreutils
-PKG_MD5SUM:=0d79ae8a6124546e3b94171375e5e5d0
+PKG_MD5SUM:=8b1ca4e018a7dce9bb937faec6618671
 PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
 PKG_CPE_ID:=cpe:/a:gnu:coreutils
 
