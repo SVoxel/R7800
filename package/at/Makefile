@@ -8,12 +8,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=at
-PKG_VERSION:=3.1.23
+PKG_VERSION:=3.2.5
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)_$(PKG_VERSION).orig.tar.gz
-PKG_SOURCE_URL:=http://ftp.debian.org/debian/pool/main/a/at
-PKG_HASH:=97450aa954aaa8a70218cc8e61a33df9fee9f86527e9f861de302fb7a3c81710
+PKG_MD5SUM:=ca3657a1c90d7c3d252e0bc17feddc6e
 
 PKG_LICENSE:=GPL-2.0+ GPL-3.0+ ISC
 PKG_LICENSE_FILES:=COPYING Copyright
@@ -39,8 +38,8 @@ EXTRA_CFLAGS:=-DNEED_YYWRAP -I$(PKG_BUILD_DIR) \
 	$(TARGET_LDFLAGS)
 
 CONFIGURE_ARGS+=--prefix=/usr \
-		--with-daemon_username=nobody \
-		--with-daemon_groupname=nogroup \
+		--with-daemon_username=root \
+		--with-daemon_groupname=root \
 		--with-jobdir=/var/spool/cron/atjobs \
 		--with-atspool=/var/spool/cron/atspool
 
