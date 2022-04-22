@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=popt
-PKG_VERSION:=1.16
+PKG_VERSION:=1.18
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://rpm5.org/files/popt/
-PKG_MD5SUM:=3743beefa3dd6247a73f8f7a32c14c33
+PKG_SOURCE_URL:=http://ftp.rpm.org/popt/releases/popt-1.x/
+PKG_MD5SUM:=450f2f636e6a3aa527de803d0ae76c5a
 PKG_LICENSE:=MIT
 
 PKG_FIXUP:=autoreconf
@@ -30,7 +30,7 @@ define Package/libpopt
   SECTION:=libs
   CATEGORY:=Libraries
   TITLE:=A command line option parsing library
-  URL:=http://rpm5.org/files/popt/
+  URL:=https://github.com/rpm-software-management/popt
 endef
 
 define Build/Configure
