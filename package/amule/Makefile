@@ -16,6 +16,8 @@ PKG_SOURCE_URL:=@SF/amule
 PKG_MD5SUM:=31724290a440943f5b05d4dca413fe02
 PKG_BUILD_DEPENDS:=libgd libwxwidgets
 
+INSTALL_UPX:=upx --ultra-brute -o
+
 include $(INCLUDE_DIR)/package.mk
 
 TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
@@ -86,7 +88,8 @@ define Package/amule/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_DIR) $(1)/etc/aMule
 	$(INSTALL_DIR) $(1)/etc/aMule/config
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/amule{cmd,d} $(1)/usr/bin/
+	$(INSTALL_UPX) $(1)/usr/bin/amulecmd $(PKG_BUILD_DIR)/src/amulecmd
+	$(INSTALL_UPX) $(1)/usr/bin/amuled $(PKG_BUILD_DIR)/src/amuled
 	$(INSTALL_BIN) ./file/amule.sh $(1)/etc/aMule/
 	$(INSTALL_BIN) ./file/remote.conf $(1)/etc/aMule/
 	$(INSTALL_BIN) ./file/amule.conf $(1)/etc/aMule/
