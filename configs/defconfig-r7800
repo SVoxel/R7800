@@ -353,7 +353,7 @@ CONFIG_TARGET_ipq806x_QSDK_Retail=y
 # CONFIG_TARGET_octeon_mototech is not set
 CONFIG_TARGET_BOARD="ipq806x"
 CONFIG_TARGET_ARCH_PACKAGES="ipq806x"
-CONFIG_DEFAULT_TARGET_OPTIMIZATION="-O2 -pipe -mcpu=cortex-a15 -mfpu=neon-vfpv4 -funsafe-math-optimizations -mtune=cortex-a15 -mfloat-abi=softfp -fcommon"
+CONFIG_DEFAULT_TARGET_OPTIMIZATION="-O2 -pipe -mcpu=cortex-a15 -mfpu=neon-vfpv4 -ftree-vectorize -fvect-cost-model=unlimited -funsafe-math-optimizations -mtune=cortex-a15 -mfloat-abi=softfp -fcommon"
 CONFIG_LINUX_3_4=y
 CONFIG_DEFAULT_alljoyn=y
 CONFIG_DEFAULT_alljoyn-about=y
@@ -593,7 +593,7 @@ CONFIG_KERNEL_GIT_LOCAL_REPOSITORY=""
 # CONFIG_BUILD_LOG is not set
 # CONFIG_SRC_TREE_OVERRIDE is not set
 # CONFIG_TARGET_OPTIONS is not set
-CONFIG_TARGET_OPTIMIZATION="-O2 -pipe -mcpu=cortex-a15 -mfpu=neon-vfpv4 -funsafe-math-optimizations -mtune=cortex-a15 -mfloat-abi=softfp -fcommon"
+CONFIG_TARGET_OPTIMIZATION="-O2 -pipe -mcpu=cortex-a15 -mfpu=neon-vfpv4 -ftree-vectorize -fvect-cost-model=unlimited -funsafe-math-optimizations -mtune=cortex-a15 -mfloat-abi=softfp -fcommon"
 CONFIG_SOFT_FLOAT=y
 # CONFIG_EXTERNAL_TOOLCHAIN is not set
 CONFIG_INSTALL_LIBSTDCPP=y
