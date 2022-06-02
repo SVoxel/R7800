@@ -5,9 +5,9 @@
  endif
  
 -ifndef LFLAGS
--LFLAGS = @STRIP@
+-LFLAGS = @STRIP@ @LDFLAGS@
 +ifndef LDFLAGS
-+LDFLAGS += @STRIP@
++LDFLAGS = @STRIP@ @LDFLAGS@
  endif
  
  # Commands
