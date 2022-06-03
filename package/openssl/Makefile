@@ -37,14 +37,19 @@ PKG_CONFIG_DEPENDS:= \
 
 include $(INCLUDE_DIR)/package.mk
 
+# GCC 12.x.x issue fixing (use of '-fvect-cost-model=unlimited' flag)
+ifdef CONFIG_GCC_USE_VERSION_12
+  TARGET_CFLAGS := $(subst -fvect-cost-model=unlimited,-fvect-cost-model=dynamic,$(TARGET_CFLAGS))
+endif
+
 TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3
 TARGET_CFLAGS += $(FPIC) -ffunction-sections -fdata-sections
-TARGET_ASFLAGS=$(TARGET_CFLAGS)
+TARGET_ASFLAGS := $(TARGET_CFLAGS)
 TARGET_LDFLAGS += -Wl,--gc-sections
 
 ifneq ($(CONFIG_CCACHE),)
-HOSTCC=$(HOSTCC_NOCACHE)
-HOSTCXX=$(HOSTCXX_NOCACHE)
+  HOSTCC=$(HOSTCC_NOCACHE)
+  HOSTCXX=$(HOSTCXX_NOCACHE)
 endif
 
 define Package/openssl/Default
@@ -53,14 +58,14 @@ define Package/openssl/Default
 endef
 
 define Package/libopenssl/config
-source "$(SOURCE)/Config.in"
+  source "$(SOURCE)/Config.in"
 endef
 
 define Package/openssl/Default/description
-The OpenSSL Project is a collaborative effort to develop a robust,
-commercial-grade, full-featured, and Open Source toolkit implementing the Secure
-Sockets Layer (SSL v2/v3) and Transport Layer Security (TLS v1) protocols as well
-as a full-strength general purpose cryptography library.
+  The OpenSSL Project is a collaborative effort to develop a robust,
+  commercial-grade, full-featured, and Open Source toolkit implementing the Secure
+  Sockets Layer (SSL v2/v3) and Transport Layer Security (TLS v1) protocols as well
+  as a full-strength general purpose cryptography library.
 endef
 
 define Package/libopenssl
@@ -75,8 +80,8 @@ $(call Package/openssl/Default)
 endef
 
 define Package/libopenssl/description
-$(call Package/openssl/Default/description)
-This package contains the OpenSSL shared libraries, needed by other programs.
+  $(call Package/openssl/Default/description)
+  This package contains the OpenSSL shared libraries, needed by other programs.
 endef
 
 define Package/openssl-util
@@ -88,12 +93,12 @@ define Package/openssl-util
 endef
 
 define Package/openssl-util/conffiles
-/etc/ssl/1.0.2/openssl.cnf
+  /etc/ssl/1.0.2/openssl.cnf
 endef
 
 define Package/openssl-util/description
-$(call Package/openssl/Default/description)
-This package contains the OpenSSL command-line utility.
+  $(call Package/openssl/Default/description)
+  This package contains the OpenSSL command-line utility.
 endef
 
 
