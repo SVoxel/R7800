@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=unbound
-PKG_VERSION:=1.16.0
+PKG_VERSION:=1.16.1
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-release-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://nlnetlabs.nl/downloads/unbound
-PKG_MD5SUM:=e5841d3fb355c8d42806f81bc0b6ad36
+PKG_MD5SUM:=dd310a856893b4d77597c8bc509d666a
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-release-$(PKG_VERSION)
 
 PKG_MAINTAINER:=Eric Luehrsen <ericluehrsen@gmail.com>
