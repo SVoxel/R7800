@@ -8,13 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=tcpdump
-PKG_VERSION:=4.9.3
+PKG_VERSION:=4.99.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://www.us.tcpdump.org/release/ \
-	http://www.tcpdump.org/release/
-PKG_MD5SUM:=a4ead41d371f91aa0a2287f589958bae
+PKG_SOURCE_URL:=http://www.tcpdump.org/release/
+PKG_MD5SUM:=929a255c71a9933608bd7c31927760f7
 
 PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 PKG_LICENSE:=BSD-3-Clause
@@ -61,7 +60,7 @@ endif
 
 define Package/tcpdump/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/sbin/tcpdump $(1)/usr/sbin/
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/tcpdump $(1)/usr/sbin/
 endef
 
 Package/tcpdump-mini/install = $(Package/tcpdump/install)
