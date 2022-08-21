@@ -5,7 +5,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=getdns
-PKG_VERSION:=1.7.0
+PKG_VERSION:=1.7.2
 PKG_RELEASE:=1
 
 PKG_LICENSE:=BSD-3-Clause
@@ -14,7 +14,7 @@ PKG_MAINTAINER:=
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://getdnsapi.net/dist/
-PKG_MD5SUM:=91876dd5883f5fed8ed5ae27226e6bb7
+PKG_MD5SUM:=f63850e44ec9188eb4be2d5b2efe3e7c
 
 CMAKE_INSTALL:=1
 
