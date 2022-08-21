@@ -1,6 +1,6 @@
 --- a/configure.ac
 +++ b/configure.ac
-@@ -2707,18 +2707,23 @@
+@@ -2713,18 +2713,23 @@
  #
  AC_CONFIG_FILES([
  Makefile
