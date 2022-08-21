@@ -22,6 +22,8 @@ PKG_CPE_ID:=cpe:/a:tcpdump:tcpdump
 PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
 
+INSTALL_UPX:=upx --ultra-brute -o
+
 include $(INCLUDE_DIR)/package.mk
 
 define Package/tcpdump/default
@@ -60,7 +62,7 @@ endif
 
 define Package/tcpdump/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/tcpdump $(1)/usr/sbin/
+	$(INSTALL_UPX) $(1)/usr/sbin/tcpdump $(PKG_INSTALL_DIR)/usr/bin/tcpdump
 endef
 
 Package/tcpdump-mini/install = $(Package/tcpdump/install)
