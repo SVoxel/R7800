@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libgpg-error
-PKG_VERSION:=1.45
+PKG_VERSION:=1.46
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=ftp://ftp.gnupg.org/gcrypt/libgpg-error
-PKG_MD5SUM:=3bb15e0c29d3a680db7cef15143615e1
+PKG_MD5SUM:=db41efe5aba3baad6cf266fea720095d
 
 PKG_BUILD_PARALLEL:=1
 PKG_FIXUP:=autoreconf
@@ -44,7 +44,8 @@ CONFIGURE_ARGS += \
 	--disable-doc \
 	--disable-languages \
 	--disable-rpath \
-	--disable-tests
+	--disable-tests \
+	--enable-install-gpg-error-config
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(2)/bin $(1)/usr/bin
