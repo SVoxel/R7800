@@ -1,0 +1,20 @@
+--- a/fsck_hfs.tproj/fsck_hfs.h
++++ b/fsck_hfs.tproj/fsck_hfs.h
+@@ -22,6 +22,7 @@
+  */
+ 
+ #include "cache.h"
++#include <stdarg.h>
+ 
+ 
+ const extern char	*cdevname;		/* name of device being checked */
+--- a/fsck_hfs.tproj/fsck_messages.h
++++ b/fsck_hfs.tproj/fsck_messages.h
+@@ -21,6 +21,7 @@
+  * @APPLE_LICENSE_HEADER_END@
+  */
+ #include <stdio.h>
++#include <stdarg.h>
+ 
+ #ifndef _FSCK_MESSAGES_H
+ #define _FSCK_MESSAGES_H

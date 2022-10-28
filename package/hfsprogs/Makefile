@@ -8,25 +8,21 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=hfsprogs
-PKG_VERSION:=332.25
-PKG_RELEASE:=1
+PKG_VERSION:=540.1.linux3
+PKG_RELEASE:=$(AUTORELEASE)
 
-PKG_LICENSE:=GPL-3.0+
+PKG_SOURCE:=diskdev_cmds-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://src.fedoraproject.org/repo/pkgs/hfsplus-tools/$(PKG_SOURCE)/0435afc389b919027b69616ad1b05709
+PKG_MD5SUM:=0435afc389b919027b69616ad1b05709
+PKG_BUILD_DIR:=$(BUILD_DIR)/diskdev_cmds-$(PKG_VERSION)
+
+PKG_MAINTAINER:=
+PKG_LICENSE:=APSL-2.0
 PKG_LICENSE_FILES:=COPYING
 
-PKG_MAINTAINER:=Florian Fainelli <florian@openwrt.org>
-
-PKG_SOURCE:=$(PKG_NAME)_$(PKG_VERSION).orig.tar.gz
-PKG_SOURCE_URL:=http://archive.ubuntu.com/ubuntu/pool/universe/h/$(PKG_NAME)
-PKG_BUILD_DIR:=$(BUILD_DIR)/diskdev_cmds-$(PKG_VERSION)
-PKG_MD5SUM:=261c3de5ec0dcf5244e3f60d79c1d6f1
-PKG_LICENSE:=APSL 2.0
+PKG_BUILD_DEPENDS:=util-linux
 
 include $(INCLUDE_DIR)/package.mk
-include $(INCLUDE_DIR)/nls.mk
-
-TARGET_CFLAGS += -ffunction-sections -fdata-sections
-TARGET_LDFLAGS += -Wl,--gc-sections
 
 define Package/hfsprogs/Default
   SECTION:=utils
@@ -58,15 +54,19 @@ endef
 define Build/Configure
 endef
 
+TARGET_CFLAGS+=$(if $(CONFIG_USE_MUSL),-D__P\(x\)=x -D__va_copy=va_copy -DBSD_SOURCE)
+
 define Build/Compile
 	$(MAKE) -C $(PKG_BUILD_DIR) \
-		-f Makefile.lnx \
 		$(TARGET_CONFIGURE_OPTS) \
-		CFLAGS+="$(TARGET_CPPFLAGS) -I$(PKG_BUILD_DIR)/include -DDEBUG_BUILD=0 -D_FILE_OFFSET_BITS=64 -D LINUX=1 -D BSD=1 $(TARGET_LDFLAGS)" \
+		CFLAGS+="$(TARGET_CFLAGS) $(TARGET_CPPFLAGS) -I$(PKG_BUILD_DIR)/include -DDEBUG_BUILD=0 -D_FILE_OFFSET_BITS=64 -D LINUX=1 -D BSD=1 -D VERSION=\\\"$(PKG_VERSION)\\\"" \
+		LDFLAGS+="$(TARGET_LDFLAGS)" \
 		all
 endef
 
 define Package/hfsfsck/install
+	$(INSTALL_DIR) $(1)/lib/functions/fsck
+	$(INSTALL_DATA) ./files/hfsfsck.sh $(1)/lib/functions/fsck/
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/fsck_hfs.tproj/fsck_hfs	$(1)/usr/sbin/fsck.hfsplus
 	(cd $(1)/usr/sbin; ln -sf fsck.hfsplus fsck.hfs;)

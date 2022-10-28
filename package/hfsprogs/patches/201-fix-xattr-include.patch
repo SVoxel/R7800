@@ -1,0 +1,14 @@
+--- a/fsck_hfs.tproj/dfalib/Scavenger.h
++++ b/fsck_hfs.tproj/dfalib/Scavenger.h
+@@ -40,7 +40,11 @@
+ #include "../fsck_hfs.h"
+ 
+ #include <assert.h>
++#if !LINUX
+ #include <sys/xattr.h>
++#else
++#include <linux/xattr.h>
++#endif
+ #if !LINUX
+ #include <sys/acl.h>
+ #include <sys/kauth.h>
