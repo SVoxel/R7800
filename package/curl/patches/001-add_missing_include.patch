@@ -1,8 +1,8 @@
 --- a/lib/easy_lock.h
 +++ b/lib/easy_lock.h
-@@ -40,6 +40,10 @@
- #define curl_simple_lock atomic_bool
- #define CURL_SIMPLE_LOCK_INIT false
+@@ -74,6 +74,10 @@
+ 
+ #endif
  
 +#if defined(HAVE_SCHED_YIELD)
 +#include <sched.h>
