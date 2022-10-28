@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=flac
-PKG_VERSION:=1.3.4
+PKG_VERSION:=1.4.2
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://downloads.xiph.org/releases/flac/
-PKG_MD5SUM:=bfdb2dd854d334b55a3309e3cd659f2c
+PKG_MD5SUM:=ca9140f37b286d2571e37d66aae50f92
 
 PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>
 PKG_LICENSE:=GFDL-1.2 GPL-2 LGPL-2.1 BSD-3-Clause
