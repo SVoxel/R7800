@@ -1,11 +1,11 @@
 --- a/config.c
 +++ b/config.c
-@@ -1557,7 +1557,7 @@
-                             /* replace '~' with content of $HOME cause low-level functions
-                              * like stat() do not support the glob ~
-                              */
--                            const char *env_home = secure_getenv("HOME");
-+                            const char *env_home = getenv("HOME");
-                             char *new_key = NULL;
+@@ -950,7 +950,7 @@
+     if (!*path || (*path)[0] != '~' || (*path)[1] != '/')
+         return 0;
  
-                             if (!env_home) {
+-    env_home = secure_getenv("HOME");
++    env_home = getenv("HOME");
+     if (!env_home) {
+         const struct passwd *pwd;
+ 
