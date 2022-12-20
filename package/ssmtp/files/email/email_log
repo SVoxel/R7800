@@ -205,7 +205,7 @@ print_email_header_for_hdd()
 	fi
 
 	cat <<EOF
-Subject: Warning!R7800 Internal HDD might have some issues
+Subject: Warning! R7800 Internal HDD might have some issues
 From: $from
 To: $addr
 
