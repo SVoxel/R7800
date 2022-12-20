@@ -36,7 +36,7 @@
 -sadc: LFLAGS += $(LFSENSORS)
 +sadc: LDFLAGS += $(LFSENSORS)
  
- sadc: sadc.o act_sadc.o sa_wrap.o sa_common_light.o common_light.o systest.o librdstats.a librdsensors.a
+ sadc: sadc.o act_sadc.o sa_wrap.o sa_common_light.o common_light.o systest.o librdstats.a librdsensors.a libsyscom.a
  
 @@ -346,7 +346,7 @@
  
