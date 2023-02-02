@@ -1,6 +1,6 @@
---- a/pcap-common.c
-+++ b/pcap-common.c
-@@ -1662,14 +1662,23 @@ swap_pseudo_headers(int linktype, struct
+--- a/pcap-util.c
++++ b/pcap-util.c
+@@ -415,14 +415,23 @@
  		break;
  
  	case DLT_USB_LINUX:
