@@ -1,6 +1,21 @@
+https://bugs.gentoo.org/545114
+
+extracted from the upstream change (which had many unrelated commits in one)
+
+From 97bb4678dc03e753290b39bbff30ba2825df9517 Mon Sep 17 00:00:00 2001
+From: "Thomas E. Dickey" <dickey@invisible-island.net>
+Date: Sun, 7 Dec 2014 03:10:09 +0000
+Subject: [PATCH] ncurses 5.9 - patch 20141206
+
++ modify MKlib_gen.sh to work around change in development version of
+  gcc introduced here:
+	  https://gcc.gnu.org/ml/gcc-patches/2014-06/msg02185.html
+	  https://gcc.gnu.org/ml/gcc-patches/2014-07/msg00236.html
+  (reports by Marcus Shawcroft, Maohui Lei).
+
 --- a/ncurses/base/MKlib_gen.sh
 +++ b/ncurses/base/MKlib_gen.sh
-@@ -511,11 +511,22 @@
+@@ -512,11 +512,22 @@ sed -n -f $ED1 \
  	-e 's/gen_$//' \
  	-e 's/  / /g' >>$TMP
  
