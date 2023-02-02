@@ -5,6 +5,8 @@
 # Rewritten to use lists instead of if-statements.
 #
 
+KBUILD_CFLAGS := $(filter-out -O%,$(KBUILD_CFLAGS)) -O3
+
 obj-y	:= nonet.o
 
 obj-$(CONFIG_NET)		:= socket.o core/
