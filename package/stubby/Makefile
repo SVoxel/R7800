@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=stubby
-PKG_VERSION:=0.4.2
+PKG_VERSION:=0.4.3
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://getdnsapi.net/dist/
-PKG_MD5SUM:=f6d68f0c865f7564638290929971c42b
+PKG_MD5SUM:=557697652c997b697de7b272f5cd4062
 
 PKG_MAINTAINER:=Jonathan Underwood <jonathan.underwood@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
