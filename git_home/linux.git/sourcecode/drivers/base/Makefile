@@ -1,5 +1,7 @@
 # Makefile for the Linux device tree
 
+KBUILD_CFLAGS := $(filter-out -O%,$(KBUILD_CFLAGS)) -O3
+
 obj-y			:= core.o bus.o dd.o syscore.o \
 			   driver.o class.o platform.o \
 			   cpu.o firmware.o init.o map.o devres.o \
