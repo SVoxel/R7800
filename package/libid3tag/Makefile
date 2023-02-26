@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2006-2014 OpenWrt.org
+# Copyright (C) 2006-2010 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,21 +8,17 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libid3tag
-PKG_VERSION:=0.15.1b
-PKG_RELEASE:=4
+PKG_VERSION:=0.16.2
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@SF/mad
-PKG_MD5SUM:=e5808ad997ba32c498803822078748c3
-PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>
+PKG_MD5SUM:=196ac45b7066c5714af0e441271ad4e3
 
-PKG_LICENSE:=GPL-2
-PKG_LICENSE_FILES:=COPYING
-
-PKG_FIXUP:=autoreconf
-PKG_INSTALL:=1
+CMAKE_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/cmake.mk
 
 define Package/libid3tag
   SECTION:=libs
@@ -37,18 +33,7 @@ define Package/libid3tag/description
 	ID3v1 and the various versions of ID3v2.
 endef
 
-TARGET_CFLAGS += $(FPIC)
-
-CONFIGURE_VARS += CC="$(TARGET_CC) $(TARGET_CFLAGS)"
-
-define Build/Configure
-	$(call Build/Configure/Default, \
-		--enable-shared \
-		--enable-static \
-		--disable-debugging \
-		--disable-profiling \
-	)
-endef
+TARGET_CFLAGS += $(FPIC) -DNDEBUG
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
