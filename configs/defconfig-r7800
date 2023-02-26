@@ -1425,7 +1425,7 @@ CONFIG_PACKAGE_dnippp-mod-pptp=y
 # CONFIG_PACKAGE_dnipppstats is not set
 CONFIG_PACKAGE_ebtables=y
 # CONFIG_PACKAGE_ebtables-utils is not set
-CONFIG_PACKAGE_ethtool=y
+CONFIG_PACKAGE_ethtool-tiny=y
 # CONFIG_PACKAGE_failover is not set
 # CONFIG_PACKAGE_genl is not set
 CONFIG_PACKAGE_greendownload=y
