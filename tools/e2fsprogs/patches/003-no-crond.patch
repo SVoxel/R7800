@@ -1,11 +1,11 @@
---- a/configure	2021-07-27 20:38:14.000000000 +0300
-+++ b/configure	2021-07-28 10:06:54.647944700 +0300
-@@ -12538,7 +12538,7 @@
+--- a/configure
++++ b/configure
+@@ -15259,7 +15259,7 @@
  
- 		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${crond_dir}" >&5
- $as_echo "${crond_dir}" >&6; }
+ 		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${crond_dir}" >&5
+ printf "%s\n" "${crond_dir}" >&6; }
 -		have_crond="yes"
 +		have_crond="no"; with_crond_dir=""
  
- else
+ else $as_nop
  
