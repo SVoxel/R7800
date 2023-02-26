@@ -1,5 +1,5 @@
---- a/Make.rules.in	2021-06-14 05:48:23.000000000 +0300
-+++ b/Make.rules.in	2021-06-30 10:03:08.375275200 +0300
+--- a/Make.rules.in
++++ b/Make.rules.in
 @@ -18,7 +18,7 @@
  PLATFORM=@OSREL@ @OSTYPE@
  LDFLAGS=@LDFLAGS@ @LIBDIRS@
@@ -9,9 +9,9 @@
  LIBTOOL=@LIBTOOL@
  MAKEDEPEND=makedepend -Y
  RANLIB=@RANLIB@
---- a/configure.in	2021-06-14 05:48:23.000000000 +0300
-+++ b/configure.in	2021-06-30 10:03:08.390929100 +0300
-@@ -734,24 +734,7 @@
+--- a/configure.in
++++ b/configure.in
+@@ -735,24 +735,7 @@
        ac_core_modules="$ac_core_modules mod_dso.o"
        ac_build_core_modules="$ac_build_core_modules modules/mod_dso.o"
  
