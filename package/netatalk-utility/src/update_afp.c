@@ -1,6 +1,6 @@
-/* check share_info in all partitions and update AppleVolumes.default and reload afpd.
+/* check share_info in all partitions and update afp.conf and reload netatalk.
  *
- *  Copyright (C) 2008 - 2009, Delta Networks, Inc.
+ *  Copyright (C) 2008 - 2019, Delta Networks, Inc.
  *
  */
 
@@ -27,11 +27,52 @@
 
 #include "list.h"
 
-#if 0
+#if 1
 #define USB_DEBUGP(format, args...) printf(format, ## args)
 #else
 #define USB_DEBUGP(format, args...)
 #endif
+
+char *config_get(char * name)
+{
+#define MAX_VALUE_LEN 1024
+	char cmd[128] = {0},filename[128] = {0};
+	static char value[MAX_VALUE_LEN] = {0};
+	FILE *fp = NULL;
+	struct timeval tv;
+	int len = 0;
+
+	if (name == NULL)
+		return "";
+	gettimeofday(&tv,NULL);
+	snprintf(filename, sizeof(filename), "/tmp/%s-%ld",  name, tv.tv_usec);
+	snprintf(cmd, sizeof(cmd), "/bin/config get %s > %s", name, filename);
+	system(cmd);
+	fp = fopen(filename,"r");
+	if(fp != NULL )
+	{
+		fgets(value, sizeof(value), fp);
+		len = strlen(value);
+		fclose(fp);
+	}
+	/*Remove '\n' in the end */
+	if (len > 0 && value[len-1] == '\n')
+		value[len-1] = '\0';
+			
+	snprintf(cmd, sizeof(cmd), "rm -fr %s",  filename);
+	system(cmd);
+	
+	return value;
+}
+
+int config_match(char *name, char *match)
+{
+	char *value;
+
+	value = config_get(name);
+
+	return strcmp(value, match) == 0;
+}
 
 #define ITUNES_SHARE_FOLDER_SIZE 4096
 char itunes_share_floders[ITUNES_SHARE_FOLDER_SIZE] = {0};
@@ -65,6 +106,7 @@ struct disk_partition_info
 	int ishfsplus;
 	char label;	/* `U` ~ ... */
 	char name[15]; /* `sda1` `sda2` */
+	char mount_name[15]; /* `sda1` `sda2` */
 	char vendor[128];  /*device name :SigmaTel MSCN*/
 	char vol_name[31]; /* Volume Name */
 	char device_id[128]; /* serialNum_partitionNum */
@@ -77,7 +119,7 @@ struct share_info
 	char name[];
 };
 
-#define USB_APPLE_VOLUMES_DEFAULT_CONF	"/etc/netatalk/AppleVolumes.default"
+#define USB_NETATALK_DEFAULT_CONF  "/etc/netatalk/afp.conf"
 #define AVAHI_SERVICE_ADISK	"/etc/avahi/services/adisk.service"
 #define TMP_AFP_LOCK  "/tmp/tmp_afp_lock"
 #define SHARE_FILE_INFO "shared_usb_folder"
@@ -105,14 +147,14 @@ static void reload_services(void)
 	/* Sync with locking file, and wait 1s to not miss SIGUP for `afpd` */
 	sleep(1);
 	ret = system("/bin/pidof afpd > /dev/zero 2>&1");
-	if (ret != -1 && WIFEXITED(ret) && WEXITSTATUS(ret) == 0) {
-		system("/bin/kill -HUP `cat /var/run/afpd.pid` > /dev/null 2>&1");
-	} else {
-		system("/bin/nice -n 19 /usr/sbin/afpd -F /etc/netatalk/afpd.conf -P /var/run/afpd.pid -c 7 > /dev/null 2>&1");
+	if (ret == 0 && WIFEXITED(ret) && WEXITSTATUS(ret) == 0) {
+		system("/usr/bin/killall afpd");
+		sleep(1);
+		system("/usr/sbin/afpd -F /etc/netatalk/afp.conf");
+	} 
+	else {
+		system("/usr/sbin/afpd -F /etc/netatalk/afp.conf");
 	}
-
-	system("/usr/bin/killall afpd");
-	system("/usr/sbin/afpd -F /etc/netatalk/afpd.conf -P /var/run/afpd.pid -c 7");
 
 #if 0 /* Not required */
 	/* cnid_metad */
@@ -124,6 +166,39 @@ static void reload_services(void)
 	/* avahi-daemon: not required */
 }
 
+static void add_netatalk_global(FILE *fp)
+{
+	fprintf(fp, "[Global]\n");
+	fprintf(fp, " admin auth user = admin\n");
+	fprintf(fp, " uam path = /usr/lib/netatalk/\n");
+	fprintf(fp, " uam list = uams_guest.so,uams_passwd.so,uame_dhx_passwd.so,uams_randnum.so,uams_dhx.so,uams_dhx2.so\n");
+	fprintf(fp, " passwd file = /etc/netatalk/afppasswd\n");
+	fprintf(fp, " save password = yes\n");
+	fprintf(fp, " passwd minlen = 0\n");
+	fprintf(fp, " set password = no\n");
+	fprintf(fp, " guest account = guest\n");
+	fprintf(fp, " sleep time = 1\n");
+	fprintf(fp, " advertise ssh = no\n");
+	fprintf(fp, " admin group = admin\n");
+	fprintf(fp, " map acls = rights\n");
+	fprintf(fp, " log level = default:warn\n");
+	//fprintf(fp, " log file = /var/log/afp.log\n");
+	fprintf(fp, " extmap file = /etc/netatalk/extmap.conf\n");
+	fprintf(fp, " force user = root\n");
+	fprintf(fp, " force group = root\n");
+	//fprintf(fp, " ea = ad\n");
+	//fprintf(fp, " appledouble = v2\n");
+	//fprintf(fp, " convert appledouble = no\n");
+	fprintf(fp, " use sendfile = no\n");
+	fprintf(fp, " zeroconf = no\n");
+	fprintf(fp, " tcprevbuf = 65536\n"); // DSI Rev Buff: 64k bytes
+	fprintf(fp, " tcpsndbuf = 65536\n"); // DSI Snd Buff: 64k bytes
+	//fprintf(fp, "[Homes]\n");
+	//fprintf(fp, " basedir regex = /home\n");
+	fprintf(fp, "\n");
+}
+
+
 static inline char *user_name(char *code)
 {
 	if (*code == '1')
@@ -132,19 +207,93 @@ static inline char *user_name(char *code)
 		return USER_GUEST;
 }
 
+/* Count the mask
+ */
+int count_mask(char *str_p)
+{
+        char tmp[100] = {0};
+        int addr[4] = {0};
+        int i, j, count = 0;
+
+        snprintf(tmp, sizeof(tmp), "%s", str_p);
+        if (4 == sscanf(tmp, "%d.%d.%d.%d", &addr[0], &addr[1], &addr[2], &addr[3]))
+        {
+                for (i = 0; i < 4; i++)
+                {
+                        j = addr[i];
+                        while (j != 0)
+                        {
+			 	j = j & (j - 1);
+                                count++;
+                        }
+                }
+        }
+
+        return count;
+}
+
+
 static void add_afpd_share_info(FILE *fp, char *displayname, char *reader, char *writer, char *path)
 {
-	fprintf(fp, "%s \"%s\"", path, displayname);
+        int count = 0;
+        int addr[4] = {0};
+        int mask[4] = {0};
+        char *lan_ipaddr_p = NULL;
+        char *lan_netmask_p = NULL;
+        //char subnet[100] = {0};
 
-	/* FIXME: set proper permission and/or allow proper user */
+/************
+	lan_ipaddr_p = config_get("lan_ipaddr");
+        sscanf(lan_ipaddr_p, "%d.%d.%d.%d", &addr[0], &addr[1], &addr[2], &addr[3]);
+
+        lan_netmask_p = config_get("lan_netmask");
+        sscanf(lan_netmask_p, "%d.%d.%d.%d", &mask[0], &mask[1], &mask[2], &mask[3]);
+
+        count = count_mask(lan_netmask_p);
+
+        snprintf(subnet, sizeof(subnet), "%d.%d.%d.%d/%d", addr[0]&mask[0], addr[1]&mask[1], addr[2]&mask[2], addr[3]&mask[3], count);
+***************/
+
+	fprintf(fp, "# Start of %s\n", path);
+	fprintf(fp, "[%s]\n", displayname);
+	fprintf(fp, " path = %s\n", path);
 	if (strncmp(reader, USER_GUEST, strlen(USER_GUEST)))
-		fprintf(fp, " allow:@admin deny:@guest");
+	{
+		fprintf(fp, " valid users = @admin @root\n");
+		fprintf(fp, " invalid users = @guest\n");
+		fprintf(fp, " rwlist = @admin @root\n");
+	}
 	else if (strncmp(writer, USER_GUEST, strlen(USER_GUEST)))
-		fprintf(fp, " allow:@admin,@guest rolist:@guest");
+	{
+		fprintf(fp, " valid users = @admin @root @guest\n");
+		fprintf(fp, " rwlist = @admin @root\n");
+		fprintf(fp, " rolist = @guest\n");
+	}
 	else
-		fprintf(fp, " allow:@admin,@guest");
+	{
+		fprintf(fp, " valid users = @admin @guest @root\n");
+		fprintf(fp, " rwlist = @admin @guest @root\n");
+	}
+	fprintf(fp, " read only = no\n");
+	//fprintf(fp, " hosts allow = %s\n", subnet);
+	fprintf(fp, " cnid scheme = cdb\n");
+	fprintf(fp, " file perm = 0777\n");
+	fprintf(fp, " directory perm = 0777\n");
+	fprintf(fp, " time machine = yes\n");
+	fprintf(fp, " spotlight = no\n");
+	//fprintf(fp, "\n");
+	fprintf(fp, "# End of %s\n", path);
 
-	fprintf(fp, " cnidscheme:cdb options:usedots,tm\n");
+	/***
+	fprintf(fp, "[TimeMachine]\n");
+	fprintf(fp, " path = %s\n", path);
+	fprintf(fp, " rwlist = admin\n");
+	fprintf(fp, " force user = admin\n");
+	fprintf(fp, " time machine = yes\n");
+	fprintf(fp, " vol size limit = 100000\n");	
+	fprintf(fp, " spotlight = no\n");
+	fprintf(fp, "\n");
+	****/
 }
 
 int is_sda(char * dev)
@@ -237,7 +386,7 @@ static void format_capacity(char *buf, int buflen, unsigned long long megabytes)
 		snprintf(buf, buflen, "%llu MB", megabytes);
 	}
 }
-
+		
 static int is_special_backup_format(char *dev)
 {
 #define DISK_FORMAT_FILE "/tmp/disk_special_format"
@@ -261,10 +410,11 @@ static int is_special_backup_format(char *dev)
 	while (buf[i] != '\0' && buf[i] != '\r' && buf[i] != '\n')
 		i++;
 	buf[i] = '\0';
-	if ( !strcmp(buf,"hfsplus") || !strcmp(buf, "xfs") || !strcmp(buf, "ntfs") 
-			|| !strcmp(buf, "ext2") || !strcmp(buf, "ext3") || !strcmp(buf, "ext4") )
+	if (!strcmp(buf, "hfsplus") || !strcmp(buf, "xfs") || !strcmp(buf, "mac") || !strcmp(buf, "vfat")  
+	    || !strcmp(buf, "ext2") || !strcmp(buf, "ext3") || !strcmp(buf, "ext4") || !strcmp(buf, "exfat"))
 		ret = 1;
-	//printf("dev = %s, buf = %s", dev, buf);
+
+	printf("dev = %s, buf = %s", dev, buf);
 	return ret;
 }
 
@@ -279,7 +429,7 @@ static int is_hfsplus_formated(char *dev)
 	memset(cmd,0,128);
 	memset(buf,0,256);
 
-	snprintf(cmd, sizeof(cmd), "/usr/sbin/vol_id -t /dev/%s > " VOLUME_FORMAT_FILE, dev);
+	snprintf(cmd, sizeof(cmd), "/usr/sbin/blkid '/dev/%s' | grep -o 'TYPE=.*' | awk -F\\\" '{print $2}' > " VOLUME_FORMAT_FILE, dev);
 	system(cmd);
 
 	if (!(fp = fopen(VOLUME_FORMAT_FILE, "r"))) {
@@ -294,8 +444,8 @@ static int is_hfsplus_formated(char *dev)
 		i++;
 	buf[i] = '\0';
 
-	if ( !strcmp(buf,"hfsplus") || !strcmp(buf, "xfs") || !strcmp(buf, "ntfs") 
-			|| !strcmp(buf, "ext2") || !strcmp(buf, "ext3") || !strcmp(buf, "ext4") )
+	if (!strcmp(buf, "hfsplus") || !strcmp(buf, "xfs") || !strcmp(buf, "mac") || !strcmp(buf, "vfat") 
+	    || !strcmp(buf, "ext2") || !strcmp(buf, "ext3") || !strcmp(buf, "ext4") || !strcmp(buf, "exfat"))
 		ret = 1;
 
 	USB_DEBUGP("\nDev: %s vol_type: %s ret: %d\n", dev, buf, ret);	
@@ -330,6 +480,22 @@ static char * get_usb_serial_num(char *part_name)
 	}	
 
 	if(bus_num != NULL){
+		char cmds[128] = {0}, line_num[32] = {0}, last_nu[16] = {0};
+		FILE *last_num_fp = NULL;
+		int len = 0;
+		sprintf(cmds, "/bin/ls /sys/block/%s/device/scsi_device |awk -F: '{print $4}'> /tmp/last_num_afp", disk_name);
+		system(cmds);
+		if((last_num_fp = fopen("/tmp/last_num_afp","r")) != NULL)
+		{
+			if (fgets(line_num,sizeof(line_num), last_num_fp)!= NULL)
+			{
+				strncpy(last_nu, line_num, sizeof(last_nu)-1);
+				len = strlen(last_nu);
+			}
+			system("rm -f /tmp/last_num_afp");
+			fclose(last_num_fp);
+		}
+
 		snprintf(path, 64, "/proc/scsi/usb-storage/%s", bus_num);
 		fp= fopen(path, "r");
 		if (fp == NULL)
@@ -354,6 +520,11 @@ static char * get_usb_serial_num(char *part_name)
 				while (*p == ' ' || *p == '\t')
 					p++;
 				strcpy(serial_num, p);
+				if (atoi(last_nu) != 0)
+				{
+					last_nu[len-1] = '\0';
+					strcat(serial_num, last_nu);
+				}
 			}
 		}
 	}
@@ -379,7 +550,7 @@ static char * get_sd_card_serial_num(char *part_name)
 	FILE *fp;
         buf[0] = '\0';
 	
-     	snprintf(cmd, sizeof(cmd), "/usr/sbin/vol_id -u /dev/%s > "SD_CARD_UUID_FILE, part_name);
+     	snprintf(cmd, sizeof(cmd), "/usr/sbin/blkid /dev/%s | grep -o 'UUID=.*' | awk -F\\\" '{print $2}'> "SD_CARD_UUID_FILE, part_name);
        	system(cmd);
 	if(!(fp = fopen(SD_CARD_UUID_FILE, "r")))
                	return get_usb_serial_num(part_name);
@@ -403,9 +574,9 @@ static void  get_device_id(struct disk_partition_info *disk)
 	if(strncmp(disk->name, SATA_DEV_NAME, 3) == 0)
 		snprintf(id, sizeof(disk->device_id), "%s*%s", get_sata_serial_num(), disk->name + 3);
 	else if(strncmp(disk->name, SD_CARD_DEV_NAME, 3) == 0)
-		snprintf(id, sizeof(disk->device_id), "%s*%s", get_sd_card_serial_num(disk->name), disk->name + 3);
+		snprintf(id, sizeof(disk->device_id), "%s*%s", get_sd_card_serial_num(disk->name), strlen(disk->name + 3) == 0 ? "0" : disk->name + 3);
 	else
-		snprintf(id, sizeof(disk->device_id), "%s*%s", get_usb_serial_num(disk->name), disk->name + 3);
+		snprintf(id, sizeof(disk->device_id), "%s*%s", get_usb_serial_num(disk->name), strlen(disk->name + 3) == 0 ? "0" : disk->name + 3);
 
 }
 
@@ -429,11 +600,11 @@ static void  get_disk_volume(struct disk_partition_info *disk, char *part_name)
 	buf = disk->vol_name;
 	buf[0] = '\0';
 
-	snprintf(cmd, sizeof(cmd), "/usr/sbin/vol_id -L /dev/%s > " VOLUME_ID_FILE, part_name);
+	snprintf(cmd, sizeof(cmd), "/usr/sbin/blkid '/dev/%s' | grep -o 'LABEL=.*' | awk -F\\\" '{print $2}' >  " VOLUME_ID_FILE, part_name);
 	system(cmd);
 
 	if(!(fp = fopen(VOLUME_ID_FILE, "r"))){
-		printf("[get_disk_volume vol_id] open file vol_id_2 error!!\n");
+		printf("[get_disk_volume blkid] open file vol_id_2 error!!\n");
 		fclose(fp);
 		goto ret;
 	}
@@ -447,7 +618,7 @@ static void  get_disk_volume(struct disk_partition_info *disk, char *part_name)
 	buf[i] = '\0';
 
 	if (buf[0] == '\0'){
-		//printf("[afp: get_disk_volume vol_id] Get info by vol_id failed!!\n");
+		printf("[afp: get_disk_volume vol_id] Get info by vol_id failed!!\n");
 		memset(cmd,0,sizeof(cmd));
 		strncpy(diskname, part_name, 3);
 		diskname[3] = '\0';
@@ -551,13 +722,13 @@ static int is_noshare_partition(char *dev)
 
 static void scan_disk_entries(struct list_head *head)
 {
-	FILE *fp;
+	FILE *fp, *fpu;
 	struct statfs statbuf;
 	int i = 0, j=0, k = 0, major,minors;
 	int have_disk_mouted = 0, have_hfsplus_disk_mounted = 0;
 	unsigned long long capacity;
 	char mnt_path[32],*vendor = NULL;
-	char *s, part_name[128], line[256];
+	char *s, serial[128], disk_serial[128], mount_point[128], mount_part[16], part_name[16], device_name[16], line[256], mount_num[8];
 	struct disk_partition_info *partinfo;
 
 	fp = fopen("/proc/partitions","r");
@@ -600,13 +771,36 @@ static void scan_disk_entries(struct list_head *head)
 		if (partinfo == NULL)
 			continue;
 
+		partinfo->capacity = capacity;
+		if(strncmp(part_name, SATA_DEV_NAME, 3) == 0){
+			partinfo->label = 's' - j;
+			j++;
+		}else if(strncmp(part_name, SD_CARD_DEV_NAME, 3) == 0){
+			partinfo->label = '0' + k;
+			k++;
+		}else{
+			partinfo->label = 'U' - i;
+			i++;
+		}
+		snprintf(partinfo->name, sizeof(partinfo->name),"%s", part_name);
+		if(vendor)
+			strcpy(partinfo->vendor,vendor);
+
+		get_device_id(partinfo);
+		get_disk_volume(partinfo, part_name);
 		/* SEE: hotplug2.mount ==> mount /dev/$1 /mnt/$1 */
 		snprintf(mnt_path, sizeof(mnt_path), "/mnt/%s", part_name);
+		strcpy(partinfo->mount_name,part_name);
+
+		USB_DEBUGP("[USB-AFP]: the mnt_path: %s.\n", mnt_path);
 		/* NO Disk, the mount point directory is NOT removed, this magic value is `0x858458F6` */
 		if (statfs(mnt_path, &statbuf) == 0 && (unsigned int)statbuf.f_type != 0x858458F6 && (unsigned int)statbuf.f_type != TMPFS_MAGIC)
 			partinfo->mounted = 1, have_disk_mouted = 1;
 		else
 			partinfo->mounted = 0;
+
+		USB_DEBUGP("[USB-AFP]: have_disk_mouted: %d.\n", have_disk_mouted);
+
 		partinfo->afplistupdated = 0;
 		//partinfo->ishfsplus = is_hfsplus_formated(part_name);
 		if ( (is_hfsplus_formated(part_name)) || (is_special_backup_format(part_name)) ){
@@ -616,9 +810,12 @@ static void scan_disk_entries(struct list_head *head)
 			printf("[Waring]: This HDD format failed to support the Time Machine!!!!!!\n");
 			partinfo->ishfsplus = 0;
 		}
+
+		USB_DEBUGP("[USB-AFP]: ishfsplus: %d.\n", partinfo->ishfsplus);
+
 		if (partinfo->ishfsplus == 1)
 			have_hfsplus_disk_mounted = 1;
-		partinfo->capacity = capacity;
+/*		partinfo->capacity = capacity;
 		if(strncmp(part_name, SATA_DEV_NAME, 3) == 0){
 			partinfo->label = 's' - j;
 			j++;
@@ -635,7 +832,7 @@ static void scan_disk_entries(struct list_head *head)
 		
 		get_device_id(partinfo);
 		get_disk_volume(partinfo, part_name);
-		
+*/		
 		list_add_tail(&partinfo->list, head);
 
 		USB_DEBUGP("[USB-AFP]: Found partition %s, mounted %s!!!\n", part_name,
@@ -645,15 +842,21 @@ static void scan_disk_entries(struct list_head *head)
 	fclose(fp);
 	USB_DEBUGP("[USB-AFP]: Total %d partitions are FOUND!\n", i);
 
-	if (have_disk_mouted) {
+	USB_DEBUGP("[USB-AFP]: have_hfsplus_disk_mounted: %d.\n", have_hfsplus_disk_mounted);
+
+	if (have_disk_mouted) 
+	{
 		/* reload avahi with afpd and adisk services */
 		if (have_hfsplus_disk_mounted)
 			system("cp /usr/config/avahi/services/afpd.service /etc/avahi/services/ > /dev/null 2>&1");
 		else
 			system("rm /etc/avahi/services/afpd.service > /dev/null 2>&1");
+
 		system("cp /usr/config/avahi/services/adisk.service /etc/avahi/services/ > /dev/null 2>&1");
 		system("echo \"    <txt-record>sys=waMA=$(/bin/config get wan_factory_mac),adVF=0x1000</txt-record>\" >> /etc/avahi/services/adisk.service");
-	} else {
+	} 
+	else 
+	{
 		/* reload avahi without afpd and adisk services */
 		system("rm /etc/avahi/services/afpd.service > /dev/null 2>&1");
 		system("rm /etc/avahi/services/adisk.service > /dev/null 2>&1");
@@ -854,10 +1057,12 @@ static void load_share_info(FILE *fp, char *diskname)
 			memset(share_name, 0, 128);
 			sprintf(share_name, "%s", t_share_name);
 
-			if (share_name == NULL || folderName == NULL || readAccess == NULL ||writeAccess == NULL ||
-				volumeName == NULL || deviceName == NULL )
+			if (t_share_name == NULL || share_name == NULL || folderName == NULL || readAccess == NULL || writeAccess == NULL ||
+				volumeName == NULL || deviceName == NULL || serial_num == NULL || partition_id == NULL)
 				continue;
 
+			if (!isdigit(*partition_id))
+				*partition_id = '\0';
 			snprintf(device_id, sizeof(device_id), "%s*%s", serial_num, partition_id);
 			if(strcmp(device_id,diskinfo->device_id) || strcmp(volumeName,diskinfo->vol_name) || strcmp(deviceName,diskinfo->vendor))
 				continue;
@@ -871,22 +1076,31 @@ static void load_share_info(FILE *fp, char *diskname)
 
 			add_share_info_list(share_name, &share_lists);
 
-			snprintf(fullpath, sizeof(fullpath), "/mnt/%s%s", diskinfo->name, folderName);
+			snprintf(fullpath, sizeof(fullpath), "/mnt/%s%s", diskinfo->mount_name, folderName);
+
+			USB_DEBUGP("[USB-AFP]: the fullpath is: %s.\n", fullpath);
 
 			readAccess = user_name(readAccess);
 			writeAccess = user_name(writeAccess);
 
 			USB_DEBUGP("[USB-AFP]: AFPInfo %s Folder:%s Reader:%s Writer: %s\n", share_name, folderName, readAccess, writeAccess);
 
-			if (diskinfo->ishfsplus) {
+			//snprintf(share_name, sizeof(share_name), "%s", "Volume");
+
+			USB_DEBUGP("[USB-AFP]: the ishfsplus of diskinfo is: %d.\n", diskinfo->ishfsplus);
+
+			if (diskinfo->ishfsplus) 
+			{
 				add_afpd_share_info(fp, share_name, readAccess, writeAccess, fullpath);
 				update_adisk(1,share_name);
-			} else {
+			} 
+			else 
+			{
 				update_adisk(0,share_name);
 			}
 
 			if (itunes_db_folder[0] == 0)
-				sprintf(itunes_db_folder, "/tmp/mnt/%s/.itunes", diskinfo->name);
+				sprintf(itunes_db_folder, "/tmp/mnt/%s/.itunes", diskinfo->mount_name);
 			if (strcmp(readAccess, USER_GUEST) == 0) {
 				int len = strlen(itunes_share_floders);
 				if (len == 0)
@@ -899,7 +1113,7 @@ static void load_share_info(FILE *fp, char *diskname)
 
 			diskinfo->afplistupdated = 1;
 			num_mounted_disk++;
-			USB_DEBUGP("\nIn First Step: valume: %s afplist: %d", diskinfo->vol_name, diskinfo->afplistupdated);
+			USB_DEBUGP("\nIn First Step: volume: %s afplist: %d", diskinfo->vol_name, diskinfo->afplistupdated);
 
 			if (diskname != NULL && strncmp(diskinfo->name, diskname, 3) == 0)
 				no_shareinfo = 0;
@@ -980,20 +1194,20 @@ int main(int argc, char**argv)
 	check_sata_dev();
 	check_sd_card_dev();
 
-	fp = fopen(USB_APPLE_VOLUMES_DEFAULT_CONF, "w");
+	fp = fopen(USB_NETATALK_DEFAULT_CONF, "w");
 	if (fp == NULL)
 		goto unlock;
 
 	if (argc == 2 && strlen(argv[1]) == 3 && strncmp(argv[1], "sd", 2) == 0)
 		diskname = argv[1];	/* sd[a-z] */
 
+	add_netatalk_global(fp);
 	load_share_info(fp, diskname);
 
 	fclose(fp);
 
 	reload_services();
 
-	system("/etc/init.d/forked-daapd stop > /dev/null 2>&1");
 	if (config_match("endis_itunes", "1") && itunes_share_floders[0] != 0 && (fp = fopen("/etc/forked-daapd.conf", "w")) != NULL) {
 		device_name  = config_get("upnp_serverName");
 		if (*device_name != '\0')
@@ -1011,7 +1225,6 @@ int main(int argc, char**argv)
 			sprintf(filename, "%s/forked-daapd.db", itunes_db_folder);
 			unlink(filename);
 		}
-		system("/etc/init.d/forked-daapd start > /dev/null 2>&1");
 	}
 unlock:	
 	unlink(TMP_AFP_LOCK);

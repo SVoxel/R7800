@@ -5,7 +5,7 @@ GCC=$(CROSS_COMPILE)gcc
 all:	$(OBJS)
 
 update_afp: update_afp.c
-	$(GCC) $(CFLAGS) -o $@ $< $(EXTRA_LDFLAGS) $(LDFLAGS) -lconfig
+	$(GCC) $(CFLAGS) -o $@ $< $(EXTRA_LDFLAGS) $(LDFLAGS)
 
 wol: wol.c
 	$(GCC) $(CFLAGS) -o $@ $< $(EXTRA_LDFLAGS) $(LDFLAGS)
