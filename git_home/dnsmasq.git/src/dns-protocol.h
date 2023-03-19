@@ -89,13 +89,6 @@ struct dns_header {
   u16 qdcount,ancount,nscount,arcount;
 };
 
-struct mac_data {
-  u8 option1;
-  u8 option2;
-  u16 flag;
-  u8 mac[6];
-};
-
 #define HB3_QR       0x80 /* Query */
 #define HB3_OPCODE   0x78
 #define HB3_AA       0x04 /* Authoritative Answer */

@@ -3108,17 +3108,12 @@ static void parse_parentalcontrol(struct dns_header *header, int *n, union mysoc
         unsigned char *p_header=(unsigned char *)header;
         unsigned char *pheader=(unsigned char *)header+*n, *p;
         int len_header=*n;
-	int flen_header=len_header;
         short int rdlen=0;
         FILE *fp;
         unsigned char parentalcontrol='0';
         char deviceid[33]={0};
         char macaddr[20]={0}, macaddr_p[20]={0} ;
 	char ip_addr[20]={0};
-	struct mac_data *mac_data=( struct mac_data *)header;
-	unsigned char *f_header=(unsigned char *)header;
-	int i,j;
-	char *lan_ip_addr;
         const unsigned char clientid[11] = { PC_HTONS_CHARS(4), PC_HTONS_CHARS(15),
                                                'O', 'p', 'e', 'n', 'D', 'N', 'S' };
         const unsigned char fixed[11] = { 0, PC_HTONS_CHARS(41),
@@ -3128,48 +3123,14 @@ static void parse_parentalcontrol(struct dns_header *header, int *n, union mysoc
                                                 0x11, 0x11, 0x11, 0x11};
 	strcpy(ip_addr, inet_ntoa(ipaddr.in.sin_addr));
 
-	lan_ip_addr=config_get("lan_ipaddr");
-	strcpy(ip_addr, inet_ntoa(ipaddr.in.sin_addr));
-	if(strcmp(ip_addr,lan_ip_addr) == 0)
-	{
-		for(i=0;i<len_header;i++)
+	if(!get_macaddr_by_ip(macaddr_p, ip_addr))
+		if(!trans_macaddr(macaddr, macaddr_p))
 		{
-			if (mac_data->option1 == 0xfd && mac_data->option2 == 0xe9)
-			{
-				for(j=0;j<6;j++)
-				{
-					sprintf(macaddr+j*2,"%X",mac_data->mac[j]);
-				}
-				flen_header-=21;
-				pheader-=21;
-				break;
-			}
-			else
-			{
-				f_header+=1;
-				mac_data=( struct mac_data *)f_header;
-			}
+			get_deviceid_by_macaddr(macaddr, deviceid);
+			trans_deviceid(deviceid, deviceid_b);
 		}
-		for(j=0;j<12;j++)
-		{
-			if(macaddr[j]>='A' && macaddr[j]<='Z')
-			macaddr[j] |= 0x20;
-		}
-		get_deviceid_by_macaddr(macaddr, deviceid);
-		trans_deviceid(deviceid, deviceid_b);
-	}
-	else
-	{
-		if(!get_macaddr_by_ip(macaddr_p, ip_addr))
-			if(!trans_macaddr(macaddr, macaddr_p))
-			{
-				get_deviceid_by_macaddr(macaddr, deviceid);
-				trans_deviceid(deviceid, deviceid_b);
-			}
-	}
 
 	header->arcount = htons(1);
-	len_header=flen_header;
         memcpy(p_header+len_header, fixed, sizeof(fixed));
         len_header+=sizeof(fixed);
         memcpy(p_header+len_header, clientid, sizeof(clientid));
