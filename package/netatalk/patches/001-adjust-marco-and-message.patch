@@ -1,0 +1,26 @@
+--- a/etc/afpd/volume.c
++++ b/etc/afpd/volume.c
+@@ -668,8 +668,10 @@
+ #ifdef SERVERTEXT
+         /* kill ourself with SIGUSR2 aka msg pending */
+         if (volume->v_cdb) {
++#if 0
+             setmessage("Something wrong with the volume's CNID DB, using temporary CNID DB instead."
+                        "Check server messages for details!");
++#endif
+             kill(getpid(), SIGUSR2);
+             /* deactivate cnid caching/storing in AppleDouble files */
+         }
+--- a/libatalk/cnid/dbd/cnid_dbd.c
++++ b/libatalk/cnid/dbd/cnid_dbd.c
+@@ -59,6 +59,10 @@
+     select(0, NULL, NULL, NULL, &tv);
+ }
+ 
++#ifndef AI_NUMERICSERV
++#define AI_NUMERICSERV 0
++#endif
++
+ static int tsock_getfd(const char *host, const char *port)
+ {
+     int sock = -1;

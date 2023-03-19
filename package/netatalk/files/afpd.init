@@ -1,40 +1,50 @@
 #!/bin/sh /etc/rc.common
 
-#START=71
-
-MAXCONS="7"
-CONFIGFILE="/etc/netatalk/afpd.conf"
-PIDFILE="/var/run/afpd.pid"
+CONFIG=/bin/config
+AFP_DISABLED=$($CONFIG get noafp)
+AFP_CONF_DIR=/tmp/netatalk
+CONFIG_FILE="/usr/config/netatalk/afp.conf"
 
 start()
 {
-	AFP_CONF_DIR=/tmp/netatalk
+	# Check if AFP is disabled
+	if [ "$AFP_DISABLED" = "1" ]; then
+		exit 0
+	fi
+
 	mkdir -p $AFP_CONF_DIR
-	cp -f /usr/config/netatalk/AppleVolumes.default $AFP_CONF_DIR
+	cp -f $CONFIG_FILE $AFP_CONF_DIR
+	touch $AFP_CONF_DIR/afppasswd
 
-	#/usr/sbin/cnid_metad
-	#/usr/sbin/afpd -F ${CONFIGFILE} -P ${PIDFILE} -c ${MAXCONS}
-
-# create users, groups
+	# Create users, groups
 	update_user
 
-# update AppleVolumes.default and start afpd if needed
+	# Update AppleVolumes.default and start afpd if needed
 	update_afp 
 
-# FIXME: start sending WOL packet periodically
-   /usr/sbin/check_time_machine &
+	# Start sending WOL packet periodically
+	cnt=`ps | grep check_time_machine | grep -v grep | wc -l`
+	if [ $cnt -ne 0 ]; then
+		echo "check_time_machine process is already running.... " > /dev/console
+	else
+		/usr/sbin/check_time_machine &
+	fi
 }
 
 stop()
 {
-	killall afpd
-	killall cnid_metad
-	killall send_wol
+	killall netatalk   2> /dev/null
+	killall afpd       2> /dev/null
+	killall cnid_metad 2> /dev/null
+	killall send_wol   2> /dev/null
 }
 
 reload()
 {
-	#kill -s HUP `cat ${PIDFILE}`
-	#start
+	# Check if AFP is disabled
+	if [ "$AFP_DISABLED" = "1" ]; then
+		exit 0
+	fi
+
 	update_afp
 }

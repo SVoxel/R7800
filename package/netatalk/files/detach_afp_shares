@@ -20,6 +20,7 @@ elif [ $# -eq 2 ]; then
 fi
 
 TMP_AFP_SHARE_LOCK="/tmp/tmp_afp_share_lock"
+RETRY_COUNT=5
 
 # Functions
 check_afp_share_locked()
@@ -62,10 +63,12 @@ if [ $# -eq 0 ] || [ $# -eq 1 -a "$1" = "hotplug2" ]; then
 	# Reload master afpd and all smbd processes, as volumes are changed
 	hold_lock
 	# Clear all mount entry from AppleVolumes.default
-	echo > /etc/netatalk/AppleVolumes.default
+	#echo > /etc/netatalk/AppleVolumes.default
+	echo > /etc/netatalk/afp.conf
 
 	# Send HUP signal to master afpd processes, as volumes are changed
-	/bin/kill -HUP `cat /var/run/afpd.pid`
+	#/bin/kill -HUP `cat /var/run/afpd.pid`
+	killall -HUP afpd
 	sleep 1
 	release_lock
 
@@ -78,6 +81,7 @@ if [ $# -eq 0 ] || [ $# -eq 1 -a "$1" = "hotplug2" ]; then
 		killall afpd
 
 		# Wait until all afpd processes are died
+		cnt=0
 		while [ 1 ]
 		do
 			status=`ps | grep afpd | grep -v grep`
@@ -87,6 +91,13 @@ if [ $# -eq 0 ] || [ $# -eq 1 -a "$1" = "hotplug2" ]; then
 			else
 				echo "======> afpd running"
 				sleep 1
+			fi
+			let cnt=$cnt+1
+			if [ $cnt -ge $RETRY_COUNT ]; then
+				# Kill all the afpd processes
+				echo "======> force to kill afpd after retry count:$cnt"
+				killall -KILL afpd
+				break
 			fi
 		done
 
@@ -105,6 +116,7 @@ if [ $# -eq 0 ] || [ $# -eq 1 -a "$1" = "hotplug2" ]; then
 		killall cnid_dbd
 
 		# Wait until all cnid_dbd processes are died
+		cnt=0
 		while [ 1 ]
 		do
 			status=`ps | grep cnid_dbd | grep -v grep`
@@ -114,6 +126,13 @@ if [ $# -eq 0 ] || [ $# -eq 1 -a "$1" = "hotplug2" ]; then
 			else
 				echo "======> cnid_dbd running"
 				sleep 1
+			fi
+			let cnt=$cnt+1
+			if [ $cnt -ge $RETRY_COUNT ]; then
+				# Kill all the cnid_dbd processes
+				echo "======> force to kill cnid_dbd after retry count:$cnt"
+				killall -KILL cnid_dbd
+				break
 			fi
 		done
 
@@ -127,16 +146,21 @@ if [ $# -eq 0 ] || [ $# -eq 1 -a "$1" = "hotplug2" ]; then
 elif [ $# -eq 1 -a "$1" != "hotplug2" ] || [ $# -eq 2 -a "$2" = "hotplug2" ]; then
 	echo "===> Removing $1"
 	mount_point=$1
+	mount_point_dev="$(basename $mount_point)"
 
 	# Reload master afpd and all smbd processes, as volumes are changed
 	hold_lock
 	# Clear specific mount entry from AppleVolumes.default
-	sed '/^\/mnt\/'${mount_point}'\/.*$/d' /etc/netatalk/AppleVolumes.default > /tmp/AppleVolumes.default.tmp
-	cat /tmp/AppleVolumes.default.tmp > /etc/netatalk/AppleVolumes.default
-	rm -f /tmp/AppleVolumes.default.tmp
+	#sed '/^\/mnt\/'${mount_point}'\/.*$/d' /etc/netatalk/AppleVolumes.default > /tmp/AppleVolumes.default.tmp
+	#cat /tmp/AppleVolumes.default.tmp > /etc/netatalk/AppleVolumes.default
+	#rm -f /tmp/AppleVolumes.default.tmp
+	sed '/^#START \/mnt\/'${mount_point_dev}'\>/,/^#END \/mnt\/'${mount_point_dev}'\>/d' /etc/netatalk/afp.conf > /tmp/afp.conf.tmp
+	cat /tmp/afp.conf.tmp > /etc/netatalk/afp.conf
+	rm -f /tmp/afp.conf.tmp
 
 	# Send HUP signal to master afpd, as volumes are changed
-	/bin/kill -HUP `cat /var/run/afpd.pid`
+	#/bin/kill -HUP `cat /var/run/afpd.pid`
+	killall -HUP afpd
 	sleep 1
 	release_lock
 
@@ -154,6 +178,7 @@ elif [ $# -eq 1 -a "$1" != "hotplug2" ] || [ $# -eq 2 -a "$2" = "hotplug2" ]; th
 				/bin/kill -TERM $afppid
 
 				# Wait until the specific afpd process is died
+				cnt=0
 				while [ 1 ]
 				do
 					status=`ls -l /proc/$afppid/cwd | awk '{print $11}' | grep -o "$mount_point[ ]*$\|$mount_point/"`
@@ -163,6 +188,13 @@ elif [ $# -eq 1 -a "$1" != "hotplug2" ] || [ $# -eq 2 -a "$2" = "hotplug2" ]; th
 					else
 						echo "======> afpd running with pid: $afppid"
 						sleep 1
+					fi
+					let cnt=$cnt+1
+					if [ $cnt -ge $RETRY_COUNT ]; then
+						# Send 'KILL' signal, to force kill afpd
+						echo "======> force to kill afpd with pid: $afppid after retry count:$cnt"
+						/bin/kill -KILL $afppid
+						break
 					fi
 				done
 
@@ -186,6 +218,7 @@ elif [ $# -eq 1 -a "$1" != "hotplug2" ] || [ $# -eq 2 -a "$2" = "hotplug2" ]; th
 			/bin/kill -TERM $cnidpid
 
 			# Wait until the specific cnid_dbd process is died
+			cnt=0
 			while [ 1 ]
 			do
 				status=`ps | grep cnid_dbd | grep "$mount_point/" | grep -v grep`
@@ -195,6 +228,13 @@ elif [ $# -eq 1 -a "$1" != "hotplug2" ] || [ $# -eq 2 -a "$2" = "hotplug2" ]; th
 				else
 					echo "======> cnid_dbd running with pid: $cnidpid"
 					sleep 1
+				fi
+				let cnt=$cnt+1
+				if [ $cnt -ge $RETRY_COUNT ]; then
+					# Send 'KILL' signal, as the cnid_dbd is not required
+					echo "======> force to kill cnid_dbd with pid: $cnidpid after retry count:$cnt"
+					/bin/kill -KILL $cnidpid
+					break
 				fi
 			done
 
