@@ -2,8 +2,6 @@
 # Makefile for the IEEE 802.1d ethernet bridging layer.
 #
 
-KBUILD_CFLAGS := $(filter-out -O%,$(KBUILD_CFLAGS)) -O3
-
 obj-$(CONFIG_BRIDGE) += bridge.o
 
 bridge-y	:= br.o br_device.o br_fdb.o br_forward.o br_if.o br_input.o \
