@@ -193,9 +193,6 @@ static void add_netatalk_global(FILE *fp)
 	fprintf(fp, " zeroconf = no\n");
 	fprintf(fp, " tcprevbuf = 65536\n"); // DSI Rev Buff: 64k bytes
 	fprintf(fp, " tcpsndbuf = 65536\n"); // DSI Snd Buff: 64k bytes
-	//fprintf(fp, "[Homes]\n");
-	//fprintf(fp, " basedir regex = /home\n");
-	fprintf(fp, "\n");
 }
 
 
@@ -254,7 +251,7 @@ static void add_afpd_share_info(FILE *fp, char *displayname, char *reader, char 
         snprintf(subnet, sizeof(subnet), "%d.%d.%d.%d/%d", addr[0]&mask[0], addr[1]&mask[1], addr[2]&mask[2], addr[3]&mask[3], count);
 ***************/
 
-	fprintf(fp, "# Start of %s\n", path);
+	fprintf(fp, "\n# Start of %s\n", path);
 	fprintf(fp, "[%s]\n", displayname);
 	fprintf(fp, " path = %s\n", path);
 	if (strncmp(reader, USER_GUEST, strlen(USER_GUEST)))
