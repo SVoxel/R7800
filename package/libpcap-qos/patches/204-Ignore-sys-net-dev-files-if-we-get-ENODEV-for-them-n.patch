@@ -1,0 +1,43 @@
+From 073a8b37f97b684a34d29800400879e4e902ff63 Mon Sep 17 00:00:00 2001
+From: andy-1 <andy-1@sourceforge.net>
+Date: Tue, 27 Apr 2010 23:33:23 -0700
+Subject: [PATCH] Ignore /sys/net/dev files if we get ENODEV for them, not just
+ ENXIO.
+
+Both of them are indications that there's no such interface, so the file
+probably corresponds to something other than a device.
+
+Reviewed-By: Guy Harris <guy@alum.mit.edu>
+---
+ CREDITS      | 1 +
+ pcap-linux.c | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/CREDITS b/CREDITS
+index 0d23783..6efc188 100644
+--- a/CREDITS
++++ b/CREDITS
+@@ -15,6 +15,7 @@ Additional people who have contributed patches:
+ 	Alexey Kuznetsov		<kuznet at ms2 dot inr dot ac dot ru>
+ 	Alon Bar-Lev			<alonbl at sourceforge dot net>
+ 	Andrew Brown			<atatat at atatdot dot net>
++					<andy-1 at sourceforge dot net>
+ 	Antti Kantee			<pooka at netbsd dot org>
+ 	Arien Vijn			<arienvijn at sourceforge dot net>
+ 	Arkadiusz Miskiewicz		<misiek at pld dot org dot pl>
+diff --git a/pcap-linux.c b/pcap-linux.c
+index af12543..de3239a 100644
+--- a/pcap-linux.c
++++ b/pcap-linux.c
+@@ -1883,7 +1883,7 @@ scan_sys_class_net(pcap_if_t **devlistp, char *errbuf)
+ 		 */
+ 		strncpy(ifrflags.ifr_name, name, sizeof(ifrflags.ifr_name));
+ 		if (ioctl(fd, SIOCGIFFLAGS, (char *)&ifrflags) < 0) {
+-			if (errno == ENXIO)
++			if (errno == ENXIO || errno == ENODEV)
+ 				continue;
+ 			(void)snprintf(errbuf, PCAP_ERRBUF_SIZE,
+ 			    "SIOCGIFFLAGS: %.*s: %s",
+-- 
+1.8.2.2
+

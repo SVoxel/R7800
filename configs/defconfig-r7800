@@ -1688,6 +1688,7 @@ CONFIG_PACKAGE_libnfnetlink=y
 # CONFIG_PACKAGE_libnl is not set
 # CONFIG_PACKAGE_libogg is not set
 CONFIG_PACKAGE_libpcap=y
+CONFIG_PACKAGE_libpcap-qos=y
 # CONFIG_PACKAGE_libsodium is not set
 
 #
