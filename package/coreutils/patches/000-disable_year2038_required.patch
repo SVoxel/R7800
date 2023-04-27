@@ -1,0 +1,11 @@
+--- a/configure
++++ b/configure
+@@ -652,7 +652,7 @@
+ gl_getopt_required=POSIX
+ ac_c_werror_flag=
+ gt_needs=
+-ac_year2038_required=yes
++ac_year2038_required=no
+ enable_year2038=no
+ ac_largefile_required=no
+ enable_largefile=yes
