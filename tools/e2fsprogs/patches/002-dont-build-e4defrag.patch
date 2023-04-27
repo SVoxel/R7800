@@ -1,6 +1,6 @@
---- a/misc/Makefile.in	2021-03-01 05:46:44.000000000 +0300
-+++ b/misc/Makefile.in	2021-03-01 12:15:13.868583800 +0300
-@@ -12,7 +12,7 @@
+--- a/misc/Makefile.in
++++ b/misc/Makefile.in
+@@ -12,7 +12,7 @@ MKDIR_P = @MKDIR_P@
  
  @MCONFIG@
  
