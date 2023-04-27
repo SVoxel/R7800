@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libpcap
-PKG_VERSION:=1.10.3
+PKG_VERSION:=1.10.4
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://www.us.tcpdump.org/release/ \
         http://www.tcpdump.org/release/
-PKG_MD5SUM:=c42fde2eb75a5075f19116f8c9768573
+PKG_MD5SUM:=0322e28dd76cda8066bb6d00fee5969b
 
 PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 PKG_LICENSE:=BSD-3-Clause
@@ -80,7 +80,6 @@ endef
 define Package/libpcap/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libpcap.so.* $(1)/usr/lib/
-	$(CP) ./files/libpcap.so.* $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,libpcap))
