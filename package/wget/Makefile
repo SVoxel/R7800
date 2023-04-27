@@ -31,7 +31,7 @@ TARGET_LDFLAGS += -Wl,--gc-sections
 define Package/wget/Default
   SECTION:=net
   CATEGORY:=Network
-  DEPENDS:=+libpcre +zlib
+  DEPENDS:=+zlib
   SUBMENU:=File Transfer
   TITLE:=Non-interactive network downloader
   URL:=http://www.gnu.org/software/wget/index.html
