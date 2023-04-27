@@ -1,6 +1,6 @@
---- a/lib/et/Makefile.in	2021-03-01 05:46:44.000000000 +0300
-+++ b/lib/et/Makefile.in	2021-03-01 11:42:07.059788300 +0300
-@@ -26,8 +26,8 @@
+--- a/lib/et/Makefile.in
++++ b/lib/et/Makefile.in
+@@ -26,8 +26,8 @@ SHARE_FILES= et_c.awk et_h.awk
  LIBRARY= libcom_err
  LIBDIR= et
  
