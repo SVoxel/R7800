@@ -41,6 +41,21 @@ define Package/libreadline/description
 	history expansion on previous commands.
 endef
 
+define Package/libhistory
+  SECTION:=libs
+  CATEGORY:=Libraries
+  DEPENDS:=+libncurses
+  TITLE:=Command lines edition library (history facilities)
+  URL:=http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
+endef
+
+define Package/libhistory/description
+	The Readline history facilities are also placed into a separate library,
+	the History library, as part of the build process.  The History library
+	may be used without Readline in applications which desire its
+	capabilities.
+endef
+
 # prevent "autoreconf" from removing "aclocal.m4"
 PKG_REMOVE_FILES:=
 
@@ -64,7 +79,13 @@ endef
 
 define Package/libreadline/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{history,readline}.so.* $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libreadline.so.* $(1)/usr/lib/
+endef
+
+define Package/libhistory/install
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libhistory.so.* $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,libreadline))
+$(eval $(call BuildPackage,libhistory))

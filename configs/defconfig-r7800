@@ -1695,6 +1695,7 @@ CONFIG_PACKAGE_libpcap-qos=y
 # Configuration
 #
 # CONFIG_PCAP_HAS_USB is not set
+# CONFIG_PACKAGE_libhistory is not set
 CONFIG_PACKAGE_libpcre=y
 # CONFIG_PACKAGE_libplist is not set
 # CONFIG_PACKAGE_libplistcxx is not set
