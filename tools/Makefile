@@ -23,7 +23,7 @@ tools-$(CONFIG_powerpc) += upx
 tools-$(CONFIG_TARGET_x86) += qemu
 tools-$(CONFIG_TARGET_brcm2708) += mtools dosfstools
 ifneq ($(CONFIG_TARGET_ar71xx),)
-tools-y += lzma-old squashfs
+tools-y += lzma-old squashfs3-lzma
 endif
 tools-y += lzma squashfs4
 tools-y += makefun
@@ -44,7 +44,7 @@ endif
 $(curdir)/bison/compile := $(curdir)/flex/install
 $(curdir)/flex/compile := $(curdir)/m4/install
 $(curdir)/pkg-config/compile := $(curdir)/sed/install
-$(curdir)/squashfs/compile := $(curdir)/lzma-old/install
+$(curdir)/squashfs3-lzma/compile := $(curdir)/lzma-old/install
 $(curdir)/squashfs4/compile := $(curdir)/xz/install
 $(curdir)/quilt/compile := $(curdir)/sed/install $(curdir)/autoconf/install
 $(curdir)/dtc/compile := $(curdir)/bison/install
