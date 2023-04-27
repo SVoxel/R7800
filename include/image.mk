@@ -45,7 +45,7 @@ endif
 SQUASHFS_BLOCKSIZE := 256k
 SQUASHFSOPT := -b $(SQUASHFS_BLOCKSIZE)
 SQUASHFSCOMP := gzip
-LZMA_XZ_OPTIONS := -Xpreset 9 -Xe -Xlc 0 -Xlp 2 -Xpb 2
+LZMA_XZ_OPTIONS := -Xpreset 9 -Xlc 0 -Xlp 2 -Xpb 2
 ifeq ($(CONFIG_SQUASHFS_LZMA),y)
   SQUASHFSCOMP := lzma $(LZMA_XZ_OPTIONS)
 endif
