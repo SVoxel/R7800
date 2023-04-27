@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2009-2012 OpenWrt.org
+# Copyright (C) 2006-2012 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -7,26 +7,24 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=squashfs4
-PKG_VERSION:=4.2
+PKG_CPE_ID:=cpe:/a:phillip_lougher:squashfs
+PKG_VERSION:=4.6.1
+PKG_RELEASE=1
 
-PKG_SOURCE:=squashfs$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=@SF/squashfs
-PKG_MD5SUM:=1b7a781fb4cf8938842279bd3e8ee852
-PKG_CAT:=zcat
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
+PKG_SOURCE_URL:=http://sources.openwrt.org/
+PKG_HASH:=fc625af657ca284d69fbc32e3bb572d0afd566cf816b7c1c1b66dda0a0c2760a
 
-HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/squashfs$(PKG_VERSION)
+HOST_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/host-build.mk
 
 define Host/Compile
-	$(MAKE) -C $(HOST_BUILD_DIR)/squashfs-tools \
-		CC="$(HOSTCC)" \
+	+$(HOST_MAKE_VARS) \
+	$(MAKE) $(HOST_JOBS) -C $(HOST_BUILD_DIR)/squashfs-tools \
 		XZ_SUPPORT=1 \
 		LZMA_XZ_SUPPORT=1 \
-		XATTR_SUPPORT= \
-		LZMA_LIB="$(STAGING_DIR_HOST)/lib/liblzma.a" \
 		EXTRA_CFLAGS="-I$(STAGING_DIR_HOST)/include" \
-		EXTRA_LDFLAGS="$(HOST_STATIC_LINKING)" \
 		mksquashfs unsquashfs
 endef
 
