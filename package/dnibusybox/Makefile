@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=dnibusybox
 PKG_VERSION:=1.4.2
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_GIT_TREEISH:=busybox-v1.4.2-dni63
 BUSYBOX_HOME=$(GIT_HOME)/busybox.git
@@ -96,6 +96,8 @@ define Package/dnibusybox/install
 	$(INSTALL_BIN) ./files/cron $(1)/etc/init.d/
 	$(INSTALL_DIR) $(1)/etc/bandcheck
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/dni-examples/band-check $(1)/etc/bandcheck/band-check
+	$(INSTALL_DIR) $(1)/root
+	(cd $(1)/root; $(LN) /tmp/.ash_history ./.ash_history)
 	-rm -rf $(1)/lib64
 endef
 
