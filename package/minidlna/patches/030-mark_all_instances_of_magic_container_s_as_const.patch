@@ -12,7 +12,7 @@ Subject: [PATCH] Mark all instances of magic_container_s as const
 
 --- a/containers.c
 +++ b/containers.c
-@@ -50,23 +50,23 @@ const struct container_s containers[] =
+@@ -50,23 +50,23 @@
  
  #define NINETY_DAYS "7776000"
  
@@ -52,7 +52,7 @@ Subject: [PATCH] Mark all instances of magic_container_s as const
  {
  	/* Alternate root container */
  	{ NULL,
-@@ -149,7 +149,7 @@ struct magic_container_s magic_container
+@@ -149,7 +149,7 @@
  	{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0 }
  };
  
@@ -61,7 +61,7 @@ Subject: [PATCH] Mark all instances of magic_container_s as const
  in_magic_container(const char *id, int flags, const char **real_id)
  {
  	size_t len;
-@@ -179,7 +179,7 @@ in_magic_container(const char *id, int f
+@@ -179,7 +179,7 @@
  	return NULL;
  }
  
@@ -72,7 +72,7 @@ Subject: [PATCH] Mark all instances of magic_container_s as const
  	int i;
 --- a/containers.h
 +++ b/containers.h
-@@ -38,7 +38,7 @@ struct magic_container_s {
+@@ -38,7 +38,7 @@
  	int required_flags;
  };
  
@@ -85,7 +85,7 @@ Subject: [PATCH] Mark all instances of magic_container_s as const
 +const struct magic_container_s *check_magic_container(const char *id, int flags);
 --- a/scanner.c
 +++ b/scanner.c
-@@ -566,7 +566,7 @@ CreateDatabase(void)
+@@ -566,7 +566,7 @@
  	}
  	for( int i=0; magic_containers[i].objectid_match; i++ )
  	{
@@ -96,7 +96,7 @@ Subject: [PATCH] Mark all instances of magic_container_s as const
  		if( sql_get_int_field(db, "SELECT 1 from OBJECTS where OBJECT_ID = '%s'", magic->objectid_match) == 0 )
 --- a/upnpsoap.c
 +++ b/upnpsoap.c
-@@ -804,7 +804,7 @@ add_res(char *size, char *duration, char
+@@ -804,7 +804,7 @@
  }
  
  static int
@@ -105,7 +105,7 @@ Subject: [PATCH] Mark all instances of magic_container_s as const
  {
  	int ret;
  
-@@ -1301,7 +1301,7 @@ BrowseContentDirectory(struct upnphttp *
+@@ -1305,7 +1305,7 @@
  			"<Result>"
  			"&lt;DIDL-Lite"
  			CONTENT_DIRECTORY_SCHEMAS;
@@ -114,7 +114,7 @@ Subject: [PATCH] Mark all instances of magic_container_s as const
  	char *zErrMsg = NULL;
  	char *sql, *ptr;
  	struct Response args;
-@@ -1823,7 +1823,7 @@ SearchContentDirectory(struct upnphttp *
+@@ -1828,7 +1828,7 @@
  			"<Result>"
  			"&lt;DIDL-Lite"
  			CONTENT_DIRECTORY_SCHEMAS;
