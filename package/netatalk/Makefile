@@ -8,10 +8,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=netatalk
-PKG_VERSION:=3.1.14
+PKG_VERSION:=3.1.15
+PKG_RELEASE:=1
 PKG_SOURCE:=netatalk-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=@SF/netatalk/
-PKG_MD5SUM:=96874d1505fae5b313846d9d8949452f
+PKG_MD5SUM:=ae542961a541ee786c8ac33daba2e00f
 
 include $(INCLUDE_DIR)/package.mk
 
