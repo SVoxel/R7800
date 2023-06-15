@@ -10,7 +10,7 @@ include $(TOPDIR)/rules.mk
 BASE_NAME:=openssl
 PKG_NAME:=openssl-1.1.x
 PKG_BASE:=1.1.1
-PKG_BUGFIX:=t
+PKG_BUGFIX:=u
 PKG_VERSION:=$(PKG_BASE)$(PKG_BUGFIX)
 PKG_RELEASE:=1
 PKG_USE_MIPS16:=0
@@ -26,7 +26,7 @@ PKG_SOURCE_URL:= \
 	ftp://ftp.pca.dfn.de/pub/tools/net/openssl/source/ \
 	http://www.openssl.org/source/ \
 	http://www.openssl.org/source/old/$(PKG_BASE)/
-PKG_MD5SUM:=1cfee919e0eac6be62c88c5ae8bcd91e
+PKG_MD5SUM:=72f7ba7395f0f0652783ba1089aa0dcc
 
 PKG_LICENSE:=OpenSSL
 PKG_LICENSE_FILES:=LICENSE
@@ -70,6 +70,11 @@ include $(INCLUDE_DIR)/package.mk
 
 # GCC 12.x.x issue fixing (use of '-fvect-cost-model=unlimited' flag)
 ifdef CONFIG_GCC_USE_VERSION_12
+  TARGET_CFLAGS := $(subst -fvect-cost-model=unlimited,-fvect-cost-model=dynamic,$(TARGET_CFLAGS))
+endif
+
+# GCC 13.x.x issue fixing (use of '-fvect-cost-model=unlimited' flag)
+ifdef CONFIG_GCC_USE_VERSION_13
   TARGET_CFLAGS := $(subst -fvect-cost-model=unlimited,-fvect-cost-model=dynamic,$(TARGET_CFLAGS))
 endif
 
