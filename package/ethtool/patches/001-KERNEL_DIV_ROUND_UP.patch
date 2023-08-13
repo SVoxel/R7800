@@ -1,0 +1,14 @@
+--- a/uapi/linux/ethtool.h
++++ b/uapi/linux/ethtool.h
+@@ -1501,6 +1501,11 @@
+  * @queue_mask: Bitmap of the queues which sub command apply to
+  * @data: A complete command structure following for each of the queues addressed
+  */
++/* ethtool.h epxects __KERNEL_DIV_ROUND_UP to be defined by <linux/kernel.h> */
++#include <linux/kernel.h>
++#ifndef __KERNEL_DIV_ROUND_UP
++#define __KERNEL_DIV_ROUND_UP(n, d) (((n) + (d) - 1) / (d))
++#endif
+ struct ethtool_per_queue_op {
+ 	__u32	cmd;
+ 	__u32	sub_command;
