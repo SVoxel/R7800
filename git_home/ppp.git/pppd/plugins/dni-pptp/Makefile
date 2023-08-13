@@ -16,7 +16,7 @@ INSTALL	= install
 # Version is set ONLY IN THE MAKEFILE!  Don't delete this!
 VERSION=3.3
 
-COPTS=-O2 -g
+COPTS=-O3 -g
 override CFLAGS += $(COPTS) -fPIC -I../../../include/linux
 all: dni-pptp.so
 

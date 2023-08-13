@@ -22,6 +22,8 @@ PKG_GIT_TREEISH=ppp-v2.4.3-dni29
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/kernel.mk
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3
+
 define Package/dnippp/Default
   SECTION:=net
   CATEGORY:=Network
