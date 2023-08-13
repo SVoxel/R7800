@@ -29,7 +29,7 @@
 ##
 ## Remove the leading # first to enable this; lines starting with # are ignored.
 
-server_names = ['cloudflare', 'scaleway-fr', 'dnscrypt.eu-nl', 'sth-dnscrypt-se']
+server_names = ['cloudflare', 'sth-dnscrypt-se', 'scaleway-fr', 'techsaviours.org-dnscrypt', 'ams-dnscrypt-nl', 'dnscrypt.pl', 'serbica', 'faelix-ch-ipv4']
 
 
 ## List of local addresses and ports to listen to. Can be IPv4 and/or IPv6.
@@ -97,7 +97,7 @@ disabled_server_names = []
 force_tcp = false
 
 
-## Enable support for HTTP/3 (DoH3, HTTP over QUIC)
+## Enable *experimental* support for HTTP/3 (DoH3, HTTP over QUIC)
 ## Note that, like DNSCrypt but unlike other HTTP versions, this uses
 ## UDP and (usually) port 443 instead of TCP.
 
@@ -125,7 +125,7 @@ http3 = false
 timeout = 5000
 
 
-## Keepalive for HTTP (HTTPS, HTTP/2) queries, in seconds
+## Keepalive for HTTP (HTTPS, HTTP/2, HTTP/3) queries, in seconds
 
 keepalive = 30
 
@@ -188,6 +188,13 @@ keepalive = 30
 cert_refresh_delay = 240
 
 
+## Initially don't check DNSCrypt server certificates for expiration, and
+## only start checking them after a first successful connection to a resolver.
+## This can be useful on routers with no battery-backed clock.
+
+# cert_ignore_timestamp = false
+
+
 ## DNSCrypt: Create a new, unique key for every single DNS query
 ## This may improve privacy but can also have a significant impact on CPU usage
 ## Only enable if you don't have a lot of network load
@@ -200,22 +207,28 @@ cert_refresh_delay = 240
 # tls_disable_session_tickets = false
 
 
-## DoH: Use a specific cipher suite instead of the server preference
+## DoH: Use TLS 1.2 and specific cipher suite instead of the server preference
 ## 49199 = TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
 ## 49195 = TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
 ## 52392 = TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
 ## 52393 = TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
-##  4865 = TLS_AES_128_GCM_SHA256
-##  4867 = TLS_CHACHA20_POLY1305_SHA256
 ##
 ## On non-Intel CPUs such as MIPS routers and ARM systems (Android, Raspberry Pi...),
 ## the following suite improves performance.
 ## This may also help on Intel CPUs running 32-bit operating systems.
 ##
 ## Keep tls_cipher_suite empty if you have issues fetching sources or
-## connecting to some DoH servers. Google and Cloudflare are fine with it.
+## connecting to some DoH servers.
 
 # tls_cipher_suite = [52392, 49199]
+
+
+## Log TLS key material to a file, for debugging purposes only.
+## This file will contain the TLS master key, which can be used to decrypt
+## all TLS traffic to/from DoH servers.
+## Never ever enable except for debugging purposes with a tool such as mitmproxy.
+
+# tls_key_log_file = '/tmp/keylog.txt'
 
 
 ## Bootstrap resolvers
@@ -251,7 +264,17 @@ cert_refresh_delay = 240
 bootstrap_resolvers = ['9.9.9.11:53', '8.8.8.8:53']
 
 
-## Always use the bootstrap resolver before the system DNS settings.
+## When internal DNS resolution is required, for example to retrieve
+## the resolvers list:
+##
+## - queries will be sent to dnscrypt-proxy itself, if it is already
+##   running with active servers (*)
+## - or else, queries will be sent to fallback servers
+## - finally, if `ignore_system_dns` is `false`, queries will be sent
+##   to the system DNS
+##
+## (*) this is incompatible with systemd sockets.
+## `listen_addrs` must not be empty.
 
 ignore_system_dns = true
 
@@ -325,6 +348,7 @@ block_ipv6 = false
 
 
 ## Immediately respond to A and AAAA queries for host names without a domain name
+## This also prevents "dotless domain names" from being resolved upstream.
 
 block_unqualified = true
 
@@ -446,6 +470,8 @@ cache_neg_max_ttl = 600
 
 
 ## Certificate file and key - Note that the certificate has to be trusted.
+## Can be generated using the following command:
+## openssl req -x509 -nodes -newkey rsa:2048 -days 5000 -sha256 -keyout localhost.pem -out localhost.pem
 ## See the documentation (wiki) for more information.
 
 # cert_file = 'localhost.pem'
@@ -670,16 +696,16 @@ format = 'tsv'
 ## If the `urls` property is missing, cache files and valid signatures
 ## must already be present. This doesn't prevent these cache files from
 ## expiring after `refresh_delay` hours.
-## Cache freshness is checked every 24 hours, so values for 'refresh_delay'
-## of less than 24 hours will have no effect.
-## A maximum delay of 168 hours (1 week) is imposed to ensure cache freshness.
+## `refreshed_delay` must be in the [24..168] interval.
+## The minimum delay of 24 hours (1 day) avoids unnecessary requests to servers.
+## The maximum delay of 168 hours (1 week) ensures cache freshness.
 
 [sources]
 
   ### An example of a remote source from https://github.com/DNSCrypt/dnscrypt-resolvers
 
   [sources.public-resolvers]
-    urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/public-resolvers.md', 'https://download.dnscrypt.info/resolvers-list/v3/public-resolvers.md', 'https://ipv6.download.dnscrypt.info/resolvers-list/v3/public-resolvers.md']
+    urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/public-resolvers.md', 'https://download.dnscrypt.info/resolvers-list/v3/public-resolvers.md']
     cache_file = 'public-resolvers.md'
     minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
     refresh_delay = 72
@@ -688,7 +714,7 @@ format = 'tsv'
   ### Anonymized DNS relays
 
   [sources.relays]
-    urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/relays.md', 'https://download.dnscrypt.info/resolvers-list/v3/relays.md', 'https://ipv6.download.dnscrypt.info/resolvers-list/v3/relays.md']
+    urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/relays.md', 'https://download.dnscrypt.info/resolvers-list/v3/relays.md']
     cache_file = 'relays.md'
     minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
     refresh_delay = 72
@@ -697,13 +723,13 @@ format = 'tsv'
   ### ODoH (Oblivious DoH) servers and relays
 
   # [sources.odoh-servers]
-  #   urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/odoh-servers.md', 'https://download.dnscrypt.info/resolvers-list/v3/odoh-servers.md', 'https://ipv6.download.dnscrypt.info/resolvers-list/v3/odoh-servers.md']
+  #   urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/odoh-servers.md', 'https://download.dnscrypt.info/resolvers-list/v3/odoh-servers.md']
   #   cache_file = 'odoh-servers.md'
   #   minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
   #   refresh_delay = 24
   #   prefix = ''
   # [sources.odoh-relays]
-  #   urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/odoh-relays.md', 'https://download.dnscrypt.info/resolvers-list/v3/odoh-relays.md', 'https://ipv6.download.dnscrypt.info/resolvers-list/v3/odoh-relays.md']
+  #   urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/odoh-relays.md', 'https://download.dnscrypt.info/resolvers-list/v3/odoh-relays.md']
   #   cache_file = 'odoh-relays.md'
   #   minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
   #   refresh_delay = 24
@@ -721,7 +747,7 @@ format = 'tsv'
   ### This is a subset of the `public-resolvers` list, so enabling both is useless.
 
   # [sources.parental-control]
-  #   urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/parental-control.md', 'https://download.dnscrypt.info/resolvers-list/v3/parental-control.md', 'https://ipv6.download.dnscrypt.info/resolvers-list/v3/parental-control.md']
+  #   urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/parental-control.md', 'https://download.dnscrypt.info/resolvers-list/v3/parental-control.md']
   #   cache_file = 'parental-control.md'
   #   minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
 
