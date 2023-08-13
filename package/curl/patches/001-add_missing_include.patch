@@ -1,6 +1,6 @@
 --- a/lib/easy_lock.h
 +++ b/lib/easy_lock.h
-@@ -74,6 +74,10 @@
+@@ -76,6 +76,10 @@
  
  #endif
  
