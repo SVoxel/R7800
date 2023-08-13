@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=tar
-PKG_VERSION:=1.34
+PKG_VERSION:=1.35
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNU/$(PKG_NAME)
-PKG_MD5SUM:=9a08d29a9ac4727130b5708347c0f5cf
+PKG_MD5SUM:=a2d8042658cfd8ea939e6d911eaf4152
 
 PKG_MAINTAINER:=Álvaro Fernández Rojas <noltari@gmail.com>
 PKG_LICENSE:=GPL-3.0
@@ -43,6 +43,8 @@ endef
 MAKE_FLAGS += \
 	CFLAGS="$(TARGET_CFLAGS)" \
 	LDFLAGS="$(TARGET_LDFLAGS)"
+
+CONFIGURE_ARGS += --disable-year2038
 
 define Package/tar/install
 	$(INSTALL_DIR) $(1)/usr/bin/
