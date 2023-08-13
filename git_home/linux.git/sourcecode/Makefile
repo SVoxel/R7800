@@ -565,7 +565,7 @@ all: vmlinux
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -Os -fno-caller-saves
 else
-KBUILD_CFLAGS	+= -O2 -fno-reorder-blocks -fno-tree-ch -fno-caller-saves
+KBUILD_CFLAGS	+= -O3 -fno-reorder-blocks -fno-tree-ch -fno-caller-saves
 endif
 
 include $(srctree)/arch/$(SRCARCH)/Makefile
