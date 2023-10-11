@@ -32,7 +32,7 @@ define Package/minidlna
   CATEGORY:=Multimedia
   TITLE:=UPnP A/V & DLNA Media Server
   URL:=http://minidlna.sourceforge.net/
-  DEPENDS:= +libpthread +libexif +libjpeg +libsqlite3 +libffmpeg \
+  DEPENDS:= +libpthread +libexif +libjpeg-turbo +libsqlite3 +libffmpeg \
   	+libid3tag +libflac +libogg +libvorbis +libuuid \
   	$(ICONV_DEPENDS) $(INTL_DEPENDS)
   USERID:=minidlna:minidlna
