@@ -1,0 +1,95 @@
+--- a/.#ipkg-make-index.1.12
++++ b/.#ipkg-make-index.1.12
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/usr/bin/python3
+ # $id: $
+ 
+ import sys, os, posixpath
+--- a/Makefile
++++ b/Makefile
+@@ -5,14 +5,14 @@
+ all: build
+ 
+ build: ipkg-compare-versions
+-	python setup.py build
++	python3 setup.py build
+ 
+ ipkg-compare-versions: ipkg-compare-versions.c
+ 	$(CC) $(CFLAGS) -o ipkg-compare-versions ipkg-compare-versions.c
+ 
+ install: ${UTILS}
+ 	cp ${UTILS} $(PREFIX)/bin
+-	python setup.py install
++	python3 setup.py install
+ 	chmod agu+rx ipkg-make-index
+ 	cp -f ipkg-make-index $(PREFIX)/bin
+ 
+--- a/Makefile.python
++++ b/Makefile.python
+@@ -1,7 +1,7 @@
+ 
+ 
+ install:
+-	python setup.py build
+-	python setup.py install
++	python3 setup.py build
++	python3 setup.py install
+ 	chmod agu+rx ipkg-make-index
+ 	cp -f ipkg-make-index /usr/local/bin
+--- a/ipkg-compare-indexes
++++ b/ipkg-compare-indexes
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ 
+ import sys, os
+ from glob import glob
+--- a/ipkg-make-index
++++ b/ipkg-make-index
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ # $Id: ipkg-make-index,v 1.20 2003/10/30 02:32:09 jamey Exp $
+ 
+ import sys, os, posixpath
+--- a/ipkg-show-deps
++++ b/ipkg-show-deps
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/usr/bin/python3
+ # $Id: ipkg-show-deps,v 1.2 2004/03/06 13:08:33 pb Exp $
+ 
+ import sys, os, posixpath
+--- a/ipkg-update-index
++++ b/ipkg-update-index
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python2.1
++#!/usr/bin/env python3
+ 
+ import sys, os
+ from glob import glob
+--- a/ipkg.py
++++ b/ipkg.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ #   Copyright (C) 2001 Alexander S. Guy <a7r@andern.org>
+ #                      Andern Research Labs
+ #
+--- a/makePackage
++++ b/makePackage
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/usr/bin/python3
+ 
+ # The general algorithm this program follows goes like this:
+ #   Run tar to extract control from control.tar.gz from the package.
+--- a/upload-package.cgi
++++ b/upload-package.cgi
+@@ -1,4 +1,4 @@
+-#!/usr/local/bin/python
++#!/usr/local/bin/python3
+ 
+ import sys, os, cgi, commands, time
+ import re
