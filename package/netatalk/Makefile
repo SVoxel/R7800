@@ -8,11 +8,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=netatalk
-PKG_VERSION:=3.1.15
+PKG_VERSION:=3.1.18
 PKG_RELEASE:=1
-PKG_SOURCE:=netatalk-$(PKG_VERSION).tar.bz2
+PKG_SOURCE:=netatalk-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@SF/netatalk/
-PKG_MD5SUM:=ae542961a541ee786c8ac33daba2e00f
+PKG_MD5SUM:=b1caff4e1da534d8ca57d688c7fa3ce1
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -88,9 +88,7 @@ define Package/netatalk/install
 	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/cnid_metad $(1)/usr/sbin/
 	$(CP) $(PKG_INSTALL_DIR)/usr/sbin/netatalk $(1)/usr/sbin/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/uams/*.so $(1)/usr/lib/netatalk/
-	$(CP) $(PKG_BUILD_DIR)/libatalk/.libs/libatalk.so.18.0.0 $(1)/usr/lib/
-	$(CP) $(PKG_BUILD_DIR)/libatalk/.libs/libatalk.so.18 $(1)/usr/lib/
-	$(CP) $(PKG_BUILD_DIR)/libatalk/.libs/libatalk.so $(1)/usr/lib/
+	$(CP) $(PKG_BUILD_DIR)/libatalk/.libs/libatalk.so* $(1)/usr/lib/
 	$(INSTALL_DATA) ./files/afp.conf $(1)/usr/config/netatalk
 	$(INSTALL_DATA) ./files/extmap.conf $(1)/etc/netatalk/
 	$(INSTALL_BIN) ./files/afpd.init $(1)/etc/init.d/run_afpd

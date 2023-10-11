@@ -1,6 +1,6 @@
 --- a/etc/afpd/volume.c
 +++ b/etc/afpd/volume.c
-@@ -668,8 +668,10 @@
+@@ -665,8 +665,10 @@
  #ifdef SERVERTEXT
          /* kill ourself with SIGUSR2 aka msg pending */
          if (volume->v_cdb) {
