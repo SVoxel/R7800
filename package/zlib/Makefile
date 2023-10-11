@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=zlib
-PKG_VERSION:=1.2.13
+PKG_VERSION:=1.3
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://github.com/madler/zlib/releases/download/v$(PKG_VERSION)
-PKG_MD5SUM:=7d9fc1d78ae2fa3e84fe98b77d006c63
+PKG_MD5SUM:=b49e70aacafacfceb1107943497f5545
 
 PKG_LICENSE:=Zlib
 PKG_LICENSE_FILES:=README
