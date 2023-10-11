@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=jq
-PKG_VERSION:=1.6
+PKG_VERSION:=1.7
 PKG_RELEASE:=1
 PKG_LICENSE:=BSD
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://github.com/stedolan/jq/releases/download/jq-$(PKG_VERSION)/
-PKG_MD5SUM:=f5f70ad5dc46d95e0128dc94c25c4d5d
+PKG_SOURCE_URL:=https://github.com/jqlang/jq/releases/download/$(PKG_NAME)-$(PKG_VERSION)/
+PKG_MD5SUM:=4662fd45f0b5622382fc85c1249739d5
 
 PKG_INSTALL:=1
 
@@ -25,6 +25,8 @@ ifdef CONFIG_USE_MIPS16
 endif
 
 TARGET_CFLAGS += -std=c99
+TARGET_CFLAGS += -ffunction-sections -fdata-sections
+TARGET_LDFLAGS += -Wl,--gc-sections
 
 CONFIGURE_ARGS+= \
 	--disable-docs \
@@ -35,8 +37,8 @@ define Package/jq
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=Lightweight and flexible command-line JSON processor.
-  URL:=https://stedolan.github.io/jq/
-  MAINTAINER:=Marko Ratkaj <marko.ratkaj@sartura.hr>
+  URL:=https://github.com/jqlang
+  MAINTAINER:=Marko Ratkaj <markoratkaj@gmail.com>
 endef
 
 define Package/jq/description
