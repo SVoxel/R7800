@@ -1,5 +1,5 @@
---- a/kernel/net/Kbuild	2021-02-19 23:30:58.000000000 +0300
-+++ b/kernel/net/Kbuild	2021-03-30 11:57:08.000000000 +0300
+--- a/kernel/net/Kbuild
++++ b/kernel/net/Kbuild
 @@ -1,5 +1,6 @@
  NOSTDINC_FLAGS += -I$(KDIR)/include
  EXTRA_CFLAGS := -DCONFIG_IP_SET_MAX=$(IP_SET_MAX)
@@ -7,8 +7,8 @@
  
  obj-m += netfilter/
  obj-m += sched/
---- a/kernel/net/netfilter/Kbuild	2021-02-19 23:30:58.000000000 +0300
-+++ b/kernel/net/netfilter/Kbuild	2021-03-30 11:57:20.000000000 +0300
+--- a/kernel/net/netfilter/Kbuild
++++ b/kernel/net/netfilter/Kbuild
 @@ -1,5 +1,6 @@
  NOSTDINC_FLAGS += -I$(KDIR)/include
  EXTRA_CFLAGS := -DCONFIG_IP_SET_MAX=$(IP_SET_MAX)
@@ -16,8 +16,8 @@
  
  obj-m += xt_set.o
  obj-m += ipset/
---- a/kernel/net/netfilter/ipset/Kbuild	2021-02-19 23:30:58.000000000 +0300
-+++ b/kernel/net/netfilter/ipset/Kbuild	2021-03-30 11:47:27.379968800 +0300
+--- a/kernel/net/netfilter/ipset/Kbuild
++++ b/kernel/net/netfilter/ipset/Kbuild
 @@ -1,5 +1,6 @@
  NOSTDINC_FLAGS += -I$(KDIR)/include
  EXTRA_CFLAGS := -DIP_SET_MAX=$(IP_SET_MAX)
@@ -25,8 +25,8 @@
  
  ip_set-y := ip_set_core.o ip_set_getport.o pfxlen.o
  obj-m += ip_set.o
---- a/kernel/net/sched/Kbuild	2021-02-19 23:30:58.000000000 +0300
-+++ b/kernel/net/sched/Kbuild	2021-03-30 11:57:14.000000000 +0300
+--- a/kernel/net/sched/Kbuild
++++ b/kernel/net/sched/Kbuild
 @@ -1,4 +1,5 @@
  NOSTDINC_FLAGS += -I$(KDIR)/include
  EXTRA_CFLAGS := -DCONFIG_IP_SET_MAX=$(IP_SET_MAX)

@@ -1,0 +1,11 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -762,7 +762,7 @@
+ 	AC_SUBST(HAVE_STRSCPY_PAD, define)
+ else
+ 	AC_MSG_RESULT(no)
+-	AC_SUBST(HAVE_STRSCPY, undef)
++	AC_SUBST(HAVE_STRSCPY_PAD, undef)
+ fi
+ 
+ AC_MSG_CHECKING([kernel source for synchronize_rcu_bh() in rcutiny.h and rcupdate.h])
