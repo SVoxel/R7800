@@ -18,7 +18,7 @@
 -include $(top_srcdir)/tests/local.mk
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -4149,11 +4149,7 @@
+@@ -4282,11 +4282,7 @@
  	install-ps-recursive install-recursive installcheck-recursive \
  	installdirs-recursive pdf-recursive ps-recursive \
  	tags-recursive uninstall-recursive
@@ -31,7 +31,7 @@
  am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
  am__vpath_adj = case $$p in \
      $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-@@ -4403,10 +4399,10 @@
+@@ -4536,10 +4532,10 @@
  	$(top_srcdir)/build-aux/missing \
  	$(top_srcdir)/build-aux/test-driver \
  	$(top_srcdir)/build-aux/texinfo.tex \
@@ -44,9 +44,9 @@
 +	$(top_srcdir)/lib/local.mk \
 +	$(top_srcdir)/src/local.mk \
  	$(top_srcdir)/tests/local.mk ABOUT-NLS AUTHORS COPYING \
- 	ChangeLog INSTALL NEWS README THANKS TODO build-aux/compile \
- 	build-aux/config.guess build-aux/config.rpath \
-@@ -4520,7 +4516,7 @@
+ 	ChangeLog INSTALL NEWS README THANKS TODO build-aux/ar-lib \
+ 	build-aux/compile build-aux/config.guess \
+@@ -4655,7 +4651,7 @@
  ETAGS = @ETAGS@
  EUIDACCESS_LIBGEN = @EUIDACCESS_LIBGEN@
  EXEEXT = @EXEEXT@
@@ -55,7 +55,7 @@
  FDATASYNC_LIB = @FDATASYNC_LIB@
  FILE_HAS_ACL_LIB = @FILE_HAS_ACL_LIB@
  FLOAT_H = @FLOAT_H@
-@@ -6181,7 +6177,7 @@
+@@ -6522,7 +6518,7 @@
  localstatedir = @localstatedir@
  localstatedir_c = @localstatedir_c@
  localstatedir_c_make = @localstatedir_c_make@
@@ -64,7 +64,7 @@
  mandir = @mandir@
  mandir_c = @mandir_c@
  mandir_c_make = @mandir_c_make@
-@@ -6230,7 +6226,7 @@
+@@ -6571,7 +6567,7 @@
  top_builddir = @top_builddir@
  top_srcdir = @top_srcdir@
  ALL_RECURSIVE_TARGETS = distcheck-hook check-root
@@ -73,7 +73,7 @@
  
  #if GNU_MAKE
  #	[nicer features that work only with GNU Make]
-@@ -8437,7 +8433,7 @@
+@@ -8838,7 +8834,7 @@
  .SUFFIXES: .1 .c .dvi .log .o .obj .pl .pl$(EXEEXT) .ps .sh .sh$(EXEEXT) .trs .x .xpl .xpl$(EXEEXT) .y
  am--refresh: Makefile
  	@:
@@ -82,7 +82,7 @@
  	@for dep in $?; do \
  	  case '$(am__configure_deps)' in \
  	    *$$dep*) \
-@@ -8459,7 +8455,7 @@
+@@ -8860,7 +8856,7 @@
  	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__maybe_remake_depfiles)'; \
  	    cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__maybe_remake_depfiles);; \
  	esac;

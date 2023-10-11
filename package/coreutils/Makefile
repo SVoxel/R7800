@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=coreutils
-PKG_VERSION:=9.3
+PKG_VERSION:=9.4
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNU/coreutils
-PKG_MD5SUM:=040b4b7acaf89499834bfc79609af29f
+PKG_MD5SUM:=459e9546074db2834eefe5421f250025
 PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
 PKG_CPE_ID:=cpe:/a:gnu:coreutils
 
@@ -119,7 +119,8 @@ endif
 
 CONFIGURE_ARGS += \
 	--disable-xattr \
-	--enable-install-program=su
+	--enable-install-program=su \
+	--disable-year2038
 
 define Build/Compile
 	$(MAKE) -C $(PKG_BUILD_DIR) \
