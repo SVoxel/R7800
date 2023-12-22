@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libxml2
-PKG_VERSION:=2.11.5
+PKG_VERSION:=2.11.6
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNOME/libxml2/$(basename $(PKG_VERSION))
-PKG_MD5SUM:=b2e7332289f5784087448a0717f45ac3
+PKG_MD5SUM:=948141d54edae15daaee80ea216645eb
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING
@@ -70,6 +70,7 @@ define Package/libxml2-utils/description
   from libxml2, a library for manipulating XML and HTML resources.
 endef
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 TARGET_CFLAGS += $(FPIC)
 
 CONFIGURE_ARGS += \
