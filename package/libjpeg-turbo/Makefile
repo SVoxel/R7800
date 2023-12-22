@@ -18,6 +18,8 @@ PKG_BUILD_FLAGS:=no-mips16
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
+
 define Package/libjpeg-turbo/Default
   TITLE:=libjpeg-turbo
   URL:=https://www.libjpeg-turbo.org/

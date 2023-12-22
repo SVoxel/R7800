@@ -54,6 +54,7 @@ endef
 define Build/Configure
 endef
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 TARGET_CFLAGS+=$(if $(CONFIG_USE_MUSL),-D__P\(x\)=x -D__va_copy=va_copy -DBSD_SOURCE)
 
 define Build/Compile

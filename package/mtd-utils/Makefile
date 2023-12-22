@@ -24,6 +24,8 @@ PKG_BUILD_DEPENDS:=util-linux
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
+
 FILES:= \
 	doc_loadbios \
 	docfdisk \

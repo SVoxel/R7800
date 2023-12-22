@@ -16,6 +16,7 @@ PKG_MD5SUM:=b1caff4e1da534d8ca57d688c7fa3ce1
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 TARGET_CFLAGS += -ffunction-sections -fdata-sections
 TARGET_LDFLAGS += -Wl,--gc-sections
 

@@ -107,6 +107,7 @@ define Package/libevent2-pthreads-qos/description
 	threading & locking.
 endef
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 TARGET_CFLAGS += $(FPIC)
 
 CONFIGURE_ARGS += \

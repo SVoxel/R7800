@@ -23,6 +23,8 @@ PKG_CPE_ID:=cpe:/a:flac_project:flac
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
+
 define Package/libflac
   SECTION:=libs
   CATEGORY:=Libraries

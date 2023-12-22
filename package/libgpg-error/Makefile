@@ -37,6 +37,7 @@ define Package/libgpg-error/description
 endef
 
 TARGET_CFLAGS += $(FPIC)
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 
 CONFIGURE_ARGS += \
 	--enable-shared \

@@ -45,6 +45,7 @@ endef
 
 ICONV_PREFIX := $(STAGING_DIR)/usr/lib/libiconv
 INTL_PREFIX := $(STAGING_DIR)/usr/lib/libintl
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 TARGET_CFLAGS += -std=gnu99 
 
 TARGET_CPPFLAGS += \

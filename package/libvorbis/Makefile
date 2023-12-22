@@ -24,6 +24,8 @@ PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
+
 define Package/libvorbis
   SECTION:=libs
   CATEGORY:=Libraries

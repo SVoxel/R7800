@@ -40,6 +40,7 @@ define Package/libpcap-qos/config
 	source "$(SOURCE)/Config.in"
 endef
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 TARGET_CFLAGS += \
 	-ffunction-sections \
 	-fdata-sections

@@ -47,6 +47,7 @@ CONFIGURE_ARGS+= \
 	--without-libiconv-prefix \
 	--without-libintl-prefix \
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 TARGET_CFLAGS += $(FPIC)
 
 define Build/InstallDev

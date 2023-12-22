@@ -11,6 +11,8 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 CONFIG_DIR=${shell pwd}
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
+
 define Package/igmpproxy
 	SECTION:=utils
 	CATEGORY:=Network
