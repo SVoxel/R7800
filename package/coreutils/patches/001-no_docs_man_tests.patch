@@ -18,7 +18,7 @@
 -include $(top_srcdir)/tests/local.mk
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -4282,11 +4282,7 @@
+@@ -4283,11 +4283,7 @@
  	install-ps-recursive install-recursive installcheck-recursive \
  	installdirs-recursive pdf-recursive ps-recursive \
  	tags-recursive uninstall-recursive
@@ -31,7 +31,7 @@
  am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
  am__vpath_adj = case $$p in \
      $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-@@ -4536,10 +4532,10 @@
+@@ -4537,10 +4533,10 @@
  	$(top_srcdir)/build-aux/missing \
  	$(top_srcdir)/build-aux/test-driver \
  	$(top_srcdir)/build-aux/texinfo.tex \
@@ -46,7 +46,7 @@
  	$(top_srcdir)/tests/local.mk ABOUT-NLS AUTHORS COPYING \
  	ChangeLog INSTALL NEWS README THANKS TODO build-aux/ar-lib \
  	build-aux/compile build-aux/config.guess \
-@@ -4655,7 +4651,7 @@
+@@ -4656,7 +4652,7 @@
  ETAGS = @ETAGS@
  EUIDACCESS_LIBGEN = @EUIDACCESS_LIBGEN@
  EXEEXT = @EXEEXT@
@@ -55,7 +55,7 @@
  FDATASYNC_LIB = @FDATASYNC_LIB@
  FILE_HAS_ACL_LIB = @FILE_HAS_ACL_LIB@
  FLOAT_H = @FLOAT_H@
-@@ -6522,7 +6518,7 @@
+@@ -6551,7 +6547,7 @@
  localstatedir = @localstatedir@
  localstatedir_c = @localstatedir_c@
  localstatedir_c_make = @localstatedir_c_make@
@@ -64,16 +64,16 @@
  mandir = @mandir@
  mandir_c = @mandir_c@
  mandir_c_make = @mandir_c_make@
-@@ -6571,7 +6567,7 @@
+@@ -6600,7 +6596,7 @@
  top_builddir = @top_builddir@
  top_srcdir = @top_srcdir@
  ALL_RECURSIVE_TARGETS = distcheck-hook check-root
 -SUBDIRS = po . gnulib-tests
 +SUBDIRS = po
- 
- #if GNU_MAKE
- #	[nicer features that work only with GNU Make]
-@@ -8838,7 +8834,7 @@
+ EXTRA_DIST = .mailmap .prev-version .version .vg-suppressions \
+ 	README-install THANKS.in THANKS-to-translators THANKStt.in \
+ 	bootstrap bootstrap.conf build-aux/gen-lists-of-programs.sh \
+@@ -8868,7 +8864,7 @@
  .SUFFIXES: .1 .c .dvi .log .o .obj .pl .pl$(EXEEXT) .ps .sh .sh$(EXEEXT) .trs .x .xpl .xpl$(EXEEXT) .y
  am--refresh: Makefile
  	@:
@@ -82,7 +82,7 @@
  	@for dep in $?; do \
  	  case '$(am__configure_deps)' in \
  	    *$$dep*) \
-@@ -8860,7 +8856,7 @@
+@@ -8890,7 +8886,7 @@
  	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__maybe_remake_depfiles)'; \
  	    cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__maybe_remake_depfiles);; \
  	esac;
