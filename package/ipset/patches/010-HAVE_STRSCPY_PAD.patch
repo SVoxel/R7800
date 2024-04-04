@@ -1,6 +1,6 @@
 --- a/configure.ac
 +++ b/configure.ac
-@@ -762,7 +762,7 @@
+@@ -772,7 +772,7 @@
  	AC_SUBST(HAVE_STRSCPY_PAD, define)
  else
  	AC_MSG_RESULT(no)
