@@ -84,7 +84,7 @@ define Package/libcurl
   $(call Package/curl/Default)
   SECTION:=libs
   CATEGORY:=Libraries
-  DEPENDS:= +LIBCURL_CYASSL:libcyassl +LIBCURL_OPENSSL:libopenssl +LIBCURL_GNUTLS:libgnutls +LIBCURL_MBEDTLS:libmbedtls
+  DEPENDS:= +LIBCURL_CYASSL:libcyassl +LIBCURL_OPENSSL:libopenssl-1.0.2 +LIBCURL_GNUTLS:libgnutls +LIBCURL_MBEDTLS:libmbedtls
   DEPENDS += +LIBCURL_ZLIB:zlib +LIBCURL_THREADED_RESOLVER:libpthread +LIBCURL_LDAP:libopenldap +LIBCURL_LIBIDN:libidn +LIBCURL_SSH2:libssh2
   TITLE:=A client-side URL transfer library
   MENU:=1

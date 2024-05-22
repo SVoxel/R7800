@@ -22,9 +22,6 @@ PKG_BUILD_PARALLEL:=1
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
-TARGET_CPPFLAGS:=-I$(STAGING_DIR)/usr/include/openssl-1.1.x $(TARGET_CPPFLAGS)
-TARGET_LDFLAGS:=-L$(STAGING_DIR)/usr/lib/openssl-1.1.x $(TARGET_LDFLAGS) -lunbound -lcrypto -lssl
-
 define Package/stubby/Default
   TITLE:=stubby
   URL:=https://dnsprivacy.org/wiki/display/DP/DNS+Privacy+Daemon+-+Stubby
@@ -37,7 +34,7 @@ define Package/stubby
   SUBMENU:=IP Addresses and Names
   TITLE+= - (daemon that uses getdns)
   USERID:=stubby=410:stubby=410
-  DEPENDS:= libopenssl-1.1.x +libyaml +getdns +ca-certificates
+  DEPENDS:= libopenssl +libyaml +getdns +ca-certificates
 endef
 
 define Package/stubby/description
@@ -48,10 +45,6 @@ endef
 define Package/stubby/conffiles
 /etc/stubby/stubby.yml
 endef
-
-CMAKE_OPTIONS += -DOPENSSL_INCLUDE_DIR=$(STAGING_DIR)/usr/include/openssl-1.1.x
-CMAKE_OPTIONS += -DOPENSSL_CRYPTO_LIBRARY=$(STAGING_DIR)/usr/lib/openssl-1.1.x/libcrypto.so
-CMAKE_OPTIONS += -DOPENSSL_SSL_LIBRARY=$(STAGING_DIR)/usr/lib/openssl-1.1.x/libssl.so
 
 define Package/stubby/install
 	$(INSTALL_DIR) $(1)/usr/sbin

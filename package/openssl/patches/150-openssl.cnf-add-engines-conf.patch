@@ -1,22 +1,23 @@
 --- a/apps/openssl.cnf
 +++ b/apps/openssl.cnf
-@@ -22,6 +22,99 @@ oid_section		= new_oids
- # (Alternatively, use a configuration file that has only
- # X.509v3 extensions in its main [= default] section.)
+@@ -52,6 +52,7 @@
  
-+openssl_conf=openssl_conf
-+
-+[openssl_conf]
-+engines=engines
-+
-+[engines]
+ [openssl_init]
+ providers = provider_sect
++engines = engines_sect
+ 
+ # List of providers to load
+ [provider_sect]
+@@ -71,6 +72,76 @@
+ [default_sect]
+ # activate = 1
+ 
++[engines_sect]
 +# To enable an engine, install the package, and uncomment it here:
-+#devcrypto=devcrypto
-+#afalg=afalg
-+#padlock=padlock
-+##gost=gost
++# afalg = afalg_sect
++# devcrypto = devcrypto_sect
 +
-+[afalg]
++[afalg_sect]
 +# Leave this alone and configure algorithms with CIPERS/DIGESTS below
 +default_algorithms = ALL
 +
@@ -30,7 +31,7 @@
 +# USE_SOFTDRIVERS: specifies whether to use software (not accelerated)
 +# drivers (0=use only accelerated drivers, 1=allow all drivers, 2=use
 +# if acceleration can't be determined) [default=2]
-+#USE_SOFTDRIVERS = 2
++# USE_SOFTDRIVERS = 2
 +
 +# CIPHERS: either ALL, NONE, NO_ECB (all except ECB-mode) or a
 +# comma-separated list of ciphers to enable [default=NO_ECB]
@@ -38,7 +39,7 @@
 +# followed by a colon (:) and the minimum request length to use
 +# AF_ALG drivers for that cipher; smaller requests are processed by
 +# softare; a negative value will use the default for that cipher
-+#CIPHERS=AES-128-CBC:1024, AES-256-CBC:768, DES-EDE3-CBC:0
++# CIPHERS=AES-128-CBC:1024, AES-256-CBC:768, DES-EDE3-CBC:0
 +
 +# DIGESTS: either ALL, NONE, or a comma-separated list of digests to
 +# enable [default=NONE]
@@ -46,9 +47,9 @@
 +# is poor, and there are many cases in which they will not work,
 +# especially when calling fork with open crypto contexts.  Openssh,
 +# for example, does this, and you may not be able to login.
-+#DIGESTS = NONE
++# DIGESTS = NONE
 +
-+[devcrypto]
++[devcrypto_sect]
 +# Leave this alone and configure algorithms with CIPERS/DIGESTS below
 +default_algorithms = ALL
 +
@@ -60,15 +61,16 @@
 +# USE_SOFTDRIVERS: specifies whether to use software (not accelerated)
 +# drivers (0=use only accelerated drivers, 1=allow all drivers, 2=use
 +# if acceleration can't be determined) [default=2]
-+#USE_SOFTDRIVERS = 2
++# USE_SOFTDRIVERS = 2
 +
 +# CIPHERS: either ALL, NONE, or a comma-separated list of ciphers to
 +# enable [default=ALL]
 +# It is recommended to disable the ECB ciphers; in most cases, it will
 +# only be used for PRNG, in small blocks, where performance is poor,
 +# and there may be problems with apps forking with open crypto
-+# contexts, leading to failures.  The CBC ciphers work well:
-+#CIPHERS=DES-CBC, DES-EDE3-CBC, AES-128-CBC, AES-192-CBC, AES-256-CBC
++# contexts, leading to failures.  The CBC ciphers work well.
++CIPHERS=DES-CBC, DES-EDE3-CBC, AES-128-CBC, AES-192-CBC, AES-256-CBC, \
++	AES-128-CTR, AES-192-CTR, AES-256-CTR
 +
 +# DIGESTS: either ALL, NONE, or a comma-separated list of digests to
 +# enable [default=NONE]
@@ -76,27 +78,10 @@
 +# is poor, and there are many cases in which they will not work,
 +# especially when calling fork with open crypto contexts.  Openssh,
 +# for example, does this, and you may not be able to login.
-+#DIGESTS = NONE
-+
-+[padlock]
-+default_algorithms = ALL
-+
-+[gost]
-+default_algorithms = ALL
-+# CRYPT_PARAMS: OID of default GOST 28147-89 parameters It allows the
-+# user to choose between different parameter sets of symmetric cipher
-+# algorithm. RFC 4357 specifies several parameters for the
-+# GOST 28147-89 algorithm, but OpenSSL doesn't provide user interface
-+# to choose one when encrypting. So use engine configuration parameter
-+# instead.
-+# Value of this parameter can be either short name, defined in OpenSSL
-+# obj_dat.h header file or numeric representation of OID, defined in
-+# RFC 4357.  Defaults to id-tc26-gost-28147-param-Z
-+#CRYPT_PARAMS = id-tc26-gost-28147-param-Z
-+
-+# PBE_PARAMS: Shortname of default digest alg for PBE
-+#PBE_PARAMS =
-+
- [ new_oids ]
++# Sysupgrade will fail as well.  If you're adventurous enough to change
++# this, you should change it back to NONE, and reboot before running
++# sysupgrade!
++DIGESTS = NONE
  
- # We can add new OIDs in here for use by 'ca', 'req' and 'ts'.
+ ####################################################################
+ [ ca ]

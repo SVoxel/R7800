@@ -21,7 +21,7 @@ define Package/callhomeclient
   CATEGORY:=Bigfoot
   SUBMENU:=Flow Detect
   TITLE:=Client for the callhome server
-  DEPENDS:=+curl +openssl-util +customer-keys
+  DEPENDS:=+curl +openssl-util-1.0.2 +customer-keys
   MAINTAINER:=Ryan Nowakowski <rnowakow@qca.qualcomm.com>
 endef
 

@@ -18,6 +18,8 @@ PKG_CONFIG_DEPENDS := \
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -Wno-int-conversion -Wno-implicit-function-declaration -Wno-return-mismatch
+
 WEB_PATH:=www
 PKG_GIT_TREEISH:=uhttpd-dni015
 define Package/uhttpd/default
@@ -42,7 +44,7 @@ endef
 define Package/uhttpd-mod-tls
   $(Package/uhttpd/default)
   TITLE+= (TLS plugin)
-  DEPENDS:=uhttpd +PACKAGE_uhttpd-mod-tls_cyassl:libcyassl +PACKAGE_uhttpd-mod-tls_openssl:libopenssl
+  DEPENDS:=uhttpd +PACKAGE_uhttpd-mod-tls_cyassl:libcyassl +PACKAGE_uhttpd-mod-tls_openssl:libopenssl-1.0.2
 endef
 
 define Package/uhttpd-mod-tls/description
@@ -81,6 +83,8 @@ ifneq ($(CONFIG_PACKAGE_uhttpd-mod-tls_openssl),)
   UHTTPD_TLS:=openssl
   TLS_CFLAGS:=-DTLS_IS_OPENSSL
   TLS_LDFLAGS:=-lssl
+  TARGET_CPPFLAGS:=-I$(STAGING_DIR)/usr/local/include $(TARGET_CPPFLAGS)
+  TARGET_LDFLAGS:=-L$(STAGING_DIR)/usr/local/lib $(TARGET_LDFLAGS)
 endif
 
 

@@ -88,7 +88,7 @@ endef
 define Package/libevent2-openssl
   $(call Package/libevent2/Default)
   TITLE+= OpenSSL library (version 2.1)
-  DEPENDS+=+libopenssl +libevent2-core
+  DEPENDS+=+libopenssl-1.0.2 +libevent2-core
 endef
 
 define Package/libevent2-openssl/description
@@ -111,6 +111,8 @@ define Package/libevent2-pthreads/description
 	threading & locking.
 endef
 
+TARGET_CPPFLAGS:=-I$(STAGING_DIR)/usr/local/include $(TARGET_CPPFLAGS)
+TARGET_LDFLAGS:=-L$(STAGING_DIR)/usr/local/lib $(TARGET_LDFLAGS)
 TARGET_CFLAGS += $(FPIC) -ffunction-sections -fdata-sections -flto
 TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed -flto
 

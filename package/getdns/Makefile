@@ -35,7 +35,7 @@ define Package/getdns
 	SECTION:=libs
 	CATEGORY:=Libraries
 	TITLE+= (library)
-	DEPENDS+= +libopenssl-1.1.x +check +!GETDNS_ENABLE_STUB_ONLY:libunbound +GETDNS_ENABLE_IDN_LIBIDN2:libidn2
+	DEPENDS+= +libopenssl +check +!GETDNS_ENABLE_STUB_ONLY:libunbound +GETDNS_ENABLE_IDN_LIBIDN2:libidn2
 	MENU:=1
 endef
 
@@ -61,9 +61,6 @@ CMAKE_OPTIONS += -DUSE_LIBIDN2=$(if $(CONFIG_GETDNS_ENABLE_IDN_LIBIDN2),ON,OFF)
 # force the use of the built in code and remove the libbsd dependency disable
 # the test for libbsd.
 CMAKE_OPTIONS += -DBSD_LIBRARY=OFF
-CMAKE_OPTIONS += -DOPENSSL_INCLUDE_DIR=$(STAGING_DIR)/usr/include/openssl-1.1.x
-CMAKE_OPTIONS += -DOPENSSL_CRYPTO_LIBRARY=$(STAGING_DIR)/usr/lib/openssl-1.1.x/libcrypto.so
-CMAKE_OPTIONS += -DOPENSSL_SSL_LIBRARY=$(STAGING_DIR)/usr/lib/openssl-1.1.x/libssl.so
 
 # Disable static linking to ensure that utility programs such as getdns_query
 # don't end up as large statically linked binaries.

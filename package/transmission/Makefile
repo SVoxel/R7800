@@ -26,7 +26,9 @@ PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
-TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
+-TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
+TARGET_CPPFLAGS:=-I$(STAGING_DIR)/usr/local/include $(TARGET_CPPFLAGS)
+TARGET_LDFLAGS:=-L$(STAGING_DIR)/usr/local/lib $(TARGET_LDFLAGS)
 TARGET_CFLAGS += -ffunction-sections -fdata-sections
 TARGET_LDFLAGS += -Wl,--gc-sections
 
@@ -47,7 +49,7 @@ endef
 define Package/transmission-daemon-openssl
   $(call Package/transmission-daemon/Default)
   TITLE+= (with OpenSSL)
-  DEPENDS+=+libopenssl
+  DEPENDS+=+libopenssl-1.0.2
   VARIANT:=openssl
 endef
 
@@ -61,7 +63,7 @@ endef
 define Package/transmission-cli-openssl
   $(call Package/transmission/template)
   TITLE+= (with OpenSSL)
-  DEPENDS+=+libopenssl
+  DEPENDS+=+libopenssl-1.0.2
   VARIANT:=openssl
 endef
 
@@ -75,7 +77,7 @@ endef
 define Package/transmission-remote-openssl
   $(call Package/transmission/template)
   TITLE+= (with OpenSSL)
-  DEPENDS+=+libopenssl
+  DEPENDS+=+libopenssl-1.0.2
   VARIANT:=openssl
 endef
 

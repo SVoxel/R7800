@@ -60,7 +60,7 @@ endef
 define Package/qca-wpa-supplicant
   $(call Package/qca-hostap/Default)
   TITLE:=WPA Supplicant
-  DEPENDS:=kmod-qca-wifi @(!(PACKAGE_wpa-supplicant)) +libopenssl +libnl-bf +qsdk-wifi-script
+  DEPENDS:=kmod-qca-wifi @(!(PACKAGE_wpa-supplicant)) +libopenssl-1.0.2 +libnl-bf +qsdk-wifi-script
 endef
 
 define Package/qca-wpa-supplicant/Description

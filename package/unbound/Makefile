@@ -36,9 +36,6 @@ PKG_CONFIG_DEPENDS:=CONFIG_PACKAGE_libunbound_dnscrypt \
 
 include $(INCLUDE_DIR)/package.mk
 
-TARGET_CPPFLAGS:=-I$(STAGING_DIR)/usr/include/openssl-1.1.x $(TARGET_CPPFLAGS)
-TARGET_LDFLAGS:=-L$(STAGING_DIR)/usr/lib/openssl-1.1.x $(TARGET_LDFLAGS)
-
 define Package/unbound/Default
   SECTION:=net
   CATEGORY:=Network
@@ -46,7 +43,7 @@ define Package/unbound/Default
   USERID:=unbound:unbound
   TITLE:=Recursive DNS Server
   URL:=https://nlnetlabs.nl/projects/unbound/about
-  DEPENDS:=+ca-certificates +libopenssl-1.1.x +@OPENSSL_WITH_EC
+  DEPENDS:=+ca-certificates +libopenssl +@OPENSSL_WITH_EC
 endef
 
 define Package/unbound-daemon
@@ -116,7 +113,7 @@ endef
 define Package/unbound-control-setup
   $(call Package/unbound/Default)
   TITLE+= (control setup)
-  DEPENDS+= +unbound-control +openssl-util-1.1.x
+  DEPENDS+= +unbound-control +openssl
 endef
 
 define Package/unbound-control-setup/description

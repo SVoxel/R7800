@@ -38,8 +38,8 @@ MAKE_FLAGS += \
 	INSTALL_GROUP=$(shell id -g)
 
 CONFIGURE_ARGS += \
-	--with-includes=$(STAGING_DIR)/include:$(STAGING_DIR)/usr/include:$(STAGING_DIR)/usr/lib/libintl/include:$(STAGING_DIR)/usr/lib/libiconv/include \
-	--with-libraries=$(STAGING_DIR)/lib:$(STAGING_DIR)/usr/lib:$(STAGING_DIR)/usr/lib/libintl/lib:$(STAGING_DIR)/usr/lib/libiconv/lib \
+	--with-includes=$(STAGING_DIR)/include:$(STAGING_DIR)/usr/include:$(STAGING_DIR)/usr/lib/libintl/include:$(STAGING_DIR)/usr/lib/libiconv-full/include \
+	--with-libraries=$(STAGING_DIR)/lib:$(STAGING_DIR)/usr/lib:$(STAGING_DIR)/usr/lib/libintl/lib:$(STAGING_DIR)/usr/lib/libiconv-full/lib \
 	--disable-cap \
 	--disable-auth-pam \
 	--disable-strip \

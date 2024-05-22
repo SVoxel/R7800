@@ -84,7 +84,7 @@ endef
 define Package/libevent2-openssl-qos
   $(call Package/libevent2-qos/Default)
   TITLE+= OpenSSL library (version 2.0)
-  DEPENDS+=+libopenssl
+  DEPENDS+=+libopenssl-1.0.2
 endef
 
 define Package/libevent2-openssl-qos/description
@@ -107,6 +107,8 @@ define Package/libevent2-pthreads-qos/description
 	threading & locking.
 endef
 
+TARGET_CPPFLAGS:=-I$(STAGING_DIR)/usr/local/include $(TARGET_CPPFLAGS)
+TARGET_LDFLAGS:=-L$(STAGING_DIR)/usr/local/lib $(TARGET_LDFLAGS)
 TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 TARGET_CFLAGS += $(FPIC)
 
