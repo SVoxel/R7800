@@ -430,6 +430,7 @@ CONFIG_DEFAULT_kmod-usb-gadget-dwc3-ipq=y
 # CONFIG_DEFAULT_kmod-usb-storage is not set
 CONFIG_DEFAULT_kmod-usb-xhci=y
 CONFIG_DEFAULT_kmod-usb2=y
+CONFIG_PACKAGE_libatomic=y
 CONFIG_DEFAULT_libc=y
 CONFIG_DEFAULT_libgcc=y
 CONFIG_PACKAGE_libmnl=y

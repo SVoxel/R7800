@@ -50,6 +50,31 @@ define Package/libgcc/config
 	endmenu
 endef
 
+define Package/libatomic
+$(call Package/gcc/Default)
+  DEPENDS:=+libgcc
+  TITLE:=Atomic support library
+endef
+
+define Package/libatomic/config
+	menu "Configuration"
+		depends on EXTERNAL_TOOLCHAIN && PACKAGE_libatomic
+
+	config LIBATOMIC_ROOT_DIR
+		string
+		prompt "libatomic shared library base directory"
+		depends on EXTERNAL_TOOLCHAIN && PACKAGE_libatomic
+		default TOOLCHAIN_ROOT  if !NATIVE_TOOLCHAIN
+		default "/"  if NATIVE_TOOLCHAIN
+
+	config LIBATOMIC_FILE_SPEC
+		string
+		prompt "libatomic shared library files (use wildcards)"
+		depends on EXTERNAL_TOOLCHAIN && PACKAGE_libatomic
+		default "./lib/libatomic.so.*"
+
+	endmenu
+endef
 
 define Package/libssp
 $(call Package/gcc/Default)
@@ -307,6 +332,13 @@ ifneq ($(BUILD_LIBGCC),)
 		-Wl,-soname=libcrypt.so.0
 	$(SCRIPT_DIR)/relink-lib.sh \
 		"$(TARGET_CROSS)" \
+		"$(wildcard $(TOOLCHAIN_DIR)/lib/libatomic.so)" \
+		"$(wildcard $(TOOLCHAIN_DIR)/lib/libatomic.a)" \
+		"$(patsubst $(TOOLCHAIN_DIR)/lib/%,$(PKG_BUILD_DIR)/%,$(wildcard $(TOOLCHAIN_DIR)/lib/libatomic*.so))" \
+		$(BUILD_LIBGCC) \
+		-Wl,-soname=libatomic.so.0
+	$(SCRIPT_DIR)/relink-lib.sh \
+		"$(TARGET_CROSS)" \
 		"$(wildcard $(TOOLCHAIN_DIR)/lib/libm-*.so)" \
 		"$(wildcard $(TOOLCHAIN_DIR)/lib/libm_pic.a)" \
 		"$(patsubst $(TOOLCHAIN_DIR)/lib/%,$(PKG_BUILD_DIR)/%,$(wildcard $(TOOLCHAIN_DIR)/lib/libm-*.so))" \
@@ -356,6 +388,11 @@ ifeq ($(CONFIG_EXTERNAL_TOOLCHAIN),)
   define Package/libgcc/install
 	$(INSTALL_DIR) $(1)/lib
 	$(if $(CONFIG_TARGET_avr32)$(CONFIG_TARGET_coldfire),,$(CP) $(TOOLCHAIN_DIR)/lib/libgcc_s.so.* $(1)/lib/)
+  endef
+
+  define Package/libatomic/install
+	$(INSTALL_DIR) $(1)/lib
+	$(CP) $(TOOLCHAIN_DIR)/lib/libatomic.so.* $(1)/lib/
   endef
 
   define Package/libgfortran/install
@@ -455,6 +492,11 @@ ifeq ($(CONFIG_EXTERNAL_TOOLCHAIN),)
 		$(1)/lib/
   endef
 
+  define Package/libatomic/install
+	$(INSTALL_DIR) $(1)/lib
+	$(CP) $(TOOLCHAIN_DIR)/lib/libatomic.so* $(1)/lib/
+  endef
+
   define Package/ldd/install
 	$(INSTALL_DIR) $(1)/usr/bin/
 	$(CP) $(TOOLCHAIN_DIR)/bin/ldd $(1)/usr/bin/
@@ -551,6 +593,7 @@ endif
 
 $(eval $(call BuildPackage,libc))
 $(eval $(call BuildPackage,libgcc))
+$(eval $(call BuildPackage,libatomic))
 $(eval $(call BuildPackage,libssp))
 $(eval $(call BuildPackage,libstdcpp))
 $(eval $(call BuildPackage,libpthread))
