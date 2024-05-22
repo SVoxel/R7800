@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libcap-ng
-PKG_VERSION:=0.8.4
+PKG_VERSION:=0.8.5
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://people.redhat.com/sgrubb/libcap-ng
-PKG_MD5SUM:=950748fcbc46a9bacf544e97724e46a2
+PKG_MD5SUM:=8635fae2b1ead2381a9630d00e8f80b7
 
 PKG_MAINTAINER:=Lucian CRISTIAN <lucian.cristian@gmail.com>
 PKG_LICENSE:=GPL-2.0-or-later LGPL-2.1-or-later
@@ -40,6 +40,7 @@ endef
 define Package/libcap-ng
   $(call Package/libcap-ng/Default)
   TITLE += library
+  DEPENDS += libpthread
 endef
 
 define Package/libcap-ng-bin
@@ -73,7 +74,7 @@ define Build/InstallDev
 	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/libcap-ng.pc $(1)/usr/lib/pkgconfig/
 	$(INSTALL_DIR) $(1)/usr/share/aclocal
 	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/share/aclocal/cap-ng.m4\
-	 $(1)/usr/share/aclocal
+	$(1)/usr/share/aclocal
 endef
 
 define Package/libcap-ng/install
