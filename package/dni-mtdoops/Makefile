@@ -14,6 +14,8 @@ PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -Wno-implicit-function-declaration
+
 define KernelPackage/dni-mtdoops
   SUBMENU:=
   TITLE:= MTD Oops/Panic console logger/driver

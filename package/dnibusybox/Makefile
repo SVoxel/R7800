@@ -16,7 +16,7 @@ BUSYBOX_HOME=$(GIT_HOME)/busybox.git
 
 include $(INCLUDE_DIR)/package.mk
 
-TARGET_CFLAGS += -ffunction-sections -fdata-sections
+TARGET_CFLAGS += -ffunction-sections -fdata-sections -Wno-int-conversion -Wno-implicit-int
 TARGET_LDFLAGS += -Wl,--gc-sections
 
 ifeq ($(DUMP),)

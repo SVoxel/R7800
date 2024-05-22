@@ -17,6 +17,8 @@ PKG_GIT_TREEISH=ntpclient_2003_194-dni33
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -Wno-implicit-function-declaration
+
 define Package/dni-ntpclient
   SECTION:=utils
   CATEGORY:=Base system

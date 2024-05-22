@@ -12,6 +12,9 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 PKG_GIT_TREEISH:=phddns-sdk-1.0.4-dni5
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -Wno-implicit-function-declaration -Wno-incompatible-pointer-types
+TARGET_CFLAGS += -Wno-int-conversion -Wno-implicit-int
+
 define Package/phddns
 	SECTION:=utils
 	CATEGORY:=Network

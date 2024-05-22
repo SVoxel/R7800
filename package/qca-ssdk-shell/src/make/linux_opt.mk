@@ -277,3 +277,4 @@ ifneq (TRUE, $(KERNEL_MODE))
 endif
 
 CFLAGS += $(MODULE_INC) $(MODULE_CFLAG)
+CFLAGS += -Wno-implicit-function-declaration -Wno-return-mismatch

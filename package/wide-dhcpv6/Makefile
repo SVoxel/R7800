@@ -14,6 +14,8 @@ PKG_GIT_TREEISH=wide-dhcpv6-dni91
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -Wno-implicit-int -Wno-implicit-function-declaration
+
 EXTRA_CFLAGS += -DNETGEAR_getifaddrs -DNETGEAR_lease_phase \
 	-DNETGEAR_reconfig -DNETGEAR_user_class -DNETGEAR_select_server \
 	-DNETGEAR_dhcp6c_gw -DNETGEAR_dhcp6c_dad -DNETGEAR_dhcp6s_iata \

@@ -34,7 +34,7 @@ define Package/libnl-bf/description
  The standard libnl has been modified to suit Bigfoot purposes.
 endef
 
-TARGET_CFLAGS += -ffunction-sections $(FPIC)
+TARGET_CFLAGS += -ffunction-sections $(FPIC) -Wno-implicit-function-declaration
 
 CONFIGURE_ARGS += --enable-cli
 

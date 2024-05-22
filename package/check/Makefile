@@ -24,6 +24,8 @@ CMAKE_INSTALL:=1
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
+TARGET_CFLAGS += -Wno-implicit-function-declaration -Wno-int-conversion
+
 define Package/check
   SECTION:=libs
   CATEGORY:=Libraries

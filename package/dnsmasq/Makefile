@@ -16,6 +16,9 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 include $(INCLUDE_DIR)/package.mk
 
 TARGET_CFLAGS += -ffunction-sections -fdata-sections
+TARGET_CFLAGS += -Wno-incompatible-pointer-types \
+		 -Wno-implicit-function-declaration \
+		 -Wno-return-mismatch
 TARGET_LDFLAGS += -Wl,--gc-sections
 
 config-$(CONFIG_DNSMASQ_SUP_PARENTAL_CTL)		+= --enable-parental_ctl_support

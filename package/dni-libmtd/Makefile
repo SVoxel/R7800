@@ -11,6 +11,8 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -Wno-incompatible-pointer-types
+
 define Package/dni-libmtd
   SECTION:=utils
   CATEGORY:=Utilities

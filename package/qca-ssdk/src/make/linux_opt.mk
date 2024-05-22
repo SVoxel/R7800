@@ -310,3 +310,5 @@ ifneq (TRUE, $(KERNEL_MODE))
 endif
 
 CFLAGS += $(MODULE_INC) $(MODULE_CFLAG)
+CFLAGS += -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-implicit-int
+CFLAGS := $(filter-out -O%,$(CFLAGS)) -O3

@@ -21,6 +21,8 @@ PKG_GIT_TREEISH=radvd-1.5-dni15
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -Wno-implicit-function-declaration
+
 define Package/radvd
   SECTION:=ipv6
   CATEGORY:=IPv6

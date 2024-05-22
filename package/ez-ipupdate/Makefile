@@ -23,6 +23,8 @@ PKG_GIT_TREEISH:=ez-ipupdate-v3.0.10-dni21
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -Wno-implicit-function-declaration
+
 MAKE_FLAGS += CFLAGS="$(TARGET_CFLAGS) $(EXTRA_CFLAGS) \
 			  -DNETGEAR_PROJECT -DEXPERIMENTAL"
 
@@ -36,7 +38,7 @@ endef
 
 define Build/Prepare
 	$(CP) $(GIT_HOME)/ez-ipupdate.git/* $(PKG_BUILD_DIR)/
-	touch -t 201705170001.01 $(PKG_BUILD_DIR)/*
+	touch -t 202405070001.01 $(PKG_BUILD_DIR)/*
 endef
 
 define Package/ez-ipupdate/install

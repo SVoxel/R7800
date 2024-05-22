@@ -1,0 +1,51 @@
+--- a/configure
++++ b/configure
+@@ -648,48 +648,6 @@
+   test -z "$CC" && { echo "configure: error: no acceptable cc found in \$PATH" 1>&2; exit 1; }
+ fi
+ 
+-echo $ac_n "checking whether the C compiler ($CC $CFLAGS $LDFLAGS) works""... $ac_c" 1>&6
+-echo "configure:653: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) works" >&5
+-
+-ac_ext=c
+-# CFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
+-ac_cpp='$CPP $CPPFLAGS'
+-ac_compile='${CC-cc} -c $CFLAGS $CPPFLAGS conftest.$ac_ext 1>&5'
+-ac_link='${CC-cc} -o conftest${ac_exeext} $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS 1>&5'
+-cross_compiling=$ac_cv_prog_cc_cross
+-
+-cat > conftest.$ac_ext << EOF
+-
+-#line 664 "configure"
+-#include "confdefs.h"
+-
+-main(){return(0);}
+-EOF
+-if { (eval echo configure:669: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+-  ac_cv_prog_cc_works=yes
+-  # If we can't run a trivial program, we are probably using a cross compiler.
+-  if (./conftest; exit) 2>/dev/null; then
+-    ac_cv_prog_cc_cross=no
+-  else
+-    ac_cv_prog_cc_cross=yes
+-  fi
+-else
+-  echo "configure: failed program was:" >&5
+-  cat conftest.$ac_ext >&5
+-  ac_cv_prog_cc_works=no
+-fi
+-rm -fr conftest*
+-ac_ext=c
+-# CFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
+-ac_cpp='$CPP $CPPFLAGS'
+-ac_compile='${CC-cc} -c $CFLAGS $CPPFLAGS conftest.$ac_ext 1>&5'
+-ac_link='${CC-cc} -o conftest${ac_exeext} $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS 1>&5'
+-cross_compiling=$ac_cv_prog_cc_cross
+-
+-echo "$ac_t""$ac_cv_prog_cc_works" 1>&6
+-if test $ac_cv_prog_cc_works = no; then
+-  { echo "configure: error: installation or configuration problem: C compiler cannot create executables." 1>&2; exit 1; }
+-fi
+ echo $ac_n "checking whether the C compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler""... $ac_c" 1>&6
+ echo "configure:695: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler" >&5
+ echo "$ac_t""$ac_cv_prog_cc_cross" 1>&6

@@ -16,6 +16,8 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -Wno-implicit-function-declaration -Wno-return-mismatch -Wno-int-conversion
+
 config-$(CONFIG_UDHCP_DHCPD_STATIC_LEASE)		+= --enable-dhcpd_static_lease
 config-$(CONFIG_UDHCP_DHCPD_SHOW_HOSTNAME)		+= --enable-dhcpd_show_hostname
 config-$(CONFIG_UDHCP_WAN_LAN_IPCONFLICT)		+= --enable-wan_lan_ipconflict

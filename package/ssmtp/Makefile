@@ -18,6 +18,7 @@ PKG_MD5SUM:=65b4e0df4934a6cd08c506cabcbe584f
 include $(INCLUDE_DIR)/package.mk
 
 TARGET_CFLAGS += $(TARGET_CPPFLAGS) -lconfig
+TARGET_CFLAGS += -Wno-int-conversion
 
 define Package/ssmtp
   SECTION:=mail

@@ -13,6 +13,8 @@ PKG_GIT_TREEISH:=net-scan-v1.0-dni25
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -Wno-implicit-function-declaration
+
 define Package/net-scan
 	SECTION:=utils
 	CATEGORY:=Network

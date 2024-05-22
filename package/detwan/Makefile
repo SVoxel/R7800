@@ -13,6 +13,8 @@ PKG_GIT_TREEISH:=wan-detection-dni33
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -Wno-incompatible-pointer-types -Wno-implicit-function-declaration -Wno-return-mismatch
+
 define Package/detwan
 	SECTION:=utils
 	CATEGORY:=Network

@@ -563,9 +563,9 @@ endif # $(dot-config)
 all: vmlinux
 
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
-KBUILD_CFLAGS	+= -Os -fno-caller-saves
+KBUILD_CFLAGS	+= -Os -fno-caller-saves -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-return-mismatch
 else
-KBUILD_CFLAGS	+= -O3 -fno-reorder-blocks -fno-tree-ch -fno-caller-saves
+KBUILD_CFLAGS	+= -O3 -fno-reorder-blocks -fno-tree-ch -fno-caller-saves -Wno-incompatible-pointer-types -Wno-int-conversion -Wno-return-mismatch
 endif
 
 include $(srctree)/arch/$(SRCARCH)/Makefile

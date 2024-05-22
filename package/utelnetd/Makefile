@@ -21,6 +21,8 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -Wno-implicit-int -Wno-return-mismatch -Wno-pointer-sign
+
 define Package/utelnetd
   SECTION:=net
   CATEGORY:=Base system

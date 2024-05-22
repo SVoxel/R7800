@@ -29,7 +29,7 @@ define Package/libintl
   URL:=http://www.gnu.org/software/gettext/
 endef
 
-TARGET_CFLAGS += $(FPIC)
+TARGET_CFLAGS += $(FPIC) -Wno-incompatible-pointer-types
 
 CONFIGURE_ARGS += \
 	--enable-shared \

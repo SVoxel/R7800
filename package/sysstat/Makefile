@@ -22,6 +22,8 @@ PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -Wno-implicit-function-declaration
+
 define Package/sysstat
   SECTION:=utils
   CATEGORY:=Utilities

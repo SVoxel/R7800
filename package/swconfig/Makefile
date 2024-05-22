@@ -13,6 +13,8 @@ PKG_RELEASE:=10
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/kernel.mk
 
+TARGET_CFLAGS += -Wno-implicit-function-declaration
+
 define Package/swconfig
   SECTION:=base
   CATEGORY:=Base system

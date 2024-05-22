@@ -1,0 +1,11 @@
+--- a/unix/configure
++++ b/unix/configure
+@@ -521,7 +521,7 @@
+ echo Check for memset
+ echo "int main(){ char k; memset(&k,0,0); return 0; }" > conftest.c
+ $CC -o conftest conftest.c >/dev/null 2>/dev/null
+-[ $? -ne 0 ] && CFLAGS="${CFLAGS} -DZMEM"
++[ $? -ne 0 ] && CFLAGS="${CFLAGS}"
+ 
+ 
+ echo Check for memmove

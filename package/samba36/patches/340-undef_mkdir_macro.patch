@@ -1,0 +1,13 @@
+--- a/source3/smbd/vfs.c
++++ b/source3/smbd/vfs.c
+@@ -34,6 +34,10 @@
+ #undef DBGC_CLASS
+ #define DBGC_CLASS DBGC_VFS
+ 
++#ifdef mkdir
++#undef mkdir
++#endif
++
+ static_decl_vfs;
+ 
+ struct vfs_init_function_entry {

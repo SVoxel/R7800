@@ -1,0 +1,10 @@
+--- a/unix/unix.c
++++ b/unix/unix.c
+@@ -67,7 +67,6 @@
+ #ifndef dirent
+ #  define dirent direct
+ #endif
+-typedef FILE DIR;
+ /*
+ **  Apparently originally by Rich Salz.
+ **  Cleaned up and modified by James W. Birdsall.

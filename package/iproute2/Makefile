@@ -93,7 +93,7 @@ ifdef CONFIG_USE_MUSL
   TARGET_CFLAGS += -DHAVE_SETNS
 endif
 
-TARGET_CFLAGS += -ffunction-sections -fdata-sections
+TARGET_CFLAGS += -ffunction-sections -fdata-sections -Wno-implicit-function-declaration
 TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3
 
 MAKE_FLAGS += \

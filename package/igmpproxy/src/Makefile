@@ -12,6 +12,7 @@ EXTRA_FLAG = -DUSE_ATH_HEADER
 # CFLAGS=-g
 CFLAGS=-O2 -pipe -mcpu=cortex-a15 -mfpu=neon-vfpv4 -funsafe-math-optimizations -mtune=cortex-a15 -mfloat-abi=softfp
 CFLAGS += $(EXTRA_FLAGS) -DUSE_ATH_HEADER -DDNI_MULTI_LAN_SUPPORT
+CFLAGS += -Wno-implicit-function-declaration -Wno-int-conversion -Wno-incompatible-pointer-types -Wno-return-mismatch
 
 default : build.h igmpproxy
 

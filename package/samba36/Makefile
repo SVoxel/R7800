@@ -70,6 +70,7 @@ endef
 
 TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3
 TARGET_CFLAGS += -DMAX_DEBUG_LEVEL=$(CONFIG_PACKAGE_SAMBA_MAX_DEBUG_LEVEL) -D__location__=\\\"\\\" -ffunction-sections -fdata-sections
+TARGET_CFLAGS += -Wno-int-conversion -Wno-implicit-function-declaration
 TARGET_LDFLAGS += -Wl,--gc-sections
 
 CONFIGURE_VARS += \

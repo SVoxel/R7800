@@ -37,7 +37,7 @@ config DNIBUSYBOX_CONFIG_ED
 
 config DNIBUSYBOX_CONFIG_PATCH
 	bool "patch"
-	default n
+	default y
 	help
 	  Apply a unified diff formatted patch.
 

@@ -25,6 +25,8 @@ PKG_MIRROR_MD5SUM:=9a8e64f89558998bb824525105cdbe6b
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -Wno-implicit-function-declaration
+
 define Package/hotplug2
   SECTION:=base
   CATEGORY:=Base system
