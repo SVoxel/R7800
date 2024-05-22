@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=curl
-PKG_VERSION:=8.7.1
+PKG_VERSION:=8.8.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
@@ -16,7 +16,7 @@ PKG_SOURCE_URL:=https://dl.uxnr.de/mirror/curl/ \
 	http://curl.mirror.anstey.ca/ \
 	http://curl.askapache.com/download/ \
 	https://curl.haxx.se/download/
-PKG_MD5SUM:=f4f37253c5f1ad9ee85fa6215fdfeb42
+PKG_MD5SUM:=e1062de8a9b252a75fc42e2252746bd8
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING
@@ -95,6 +95,8 @@ define Package/libcurl/config
   source "$(SOURCE)/Config.in"
 endef
 
+TARGET_CPPFLAGS:=-I$(STAGING_DIR)/usr/local/include $(TARGET_CPPFLAGS)
+TARGET_LDFLAGS:=-L$(STAGING_DIR)/usr/local/lib $(TARGET_LDFLAGS)
 TARGET_CFLAGS += $(FPIC) -ffunction-sections -fdata-sections
 TARGET_CPPFLAGS += $(if $(CONFIG_LIBCURL_NTLM),,-DCURL_DISABLE_NTLM)
 TARGET_LDFLAGS += -Wl,--gc-sections
@@ -114,7 +116,7 @@ CONFIGURE_ARGS += \
 	\
 	$(if $(CONFIG_LIBCURL_CYASSL),--with-cyassl="$(STAGING_DIR)/usr" --without-ca-path --with-ca-bundle=/etc/ssl/certs/ca-certificates.crt,--without-cyassl) \
 	$(if $(CONFIG_LIBCURL_GNUTLS),--with-gnutls="$(STAGING_DIR)/usr" --without-ca-bundle --with-ca-path=/etc/ssl/certs,--without-gnutls) \
-	$(if $(CONFIG_LIBCURL_OPENSSL),--with-ssl="$(STAGING_DIR)/usr" --without-ca-bundle --with-ca-path=/etc/ssl/certs,--without-ssl) \
+	$(if $(CONFIG_LIBCURL_OPENSSL),--with-ssl="$(STAGING_DIR)/usr/local" --without-ca-bundle --with-ca-path=/etc/ssl/certs,--without-ssl) \
 	$(if $(CONFIG_LIBCURL_MBEDTLS),--with-mbedtls="$(STAGING_DIR)/usr" --without-ca-path --with-ca-bundle=/etc/ssl/certs/ca-certificates.crt,--without-mbedtls) \
 	\
 	$(if $(CONFIG_LIBCURL_LIBIDN),--with-libidn="$(STAGING_DIR)/usr",--without-libidn) \
