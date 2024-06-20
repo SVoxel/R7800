@@ -1,0 +1,35 @@
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+--- a/gcc/bb-reorder.c
++++ b/gcc/bb-reorder.c
+@@ -1,3 +1,7 @@
++/*
++ * Copyright (c) 2013 The Linux Foundation. All rights reserved.
++ */
++
+ /* Basic block reordering routines for the GNU compiler.
+    Copyright (C) 2000, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2010
+    Free Software Foundation, Inc.
+@@ -2229,7 +2233,12 @@ rest_of_handle_reorder_blocks (void)
+ 	 minimize the combined size of all the jumps.  This would more or less
+ 	 automatically remove extra jumps, but would also try to use more short
+ 	 jumps instead of long jumps.  */
+-      && optimize_function_for_speed_p (cfun))
++      /* XXX - ignore the comment above - if we want to reorder basic blocks when
++         optimizing for size then gcc shouldn't be trying to second guess that
++	 compile flag!  BB reordering can increase code sizes but the combination
++	 of optimizing for size but with BB reordering often leads to a much
++	 better balance between size and speed.  */
++      /* && optimize_function_for_speed_p (cfun) */)
+     {
+       reorder_basic_blocks ();
+       cleanup_cfg (CLEANUP_EXPENSIVE);
