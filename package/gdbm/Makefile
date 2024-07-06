@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gdbm
-PKG_VERSION:=1.23
+PKG_VERSION:=1.24
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GNU/gdbm
-PKG_MD5SUM:=8551961e36bf8c70b7500d255d3658ec
+PKG_MD5SUM:=c780815649e52317be48331c1773e987
 
 PKG_MAINTAINER:=Marcel Denia <naoir@gmx.net>
 PKG_LICENSE:=GPL-3.0-or-later
@@ -24,6 +24,8 @@ PKG_BUILD_PARALLEL:=0
 PKG_BUILD_DEPENDS:=gettext
 
 include $(INCLUDE_DIR)/package.mk
+
+TARGET_CFLAGS += -Wno-implicit-function-declaration
 
 define Package/libgdbm
   SECTION:=libs
