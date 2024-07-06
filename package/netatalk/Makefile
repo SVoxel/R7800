@@ -8,11 +8,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=netatalk
-PKG_VERSION:=3.1.18
+PKG_VERSION:=3.2.2
 PKG_RELEASE:=1
 PKG_SOURCE:=netatalk-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@SF/netatalk/
-PKG_MD5SUM:=b1caff4e1da534d8ca57d688c7fa3ce1
+PKG_MD5SUM:=b5b69a94fbfe59a9a209925854b13cb3
+
+PKG_FIXUP:=autoreconf
+PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -28,7 +31,7 @@ define Package/netatalk
   URL:=http://netatalk.sourceforge.net
 endef
 
-define Package/netatalk/decription
+define Package/netatalk/description
   Netatalk is a freely-available Open Source AFP fileserver.
   It also provides a kernel level implementation of the AppleTalk
   Protocol Suite.
@@ -57,8 +60,7 @@ CONFIGURE_ARGS += \
 	--with-uams-path="/usr/lib/uams" \
 	--disable-admin-group \
 	--disable-zeroconf \
-	--disable-srvloc \
-
+	--disable-srvloc 
 
 define Build/Compile
 	$(MAKE) -C $(PKG_BUILD_DIR) \
