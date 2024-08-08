@@ -9,14 +9,14 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=openvpn
 
-PKG_VERSION:=2.6.11
+PKG_VERSION:=2.6.12
 PKG_RELEASE:=1
 
 PKG_SOURCE_URL:=\
 	https://build.openvpn.net/downloads/releases/ \
 	https://swupdate.openvpn.net/community/releases/
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_MD5SUM:=467b270c54955681add7f253aa03fc5a
+PKG_MD5SUM:=448e5315d24507ba70d4a0d573971765
 
 PKG_MAINTAINER:=Magnus Kroken <mkroken@gmail.com>
 
