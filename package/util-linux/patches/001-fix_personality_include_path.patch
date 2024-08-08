@@ -1,0 +1,11 @@
+--- a/sys-utils/setarch.c
++++ b/sys-utils/setarch.c
+@@ -24,7 +24,7 @@
+  * sparc32 util by Jakub Jelinek (1998, 1999)
+  */
+ 
+-#include <sys/personality.h>
++#include <linux/personality.h>
+ #include <unistd.h>
+ #include <stdio.h>
+ #include <string.h>

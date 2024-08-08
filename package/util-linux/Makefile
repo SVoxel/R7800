@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=util-linux
-PKG_VERSION:=2.38.1
+PKG_VERSION:=2.40.2
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_SOURCE_URL:=@KERNEL/linux/utils/$(PKG_NAME)/v2.38
-PKG_MD5SUM:=cd11456f4ddd31f7fbfdd9488c0c0d02
+PKG_SOURCE_URL:=@KERNEL/linux/utils/$(PKG_NAME)/v2.40
+PKG_MD5SUM:=88faefc8fefced097e58142077a3d14e
 PKG_CPE_ID:=cpe:/a:kernel:util-linux
 
 PKG_LICENSE:=GPL-2.0
@@ -524,10 +524,18 @@ CONFIGURE_ARGS += \
 	--without-udev			\
 	--without-readline		\
 	--disable-more			\
+	--disable-lsfd			\
+	--disable-liblastlog2		\
+	--disable-exch			\
+	--disable-hwclock		\
+	--disable-unshare		\
+	--disable-pipesz		\
+	--disable-year2038		\
 	--with-ncursesw
 
 TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 TARGET_CFLAGS += $(FPIC) -std=gnu99 -ffunction-sections -fdata-sections
+TARGET_CFLAGS += -Wno-error=implicit-function-declaration
 TARGET_LDFLAGS += -Wl,--gc-sections
 
 define Build/InstallDev

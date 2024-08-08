@@ -1,10 +1,30 @@
---- a/libmount/src/utils.c
-+++ b/libmount/src/utils.c
-@@ -22,6 +22,7 @@
- #include <blkid.h>
- 
- #include "strutils.h"
-+#include "namespace.h"
- #include "pathnames.h"
+--- a/libmount/src/hook_subdir.c
++++ b/libmount/src/hook_subdir.c
+@@ -20,6 +20,7 @@
  #include "mountP.h"
- #include "mangle.h"
+ #include "fileutils.h"
+ #include "mount-api-utils.h"
++#include "namespace.h"
+ 
+ struct hookset_data {
+ 	char *subdir;
+--- a/misc-utils/lsfd-sock-xinfo.c
++++ b/misc-utils/lsfd-sock-xinfo.c
+@@ -43,6 +43,7 @@
+ 
+ #include "lsfd.h"
+ #include "lsfd-sock.h"
++#include "namespace.h"
+ 
+ static void load_xinfo_from_proc_icmp(ino_t netns_inode, enum sysfs_byteorder byteorder);
+ static void load_xinfo_from_proc_icmp6(ino_t netns_inode, enum sysfs_byteorder byteorder);
+--- a/tests/helpers/test_mkfds.c
++++ b/tests/helpers/test_mkfds.c
+@@ -21,6 +21,7 @@
+ #include "xalloc.h"
+ #include "test_mkfds.h"
+ #include "exitcodes.h"
++#include "namespace.h"
+ 
+ #include <arpa/inet.h>
+ #include <ctype.h>

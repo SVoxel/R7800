@@ -1,0 +1,11 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -1951,7 +1951,7 @@
+ UL_REQUIRES_SYSCALL_CHECK([waitpid], [UL_CHECK_SYSCALL([pidfd_open])], [pidfd_open])
+ AM_CONDITIONAL([BUILD_WAITPID], [test "x$build_waitpid" = xyes])
+ 
+-UL_BUILD_INIT([enosys], [check])
++UL_BUILD_INIT([enosys], [no])
+ UL_REQUIRES_LINUX([enosys])
+ AS_IF([test "x$build_enosys" = xyes], [
+   AC_MSG_CHECKING([for valid audit arch])
