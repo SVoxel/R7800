@@ -10,7 +10,7 @@
  
 --- a/configure.ac
 +++ b/configure.ac
-@@ -319,8 +319,6 @@
+@@ -317,8 +317,6 @@
    man/man8/cnid_dbd.8
    man/man8/cnid_metad.8
    man/man8/netatalk.8
