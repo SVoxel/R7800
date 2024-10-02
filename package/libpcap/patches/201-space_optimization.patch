@@ -1,6 +1,6 @@
 --- a/pcap-util.c
 +++ b/pcap-util.c
-@@ -415,14 +415,23 @@
+@@ -469,14 +469,23 @@
  		break;
  
  	case DLT_USB_LINUX:
