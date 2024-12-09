@@ -1,0 +1,10 @@
+--- a/src/config.h.in
++++ b/src/config.h.in
+@@ -3934,3 +3934,7 @@
+   #define static_assert _Static_assert
+  #endif
+ #endif
++
++#ifdef HAVE_PTHREAD_H
++ #include <pthread.h>
++#endif
