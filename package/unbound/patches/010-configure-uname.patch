@@ -3,7 +3,7 @@ Fix cross compile errors by inserting an environment variable for the
 target. Use "uname" on host only if "UNAME" variable is empty.
 --- a/configure.ac
 +++ b/configure.ac
-@@ -895,7 +895,7 @@
+@@ -897,7 +897,7 @@
     fi
  fi
  
