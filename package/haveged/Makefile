@@ -25,13 +25,14 @@ include $(INCLUDE_DIR)/package.mk
 define Package/haveged
   SECTION:=utils
   CATEGORY:=Utilities
-  DEPENDS:=+libhavege
+  DEPENDS:=+libhavege +libpthread
   TITLE:=Feeds the kernel entropy pool by timing CPU loops.
   URL:=http://www.issihosts.com/haveged/
 endef
 
 define Package/libhavege
   CATEGORY:=Libraries
+  DEPENDS:=+libpthread
   TITLE:=Library for haveged
   URL:=http://www.issihosts.com/haveged/
 endef
