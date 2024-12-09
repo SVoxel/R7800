@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libgpg-error
-PKG_VERSION:=1.50
+PKG_VERSION:=1.51
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=https://gnupg.org/ftp/gcrypt/libgpg-error/
-PKG_MD5SUM:=80e905ce798553c766e3384467dc55ea
+PKG_MD5SUM:=74b73ea044685ce9fd6043a8cc885eac
 
 PKG_BUILD_PARALLEL:=1
 PKG_FIXUP:=autoreconf
