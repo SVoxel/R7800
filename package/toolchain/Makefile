@@ -11,6 +11,8 @@ PKG_RELEASE:=1
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -D__UCLIBC_DNSRAND_MODE_CLOCK__
+
 ifneq ($(DUMP),1)
   LIBGCC_VERSION:=$(GCC_VERSION)
 else
