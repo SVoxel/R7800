@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libexif
-PKG_VERSION:=0.6.24
+PKG_VERSION:=0.6.25
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=https://github.com/libexif/libexif/releases/download/v$(PKG_VERSION)
-PKG_MD5SUM:=00ea6e7ff62d3fd41ea9b2139746703c
+PKG_MD5SUM:=eba77b69efac8fa8e8fc53f8c2cdad7c
 
 PK_MAINTAINER:=W. Michael Petullo <mike@flyn.org>
 PKG_LICENSE:=LGPL-2.1-or-later
