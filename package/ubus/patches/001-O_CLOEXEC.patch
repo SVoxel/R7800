@@ -1,0 +1,13 @@
+--- a/libubus.h
++++ b/libubus.h
+@@ -65,6 +65,10 @@
+ typedef void (*ubus_connect_handler_t)(struct ubus_context *ctx);
+ typedef bool (*ubus_new_object_handler_t)(struct ubus_context *ctx, struct ubus_subscriber *sub, const char *path);
+ 
++#ifndef O_CLOEXEC
++#define O_CLOEXEC	02000000	/* set close_on_exec */
++#endif
++
+ #define UBUS_OBJECT_TYPE(_name, _methods)		\
+ 	{						\
+ 		.name = _name,				\
