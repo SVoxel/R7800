@@ -1,6 +1,6 @@
 --- a/configure
 +++ b/configure
-@@ -15977,7 +15977,7 @@
+@@ -15985,7 +15985,7 @@
  
  		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${crond_dir}" >&5
  printf "%s\n" "${crond_dir}" >&6; }
