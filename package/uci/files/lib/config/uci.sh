@@ -1,9 +1,7 @@
-#!/bin/sh
 # Shell script compatibility wrappers for /sbin/uci
 #
-# Copyright (c) 2013 The Linux Foundation. All rights reserved.
 # Copyright (C) 2008-2010  OpenWrt.org
-# Copyright (C) 2008  Felix Fietkau <nbd@openwrt.org>
+# Copyright (C) 2008  Felix Fietkau <nbd@nbd.name>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -118,7 +116,7 @@ uci_add() {
 	local CONFIG="$3"
 
 	if [ -z "$CONFIG" ]; then
-		export ${NO_EXPORT:+-n} CONFIG_SECTION="$(/sbin/uci add "$PACKAGE" "$TYPE")"
+		export ${NO_EXPORT:+-n} CONFIG_SECTION="$(/sbin/uci ${UCI_CONFIG_DIR:+-c $UCI_CONFIG_DIR} add "$PACKAGE" "$TYPE")"
 	else
 		/sbin/uci ${UCI_CONFIG_DIR:+-c $UCI_CONFIG_DIR} set "$PACKAGE.$CONFIG=$TYPE"
 		export ${NO_EXPORT:+-n} CONFIG_SECTION="$CONFIG"
@@ -128,9 +126,10 @@ uci_add() {
 uci_rename() {
 	local PACKAGE="$1"
 	local CONFIG="$2"
-	local VALUE="$3"
+	local OPTION="$3"
+	local VALUE="$4"
 
-	/sbin/uci ${UCI_CONFIG_DIR:+-c $UCI_CONFIG_DIR} rename "$PACKAGE.$CONFIG=$VALUE"
+	/sbin/uci ${UCI_CONFIG_DIR:+-c $UCI_CONFIG_DIR} rename "$PACKAGE.$CONFIG${VALUE:+.$OPTION}=${VALUE:-$OPTION}"
 }
 
 uci_remove() {
@@ -139,6 +138,23 @@ uci_remove() {
 	local OPTION="$3"
 
 	/sbin/uci ${UCI_CONFIG_DIR:+-c $UCI_CONFIG_DIR} del "$PACKAGE.$CONFIG${OPTION:+.$OPTION}"
+}
+
+uci_remove_list() {
+	local PACKAGE="$1"
+	local CONFIG="$2"
+	local OPTION="$3"
+	local VALUE="$4"
+
+	/sbin/uci ${UCI_CONFIG_DIR:+-c $UCI_CONFIG_DIR} del_list "$PACKAGE.$CONFIG.$OPTION=$VALUE"
+}
+
+uci_revert() {
+	local PACKAGE="$1"
+	local CONFIG="$2"
+	local OPTION="$3"
+
+	/sbin/uci ${UCI_CONFIG_DIR:+-c $UCI_CONFIG_DIR} revert "$PACKAGE${CONFIG:+.$CONFIG}${OPTION:+.$OPTION}"
 }
 
 uci_commit() {
