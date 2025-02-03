@@ -29,7 +29,7 @@
 ##
 ## Remove the leading # first to enable this; lines starting with # are ignored.
 
-server_names = ['cloudflare', 'sth-dnscrypt-se', 'scaleway-fr', 'techsaviours.org-dnscrypt', 'ams-dnscrypt-nl', 'dnscrypt.pl', 'serbica', 'faelix-ch-ipv4']
+server_names = ['cloudflare', 'fdn', 'nic.cz', 'njalla-doh', 'sth-doh-se', 'ams-doh-nl', 'dns.digitalsize.net', 'uncensoreddns-ipv4', 'uncensoreddns-dk-ipv4', 'dns.digitale-gesellschaft.ch']
 
 
 ## List of local addresses and ports to listen to. Can be IPv4 and/or IPv6.
@@ -121,6 +121,7 @@ http3 = false
 ## If you have a network with *a lot* of latency, you may need to
 ## increase this. Startup may be slower if you do so.
 ## Don't increase it too much. 10000 is the highest reasonable value.
+## A timeout below 5000 is not recommended.
 
 timeout = 5000
 
@@ -181,6 +182,12 @@ keepalive = 30
 ## Use the system logger (syslog on Unix, Event Log on Windows)
 
 # use_syslog = true
+
+
+## The maximum concurrency to reload certificates from the resolvers.
+## Default is 10.
+
+# cert_refresh_concurrency = 10
 
 
 ## Delay, in minutes, after which certificates are reloaded
@@ -708,7 +715,7 @@ format = 'tsv'
     urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/public-resolvers.md', 'https://download.dnscrypt.info/resolvers-list/v3/public-resolvers.md']
     cache_file = 'public-resolvers.md'
     minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
-    refresh_delay = 72
+    refresh_delay = 73
     prefix = ''
 
   ### Anonymized DNS relays
@@ -717,7 +724,7 @@ format = 'tsv'
     urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/relays.md', 'https://download.dnscrypt.info/resolvers-list/v3/relays.md']
     cache_file = 'relays.md'
     minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
-    refresh_delay = 72
+    refresh_delay = 73
     prefix = ''
 
   ### ODoH (Oblivious DoH) servers and relays
@@ -726,13 +733,13 @@ format = 'tsv'
   #   urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/odoh-servers.md', 'https://download.dnscrypt.info/resolvers-list/v3/odoh-servers.md']
   #   cache_file = 'odoh-servers.md'
   #   minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
-  #   refresh_delay = 24
+  #   refresh_delay = 73
   #   prefix = ''
   # [sources.odoh-relays]
   #   urls = ['https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/odoh-relays.md', 'https://download.dnscrypt.info/resolvers-list/v3/odoh-relays.md']
   #   cache_file = 'odoh-relays.md'
   #   minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
-  #   refresh_delay = 24
+  #   refresh_delay = 73
   #   prefix = ''
 
   ### Quad9
@@ -751,6 +758,14 @@ format = 'tsv'
   #   cache_file = 'parental-control.md'
   #   minisign_key = 'RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3'
 
+  ### dnscry.pt servers - See https://www.dnscry.pt
+
+  #  [sources.dnscry-pt-resolvers]
+  #    urls = ["https://www.dnscry.pt/resolvers.md"]
+  #    minisign_key = "RWQM31Nwkqh01x88SvrBL8djp1NH56Rb4mKLHz16K7qsXgEomnDv6ziQ"
+  #    cache_file = "dnscry.pt-resolvers.md"
+  #    refresh_delay = 73
+  #    prefix = "dnscry.pt-"
 
 
 #########################################
@@ -770,7 +785,7 @@ format = 'tsv'
 ## The list below enables workarounds to make non-relayed usage more reliable
 ## until the servers are fixed.
 
-fragments_blocked = ['cisco', 'cisco-ipv6', 'cisco-familyshield', 'cisco-familyshield-ipv6', 'cleanbrowsing-adult', 'cleanbrowsing-adult-ipv6', 'cleanbrowsing-family', 'cleanbrowsing-family-ipv6', 'cleanbrowsing-security', 'cleanbrowsing-security-ipv6']
+fragments_blocked = ['cisco', 'cisco-ipv6', 'cisco-familyshield', 'cisco-familyshield-ipv6', 'cisco-sandbox', 'cleanbrowsing-adult', 'cleanbrowsing-adult-ipv6', 'cleanbrowsing-family', 'cleanbrowsing-family-ipv6', 'cleanbrowsing-security', 'cleanbrowsing-security-ipv6']
 
 
 
