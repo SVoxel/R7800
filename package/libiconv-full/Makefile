@@ -26,6 +26,8 @@ PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
+
 define Package/libiconv-full/Default
   URL:=https://www.gnu.org/software/libiconv/
   TITLE:=Character set conversion

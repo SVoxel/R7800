@@ -94,7 +94,7 @@ ifdef CONFIG_USE_MUSL
 endif
 
 TARGET_CFLAGS += -ffunction-sections -fdata-sections -Wno-implicit-function-declaration
-TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3
+TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 
 MAKE_FLAGS += \
 	EXTRA_CCOPTS="$(TARGET_CFLAGS) -I../include -I$(STAGING_DIR)/usr/include/libnl-tiny" \
