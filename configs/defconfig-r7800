@@ -1466,8 +1466,8 @@ CONFIG_MINIUPNPD_DEVUPC="606449084528"
 CONFIG_PACKAGE_net-dump=y
 CONFIG_PACKAGE_net-scan=y
 CONFIG_PACKAGE_net-wall=y
-CONFIG_PACKAGE_netatalk=y
-CONFIG_PACKAGE_netatalk-utility=y
+# CONFIG_PACKAGE_netatalk is not set
+# CONFIG_PACKAGE_netatalk-utility is not set
 # CONFIG_PACKAGE_ngrep is not set
 CONFIG_PACKAGE_noip2=y
 CONFIG_PACKAGE_ntgrddns=y
