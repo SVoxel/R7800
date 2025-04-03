@@ -6,12 +6,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=fcgi
-PKG_VERSION:=2.4.2
+PKG_VERSION:=2.4.4
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)2-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/FastCGI-Archives/fcgi2/tar.gz/$(PKG_VERSION)?
-PKG_MD5SUM:=146376d5c5c059b9184755db76505fab
+PKG_MD5SUM:=8a54d4ce6a5b0cb58d9d2458cd316bce
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)2-$(PKG_VERSION)
 
 PKG_MAINTAINER:=Jacob Siverskog <jacob@teenageengineering.com>
