@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=util-linux
-PKG_VERSION:=2.40.4
+PKG_VERSION:=2.41
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_SOURCE_URL:=@KERNEL/linux/utils/$(PKG_NAME)/v2.40
-PKG_MD5SUM:=f9cbb1c8315d8ccbeb0ec36d10350304
+PKG_SOURCE_URL:=@KERNEL/linux/utils/$(PKG_NAME)/v2.41
+PKG_MD5SUM:=e666a34b03554c18a1073347b16661ce
 PKG_CPE_ID:=cpe:/a:kernel:util-linux
 
 PKG_LICENSE:=GPL-2.0
@@ -525,6 +525,8 @@ CONFIGURE_ARGS += \
 	--without-readline		\
 	--disable-more			\
 	--disable-lsfd			\
+	--disable-lsns			\
+	--disable-nsenter		\
 	--disable-liblastlog2		\
 	--disable-enosys		\
 	--disable-exch			\

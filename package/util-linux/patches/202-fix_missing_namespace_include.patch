@@ -1,30 +1,66 @@
---- a/libmount/src/hook_subdir.c
-+++ b/libmount/src/hook_subdir.c
-@@ -20,6 +20,7 @@
+diff -Nuar a/libmount/src/context.c b/libmount/src/context.c
+--- a/libmount/src/context.c	2025-03-17 14:21:53.055758300 +0300
++++ b/libmount/src/context.c	2025-03-21 16:50:08.005852800 +0300
+@@ -46,6 +46,7 @@
+ 
+ #include "mount-api-utils.h"
+ #include "strv.h"
++#include "namespace.h"
+ 
+ /**
+  * mnt_new_context:
+diff -Nuar a/libmount/src/hook_subdir.c b/libmount/src/hook_subdir.c
+--- a/libmount/src/hook_subdir.c	2025-02-26 15:27:07.523597000 +0300
++++ b/libmount/src/hook_subdir.c	2025-03-21 16:50:24.830268700 +0300
+@@ -19,6 +19,7 @@
+ 
  #include "mountP.h"
  #include "fileutils.h"
- #include "mount-api-utils.h"
 +#include "namespace.h"
  
  struct hookset_data {
  	char *subdir;
---- a/misc-utils/lsfd-sock-xinfo.c
-+++ b/misc-utils/lsfd-sock-xinfo.c
-@@ -43,6 +43,7 @@
+diff -Nuar a/lsfd-cmd/lsfd.c b/lsfd-cmd/lsfd.c
+--- a/lsfd-cmd/lsfd.c	2025-03-18 15:42:56.568315600 +0300
++++ b/lsfd-cmd/lsfd.c	2025-03-21 16:50:39.480143100 +0300
+@@ -56,6 +56,7 @@
+ #include "pathnames.h"
  
  #include "lsfd.h"
- #include "lsfd-sock.h"
++#include "namespace.h"
+ 
+ /* Make sure this ifdef block comes after all the includes since
+  * c.h is required for the case where the system does not have kcmp.h */
+diff -Nuar a/lsfd-cmd/sock-xinfo.c b/lsfd-cmd/sock-xinfo.c
+--- a/lsfd-cmd/sock-xinfo.c	2025-03-18 15:42:56.568315600 +0300
++++ b/lsfd-cmd/sock-xinfo.c	2025-03-21 16:50:58.505939700 +0300
+@@ -48,6 +48,7 @@
+ #include "lsfd.h"
+ #include "pidfd-utils.h"
+ #include "sock.h"
 +#include "namespace.h"
  
  static void load_xinfo_from_proc_icmp(ino_t netns_inode, enum sysfs_byteorder byteorder);
  static void load_xinfo_from_proc_icmp6(ino_t netns_inode, enum sysfs_byteorder byteorder);
---- a/tests/helpers/test_mkfds.c
-+++ b/tests/helpers/test_mkfds.c
-@@ -21,6 +21,7 @@
- #include "xalloc.h"
- #include "test_mkfds.h"
- #include "exitcodes.h"
+diff -Nuar a/sys-utils/nsenter.c b/sys-utils/nsenter.c
+--- a/sys-utils/nsenter.c	2025-02-26 15:27:07.638596600 +0300
++++ b/sys-utils/nsenter.c	2025-03-21 16:50:47.427662600 +0300
+@@ -52,6 +52,7 @@
+ #include "pathnames.h"
+ #include "pidfd-utils.h"
+ #include "linux_version.h"
 +#include "namespace.h"
  
- #include <arpa/inet.h>
- #include <ctype.h>
+ static struct namespace_file {
+ 	int nstype;
+diff -Nuar a/tests/helpers/test_mkfds.c b/tests/helpers/test_mkfds.c
+--- a/tests/helpers/test_mkfds.c	2025-03-04 21:14:02.602173500 +0300
++++ b/tests/helpers/test_mkfds.c	2025-03-21 16:51:07.616860000 +0300
+@@ -70,6 +70,7 @@
+ #include <sys/wait.h>
+ #include <time.h>
+ #include <unistd.h>
++#include "namespace.h"
+ 
+ #define EXIT_EPERM  18
+ #define EXIT_ENOPROTOOPT 19
