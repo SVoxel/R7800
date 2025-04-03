@@ -1,0 +1,45 @@
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -6846,7 +6846,7 @@
+ 	lib/at-func.c lib/argmatch.h lib/arpa_inet.in.h \
+ 	lib/assert.in.h lib/verify.h lib/assure.h lib/attribute.h \
+ 	lib/backup-internal.h lib/backupfile.h lib/backup-internal.h \
+-	lib/backupfile.h lib/basename-lgpl.h lib/byteswap.in.h \
++	lib/backupfile.h lib/basename-lgpl.h \
+ 	lib/file-type.h lib/c-strcaseeq.h lib/c-strtod.h \
+ 	lib/c-strtod.c lib/c-strtod.h lib/c32is-impl.h \
+ 	lib/c32is-impl.h lib/c32is-impl.h lib/c32is-impl.h \
+@@ -7033,7 +7033,7 @@
+ # insist that maintainers must build on hosts that support the widest
+ # known ints (currently 128-bit).
+ BUILT_SOURCES = .version $(ALLOCA_H) lib/arpa/inet.h $(ASSERT_H) \
+-	$(BYTESWAP_H) lib/configmake.h lib/crc-sliceby8.h lib/ctype.h \
++	lib/configmake.h lib/crc-sliceby8.h lib/ctype.h \
+ 	lib/dirent.h $(ENDIAN_H) $(ERRNO_H) lib/error.h lib/fcntl.h \
+ 	$(FLOAT_H) $(FNMATCH_H) $(GETOPT_H) $(GETOPT_CDEFS_H) \
+ 	lib/malloc/dynarray.gl.h lib/malloc/dynarray-skeleton.gl.h \
+@@ -7087,7 +7087,7 @@
+ 	$(am__append_225) $(am__append_227)
+ MOSTLYCLEANFILES = lib/core lib/*.stackdump lib/alloca.h \
+ 	lib/alloca.h-t lib/arpa/inet.h lib/arpa/inet.h-t lib/assert.h \
+-	lib/assert.h-t lib/byteswap.h lib/byteswap.h-t \
++	lib/assert.h-t \
+ 	lib/crc-sliceby8.h-t lib/crc-tmp/crc-generate-table \
+ 	lib/ctype.h lib/ctype.h-t lib/dirent.h lib/dirent.h-t \
+ 	lib/endian.h lib/endian.h-t lib/errno.h lib/errno.h-t \
+@@ -25701,15 +25701,6 @@
+ @GL_GENERATE_ASSERT_H_FALSE@lib/assert.h: $(top_builddir)/config.status
+ @GL_GENERATE_ASSERT_H_FALSE@	rm -f $@
+ 
+-# We need the following in order to create <byteswap.h> when the system
+-# doesn't have one.
+-@GL_GENERATE_BYTESWAP_H_TRUE@lib/byteswap.h: lib/byteswap.in.h $(top_builddir)/config.status
+-@GL_GENERATE_BYTESWAP_H_TRUE@	$(AM_V_GEN)$(MKDIR_P) 'lib'
+-@GL_GENERATE_BYTESWAP_H_TRUE@	$(gl_V_at)$(SED_HEADER_TO_AT_t) $(top_srcdir)/lib/byteswap.in.h
+-@GL_GENERATE_BYTESWAP_H_TRUE@	$(AM_V_at)mv $@-t $@
+-@GL_GENERATE_BYTESWAP_H_FALSE@lib/byteswap.h: $(top_builddir)/config.status
+-@GL_GENERATE_BYTESWAP_H_FALSE@	rm -f $@
+-
+ # Listed in the same order as the GNU makefile conventions, and
+ # provided by autoconf 2.59c+ or 2.70.
+ # The Automake-defined pkg* macros are appended, in the order
