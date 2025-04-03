@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gdbm
-PKG_VERSION:=1.24
+PKG_VERSION:=1.25
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GNU/gdbm
-PKG_MD5SUM:=c780815649e52317be48331c1773e987
+PKG_MD5SUM:=46266720c7980b75f29e3554aeaeb7a8
 
 PKG_MAINTAINER:=Marcel Denia <naoir@gmx.net>
 PKG_LICENSE:=GPL-3.0-or-later
@@ -32,6 +32,7 @@ define Package/libgdbm
   CATEGORY:=Libraries
   TITLE:=GNU database manager
   URL:=https://www.gnu.org/software/gdbm/
+  DEPENDS:=+librt
 endef
 
 define Package/libgdbm/description
