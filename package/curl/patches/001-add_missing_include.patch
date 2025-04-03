@@ -8,6 +8,6 @@
 +#include <sched.h>
 +#endif
 +
- static inline void curl_simple_lock_lock(curl_simple_lock *lock)
+ static CURL_INLINE void curl_simple_lock_lock(curl_simple_lock *lock)
  {
    for(;;) {
