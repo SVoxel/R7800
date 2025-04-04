@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=patch
-PKG_VERSION:=2.7.6
-PKG_RELEASE:=6
+PKG_VERSION:=2.8
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNU/patch
-PKG_HASH:=ac610bda97abe0d9f6b7c963255a11dcb196c25e337c61f94e4778d632f1d8fd
+PKG_MD5SUM:=149327a021d41c8f88d034eab41c039f
 
 PKG_LICENSE:=GPL-3.0-or-later
 PKG_LICENSE_FILES:=COPYING
@@ -40,7 +40,7 @@ define Package/patch/description
   by applying a "patch" file typically created by the diff program.
 endef
 
-CONFIGURE_ARGS+= --disable-xattr
+CONFIGURE_ARGS+= --disable-xattr --disable-year2038
 
 define Build/Compile
 	$(MAKE) -C $(PKG_BUILD_DIR) \
