@@ -1,0 +1,28 @@
+From 14dcf5d6d8f1825147ed10a1b5c9e3e28d3334ac Mon Sep 17 00:00:00 2001
+From: Matthew McClintock <mmcclint@qca.qualcomm.com>
+Date: Tue, 28 May 2013 16:47:27 -0500
+Subject: [PATCH] fix __bswap_constant_16
+
+TODO
+
+Signed-off-by: Matthew McClintock <mmcclint@qca.qualcomm.com>
+---
+ libc/sysdeps/linux/common/bits/byteswap-common.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libc/sysdeps/linux/common/bits/byteswap-common.h b/libc/sysdeps/linux/common/bits/byteswap-common.h
+index 4941d47..4850e57 100644
+--- a/libc/sysdeps/linux/common/bits/byteswap-common.h
++++ b/libc/sysdeps/linux/common/bits/byteswap-common.h
+@@ -25,7 +25,7 @@
+ 
+ /* Swap bytes in 16 bit value.  */
+ #define __bswap_constant_16(x) \
+-     ((((x) >> 8) & 0xffu) | (((x) & 0xffu) << 8))
++     ((unsigned short int)((((x) >> 8) & 0xffu) | (((x) & 0xffu) << 8)))
+ 
+ #ifndef __bswap_non_constant_16
+ # define __bswap_non_constant_16(x) __bswap_constant_16(x)
+-- 
+1.8.2.2
+
