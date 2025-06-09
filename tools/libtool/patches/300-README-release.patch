@@ -1,0 +1,12 @@
+--- a/bootstrap.conf
++++ b/bootstrap.conf
+@@ -247,9 +247,6 @@
+ 
+     my_readme=README-release
+ 
+-    test -f "$my_readme" \
+-        || func_fatal_error "error: '$my_readme' does not exist"
+-
+     # Perform substitutions to a temporary file
+     $SED -e "\
+         s|\@PACKAGE\@|$package|g
