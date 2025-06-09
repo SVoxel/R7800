@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=unbound
-PKG_VERSION:=1.22.0
+PKG_VERSION:=1.23.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-release-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://nlnetlabs.nl/downloads/unbound
-PKG_MD5SUM:=e86aaa5ddd9be055db96a4e144fc8b81
+PKG_MD5SUM:=bfa2c6b545f30831a4c6515e43ada79b
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-release-$(PKG_VERSION)
 
 PKG_MAINTAINER:=Eric Luehrsen <ericluehrsen@gmail.com>
@@ -35,8 +35,6 @@ PKG_CONFIG_DEPENDS:=CONFIG_PACKAGE_libunbound_dnscrypt \
 	CONFIG_PACKAGE_libunbound_dnstap
 
 include $(INCLUDE_DIR)/package.mk
-
-TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
 
 define Package/unbound/Default
   SECTION:=net
