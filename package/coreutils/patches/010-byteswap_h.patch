@@ -1,15 +1,15 @@
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -6846,7 +6846,7 @@
+@@ -6904,7 +6904,7 @@
  	lib/at-func.c lib/argmatch.h lib/arpa_inet.in.h \
  	lib/assert.in.h lib/verify.h lib/assure.h lib/attribute.h \
  	lib/backup-internal.h lib/backupfile.h lib/backup-internal.h \
 -	lib/backupfile.h lib/basename-lgpl.h lib/byteswap.in.h \
 +	lib/backupfile.h lib/basename-lgpl.h \
- 	lib/file-type.h lib/c-strcaseeq.h lib/c-strtod.h \
- 	lib/c-strtod.c lib/c-strtod.h lib/c32is-impl.h \
+ 	lib/file-type.h lib/c-strcase.h lib/c-strcaseeq.h \
+ 	lib/c-strcase.h lib/c-strtod.h lib/c-strtod.c lib/c-strtod.h \
  	lib/c32is-impl.h lib/c32is-impl.h lib/c32is-impl.h \
-@@ -7033,7 +7033,7 @@
+@@ -7092,7 +7092,7 @@
  # insist that maintainers must build on hosts that support the widest
  # known ints (currently 128-bit).
  BUILT_SOURCES = .version $(ALLOCA_H) lib/arpa/inet.h $(ASSERT_H) \
@@ -18,8 +18,8 @@
  	lib/dirent.h $(ENDIAN_H) $(ERRNO_H) lib/error.h lib/fcntl.h \
  	$(FLOAT_H) $(FNMATCH_H) $(GETOPT_H) $(GETOPT_CDEFS_H) \
  	lib/malloc/dynarray.gl.h lib/malloc/dynarray-skeleton.gl.h \
-@@ -7087,7 +7087,7 @@
- 	$(am__append_225) $(am__append_227)
+@@ -7146,7 +7146,7 @@
+ 	$(am__append_226) $(am__append_228)
  MOSTLYCLEANFILES = lib/core lib/*.stackdump lib/alloca.h \
  	lib/alloca.h-t lib/arpa/inet.h lib/arpa/inet.h-t lib/assert.h \
 -	lib/assert.h-t lib/byteswap.h lib/byteswap.h-t \
@@ -27,7 +27,7 @@
  	lib/crc-sliceby8.h-t lib/crc-tmp/crc-generate-table \
  	lib/ctype.h lib/ctype.h-t lib/dirent.h lib/dirent.h-t \
  	lib/endian.h lib/endian.h-t lib/errno.h lib/errno.h-t \
-@@ -25701,15 +25701,6 @@
+@@ -25818,15 +25818,6 @@
  @GL_GENERATE_ASSERT_H_FALSE@lib/assert.h: $(top_builddir)/config.status
  @GL_GENERATE_ASSERT_H_FALSE@	rm -f $@
  
