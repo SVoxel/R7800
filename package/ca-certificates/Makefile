@@ -7,13 +7,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ca-certificates
-PKG_VERSION:=20241223
+PKG_VERSION:=20250419
 PKG_RELEASE:=1
 PKG_MAINTAINER:=
 
 PKG_SOURCE:=$(PKG_NAME)_$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=http://ftp.debian.org/debian/pool/main/c/ca-certificates
-PKG_MD5SUM:=fe4ae74dd9fc7b13bd98b7ec2d1696a1
+PKG_MD5SUM:=d3b07ed9bd2d2f966419aa0b1c3fad23
 PKG_BUILD_DIR:=$(BUILD_DIR)/ca-certificates
 
 PKG_INSTALL:=1
