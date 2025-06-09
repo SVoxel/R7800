@@ -64,7 +64,7 @@ run_ramfs() { # <command> [...]
 	install_file /www/languages-ru.js
 	install_file /www/liteblue.gif /www/style/form.css /www/pls_wait.html /www/help.css /www/help.htm /www/upload.gif /www/funcs.js /www/UPG_process.htm /www/upg_get_status.htm /www/spacer.gif /www/menublue.gif /www/rbullet.gif /www/MNU_menu.htm /www/MNU_menu_nolink.htm /www/MNU_menu_wds.htm /www/MNU_menu_wds_nolink.htm /www/AUTO_upgrade_process.htm
 	install_file /etc/resolv.conf
-	install_file /lib/libcrypt.so.0 /lib/libgcc_s.so.1 /lib/libc.so.0 /lib/ld-uClibc.so.0 /lib/libcrypt-0.9.30.1.so /lib/libuClibc-0.9.30.1.so /lib/ld-uClibc-0.9.30.1.so /lib/libm-0.9.30.1.so /lib/libpthread-0.9.30.1.so /lib/libpthread.so.0 /usr/lib/libiconv.so.2.4.0 /usr/lib/libiconv.so /usr/lib/libiconv.so.2 /usr/lib/libconfig.so
+	install_file /lib/libcrypt.so.0 /lib/libgcc_s.so.1 /lib/libc.so.0 /lib/ld-uClibc.so.0 /lib/libcrypt-0.9.33.2.so /lib/libuClibc-0.9.33.2.so /lib/ld-uClibc-0.9.33.2.so /lib/libm-0.9.33.2.so /lib/libpthread-0.9.33.2.so /lib/libpthread.so.0 /usr/lib/libiconv.so.2.7.0 /usr/lib/libiconv.so.2 /usr/lib/libconfig.so
 
 	pivot $RAM_ROOT /mnt || {
 		echo "Failed to switch over to ramfs. Please reboot."
