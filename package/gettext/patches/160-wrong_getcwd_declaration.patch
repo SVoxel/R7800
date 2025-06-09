@@ -1,0 +1,11 @@
+--- a/gettext-runtime/intl/dcigettext.c
++++ b/gettext-runtime/intl/dcigettext.c
+@@ -144,7 +144,7 @@
+ #  if VMS
+ #   define getcwd(buf, max) (getcwd) (buf, max, 0)
+ #  else
+-char *getcwd ();
++extern char *getcwd (char *__buf, size_t __size) __THROW __wur;
+ #  endif
+ # endif
+ # ifndef HAVE_STPCPY

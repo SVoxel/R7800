@@ -23,7 +23,7 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3
-TARGET_CFLAGS += -Wno-implicit-function-declaration -Wno-return-mismatch
+TARGET_CFLAGS += -std=gnu17 -Wno-implicit-function-declaration -Wno-return-mismatch
 
 define Package/dnippp/Default
   SECTION:=net

@@ -74,7 +74,7 @@ define Build/Configure
 	touch $(PKG_BUILD_DIR)/stamp-h.in
 endef
 
-TARGET_CFLAGS += -I$(LINUX_DIR)/include -I$(LINUX_DIR)/arch/$(LINUX_KARCH)/include
+TARGET_CFLAGS += -std=gnu17 -I$(LINUX_DIR)/include -I$(LINUX_DIR)/arch/$(LINUX_KARCH)/include
 unexport PREFIX
 
 define Build/Compile

@@ -16,6 +16,8 @@ PKG_SOURCE_URL:=@GNU/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
+TARGET_CFLAGS += -std=gnu17
+
 define Package/parted
   SECTION:=utils
   CATEGORY:=Utilities

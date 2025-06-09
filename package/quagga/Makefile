@@ -34,7 +34,7 @@ PKG_LICENSE:=GPL-2.0
 include $(INCLUDE_DIR)/package.mk
 
 TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -Os
-TARGET_CFLAGS += -ffunction-sections -fdata-sections -flto
+TARGET_CFLAGS += -std=gnu17 -ffunction-sections -fdata-sections -flto
 
 TARGET_LDFLAGS += -Wl,--gc-sections -flto
 

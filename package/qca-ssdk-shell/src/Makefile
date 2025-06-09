@@ -9,6 +9,8 @@ include ./make/config.mk
 include ./make/tools.mk
 include ./make/$(OS)_opt.mk
 
+CFLAGS += -std=gnu17
+
 SUB_DIR=$(patsubst %/, %, $(dir $(wildcard src/*/Makefile)))
 SUB_LIB=$(subst src/, , $(SUB_DIR))
 

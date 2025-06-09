@@ -54,6 +54,11 @@ ifdef CONFIG_GCC_USE_VERSION_14
   TARGET_CFLAGS := $(subst -fvect-cost-model=unlimited,-fvect-cost-model=dynamic,$(TARGET_CFLAGS))
 endif
 
+# GCC 15.x.x issue fixing (use of '-fvect-cost-model=unlimited' flag)
+ifdef CONFIG_GCC_USE_VERSION_15
+  TARGET_CFLAGS := $(subst -fvect-cost-model=unlimited,-fvect-cost-model=dynamic,$(TARGET_CFLAGS))
+endif
+
 TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3
 TARGET_CFLAGS += $(FPIC) -ffunction-sections -fdata-sections
 TARGET_ASFLAGS := $(TARGET_CFLAGS)
