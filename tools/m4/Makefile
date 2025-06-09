@@ -8,12 +8,11 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=m4
 PKG_CPE_ID:=cpe:/a:gnu:m4
-PKG_VERSION:=1.4.19
+PKG_VERSION:=1.4.20
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@GNU/$(PKG_NAME)
-PKG_HASH:=63aede5c6d33b6d9b13511cd0be2cac046f2e70fd0a07aa9573a04a82783af96
-PKG_CAT:=xzcat
+PKG_HASH:=e236ea3a1ccf5f6c270b1c4bb60726f371fa49459a8eaaebc90b216b328daf2b
 
 HOST_BUILD_PARALLEL:=1
 
@@ -21,9 +20,8 @@ include $(INCLUDE_DIR)/host-build.mk
 
 HOST_CONFIGURE_VARS += gl_cv_func_strstr_linear=no
 
-define Host/Clean
-	-$(MAKE) -C $(HOST_BUILD_DIR) uninstall
-	$(call Host/Clean/Default)
+define Host/Uninstall
+	-$(call Host/Compile/Default,uninstall)
 endef
 
 $(eval $(call HostBuild))
