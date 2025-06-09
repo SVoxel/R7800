@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=iperf
-PKG_VERSION:=3.18
+PKG_VERSION:=3.19
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://downloads.es.net/pub/iperf
-PKG_MD5SUM:=585d4392667f1a9ae6c2106fbfb64667
+PKG_MD5SUM:=4704c31b68668f74d75a6d192599f53c
 
 PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 PKG_LICENSE:=BSD-3-Clause
@@ -47,7 +47,7 @@ $(call Package/iperf3/default)
   DEPENDS:=+libopenssl
 endef
 
-TARGET_CFLAGS += -D_GNU_SOURCE
+TARGET_CFLAGS += -std=gnu17 -D_GNU_SOURCE
 CONFIGURE_ARGS += --disable-shared
 
 ifeq ($(BUILD_VARIANT),ssl)
