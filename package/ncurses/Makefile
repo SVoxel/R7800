@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ncurses
-PKG_VERSION:=6.4
+PKG_CPE_ID:=cpe:/a:gnu:ncurses
+PKG_VERSION:=6.5
 PKG_RELEASE:=1
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=@GNU/ncurses
-PKG_MD5SUM:=5a62487b5d4ac6b132fe2bf9f8fad29b
+PKG_SOURCE_URL:=@GNU/$(PKG_NAME)
+PKG_MD5SUM:=ac2d2629296f04c8537ca706b6977687
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=README
@@ -41,7 +41,7 @@ define Package/libncurses
   URL:=http://www.gnu.org/software/ncurses/
   PROVIDES:=libncursesw
   DEPENDS:= +terminfo
-  ABI_VERSION:=$(PKG_VERSION)
+  ABI_VERSION:=6
 endef
 
 define Package/libncurses-dev
@@ -52,7 +52,7 @@ define Package/libncurses-dev
   TITLE:=Development files for the ncurses library
 endef
 
-TARGET_CFLAGS += $(FPIC)
+TARGET_CFLAGS += $(FPIC) -std=gnu17
 
 CONFIGURE_ARGS += \
 	--enable-echo \
@@ -76,7 +76,13 @@ CONFIGURE_ARGS += \
 	--enable-widec \
 	--with-build-cppflags=-D_GNU_SOURCE
 
+CONFIGURE_VARS += \
+	cf_try_fPIC=no
+
+HOST_CFLAGS += $(HOST_FPIC)
+
 HOST_CONFIGURE_ARGS += \
+	--enable-pc-files \
 	--without-cxx \
 	--without-cxx-binding \
 	--without-ada \
@@ -116,7 +122,23 @@ ifneq ($(HOST_OS),FreeBSD)
 			mv $$$$dir $$$$(echo -ne "\x$$$$dir"); \
 		done \
 	)
-	for file in a/ansi d/dumb l/linux r/rxvt r/rxvt-unicode s/screen v/vt100 v/vt102 x/xterm x/xterm-color x/xterm-256color; do \
+	for file in \
+		a/ansi \
+		a/alacritty \
+		d/dumb \
+		f/foot \
+		l/linux \
+		r/rxvt \
+		r/rxvt-unicode \
+		s/screen \
+		s/screen-256color \
+		t/tmux \
+		t/tmux-256color \
+		v/vt100 \
+		v/vt102 \
+		x/xterm \
+		x/xterm-color \
+		x/xterm-256color; do \
 		$(INSTALL_DIR) $(1)/usr/share/terminfo/`dirname $$$$file`; \
 		$(CP) $(PKG_INSTALL_DIR)/usr/share/terminfo/$$$$file \
 			$(1)/usr/share/terminfo/$$$$file; \
@@ -127,8 +149,10 @@ endef
 define Package/libncurses/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	for lib in ncurses panel menu form; do \
-		$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib$$$${lib}w.so* $(1)/usr/lib/; \
-		ln -s lib$$$${lib}w.so $(1)/usr/lib/lib$$$${lib}.so; \
+		$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib$$$${lib}w.so.* $(1)/usr/lib/; \
+		for so in $(1)/usr/lib/lib$$$${lib}w.so.*; do \
+			ln -s $$$${so##*/} $$$${so%w.so*}.so$$$${so##*w.so}; \
+		done; \
 	done
 endef
 
@@ -146,7 +170,9 @@ endef
 define Build/InstallDev
 	$(CP) $(PKG_INSTALL_DIR)/* $(1)
 	for lib in ncurses panel menu form; do \
-		ln -s lib$$$${lib}w.so $(1)/usr/lib/lib$$$${lib}.so; \
+		for so in $(1)/usr/lib/lib$$$${lib}w.so*; do \
+			ln -s $$$${so##*/} $$$${so%w.so*}.so$$$${so##*w.so}; \
+		done; \
 	done
 	ln -s . $(1)/usr/include/ncursesw
 	$(TARGET_CROSS)ar rc $(1)/usr/lib/libtinfo.a
@@ -155,15 +181,13 @@ define Build/InstallDev
 	$(SED) 's,^\(prefix\|exec_prefix\)=.*,\1=$(STAGING_DIR)/usr,g' -e 's/$$$$INCS //g' \
 		$(2)/bin/ncursesw6-config
 	ln -sf $(STAGING_DIR)/host/bin/ncursesw6-config $(1)/usr/bin/ncursesw6-config
+	$(SED) 's,$(TOOLCHAIN_DIR),$(STAGING_DIR),g' \
+		$(1)/usr/lib/pkgconfig/ncursesw.pc
 endef
 
 define Host/Compile
 	$(MAKE) -C $(HOST_BUILD_DIR) libs
 	$(MAKE) -C $(HOST_BUILD_DIR)/progs tic
-endef
-
-define Host/Install
-	$(INSTALL_BIN) $(HOST_BUILD_DIR)/progs/tic $(STAGING_DIR_HOST)/bin/tic
 endef
 
 $(eval $(call HostBuild))
