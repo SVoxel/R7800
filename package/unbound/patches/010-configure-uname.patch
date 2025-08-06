@@ -1,9 +1,10 @@
 OpenWrt (modification):
 Fix cross compile errors by inserting an environment variable for the
 target. Use "uname" on host only if "UNAME" variable is empty.
+
 --- a/configure.ac
 +++ b/configure.ac
-@@ -900,7 +900,7 @@
+@@ -901,7 +901,7 @@
     fi
  fi
  
