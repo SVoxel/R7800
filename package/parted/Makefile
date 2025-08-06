@@ -21,6 +21,7 @@ TARGET_CFLAGS += -std=gnu17
 define Package/parted
   SECTION:=utils
   CATEGORY:=Utilities
+  DEPENDS:=+e2fsprogs +libdevmapper
   TITLE:=parted Partition editor
   URL:=http://www.gnu.org/software/parted/index.shtml
 endef
