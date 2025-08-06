@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libogg
-PKG_VERSION:=1.3.5
+PKG_VERSION:=1.3.6
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=http://downloads.xiph.org/releases/ogg/
-PKG_MD5SUM:=3178c98341559657a15b185bf5d700a5
+PKG_MD5SUM:=529275432dff072f63d4ed0f1f961384
 PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>
 
 PKG_LICENSE:=BSD-3-Clause
