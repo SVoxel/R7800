@@ -1,6 +1,6 @@
 --- a/src/jv_print.c
 +++ b/src/jv_print.c
-@@ -120,7 +120,9 @@
+@@ -147,7 +147,9 @@
    const char* cstart;
    int c = 0;
    char buf[32];
@@ -10,7 +10,7 @@
    while ((i = jvp_utf8_next((cstart = i), end, &c))) {
      assert(c != -1);
      int unicode_escape = 0;
-@@ -177,7 +179,9 @@
+@@ -204,7 +206,9 @@
      }
    }
    assert(c != -1);
