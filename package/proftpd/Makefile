@@ -28,6 +28,7 @@ define Package/proftpd
   SUBMENU:=File Transfer
   SECTION:=net
   CATEGORY:=Network
+  DEPENDS:=+libintl-full +libiconv-full +libncurses
   TITLE:=ProFTPD FTP server
   URL:=http://www.proftpd.org/
   MAINTAINER:=Cezary Jackiewicz <cezary@eko.one.pl>
