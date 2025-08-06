@@ -21,7 +21,7 @@ PKG_LICENSE_FILES:=COPYING
 
 PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 
-PKG_BUILD_PARALLEL:=1
+PKG_BUILD_PARALLEL:=0
 
 include $(INCLUDE_DIR)/package.mk
 
