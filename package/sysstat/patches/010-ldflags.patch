@@ -1,8 +1,8 @@
 --- a/Makefile.in
 +++ b/Makefile.in
 @@ -109,8 +109,8 @@
- DFLAGS += $(TFLAGS)
- endif
+ DFLAGS += $(DFSENSORS) $(DFSENSORS32)
+ DFLAGS += $(DFPCP)
  
 -ifndef LFLAGS
 -LFLAGS = @STRIP@ @LDFLAGS@
@@ -20,7 +20,7 @@
  ifeq ($(NLS),y)
  REQUIRE_NLS = -DUSE_NLS -DPACKAGE=\"$(PACKAGE)\" -DLOCALEDIR=\"$(NLS_DIR)\"
  endif
-@@ -248,7 +248,7 @@
+@@ -251,7 +251,7 @@
  	$(CC) -o $@ -c $(CFLAGS) $(DFLAGS) $<
  
  % : %.o
@@ -29,7 +29,7 @@
  
  all: sadc sar sadf iostat tapestat mpstat pidstat cifsiostat locales
  
-@@ -338,7 +338,7 @@
+@@ -341,7 +341,7 @@
  
  sadc.o: sadc.c sa.h version.h common.h rd_stats.h rd_sensors.h
  
@@ -38,7 +38,7 @@
  
  sadc: sadc.o act_sadc.o sa_wrap.o sa_common_light.o common_light.o systest.o librdstats.a librdsensors.a libsyscom.a
  
-@@ -348,7 +348,7 @@
+@@ -351,7 +351,7 @@
  
  sadf.o: sadf.c sadf.h version.h sa.h common.h rd_stats.h rd_sensors.h
  
@@ -47,7 +47,7 @@
  
  sadf: sadf.o act_sadf.o format_sadf.o sadf_misc.o pcp_def_metrics.o sa_conv.o rndr_stats.o xml_stats.o json_stats.o svg_stats.o raw_stats.o pcp_stats.o sa_common.o librdstats_light.a libsyscom.a
  
-@@ -470,7 +470,7 @@
+@@ -473,7 +473,7 @@
  tests/32bits/rd_sensors32.o: rd_sensors.c common.h rd_sensors.h rd_stats.h
  	$(CC) -o $@ -c $(CFLAGS) $(DFLAGS) $<
  
