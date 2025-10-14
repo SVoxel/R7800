@@ -6,13 +6,11 @@ include $(TOPDIR)/rules.mk
 
 BASENAME:=dnscrypt-proxy
 PKG_NAME:=$(BASENAME)-2
-PKG_VERSION:=2.1.12
+PKG_VERSION:=2.1.14
 PKG_RELEASE:=1
 PKG_SOURCE=$(BASENAME)-$(PKG_VERSION).tar.gz
-PKG_MD5SUM:=fe793aa3ffaab78380d9df8c1d26de40
+PKG_MD5SUM:=33a216d04036d04193102ad7ac1cad40
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(BASENAME)-$(PKG_VERSION)
-
-INSTALL_UPX:=upx --ultra-brute -o
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -47,6 +45,7 @@ define Build/Compile
 		-ldflags "-s -w"; \
 	)
 	chmod -R u+w $(PKG_BUILD_DIR)/$(BASENAME)
+	upx --ultra-brute $(PKG_BUILD_DIR)/$(BASENAME)/dnscrypt-proxy
 endef
 
 define Package/dnscrypt-proxy-2/conffiles
@@ -55,7 +54,7 @@ endef
 
 define Package/dnscrypt-proxy-2/install
 	$(INSTALL_DIR)  $(1)/usr/sbin
-	$(INSTALL_UPX)  $(1)/usr/sbin/dnscrypt-proxy-2 $(PKG_BUILD_DIR)/$(BASENAME)/dnscrypt-proxy
+	$(INSTALL_BIN)  $(PKG_BUILD_DIR)/$(BASENAME)/dnscrypt-proxy $(1)/usr/sbin/dnscrypt-proxy-2
 	$(INSTALL_DIR)  $(1)/etc/init.d
 	$(INSTALL_BIN)  files/dnscrypt-proxy-2.init $(1)/etc/init.d/dnscrypt-proxy-2
 	$(INSTALL_DATA) files/example-dnscrypt-proxy.toml $(1)/etc/dnscrypt-proxy-2.toml
