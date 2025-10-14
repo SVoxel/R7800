@@ -12,7 +12,7 @@ curdir:=tools
 # subdirectories to descend into
 tools-y :=
 ifeq ($(CONFIG_EXTERNAL_TOOLCHAIN)$(CONFIG_GCC_LLVM),)
-tools-y += gmp mpfr mpc libelf
+tools-y += gmp mpfr mpc
 endif
 tools-y += m4 libtool autoconf automake flex bison pkg-config sed mklibs gperf
 tools-y += sstrip ipkg-utils genext2fs e2fsprogs mtd-utils mkimage
@@ -65,7 +65,6 @@ $(curdir)/xorg-macros/compile := $(curdir)/automake/install
 $(curdir)/xfce-macros/compile := $(curdir)/automake/install
 $(curdir)/missing-macros/compile := $(curdir)/automake/install
 $(curdir)/e2fsprogs/compile := $(curdir)/automake/install
-$(curdir)/libelf/compile := $(curdir)/automake/install
 $(curdir)/sdcc/compile := $(curdir)/bison/install
 
 ifneq ($(CONFIG_CCACHE),)
