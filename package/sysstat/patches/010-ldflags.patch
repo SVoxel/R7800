@@ -31,7 +31,7 @@
  
 @@ -341,7 +341,7 @@
  
- sadc.o: sadc.c sa.h version.h common.h rd_stats.h rd_sensors.h
+ sadc.o: sadc.c sa.h version.h common.h rd_stats.h rd_sensors.h systest.h
  
 -sadc: LFLAGS += $(LFSENSORS)
 +sadc: LDFLAGS += $(LFSENSORS)
@@ -40,7 +40,7 @@
  
 @@ -351,7 +351,7 @@
  
- sadf.o: sadf.c sadf.h version.h sa.h common.h rd_stats.h rd_sensors.h
+ sadf.o: sadf.c sadf.h version.h sa.h common.h rd_stats.h rd_sensors.h systest.h
  
 -sadf: LFLAGS += $(LFPCP)
 +sadf: LDFLAGS += $(LFPCP)
@@ -48,7 +48,7 @@
  sadf: sadf.o act_sadf.o format_sadf.o sadf_misc.o pcp_def_metrics.o sa_conv.o rndr_stats.o xml_stats.o json_stats.o svg_stats.o raw_stats.o pcp_stats.o sa_common.o librdstats_light.a libsyscom.a
  
 @@ -473,7 +473,7 @@
- tests/32bits/rd_sensors32.o: rd_sensors.c common.h rd_sensors.h rd_stats.h
+ tests/32bits/rd_sensors32.o: rd_sensors.c common.h rd_sensors.h rd_stats.h systest.h
  	$(CC) -o $@ -c $(CFLAGS) $(DFLAGS) $<
  
 -tests/32bits/sadc32: LFLAGS += $(LFSENSORS32)
