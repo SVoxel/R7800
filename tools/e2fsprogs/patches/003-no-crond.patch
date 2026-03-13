@@ -1,11 +1,11 @@
 --- a/configure
 +++ b/configure
-@@ -16159,7 +16159,7 @@
+@@ -16669,7 +16669,7 @@
  
  		{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: ${crond_dir}" >&5
  printf "%s\n" "${crond_dir}" >&6; }
 -		have_crond="yes"
 +		have_crond="no"; with_crond_dir=""
  
- else $as_nop
- 
+ else case e in #(
+   e)
