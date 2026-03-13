@@ -1,0 +1,8 @@
+--- a/version.h
++++ b/version.h
+@@ -10,4 +10,4 @@
+  */
+ 
+ #define E2FSPROGS_VERSION "1.47.4"
+-#define E2FSPROGS_DATE "6-Mar-2025"
++#define E2FSPROGS_DATE "6-Mar-2026"
