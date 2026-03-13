@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=openssl
-PKG_VERSION:=3.0.18
+PKG_VERSION:=3.0.19
 PKG_RELEASE:=1
 PKG_BUILD_FLAGS:=no-mips16 gc-sections no-lto
 
@@ -24,7 +24,7 @@ PKG_SOURCE_URL:= \
 	ftp://ftp.pca.dfn.de/pub/tools/net/openssl/source/ \
 	ftp://ftp.pca.dfn.de/pub/tools/net/openssl/source/old/$(PKG_BASE)/
 
-PKG_MD5SUM:=2d36cbf0f4da1be108f174f58e0637fb
+PKG_MD5SUM:=b0da2db1060860c122f910ee106ed4ba
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
