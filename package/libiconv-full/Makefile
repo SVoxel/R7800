@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libiconv-full
-PKG_VERSION:=1.18
+PKG_VERSION:=1.19
 PKG_RELEASE:=1
 
 PKG_SOURCE:=libiconv-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GNU/libiconv
-PKG_MD5SUM:=1af69958b42981d3c3029ffb4c7ebaed
+PKG_MD5SUM:=c04d0fa4cae4e9a4febc457fc00ee519
 PKG_BUILD_DIR:=$(BUILD_DIR)/libiconv-$(PKG_VERSION)
 HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/libiconv-$(PKG_VERSION)
 
