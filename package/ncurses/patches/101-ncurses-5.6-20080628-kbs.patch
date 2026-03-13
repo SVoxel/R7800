@@ -1,6 +1,6 @@
 --- a/misc/terminfo.src
 +++ b/misc/terminfo.src
-@@ -2524,6 +2524,7 @@ vt100|vt100-am|DEC VT100 (w/advanced vid
+@@ -2524,6 +2524,7 @@
  vt100+4bsd|DEC VT100 from 4.0BSD,
  	am, msgr,
  	cols#80, it#8, lines#24,
@@ -8,7 +8,7 @@
  	acsc=``aaffggjjkkllmmnnooppqqrrssttuuvvwwxxyyzz{{||}}~~,
  	bel=^G, blink=\E[5m$<2>, bold=\E[1m$<2>,
  	clear=\E[H\E[J$<50>, cr=\r, cub1=^H, cud1=\n,
-@@ -4946,6 +4947,7 @@ xterm-xfree86|xterm terminal emulator (X
+@@ -5072,6 +5073,7 @@
  
  xterm+nofkeys|building block for xterm fkey-variants,
  	npc,
@@ -16,15 +16,15 @@
  	kcbt=\E[Z, nel=\EE, use=ecma+index, use=ansi+rep,
  	use=ecma+strikeout, use=vt420+lrmm, use=xterm+focus,
  	use=xterm+sm+1006, use=xterm+tmux, use=ecma+italics,
-@@ -8413,6 +8415,7 @@ dumb-emacs-ansi|Emacs dumb terminal with
+@@ -8877,6 +8879,7 @@
  screen-base|VT 100/ANSI X3.64 virtual terminal (base),
  	OTbs, OTpt, km, mir, xenl, G0,
  	ncv@, U8#1,
 +	kbs=\177,
  	acsc=++\,\,--..00``aaffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxy
  	     yzz{{||}}~~,
- 	blink=\E[5m, bold=\E[1m, civis=\E[?25l,
-@@ -8562,6 +8565,7 @@ screen.xterm-r6|screen customized for X1
+ 	blink=\E[5m, bold=\E[1m, cub1=^H, cud1=\n,
+@@ -9023,6 +9026,7 @@
  # on Solaris because Sun's curses implementation gets confused.
  screen.teraterm|disable ncv in teraterm,
  	ncv#127,
