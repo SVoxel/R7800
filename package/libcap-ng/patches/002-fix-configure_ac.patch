@@ -1,0 +1,12 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -153,8 +153,7 @@
+ 	AC_CHECK_HEADERS(attr/xattr.h, [], [AC_MSG_WARN(attr/xattr.h not found, disabling file system capabilities.)])
+ 	])
+ AC_CHECK_HEADERS(linux/securebits.h, [], [])
+-AC_CHECK_HEADERS(linux/inet_diag.h linux/netlink.h linux/sock_diag.h
+-	linux/vm_sockets.h, [], [])
++AC_CHECK_HEADERS(linux/inet_diag.h linux/netlink.h linux/sock_diag.h linux/vm_sockets.h, [], [])
+ AC_CHECK_HEADERS(linux/vm_sockets_diag.h, [], [])
+ AC_CHECK_HEADERS(pthread.h,
+ 	[AC_SEARCH_LIBS(pthread_atfork, pthread)],
