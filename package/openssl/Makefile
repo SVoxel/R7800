@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=openssl
-PKG_VERSION:=3.0.19
+PKG_VERSION:=3.0.20
 PKG_RELEASE:=1
 PKG_BUILD_FLAGS:=no-mips16 gc-sections no-lto
 
@@ -24,7 +24,7 @@ PKG_SOURCE_URL:= \
 	ftp://ftp.pca.dfn.de/pub/tools/net/openssl/source/ \
 	ftp://ftp.pca.dfn.de/pub/tools/net/openssl/source/old/$(PKG_BASE)/
 
-PKG_MD5SUM:=b0da2db1060860c122f910ee106ed4ba
+PKG_MD5SUM:=fabdcf86f3f54e27689253f85b738959
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
@@ -83,6 +83,11 @@ endif
 
 # GCC 15.x.x issue fixing (use of '-fvect-cost-model=unlimited' flag)
 ifdef CONFIG_GCC_USE_VERSION_15
+  TARGET_CFLAGS := $(subst -fvect-cost-model=unlimited,-fvect-cost-model=dynamic,$(TARGET_CFLAGS))
+endif
+
+# GCC 16.x.x issue fixing (use of '-fvect-cost-model=unlimited' flag)
+ifdef CONFIG_GCC_USE_VERSION_16
   TARGET_CFLAGS := $(subst -fvect-cost-model=unlimited,-fvect-cost-model=dynamic,$(TARGET_CFLAGS))
 endif
 
