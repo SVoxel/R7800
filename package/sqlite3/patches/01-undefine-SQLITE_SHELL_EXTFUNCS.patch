@@ -1,0 +1,13 @@
+--- a/shell.c
++++ b/shell.c
+@@ -6969,6 +6969,10 @@
+ /*
+ ** Establish linkage to running SQLite library.
+ */
++#ifdef SQLITE_SHELL_EXTFUNCS
++#undef SQLITE_SHELL_EXTFUNCS
++#endif
++
+ #ifndef SQLITE_SHELL_EXTFUNCS
+ #ifdef _WIN32
+ 
