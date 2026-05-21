@@ -1,0 +1,39 @@
+--- a/src/openvpn/mroute.h
++++ b/src/openvpn/mroute.h
+@@ -112,11 +112,11 @@
+ };
+ 
+ /* Double-check that struct packing works as expected */
+-static_assert(offsetof(struct mroute_addr, v4.port) == offsetof(struct mroute_addr, v4) + 4,
++_Static_assert(offsetof(struct mroute_addr, v4.port) == offsetof(struct mroute_addr, v4) + 4,
+               "Unexpected struct packing of v4");
+-static_assert(offsetof(struct mroute_addr, v6.port) == offsetof(struct mroute_addr, v6) + 16,
++_Static_assert(offsetof(struct mroute_addr, v6.port) == offsetof(struct mroute_addr, v6) + 16,
+               "Unexpected struct packing of v6");
+-static_assert(offsetof(struct mroute_addr, v4mappedv6.addr)
++_Static_assert(offsetof(struct mroute_addr, v4mappedv6.addr)
+                   == offsetof(struct mroute_addr, v4mappedv6) + 12,
+               "Unexpected struct packing of v4mappedv6");
+ 
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -1663,7 +1663,7 @@
+         tun_open_device(tt, c->options.dev_node, &device_guid, &c->gc);
+ 
+         /* Ensure we can "safely" cast the handle to a socket */
+-        static_assert(sizeof(sock->sd) == sizeof(tt->hand), "HANDLE and SOCKET size differs");
++        _Static_assert(sizeof(sock->sd) == sizeof(tt->hand), "HANDLE and SOCKET size differs");
+ 
+         c->c1.tuntap = tt;
+     }
+--- a/tests/unit_tests/openvpn/test_ssl.c
++++ b/tests/unit_tests/openvpn/test_ssl.c
+@@ -616,7 +616,7 @@
+                             '3', '4', '5', '6', '7', 'A', 'B', 'C', 'D', 'E', 'F',
+                             'G', 'H', 'j', 'k', 'u', 'c', 'h', 'e', 'n', 'l' };
+ 
+-    static_assert(sizeof(key) == 32, "Size of key should be 32 bytes");
++    _Static_assert(sizeof(key) == 32, "Size of key should be 32 bytes");
+ 
+     /* copy the key a few times to ensure to have the size we need for
+      * Statickey but XOR it to not repeat it */
