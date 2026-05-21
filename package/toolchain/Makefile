@@ -105,34 +105,6 @@ define Package/libssp/config
 endef
 
 
-define Package/libstdcpp
-$(call Package/gcc/Default)
-  NAME:=libstdc++
-  TITLE:=GNU Standard C++ Library v3
-  DEPENDS+=@INSTALL_LIBSTDCPP
-endef
-
-define Package/libstdcpp/config
-	menu "Configuration"
-	depends EXTERNAL_TOOLCHAIN && PACKAGE_libstdcpp
-
-	config LIBSTDCPP_ROOT_DIR
-		string
-		prompt "libstdcpp shared library base directory"
-		depends EXTERNAL_TOOLCHAIN && PACKAGE_libstdcpp
-		default TOOLCHAIN_ROOT  if !NATIVE_TOOLCHAIN
-		default "/"  if NATIVE_TOOLCHAIN
-
-	config LIBSTDCPP_FILE_SPEC
-		string
-		prompt "libstdc++ shared library files (use wildcards)"
-		depends EXTERNAL_TOOLCHAIN && PACKAGE_libstdcpp
-		default "./lib/libstdc++.so.*"
-
-	endmenu
-endef
-
-
 define Package/libc/Default
   SECTION:=libs
   CATEGORY:=Base system
@@ -407,11 +379,6 @@ ifeq ($(CONFIG_EXTERNAL_TOOLCHAIN),)
 	$(CP) $(TOOLCHAIN_DIR)/lib/libssp.so.* $(1)/lib/
   endef
 
-  define Package/libstdcpp/install
-	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(TOOLCHAIN_DIR)/lib/libstdc++.so.* $(1)/usr/lib/
-  endef
-
   use_libutil=$(if $(CONFIG_EGLIBC_OPTION_EGLIBC_UTMP),libutil)
   use_libnsl=$(if $(CONFIG_EGLIBC_OPTION_EGLIBC_NIS),libnsl)
   use_nsswitch=$(if $(CONFIG_EGLIBC_OPTION_EGLIBC_NSSWITCH),libnss_dns libnss_files)
@@ -537,15 +504,6 @@ else
 	exit 0
   endef
 
-  define Package/libstdcpp/install
-	for file in $(call qstrip,$(CONFIG_LIBSTDCPP_FILE_SPEC)); do \
-		dir=`dirname $$$$file` ; \
-		$(INSTALL_DIR) $(1)/$$$$dir ; \
-		$(CP) $(call qstrip,$(CONFIG_LIBSTDCPP_ROOT_DIR))/$$$$file $(1)/$$$$dir/ ; \
-	done ; \
-	exit 0
-  endef
-
   define Package/libc/install
 	for file in $(call qstrip,$(CONFIG_LIBC_FILE_SPEC)); do \
 		dir=`dirname $$$$file` ; \
@@ -597,7 +555,6 @@ $(eval $(call BuildPackage,libc))
 $(eval $(call BuildPackage,libgcc))
 $(eval $(call BuildPackage,libatomic))
 $(eval $(call BuildPackage,libssp))
-$(eval $(call BuildPackage,libstdcpp))
 $(eval $(call BuildPackage,libpthread))
 $(eval $(call BuildPackage,librt))
 $(eval $(call BuildPackage,libgfortran))
