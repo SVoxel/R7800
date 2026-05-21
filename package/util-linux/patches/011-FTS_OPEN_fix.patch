@@ -1,0 +1,44 @@
+--- a/configure
++++ b/configure
+@@ -29243,28 +29243,8 @@
+ 
+ 
+ have_fts_open=no
+-
+-  for ac_func in fts_open
+-do :
+-  ac_fn_c_check_func "$LINENO" "fts_open" "ac_cv_func_fts_open"
+-if test "x$ac_cv_func_fts_open" = xyes
+-then :
+-  printf "%s\n" "#define HAVE_FTS_OPEN 1" >>confdefs.h
+- have_fts_open=yes
+-else case e in #(
+-  e) have_fts_open=no ;;
+-esac
+-fi
+-
+-done
+- if test "x$have_fts_open" = xyes; then
+-  HAVE_FTS_OPEN_TRUE=
+-  HAVE_FTS_OPEN_FALSE='#'
+-else
+-  HAVE_FTS_OPEN_TRUE='#'
+-  HAVE_FTS_OPEN_FALSE=
+-fi
+-
++HAVE_FTS_OPEN_TRUE='#'
++HAVE_FTS_OPEN_FALSE=
+ 
+ MQ_LIBS=
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for mq_open in -lrt" >&5
+--- a/configure.ac
++++ b/configure.ac
+@@ -831,8 +831,6 @@
+ AM_CONDITIONAL([HAVE_DIRFD], [test "x$have_dirfd" = xyes || test "x$have_ddfd" = xyes])
+ 
+ have_fts_open=no
+-AC_CHECK_FUNCS([fts_open], [have_fts_open=yes], [have_fts_open=no])
+-AM_CONDITIONAL([HAVE_FTS_OPEN], [test "x$have_fts_open" = xyes])
+ 
+ MQ_LIBS=
+ AC_CHECK_LIB([rt], [mq_open], [MQ_LIBS="-lrt"])

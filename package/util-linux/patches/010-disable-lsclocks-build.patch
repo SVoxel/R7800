@@ -1,6 +1,6 @@
 --- a/configure.ac
 +++ b/configure.ac
-@@ -2046,7 +2046,7 @@
+@@ -2010,7 +2010,7 @@
  ])
  AM_CONDITIONAL([BUILD_ENOSYS], [test "x$build_enosys" = xyes])
  
