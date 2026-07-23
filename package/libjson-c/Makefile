@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=json-c
-PKG_VERSION:=0.18
+PKG_VERSION:=0.19
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-nodoc.tar.gz
 PKG_SOURCE_URL:=https://s3.amazonaws.com/json-c_releases/releases/
-PKG_MD5SUM:=e795aadd85376623777ff0fd259bebab
+PKG_MD5SUM:=09b70a19758b4ec8abf3f9e7880bf09b
 
 PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 PKG_LICENSE:=MIT
