@@ -16,28 +16,27 @@ Signed-off-by: Eneas U de Queiroz <cote2004-github@yahoo.com>
 
 --- a/include/openssl/ssl.h.in
 +++ b/include/openssl/ssl.h.in
-@@ -197,9 +197,15 @@
+@@ -197,10 +197,16 @@
   * DEPRECATED IN 3.0.0, in favor of OSSL_default_ciphersuites()
   * Update both macro and function simultaneously
   */
 -#define TLS_DEFAULT_CIPHERSUITES "TLS_AES_256_GCM_SHA384:"       \
--                                 "TLS_CHACHA20_POLY1305_SHA256:" \
--                                 "TLS_AES_128_GCM_SHA256"
 +#ifdef OPENSSL_PREFER_CHACHA_OVER_GCM
 +#define TLS_DEFAULT_CIPHERSUITES "TLS_CHACHA20_POLY1305_SHA256:" \
 +                                 "TLS_AES_256_GCM_SHA384:" \
 +                                 "TLS_AES_128_GCM_SHA256"
 +#else
 +#define TLS_DEFAULT_CIPHERSUITES "TLS_AES_256_GCM_SHA384:" \
-+                                 "TLS_CHACHA20_POLY1305_SHA256:" \
-+                                 "TLS_AES_128_GCM_SHA256"
-+#endif
+                                  "TLS_CHACHA20_POLY1305_SHA256:" \
+                                  "TLS_AES_128_GCM_SHA256"
  #endif
++#endif
  /*
   * As of OpenSSL 1.0.0, ssl_create_cipher_list() in ssl/ssl_ciph.c always
+  * starts with a reasonable order, and all we have to do for DEFAULT is
 --- a/ssl/ssl_ciph.c
 +++ b/ssl/ssl_ciph.c
-@@ -1490,11 +1490,29 @@
+@@ -1494,11 +1494,29 @@
      ssl_cipher_apply_rule(0, SSL_kECDHE, 0, 0, 0, 0, 0, CIPHER_DEL, -1, &head,
          &tail);
  
@@ -67,7 +66,7 @@ Signed-off-by: Eneas U de Queiroz <cote2004-github@yahoo.com>
  
      /*
       * ...and generally, our preferred cipher is AES.
-@@ -1549,7 +1567,7 @@
+@@ -1553,7 +1571,7 @@
       * Within each group, ciphers remain sorted by strength and previous
       * preference, i.e.,
       * 1) ECDHE > DHE
@@ -76,7 +75,7 @@ Signed-off-by: Eneas U de Queiroz <cote2004-github@yahoo.com>
       * 3) AES > rest
       * 4) TLS 1.2 > legacy
       *
-@@ -2222,7 +2240,13 @@
+@@ -2226,7 +2244,13 @@
   */
  const char *OSSL_default_ciphersuites(void)
  {
