@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=jq
-PKG_VERSION:=1.8.1
+PKG_VERSION:=1.8.2
 PKG_RELEASE:=1
 PKG_LICENSE:=BSD
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/jqlang/jq/releases/download/$(PKG_NAME)-$(PKG_VERSION)/
-PKG_MD5SUM:=ea4bb241cd9c625b43b0988776db1e03
+PKG_MD5SUM:=e288a84cf2957ea2cfc643aa9e59b473
 
 PKG_INSTALL:=1
 
