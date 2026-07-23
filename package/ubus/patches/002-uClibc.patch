@@ -1,0 +1,27 @@
+--- a/ubusd_id.c
++++ b/ubusd_id.c
+@@ -15,7 +15,7 @@
+ #include <stdlib.h>
+ #include <unistd.h>
+ #include <fcntl.h>
+-#ifdef __linux__
++#if (defined __linux__) && (! defined __UCLIBC__)
+ #include <sys/random.h>
+ /* Added in Linux 5.6; define it in case the libc headers are older. */
+ #ifndef GRND_INSECURE
+@@ -27,13 +27,13 @@
+ #include "ubusmsg.h"
+ #include "ubusd_id.h"
+ 
+-#ifndef __linux__
++#if (! defined __linux__) || (defined __UCLIBC__)
+ static int random_fd = -1;
+ #endif
+ 
+ static ssize_t read_random(void *buf, size_t len)
+ {
+-#ifdef __linux__
++#if (defined __linux__) && (! defined __UCLIBC__)
+ 	/*
+ 	 * IDs only need to be hard to guess, not crypto-strong.
+ 	 * GRND_INSECURE returns bytes without blocking on the CRNG, so
