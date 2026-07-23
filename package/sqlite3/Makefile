@@ -5,13 +5,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sqlite
-PKG_VERSION:=3.53.1
-PKG_SRC_VERSION:=3530100
+PKG_VERSION:=3.53.3
+PKG_SRC_VERSION:=3530300
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-autoconf-$(PKG_SRC_VERSION).tar.gz
 PKG_SOURCE_URL:=https://www.sqlite.org/2026/
-PKG_MD5SUM:=af0fd4332e87e0d028aece375dbd2c84
+PKG_MD5SUM:=6629d5b2597aeb2233ba50dbcca9cc1a
 
 PKG_CPE_ID:=cpe:/a:sqlite:sqlite
 PKG_LICENSE:=blessing

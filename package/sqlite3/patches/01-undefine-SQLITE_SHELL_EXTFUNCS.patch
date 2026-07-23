@@ -1,6 +1,6 @@
 --- a/shell.c
 +++ b/shell.c
-@@ -6969,6 +6969,10 @@
+@@ -6982,6 +6982,10 @@
  /*
  ** Establish linkage to running SQLite library.
  */
