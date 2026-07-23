@@ -1,0 +1,63 @@
+--- a/libmount/src/context.c
++++ b/libmount/src/context.c
+@@ -46,6 +46,12 @@
+ #include <sys/wait.h>
+ 
+ #include "strv.h"
++#include "namespace.h"
++
++/* Define O_PATH if not defined */
++#ifndef O_PATH
++#define O_PATH		010000000
++#endif
+ 
+ /**
+  * mnt_new_context:
+--- a/libmount/src/context_umount.c
++++ b/libmount/src/context_umount.c
+@@ -24,6 +24,12 @@
+ #include "strutils.h"
+ #include "mountP.h"
+ 
++/* Define O_PATH if not defined */
++#ifndef O_PATH
++#define O_PATH		010000000
++#endif
++
++
+ /*
+  * umount2 flags
+  */
+--- a/libmount/src/hook_owner.c
++++ b/libmount/src/hook_owner.c
+@@ -20,6 +20,17 @@
+ #include "pathnames.h"
+ #include "fileutils.h"
+ 
++/* Define O_PATH if not defined */
++#ifndef O_PATH
++#define O_PATH		010000000
++#endif
++
++/* Define AT_EMPTY_PATH if not defined */
++#ifndef AT_EMPTY_PATH
++#define AT_EMPTY_PATH	0x1000
++#endif
++
++
+ struct hook_data {
+ 	uid_t owner;
+ 	gid_t group;
+--- a/sys-utils/fstrim.c
++++ b/sys-utils/fstrim.c
+@@ -50,6 +50,10 @@
+ 
+ #include <libmount.h>
+ 
++/* Define O_PATH if not defined */
++#ifndef O_PATH
++#define O_PATH		010000000
++#endif
+ 
+ #ifndef FITRIM
+ struct fstrim_range {

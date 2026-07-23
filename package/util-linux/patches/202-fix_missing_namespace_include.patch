@@ -1,13 +1,3 @@
---- a/libmount/src/context.c
-+++ b/libmount/src/context.c
-@@ -45,6 +45,7 @@
- #include <sys/wait.h>
- 
- #include "strv.h"
-+#include "namespace.h"
- 
- /**
-  * mnt_new_context:
 --- a/libmount/src/hook_subdir.c
 +++ b/libmount/src/hook_subdir.c
 @@ -37,6 +37,7 @@
