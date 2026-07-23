@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libevent2
-PKG_VERSION:=2.1.12
+PKG_VERSION:=2.1.13
 PKG_RELEASE:=1
 
 PKG_SOURCE:=libevent-$(PKG_VERSION)-stable.tar.gz
 PKG_SOURCE_URL:=https://github.com/libevent/libevent/releases/download/release-$(PKG_VERSION)-stable
-PKG_MD5SUM:=b5333f021f880fe76490d8a799cd79f4
+PKG_MD5SUM:=eaa0bd3472b5d6a52ac6b9e0b7418b03
 PKG_BUILD_DIR:=$(BUILD_DIR)/libevent-$(PKG_VERSION)-stable
 
 PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
