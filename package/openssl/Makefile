@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=openssl
-PKG_VERSION:=3.0.21
+PKG_VERSION:=3.5.8
 PKG_RELEASE:=1
 PKG_BUILD_FLAGS:=no-mips16 gc-sections no-lto
 
@@ -17,17 +17,14 @@ PKG_BUILD_PARALLEL:=1
 PKG_BASE:=$(subst $(space),.,$(wordlist 1,2,$(subst .,$(space),$(PKG_VERSION))))
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:= \
-	http://www.openssl.org/source/ \
-	http://www.openssl.org/source/old/$(PKG_BASE)/ \
-	http://ftp.fi.muni.cz/pub/openssl/source/ \
-	http://ftp.fi.muni.cz/pub/openssl/source/old/$(PKG_BASE)/ \
-	ftp://ftp.pca.dfn.de/pub/tools/net/openssl/source/ \
-	ftp://ftp.pca.dfn.de/pub/tools/net/openssl/source/old/$(PKG_BASE)/
+	https://www.openssl.org/source/ \
+	https://www.openssl.org/source/old/$(PKG_BASE)/ \
+	https://github.com/openssl/openssl/releases/download/$(PKG_NAME)-$(PKG_VERSION)/
 
-PKG_MD5SUM:=4e59f265667c74aa82d426b016e194c9
+PKG_MD5SUM:=88975626b10916f46c14ce74d69482d0
 
 PKG_LICENSE:=Apache-2.0
-PKG_LICENSE_FILES:=LICENSE
+PKG_LICENSE_FILES:=LICENSE.txt
 PKG_MAINTAINER:=Eneas U de Queiroz <cotequeiroz@gmail.com>
 PKG_CPE_ID:=cpe:/a:openssl:openssl
 PKG_CONFIG_DEPENDS:= \
@@ -98,7 +95,7 @@ endif
 
 define Package/openssl/Default
   TITLE:=Open source SSL toolkit
-  URL:=http://www.openssl.org/
+  URL:=https://www.openssl.org/
   SECTION:=libs
   CATEGORY:=Libraries
 endef
@@ -190,7 +187,7 @@ define Package/libopenssl-legacy/description
 The OpenSSL legacy provider supplies OpenSSL implementations of algorithms that
 have been deemed legacy. Such algorithms have commonly fallen out of use, have
 been deemed insecure by the cryptography community, or something similar.  See
-https://www.openssl.org/docs/man3.0/man7/OSSL_PROVIDER-legacy.html
+https://docs.openssl.org/3.5/man7/OSSL_PROVIDER-legacy/
 endef
 
 $(eval $(call Package/openssl/add-engine,afalg))
@@ -205,7 +202,7 @@ endef
 define Package/libopenssl-afalg/description
 This package adds an engine that enables hardware acceleration
 through the AF_ALG kernel interface.
-See https://www.openssl.org/docs/man3.0/man5/config.html#Engine-Configuration
+See https://docs.openssl.org/3.5/man5/config/#Engine-Configuration
 and https://openwrt.org/docs/techref/hardware/cryptographic.hardware.accelerators
 The engine_id is "afalg"
 endef
@@ -221,7 +218,7 @@ endef
 define Package/libopenssl-devcrypto/description
 This package adds an engine that enables hardware acceleration
 through the /dev/crypto kernel interface.
-See https://www.openssl.org/docs/man3.0/man5/config.html#Engine-Configuration
+See https://docs.openssl.org/3.5/man5/config/#Engine-Configuration
 and https://openwrt.org/docs/techref/hardware/cryptographic.hardware.accelerators
 The engine_id is "devcrypto"
 endef
@@ -237,7 +234,7 @@ endef
 
 define Package/libopenssl-padlock/description
 This package adds an engine that enables VIA Padlock hardware acceleration.
-See https://www.openssl.org/docs/man3.0/man5/config.html#Engine-Configuration
+See https://docs.openssl.org/3.5/man5/config/#Engine-Configuration
 and https://openwrt.org/docs/techref/hardware/cryptographic.hardware.accelerators
 The engine_id is "padlock"
 endef
@@ -399,6 +396,8 @@ define Build/Configure
 	)
 endef
 
+# Set TLS Security Level to '1' instead of default '2'
+TARGET_CFLAGS += -DOPENSSL_TLS_SECURITY_LEVEL=1
 TARGET_CFLAGS += $(FPIC)
 
 define Build/Compile
@@ -442,7 +441,7 @@ endef
 
 define Package/openssl-util/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/openssl $(1)/usr/bin/openssl-3.0.x
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/openssl $(1)/usr/bin/openssl-3.5.x
 endef
 
 $(eval $(call BuildPackage,libopenssl))
