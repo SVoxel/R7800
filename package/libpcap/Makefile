@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libpcap
-PKG_VERSION:=1.10.6
+PKG_VERSION:=1.10.7
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://www.tcpdump.org/release/
-PKG_MD5SUM:=e46b62dbe89611e03712fe79c5743245
+PKG_MD5SUM:=1418f40ebd08aec8b74d4c94aacbdab7
 
 PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 PKG_LICENSE:=BSD-3-Clause
