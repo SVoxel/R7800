@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libcap-ng
-PKG_VERSION:=0.9.3
+PKG_VERSION:=0.9.6
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://people.redhat.com/sgrubb/libcap-ng
-PKG_MD5SUM:=a7667d27aa461f30d118a25cd4a62ede
+PKG_MD5SUM:=32555e97b83008bec002804c8126e09d
 
 PKG_MAINTAINER:=Lucian CRISTIAN <lucian.cristian@gmail.com>
 PKG_LICENSE:=GPL-2.0-or-later LGPL-2.1-or-later
