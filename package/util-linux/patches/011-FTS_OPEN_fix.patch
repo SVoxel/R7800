@@ -1,6 +1,6 @@
 --- a/configure
 +++ b/configure
-@@ -30550,28 +30550,8 @@
+@@ -30557,28 +30557,8 @@
  
  
  have_fts_open=no
@@ -33,7 +33,7 @@
  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for mq_open in -lrt" >&5
 --- a/configure.ac
 +++ b/configure.ac
-@@ -832,8 +832,6 @@
+@@ -834,8 +834,6 @@
  AM_CONDITIONAL([HAVE_DIRFD], [test "x$have_dirfd" = xyes || test "x$have_ddfd" = xyes])
  
  have_fts_open=no
