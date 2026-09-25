@@ -1,0 +1,13 @@
+--- a/utils/netcap-advanced.c
++++ b/utils/netcap-advanced.c
+@@ -65,6 +65,10 @@
+ #include "proc-sanitize.h"
+ #include "proc-status.h"
+ 
++#ifndef SO_REUSEPORT
++#define SO_REUSEPORT 15
++#endif
++
+ /*
+  * Overview:
+  * netcap --advanced builds a process/socket ownership model from procfs and
