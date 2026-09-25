@@ -35,9 +35,20 @@
                    == offsetof(struct mroute_addr, v4mappedv6) + 12,
                "Unexpected struct packing of v4mappedv6");
  
+--- a/src/openvpn/reliable.c
++++ b/src/openvpn/reliable.c
+@@ -693,7 +693,7 @@
+     {
+         /* The initial timeout is bounded by RELIABLE_MAX_INITIAL_TIMEOUT, so
+          * shifting it cannot overflow. */
+-        static_assert(RELIABLE_MAX_INITIAL_TIMEOUT <= (INT_MAX >> RELIABLE_MAX_TIMEOUT_SHIFT),
++        _Static_assert(RELIABLE_MAX_INITIAL_TIMEOUT <= (INT_MAX >> RELIABLE_MAX_TIMEOUT_SHIFT),
+                       "initial reliable timeout overflows when shifted");
+         const interval_t max_timeout = rel->initial_timeout << RELIABLE_MAX_TIMEOUT_SHIFT;
+ 
 --- a/src/openvpn/socket.c
 +++ b/src/openvpn/socket.c
-@@ -1663,7 +1663,7 @@
+@@ -1639,7 +1639,7 @@
          tun_open_device(tt, c->options.dev_node, &device_guid, &c->gc);
  
          /* Ensure we can "safely" cast the handle to a socket */
