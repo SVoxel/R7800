@@ -27,7 +27,7 @@
 ##
 ## Remove the leading # first to enable this; lines starting with # are ignored.
 
-server_names = ['cloudflare', 'controld-uncensored', 'controld-unfiltered', 'dns.digitale-gesellschaft.ch', 'dns4all-ipv4', 'doh.appliedprivacy.net', 'doh.ffmuc.net', 'fdn', 'nextdns', 'nextdns-ultralow', 'nic.cz', 'njalla-doh', 'restena-doh-ipv4', 'uncensoreddns-dk-ipv4']
+server_names = ['cloudflare', 'controld-uncensored', 'controld-unfiltered', 'dns.digitalsize.net', 'dns4eu', 'dnscry.pt-doh-stockholm-ipv4', 'dnscry.pt-doh-vilnius-ipv4', 'doh.appliedprivacy.net', 'nextdns', 'nextdns-ultralow', 'nic.cz', 'restena-doh-ipv4', 'uncensoreddns-dk-ipv4']
 
 
 ## List of local addresses and ports to listen to. Can be IPv4 and/or IPv6.
@@ -128,7 +128,7 @@ http3_probe = false
 ## Uncomment the following line to route all TCP connections to a local Tor node
 ## Tor doesn't support UDP, so set `force_tcp` to `true` as well. When passing
 ## a random username and password to Tor's socks5 connection, dnscrypt-proxy gets
-## an isolated circuit so it will not share an exit node with other applications.
+## an isolated circuit that will not share the same path with other applications.
 ## Note: the random username and password used by dnscrypt-proxy should not
 ## actually be defined in Tor's configuration.
 
@@ -295,6 +295,15 @@ cert_refresh_delay = 240
 # tls_disable_session_tickets = false
 
 
+## DoH: Check the certificate hashes of server stamps on every new connection,
+## not only at startup and when certificates are reloaded.
+##
+## This improves security, but also increases the risks of downtime if you
+## don't use DNSCrypt servers in addition to DoH servers.
+
+# doh_check_cert_hashes_on_connect = false
+
+
 ## Prefer RSA certificates over ECDSA for TLS connections.
 ## When this is enabled, some servers may become impossible to use,
 ## or may stop working later as they upgrade their configuration.
@@ -381,6 +390,9 @@ netprobe_timeout = 60
 ## when the system starts.
 ## On other operating systems, the connection will be initialized
 ## but nothing will be sent at all.
+## Multiple comma-separated addresses can be given, for example to support
+## both IPv4-only and IPv6-only networks. Connectivity is detected as soon
+## as any of them works: '9.9.9.9:53,[2620:fe::fe]:53'
 
 netprobe_address = '9.9.9.9:53'
 
@@ -607,6 +619,11 @@ format = 'tsv'
 ##   ads.*
 ##   ads*.example.*
 ##   ads*.example[0-9]*.com
+##   regex: `^ads[0-9]+\.example\.com$`
+##
+## The last one is a regular expression, see `example-blocked-names.txt`.
+## If a regex rule is invalid or too slow, the proxy won't start, and a
+## reload keeps the old rules.
 ##
 ## Example blocklist files can be found at https://download.dnscrypt.info/blocklists/
 ## A script to build blocklists from public feeds can be found in the
@@ -663,6 +680,10 @@ format = 'tsv'
 ## Allowlists support the same patterns as blocklists
 ## If a name matches an allowlist entry, the corresponding session
 ## will bypass names and IP filters.
+##
+## Regular expressions work here too, see `example-allowed-names.txt`.
+## If a regex rule is invalid or too slow, the proxy won't start, and a
+## reload keeps the old rules.
 ##
 ## Time-based rules are also supported to make some websites only accessible at specific times of the day.
 
