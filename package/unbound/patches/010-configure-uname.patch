@@ -4,7 +4,7 @@ target. Use "uname" on host only if "UNAME" variable is empty.
 
 --- a/configure.ac
 +++ b/configure.ac
-@@ -987,7 +987,7 @@
+@@ -988,7 +988,7 @@
     fi
  fi
  
